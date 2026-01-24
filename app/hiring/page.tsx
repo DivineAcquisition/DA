@@ -159,14 +159,14 @@ export default function HiringPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
         <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={72} 
-              height={72}
+              width={120} 
+              height={120}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
@@ -186,7 +186,7 @@ export default function HiringPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-40 pb-20 md:pt-48 md:pb-24">
+      <section className="relative z-10 px-6 pt-44 pb-20 md:pt-52 md:pb-24">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
@@ -346,8 +346,8 @@ export default function HiringPage() {
                 <Image 
                   src="/logo.png" 
                   alt="Divine Acquisition" 
-                  width={48} 
-                  height={48}
+                  width={64} 
+                  height={64}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
