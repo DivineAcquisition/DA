@@ -31,7 +31,7 @@ const jobs: Record<string, {
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe are not a marketing agency. We build the infrastructure that turns one-time transactions into long-term retained clients — systems that compound, processes that scale, and operations that outlive the hustle.',
+        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
       },
       {
         title: 'Responsibilities',
@@ -101,7 +101,7 @@ const jobs: Record<string, {
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t sell leads or traffic. We build infrastructure that turns one-time transactions into long-term retained clients.',
+        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
       },
       {
         title: 'Who This Is For',
@@ -169,7 +169,7 @@ const jobs: Record<string, {
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe build infrastructure that turns one-time transactions into long-term retained clients — systems that compound and processes that scale.',
+        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
       },
       {
         title: 'Who This Is For',
@@ -238,7 +238,7 @@ const jobs: Record<string, {
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t spray and pray. We don\'t worship the algorithm. We don\'t chase vanity metrics. We build campaigns rooted in strategic clarity.',
+        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
       },
       {
         title: 'Responsibilities',
@@ -308,7 +308,7 @@ const jobs: Record<string, {
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t acquire clients to extract revenue. We acquire them to create transformation. Your job is to ensure that transformation actually happens.',
+        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
       },
       {
         title: 'Responsibilities',
@@ -442,7 +442,7 @@ export default function JobPage() {
         <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
-              src="/sadsa.png" 
+              src="/logo.png" 
               alt="Divine Acquisition" 
               width={120} 
               height={120}
@@ -622,7 +622,7 @@ export default function JobPage() {
             <div className="flex items-center gap-4">
               <Link href="/hiring">
                 <Image 
-                  src="/7_upscayl_4x_digital-art-4x.png" 
+                  src="/Comp 2 (0;00;00;00).png" 
                   alt="Divine Acquisition" 
                   width={64} 
                   height={64}
