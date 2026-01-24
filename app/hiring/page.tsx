@@ -1,10 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 
 const jobs = [
   {
     id: 1,
+    slug: 'media-buyer',
     title: 'Media Buyer',
     description: 'Manage and optimize paid advertising campaigns across Meta, Google, TikTok, and emerging platforms. Drive ROAS and scale client acquisition.',
     department: 'growth-marketing',
@@ -14,6 +17,7 @@ const jobs = [
   },
   {
     id: 2,
+    slug: 'system-integrator',
     title: 'System Integrator',
     description: 'Build and maintain integrations between our platform and third-party tools. Ensure seamless data flow and automation across client systems.',
     department: 'engineering',
@@ -23,6 +27,7 @@ const jobs = [
   },
   {
     id: 3,
+    slug: 'client-success',
     title: 'Client Success Manager',
     description: 'Ensure client satisfaction and retention through proactive relationship management. Help clients achieve their revenue goals with our platform.',
     department: 'client-success',
@@ -32,6 +37,7 @@ const jobs = [
   },
   {
     id: 4,
+    slug: 'sdr',
     title: 'SDR / Sales Development Representative',
     description: 'Generate and qualify leads through strategic outbound prospecting. First step into a high-growth sales career at a fast-moving company.',
     department: 'sales',
@@ -40,6 +46,8 @@ const jobs = [
     date: '2026-01-14',
   },
 ];
+
+export { jobs };
 
 const departments = [
   { id: 'all', name: 'View All', icon: 'all' },
@@ -59,14 +67,6 @@ const levelLabels: Record<number, string> = {
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function Logo({ className = '' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-    </svg>
-  );
 }
 
 function DeptIcon({ icon, className = '' }: { icon: string; className?: string }) {
@@ -168,12 +168,18 @@ export default function HiringPage() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-black/10 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto h-full px-6 md:px-8 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5 group">
-            <Logo className="w-6 h-6 text-white group-hover:text-[#907DFF] transition-colors" />
+          <Link href="/hiring" className="flex items-center gap-2.5 group">
+            <Image 
+              src="/logo.svg" 
+              alt="DivineAcquisition" 
+              width={24} 
+              height={24}
+              className="group-hover:opacity-80 transition-opacity"
+            />
             <span className="text-lg font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors">
               DivineAcquisition
             </span>
-          </a>
+          </Link>
           
           {/* Mobile Menu Button */}
           <button 
@@ -364,9 +370,9 @@ export default function HiringPage() {
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {deptJobs.map((job) => (
-                      <a
+                      <Link
                         key={job.id}
-                        href={`/hiring/${job.id}`}
+                        href={`/hiring/${job.slug}`}
                         className="job-card block group overflow-hidden rounded-xl p-6 relative"
                       >
                         <div className="flex flex-col h-full justify-between gap-6">
@@ -408,7 +414,7 @@ export default function HiringPage() {
                             </span>
                           </div>
                         </div>
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </section>
@@ -440,9 +446,15 @@ export default function HiringPage() {
         <div className="max-w-[1800px] mx-auto px-6 md:px-8 py-12 md:py-16">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-4">
-              <a href="/" className="flex items-center gap-2 group">
-                <Logo className="w-5 h-5 text-white/70 group-hover:text-[#907DFF] transition-colors" />
-              </a>
+              <Link href="/hiring" className="flex items-center gap-2 group">
+                <Image 
+                  src="/logo.svg" 
+                  alt="DivineAcquisition" 
+                  width={20} 
+                  height={20}
+                  className="opacity-70 group-hover:opacity-100 transition-opacity"
+                />
+              </Link>
               <span className="text-neutral-600 text-sm font-light">
                 © 2026 DivineAcquisition. All rights reserved.
               </span>
