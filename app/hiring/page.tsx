@@ -95,7 +95,7 @@ function LevelIndicator({ level }: { level: number }) {
           <span
             key={i}
             className={`w-1.5 h-1.5 rounded-full ${
-              i <= level ? 'bg-[#5500FF] shadow-[0_0_6px_rgba(85,0,255,0.8)]' : 'bg-white/10'
+              i <= level ? 'bg-[#907DFF] shadow-[0_0_8px_rgba(144,125,255,0.9)]' : 'bg-white/10'
             }`}
           />
         ))}
@@ -214,13 +214,13 @@ export default function HiringPage() {
           {/* Badge */}
           <div 
             className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
-                        text-[#907DFF] bg-[#5500FF]/10 border border-[#5500FF]/30 mb-8
-                        shadow-[0_0_30px_-5px_rgba(85,0,255,0.5)]
+                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/40 mb-8
+                        shadow-[0_0_40px_-5px_rgba(144,125,255,0.6)]
                         ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.8)]" />
             </span>
             We&apos;re Hiring
           </div>
@@ -230,7 +230,7 @@ export default function HiringPage() {
             className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
             style={{
-              backgroundImage: 'linear-gradient(to right, white 0%, white 45%, #907DFF 75%, #5500FF 100%)',
+              backgroundImage: 'linear-gradient(to right, white 0%, white 30%, #907DFF 60%, #5500FF 100%)',
             }}
           >
             Curating The Engine To Create Trust, Revenue & Retention.
@@ -252,7 +252,7 @@ export default function HiringPage() {
             {['Devotion', 'Value', 'Exclusivity'].map((value) => (
               <span 
                 key={value}
-                className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-neutral-300"
+                className="px-4 py-2 rounded-full text-sm font-medium bg-[#907DFF]/5 border border-[#907DFF]/20 text-neutral-300 hover:border-[#907DFF]/40 hover:shadow-[0_0_20px_rgba(144,125,255,0.2)] transition-all"
               >
                 {value}
               </span>
@@ -268,7 +268,7 @@ export default function HiringPage() {
             
             {/* Sidebar Filter */}
             <aside className={`lg:w-72 flex-shrink-0 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-white/[0.02] border border-white/5 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
                 
                 {/* Department Filter */}
                 <div>
@@ -385,9 +385,9 @@ export default function HiringPage() {
                             <h3 className="text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
                               {job.title}
                             </h3>
-                            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5500FF]/20 text-[#907DFF]">
-                              {job.subtitle}
-                            </span>
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#907DFF]/15 text-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.3)]">
+                          {job.subtitle}
+                        </span>
                           </div>
                           <p className="text-sm text-neutral-500 font-light leading-relaxed mb-3">
                             {job.description}
