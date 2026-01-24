@@ -5,17 +5,17 @@ import { useState, useEffect } from 'react';
 const jobs = [
   {
     id: 1,
-    title: 'Senior Full-Stack Engineer',
-    description: 'Build and scale our core platform infrastructure. Work with Next.js, TypeScript, and cloud technologies to create the future of autonomous revenue.',
-    department: 'engineering',
+    title: 'Media Buyer',
+    description: 'Manage and optimize paid advertising campaigns across Meta, Google, TikTok, and emerging platforms. Drive ROAS and scale client acquisition.',
+    department: 'growth-marketing',
     location: 'remote',
-    level: 4,
+    level: 3,
     date: '2026-01-20',
   },
   {
     id: 2,
-    title: 'Backend Engineer',
-    description: 'Design and implement scalable APIs and microservices. Experience with Node.js, Python, and distributed systems required.',
+    title: 'System Integrator',
+    description: 'Build and maintain integrations between our platform and third-party tools. Ensure seamless data flow and automation across client systems.',
     department: 'engineering',
     location: 'remote',
     level: 3,
@@ -23,84 +23,21 @@ const jobs = [
   },
   {
     id: 3,
-    title: 'Frontend Developer',
-    description: 'Create beautiful, responsive user interfaces that delight our users. Strong React, TypeScript, and CSS skills needed.',
-    department: 'engineering',
-    location: 'remote',
-    level: 2,
-    date: '2026-01-15',
-  },
-  {
-    id: 4,
-    title: 'Growth Marketing Manager',
-    description: 'Drive user acquisition and engagement through data-driven marketing strategies. Own the full funnel from awareness to conversion.',
-    department: 'growth-marketing',
-    location: 'remote',
-    level: 3,
-    date: '2026-01-19',
-  },
-  {
-    id: 5,
-    title: 'Performance Marketer',
-    description: 'Manage and optimize paid advertising campaigns across Meta, Google, TikTok, and emerging platforms.',
-    department: 'growth-marketing',
-    location: 'remote',
-    level: 2,
-    date: '2026-01-17',
-  },
-  {
-    id: 6,
-    title: 'Content Strategist',
-    description: 'Develop compelling content that educates and converts. Experience with B2B SaaS content marketing preferred.',
-    department: 'growth-marketing',
-    location: 'remote',
-    level: 2,
-    date: '2026-01-14',
-  },
-  {
-    id: 7,
-    title: 'Account Executive',
-    description: 'Build relationships with enterprise clients and drive revenue growth. Proven track record in B2B sales required.',
-    department: 'sales',
+    title: 'Client Success Manager',
+    description: 'Ensure client satisfaction and retention through proactive relationship management. Help clients achieve their revenue goals with our platform.',
+    department: 'client-success',
     location: 'remote',
     level: 3,
     date: '2026-01-16',
   },
   {
-    id: 8,
-    title: 'Sales Development Rep',
-    description: 'Generate and qualify leads through strategic outbound prospecting. First step into a high-growth sales career.',
+    id: 4,
+    title: 'SDR / Sales Development Representative',
+    description: 'Generate and qualify leads through strategic outbound prospecting. First step into a high-growth sales career at a fast-moving company.',
     department: 'sales',
     location: 'remote',
     level: 1,
     date: '2026-01-14',
-  },
-  {
-    id: 9,
-    title: 'Client Success Manager',
-    description: 'Ensure client satisfaction and retention through proactive relationship management and strategic guidance.',
-    department: 'client-success',
-    location: 'remote',
-    level: 3,
-    date: '2026-01-13',
-  },
-  {
-    id: 10,
-    title: 'Implementation Specialist',
-    description: 'Guide new clients through onboarding and help them achieve their first wins with our platform.',
-    department: 'client-success',
-    location: 'remote',
-    level: 2,
-    date: '2026-01-12',
-  },
-  {
-    id: 11,
-    title: 'Support Engineer',
-    description: 'Provide technical support to clients and work with engineering to resolve complex issues.',
-    department: 'client-success',
-    location: 'remote',
-    level: 2,
-    date: '2026-01-11',
   },
 ];
 
@@ -122,6 +59,14 @@ const levelLabels: Record<number, string> = {
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function Logo({ className = '' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+    </svg>
+  );
 }
 
 function DeptIcon({ icon, className = '' }: { icon: string; className?: string }) {
@@ -223,10 +168,8 @@ export default function HiringPage() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-black/10 backdrop-blur-xl">
         <div className="max-w-[1800px] mx-auto h-full px-6 md:px-8 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#907DFF] to-[#5500FF] flex items-center justify-center">
-              <span className="text-white font-bold text-sm">DA</span>
-            </div>
+          <a href="/" className="flex items-center gap-2.5 group">
+            <Logo className="w-6 h-6 text-white group-hover:text-[#907DFF] transition-colors" />
             <span className="text-lg font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors">
               DivineAcquisition
             </span>
@@ -498,9 +441,7 @@ export default function HiringPage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-4">
               <a href="/" className="flex items-center gap-2 group">
-                <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[#907DFF] to-[#5500FF] flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
-                  <span className="text-white font-bold text-xs">DA</span>
-                </div>
+                <Logo className="w-5 h-5 text-white/70 group-hover:text-[#907DFF] transition-colors" />
               </a>
               <span className="text-neutral-600 text-sm font-light">
                 © 2026 DivineAcquisition. All rights reserved.
