@@ -183,7 +183,7 @@ export default function HiringPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/70 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
@@ -197,7 +197,7 @@ export default function HiringPage() {
           
           <a
             href="#positions"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(98,0,255,0.5)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)]"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
@@ -227,7 +227,7 @@ export default function HiringPage() {
 
           {/* Headline */}
           <h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-white via-50% to-[#907DFF]
+            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-white via-45% via-[#907DFF] via-85% to-[#5500FF]
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
           >
             Curating The Engine To Create Trust, Revenue & Retention.
