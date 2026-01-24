@@ -111,51 +111,44 @@ export default function HiringPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
+      {/* Grid Background */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `linear-gradient(rgba(144,125,255,0.5) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(144,125,255,0.5) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
+          }}
+        />
+      </div>
+
       {/* Background Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {/* Large top glow */}
         <div 
-          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-60"
+          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-50"
           style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, rgba(85,0,255,0.2) 40%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, rgba(85,0,255,0.15) 40%, transparent 70%)',
             filter: 'blur(100px)',
           }}
         />
         {/* Bottom right glow */}
         <div 
-          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-40"
+          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-30"
           style={{
-            background: 'radial-gradient(circle, rgba(85,0,255,0.5) 0%, rgba(144,125,255,0.2) 50%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(85,0,255,0.4) 0%, rgba(144,125,255,0.15) 50%, transparent 70%)',
             filter: 'blur(120px)',
           }}
         />
         {/* Left side accent */}
         <div 
-          className="absolute top-[30%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
+          className="absolute top-[50%] left-[-15%] w-[600px] h-[600px] rounded-full opacity-20"
           style={{
             background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, transparent 60%)',
             filter: 'blur(80px)',
           }}
         />
-      </div>
-
-      {/* Floating Particles */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {mounted && [...Array(30)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full bg-[#907DFF]"
-            style={{
-              width: `${2 + Math.random() * 3}px`,
-              height: `${2 + Math.random() * 3}px`,
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              opacity: 0.3 + Math.random() * 0.4,
-              animation: `floatParticle ${10 + Math.random() * 20}s linear infinite`,
-              animationDelay: `${Math.random() * 10}s`,
-            }}
-          />
-        ))}
       </div>
 
       {/* Navigation */}
@@ -370,25 +363,6 @@ export default function HiringPage() {
         </div>
       </footer>
 
-      {/* Global Styles */}
-      <style jsx global>{`
-        @keyframes floatParticle {
-          0% {
-            transform: translateY(100vh) translateX(0);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.5;
-          }
-          90% {
-            opacity: 0.5;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(50px);
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 }
