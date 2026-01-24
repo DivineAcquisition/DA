@@ -112,9 +112,49 @@ export default function HiringPage() {
     <div className="min-h-screen bg-black text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50">
       {/* Background Effects */}
       <div className="fixed inset-0 -z-10 h-full w-full pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(144,125,255,0.35),rgba(0,0,0,0))]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(85,0,255,0.2),rgba(0,0,0,0))]" />
+        {/* Main gradient glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(144,125,255,0.3),rgba(0,0,0,0))]" />
+        {/* Secondary glow bottom right */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,rgba(85,0,255,0.15),rgba(0,0,0,0))]" />
+        {/* Center glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(144,125,255,0.05),rgba(0,0,0,0))]" />
       </div>
+
+      {/* Particles */}
+      <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
+        {mounted && [...Array(40)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-[#907DFF]/20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `float ${8 + Math.random() * 12}s linear infinite`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Particle Animation */}
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.6;
+          }
+          90% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateY(-100vh) translateX(30px);
+            opacity: 0;
+          }
+        }
+      `}</style>
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/80 backdrop-blur-xl">

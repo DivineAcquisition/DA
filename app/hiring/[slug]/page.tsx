@@ -53,7 +53,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form',
-    airtableHeight: '533',
+    airtableHeight: '600',
   },
   'setter': {
     title: 'Setter',
@@ -224,7 +224,7 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
+    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagpc2PC375pTxiDS/form',
     airtableHeight: '1080',
   },
   'client-success': {
@@ -259,10 +259,30 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
+    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag7FzW7LYVFxnAuT/form',
     airtableHeight: '1080',
   },
 };
+
+// Particle component
+function Particles() {
+  return (
+    <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
+      {[...Array(50)].map((_, i) => (
+        <div
+          key={i}
+          className="particle absolute w-1 h-1 rounded-full bg-[#907DFF]/30"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 5}s`,
+            animationDuration: `${5 + Math.random() * 10}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function JobPage() {
   const params = useParams();
@@ -286,12 +306,20 @@ export default function JobPage() {
     <div className="min-h-screen bg-black text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50">
       {/* Background Effects */}
       <div className="fixed inset-0 -z-10 h-full w-full pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(144,125,255,0.25),rgba(0,0,0,0))]" />
+        {/* Main gradient glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(144,125,255,0.3),rgba(0,0,0,0))]" />
+        {/* Secondary glow bottom right */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,rgba(85,0,255,0.15),rgba(0,0,0,0))]" />
+        {/* Center glow */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(144,125,255,0.05),rgba(0,0,0,0))]" />
       </div>
 
+      {/* Particles */}
+      <Particles />
+
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/60 backdrop-blur-2xl">
+        <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="flex items-center gap-2.5 group">
             <Image 
               src="/logo.png" 
@@ -317,80 +345,71 @@ export default function JobPage() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="pt-24 pb-12 px-6 border-b border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
+      {/* Main Content */}
+      <main className="pt-24 pb-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          
+          {/* Step 1: Role Description */}
+          <section className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#5500FF] text-white text-sm font-medium">1</span>
+              <span className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Role Overview</span>
+            </div>
+
+            {/* Role Header */}
+            <div className="mb-10">
+              <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#5500FF] text-white">
                   {job.subtitle}
                 </span>
-                <span className="text-neutral-500 text-sm">{job.location}</span>
-                <span className="text-neutral-600">•</span>
-                <span className="text-neutral-500 text-sm">{job.type}</span>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
+                  {job.location}
+                </span>
+                <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
+                  {job.type}
+                </span>
               </div>
-              <h1 className="text-4xl md:text-5xl font-medium text-white tracking-tight">
+              <h1 className="text-4xl md:text-5xl font-medium text-white tracking-tight mb-6">
                 {job.title}
               </h1>
+              <p className="text-lg text-neutral-300 font-light leading-relaxed">
+                {job.description}
+              </p>
             </div>
-            <a 
-              href="#apply" 
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg text-sm font-medium
-                         bg-[#5500FF] text-white hover:bg-[#6611FF] transition-colors shrink-0"
-            >
-              Apply Now
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
 
-      {/* Main Content */}
-      <main className="py-12 px-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            {/* Left Column - Job Details */}
-            <div className="lg:col-span-2 space-y-12">
-              {/* Description */}
-              <section>
-                <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4">About This Role</h2>
-                <p className="text-neutral-300 font-light leading-relaxed text-lg">
-                  {job.description}
-                </p>
-              </section>
+            {/* Tech Stack */}
+            {job.techStack && (
+              <div className="mb-10">
+                <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4">Tech Stack</h2>
+                <div className="flex flex-wrap gap-2">
+                  {job.techStack.map((tech, index) => (
+                    <span 
+                      key={index}
+                      className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/10 text-[#907DFF] border border-[#5500FF]/20"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
-              {/* Tech Stack */}
-              {job.techStack && (
-                <section>
-                  <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4">Tech Stack</h2>
-                  <div className="flex flex-wrap gap-2">
-                    {job.techStack.map((tech, index) => (
-                      <span 
-                        key={index}
-                        className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/10 text-[#907DFF] border border-[#5500FF]/20"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </section>
-              )}
-
-              {/* Sections */}
+            {/* Sections in a grid on desktop */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {job.sections.map((section, index) => (
-                <section key={index}>
+                <div 
+                  key={index}
+                  className={`${job.sections.length % 2 !== 0 && index === job.sections.length - 1 ? 'md:col-span-2' : ''}`}
+                >
                   <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4 flex items-center gap-2">
                     <span className="text-[#5500FF]">◆</span>
                     {section.title}
                   </h2>
                   {section.type === 'list' && section.items && (
-                    <ul className="space-y-4">
+                    <ul className="space-y-3">
                       {section.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="flex items-start gap-4 text-neutral-300 font-light">
-                          <span className="w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xs text-[#907DFF] shrink-0 mt-0.5">
+                        <li key={itemIndex} className="flex items-start gap-3 text-neutral-300 font-light text-sm">
+                          <span className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-[#907DFF] shrink-0 mt-0.5">
                             {itemIndex + 1}
                           </span>
                           <span className="leading-relaxed">{item}</span>
@@ -398,51 +417,54 @@ export default function JobPage() {
                       ))}
                     </ul>
                   )}
-                </section>
+                </div>
               ))}
-
-              {/* Culture Section */}
-              <section className="p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20">
-                <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-3">Who We Are</h2>
-                <p className="text-neutral-300 font-light leading-relaxed">
-                  Divine Acquisition is not for everybody. We value devotion, innovation, and exclusivity. 
-                  We hire people who believe that process beats personality, evidence beats assumption, 
-                  and simplicity scales. If that resonates, we want to hear from you.
-                </p>
-              </section>
             </div>
 
-            {/* Right Column - Application Form */}
-            <div className="lg:col-span-1" id="apply">
-              <div className="lg:sticky lg:top-24">
-                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-                  <div className="p-6 border-b border-white/5">
-                    <h2 className="text-lg font-medium text-white mb-1">Apply for this role</h2>
-                    <p className="text-sm text-neutral-500 font-light">Fill out the form below to get started.</p>
-                  </div>
-                  <div className="relative" style={{ minHeight: `${job.airtableHeight}px` }}>
-                    <iframe 
-                      className="airtable-embed w-full"
-                      src={job.airtableEmbed}
-                      frameBorder="0"
-                      width="100%"
-                      height={job.airtableHeight}
-                      style={{ 
-                        background: 'transparent',
-                        minHeight: `${job.airtableHeight}px`
-                      }}
-                    />
-                  </div>
-                </div>
+            {/* Culture Section */}
+            <div className="mt-10 p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20">
+              <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-3">Who We Are</h2>
+              <p className="text-neutral-300 font-light leading-relaxed text-sm">
+                Divine Acquisition is not for everybody. We value devotion, innovation, and exclusivity. 
+                We hire people who believe that process beats personality, evidence beats assumption, 
+                and simplicity scales. If that resonates, we want to hear from you.
+              </p>
+            </div>
+          </section>
+
+          {/* Step 2: Application Form */}
+          <section id="apply">
+            <div className="flex items-center gap-3 mb-8">
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#5500FF] text-white text-sm font-medium">2</span>
+              <span className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Apply Now</span>
+            </div>
+
+            <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+              <div className="p-6 border-b border-white/5">
+                <h2 className="text-xl font-medium text-white mb-1">Submit Your Application</h2>
+                <p className="text-sm text-neutral-500 font-light">Fill out the form below to apply for the {job.title} position.</p>
+              </div>
+              <div className="p-2">
+                <iframe 
+                  className="airtable-embed w-full rounded-xl"
+                  src={job.airtableEmbed}
+                  frameBorder="0"
+                  width="100%"
+                  height={job.airtableHeight}
+                  style={{ 
+                    background: 'transparent',
+                    minHeight: `${job.airtableHeight}px`
+                  }}
+                />
               </div>
             </div>
-          </div>
+          </section>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5 mt-12">
-        <div className="max-w-6xl mx-auto px-6 py-10">
+      <footer className="border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               <Link href="/hiring" className="flex items-center gap-2 group">
@@ -475,6 +497,30 @@ export default function JobPage() {
           </div>
         </div>
       </footer>
+
+      {/* Particle Animation Styles */}
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          90% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-100vh) translateX(20px);
+            opacity: 0;
+          }
+        }
+        
+        .particle {
+          animation: float linear infinite;
+        }
+      `}</style>
     </div>
   );
 }
