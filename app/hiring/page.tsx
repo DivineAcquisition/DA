@@ -9,7 +9,7 @@ const jobs = [
     id: 1,
     slug: 'media-buyer',
     title: 'Media Buyer',
-    description: 'Manage and optimize paid advertising campaigns across Meta, Google, TikTok, and emerging platforms. Drive ROAS and scale client acquisition.',
+    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence-based campaigns that compound results over time.',
     department: 'growth-marketing',
     location: 'remote',
     level: 3,
@@ -19,7 +19,7 @@ const jobs = [
     id: 2,
     slug: 'system-integrator',
     title: 'System Integrator',
-    description: 'Build and maintain integrations between our platform and third-party tools. Ensure seamless data flow and automation across client systems.',
+    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI-enabled processes.',
     department: 'engineering',
     location: 'remote',
     level: 3,
@@ -29,7 +29,7 @@ const jobs = [
     id: 3,
     slug: 'client-success',
     title: 'Client Success Manager',
-    description: 'Ensure client satisfaction and retention through proactive relationship management. Help clients achieve their revenue goals with our platform.',
+    description: 'Own the client relationship from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
     department: 'client-success',
     location: 'remote',
     level: 3,
@@ -39,7 +39,7 @@ const jobs = [
     id: 4,
     slug: 'sdr',
     title: 'SDR / Sales Development Representative',
-    description: 'Generate and qualify leads through strategic outbound prospecting. First step into a high-growth sales career at a fast-moving company.',
+    description: 'Identify and qualify service-based businesses ready to install retention infrastructure. Belief-shaping over hard selling.',
     department: 'sales',
     location: 'remote',
     level: 1,
@@ -51,8 +51,8 @@ export { jobs };
 
 const departments = [
   { id: 'all', name: 'View All', icon: 'all' },
-  { id: 'engineering', name: 'Engineering', icon: 'code' },
-  { id: 'growth-marketing', name: 'Growth & Marketing', icon: 'trending' },
+  { id: 'engineering', name: 'Systems', icon: 'code' },
+  { id: 'growth-marketing', name: 'Growth', icon: 'trending' },
   { id: 'sales', name: 'Sales', icon: 'users' },
   { id: 'client-success', name: 'Client Success', icon: 'heart' },
 ];
@@ -171,13 +171,13 @@ export default function HiringPage() {
           <Link href="/hiring" className="flex items-center gap-2.5 group">
             <Image 
               src="/logo.svg" 
-              alt="DivineAcquisition" 
+              alt="Divine Acquisition" 
               width={24} 
               height={24}
               className="group-hover:opacity-80 transition-opacity"
             />
             <span className="text-lg font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors">
-              DivineAcquisition
+              Divine Acquisition
             </span>
           </Link>
           
@@ -235,7 +235,7 @@ export default function HiringPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
             </span>
-            Recruiting Top 1% Talent
+            We&apos;re Not For Everybody
           </div>
 
           {/* Main Headline */}
@@ -243,10 +243,10 @@ export default function HiringPage() {
             className={`text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl font-medium text-white tracking-tighter mb-8 leading-[0.95]
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
           >
-            Build the engine of
+            Build systems that
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#907DFF] to-[#5500FF]">
-              autonomous revenue.
+              compound trust & revenue.
             </span>
           </h1>
 
@@ -255,14 +255,33 @@ export default function HiringPage() {
             className={`text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed font-light tracking-tight
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
-            We are building <span className="text-white font-medium">DivineAcquisition</span>,
-            the future of AI-powered client acquisition. Join us in revolutionizing how businesses grow.
+            We don&apos;t sell gimmicks — we build <span className="text-white font-medium">infrastructure</span>.
+            Strategy + automation + human support + AI. Join us in creating timeless business systems for service-based companies.
           </p>
+
+          {/* Values */}
+          <div 
+            className={`mt-12 flex flex-wrap justify-center gap-4
+                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
+          >
+            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
+              Devotion
+            </span>
+            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
+              Innovation
+            </span>
+            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
+              Value
+            </span>
+            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
+              Exclusivity
+            </span>
+          </div>
 
           {/* Scroll Indicator */}
           <div 
-            className={`mt-20 md:mt-24 flex justify-center w-full
-                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
+            className={`mt-16 md:mt-20 flex justify-center w-full
+                        ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
           >
             <a
               href="#open-roles"
@@ -276,6 +295,37 @@ export default function HiringPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
               </svg>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Culture Section */}
+      <section className="px-6 md:px-8 pb-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-neutral-900/30 backdrop-blur-xl border border-white/5 rounded-2xl p-8 md:p-12">
+            <h2 className="text-2xl font-medium text-white mb-6 tracking-tight">How We Operate</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Evidence over assumption</span> — data-informed, experiment-driven, stress-test before scale.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Belief shaping over hard selling</span> — education + insight → empowered buyers.</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Systemic repeatability over random hustle</span> — process {">"} personality; predictable outcomes.</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Simplicity scales, clarity converts</span> — we win only when the client wins.</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -449,14 +499,14 @@ export default function HiringPage() {
               <Link href="/hiring" className="flex items-center gap-2 group">
                 <Image 
                   src="/logo.svg" 
-                  alt="DivineAcquisition" 
+                  alt="Divine Acquisition" 
                   width={20} 
                   height={20}
                   className="opacity-70 group-hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
-                © 2026 DivineAcquisition. All rights reserved.
+                © 2026 Divine Acquisition. All rights reserved.
               </span>
             </div>
             <div className="flex items-center gap-8">

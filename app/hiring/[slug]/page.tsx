@@ -10,27 +10,35 @@ const jobs = [
     id: 1,
     slug: 'media-buyer',
     title: 'Media Buyer',
-    description: 'Manage and optimize paid advertising campaigns across Meta, Google, TikTok, and emerging platforms. Drive ROAS and scale client acquisition.',
-    fullDescription: `We're looking for an experienced Media Buyer to join our Growth team. You'll be responsible for managing and scaling paid advertising campaigns across multiple platforms to drive client acquisition and revenue growth.
+    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence-based campaigns that compound results over time.',
+    fullDescription: `We're looking for a Media Buyer who understands that advertising is infrastructure, not guesswork.
 
-As a Media Buyer at DivineAcquisition, you'll work directly with our clients to understand their goals and create data-driven advertising strategies that deliver results.`,
+At Divine Acquisition, we build retention-first systems for service-based businesses. Our Media Buyers don't chase vanity metrics — they architect paid acquisition systems that deliver predictable, compounding returns.
+
+You'll work directly with our clients to understand their ideal customer profile, then build and optimize campaigns across Meta, Google, and emerging platforms that feed their sales infrastructure with qualified opportunities.`,
     responsibilities: [
-      'Plan, execute, and optimize paid media campaigns across Meta, Google, TikTok, and other platforms',
-      'Manage advertising budgets and maximize ROAS for client campaigns',
-      'Analyze campaign performance data and provide actionable insights',
-      'A/B test ad creatives, audiences, and landing pages',
-      'Collaborate with the creative team to develop high-performing ad content',
-      'Stay up-to-date with platform changes and industry best practices',
+      'Architect and optimize paid media campaigns that integrate with our clients\' retention systems',
+      'Build evidence-based targeting strategies using data, not assumptions',
+      'Manage and scale ad spend while maintaining or improving ROAS benchmarks',
+      'Create systematic testing frameworks for creative, audiences, and landing pages',
+      'Document and systematize winning campaign structures for repeatability',
+      'Collaborate with our Systems team to ensure seamless lead flow into client CRMs',
     ],
     requirements: [
-      '3+ years of experience in paid media/performance marketing',
-      'Proven track record of managing $100K+ monthly ad spend',
-      'Deep expertise in Meta Ads Manager and Google Ads',
-      'Strong analytical skills and experience with data visualization tools',
-      'Excellent communication and client management skills',
-      'Experience with e-commerce or lead generation campaigns preferred',
+      '3+ years managing paid media for service-based or B2B businesses',
+      'Proven track record managing $50K+ monthly ad spend profitably',
+      'Deep expertise in Meta Ads Manager; Google Ads experience preferred',
+      'Systems thinker — you build processes, not one-off campaigns',
+      'Strong analytical skills and comfort with data-driven decision making',
+      'Clear communicator who can translate performance data into client insights',
     ],
-    department: 'Growth & Marketing',
+    whatWeOffer: [
+      'Work on infrastructure that compounds — not throwaway campaigns',
+      'Direct access to leadership and fast decision-making',
+      'Remote-first culture with async communication',
+      'Opportunity to build systems used across our entire client portfolio',
+    ],
+    department: 'Growth',
     location: 'Remote',
     type: 'Full-time',
     level: 'Senior',
@@ -39,27 +47,35 @@ As a Media Buyer at DivineAcquisition, you'll work directly with our clients to 
     id: 2,
     slug: 'system-integrator',
     title: 'System Integrator',
-    description: 'Build and maintain integrations between our platform and third-party tools. Ensure seamless data flow and automation across client systems.',
-    fullDescription: `We're seeking a talented System Integrator to build and maintain the connections between our platform and the tools our clients use every day.
+    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI-enabled processes.',
+    fullDescription: `We're looking for a System Integrator who believes that great infrastructure is invisible — it just works.
 
-You'll be responsible for creating robust, scalable integrations that enable seamless data flow and automation across multiple systems.`,
+Divine Acquisition builds retention-first systems for service-based businesses. Our System Integrators are the architects behind our Retention OS™ — designing and implementing the automation workflows, CRM configurations, and AI-enabled processes that help our clients acquire, convert, and retain customers.
+
+You'll own the technical implementation of our proprietary frameworks, ensuring seamless data flow across every touchpoint in the client journey.`,
     responsibilities: [
-      'Design and implement integrations with CRMs, marketing platforms, and other third-party tools',
-      'Build and maintain APIs and webhooks for real-time data synchronization',
-      'Troubleshoot and resolve integration issues quickly and efficiently',
-      'Document integration processes and create technical specifications',
-      'Collaborate with clients to understand their tech stack and integration needs',
-      'Optimize existing integrations for performance and reliability',
+      'Design and implement CRM systems, automation workflows, and client success infrastructure',
+      'Build integrations between platforms (HubSpot, Salesforce, GoHighLevel, Zapier, Make, custom APIs)',
+      'Configure and optimize AI-enabled workflows for client communication and follow-up',
+      'Create systematic documentation for all implementations (process > personality)',
+      'Troubleshoot and resolve integration issues with speed and precision',
+      'Collaborate with Client Success to ensure systems deliver measurable outcomes',
     ],
     requirements: [
-      '3+ years of experience in systems integration or backend development',
-      'Strong proficiency in JavaScript/TypeScript and Node.js',
-      'Experience with REST APIs, webhooks, and OAuth',
-      'Familiarity with popular CRMs (HubSpot, Salesforce) and marketing tools',
-      'Understanding of data mapping and transformation',
-      'Excellent problem-solving and debugging skills',
+      '3+ years in systems integration, automation, or technical implementation',
+      'Expert-level proficiency with CRM platforms (HubSpot, Salesforce, or GoHighLevel)',
+      'Strong experience with automation tools (Zapier, Make, n8n) and API integrations',
+      'Understanding of sales and marketing funnels from a technical perspective',
+      'Systematic approach to documentation and knowledge transfer',
+      'Comfort working in a fast-paced environment where quality control is non-negotiable',
     ],
-    department: 'Engineering',
+    whatWeOffer: [
+      'Build systems that become the backbone of client businesses',
+      'Work with cutting-edge AI and automation tools',
+      'Direct impact on client outcomes — not buried in a dev queue',
+      'Remote-first with flexible async collaboration',
+    ],
+    department: 'Systems',
     location: 'Remote',
     type: 'Full-time',
     level: 'Senior',
@@ -68,25 +84,33 @@ You'll be responsible for creating robust, scalable integrations that enable sea
     id: 3,
     slug: 'client-success',
     title: 'Client Success Manager',
-    description: 'Ensure client satisfaction and retention through proactive relationship management. Help clients achieve their revenue goals with our platform.',
-    fullDescription: `We're looking for a Client Success Manager to be the primary point of contact for our clients and ensure they achieve their goals with DivineAcquisition.
+    description: 'Own the client relationship from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
+    fullDescription: `We're looking for a Client Success Manager who understands that we win only when the client wins.
 
-You'll build strong relationships, provide strategic guidance, and work cross-functionally to deliver exceptional client experiences.`,
+At Divine Acquisition, Client Success isn't a support function — it's the heartbeat of our business. You'll own the client relationship from onboarding through ongoing success, ensuring our Retention OS™ delivers the measurable, compounding results we promise.
+
+You'll be the trusted advisor who helps clients adopt our systems, interprets their data, and proactively identifies opportunities for growth. Devotion to client outcomes isn't just a value — it's the job.`,
     responsibilities: [
-      'Serve as the primary point of contact for a portfolio of clients',
-      'Develop and execute client success plans aligned with their business goals',
-      'Conduct regular business reviews and identify growth opportunities',
-      'Proactively monitor client health metrics and address concerns',
-      'Collaborate with internal teams to resolve client issues and implement solutions',
-      'Drive client retention, expansion, and advocacy',
+      'Own the end-to-end client relationship from onboarding to retention',
+      'Ensure clients successfully adopt and utilize our retention infrastructure',
+      'Conduct regular business reviews focused on outcomes, not activity',
+      'Proactively identify risks to client success and mobilize internal resources',
+      'Translate complex system data into actionable insights for clients',
+      'Collaborate with Systems and Growth teams to optimize client results',
     ],
     requirements: [
-      '3+ years of experience in client success, account management, or consulting',
-      'Proven track record of managing and growing client relationships',
-      'Strong understanding of digital marketing and client acquisition strategies',
-      'Excellent communication and presentation skills',
-      'Data-driven approach to identifying trends and opportunities',
-      'Experience with CRM systems and client success platforms',
+      '3+ years in client success, account management, or consulting (B2B preferred)',
+      'Track record of retaining and growing client relationships',
+      'Strong understanding of CRM systems and marketing/sales infrastructure',
+      'Excellent communication — you can explain complex systems simply',
+      'Data-literate: comfortable pulling insights from dashboards and reports',
+      'High accountability — you own outcomes, not just activities',
+    ],
+    whatWeOffer: [
+      'Direct ownership of client relationships — not ticket-taker work',
+      'Work with sophisticated service businesses ready to invest in growth',
+      'Compensation tied to client outcomes, not just retention',
+      'Remote-first culture built on trust and accountability',
     ],
     department: 'Client Success',
     location: 'Remote',
@@ -97,25 +121,33 @@ You'll build strong relationships, provide strategic guidance, and work cross-fu
     id: 4,
     slug: 'sdr',
     title: 'SDR / Sales Development Representative',
-    description: 'Generate and qualify leads through strategic outbound prospecting. First step into a high-growth sales career at a fast-moving company.',
-    fullDescription: `We're looking for hungry, ambitious SDRs to join our sales team and help fuel DivineAcquisition's growth.
+    description: 'Identify and qualify service-based businesses ready to install retention infrastructure. Belief-shaping over hard selling.',
+    fullDescription: `We're looking for an SDR who understands that belief-shaping beats hard selling.
 
-This is an incredible opportunity to start your sales career at a fast-moving company with massive growth potential. You'll learn the fundamentals of B2B sales while working alongside experienced closers.`,
+Divine Acquisition helps service-based businesses install retention infrastructure that compounds trust, revenue, and client lifetime value. As an SDR, you'll be the first point of contact for businesses exploring whether our systems are right for them.
+
+This isn't about volume and pressure. It's about identifying fit, educating prospects on what's possible, and qualifying opportunities for our closers. We're not for everybody — and that's by design. Your job is to find the businesses that are ready.`,
     responsibilities: [
-      'Prospect and identify potential clients through outbound channels',
-      'Conduct discovery calls to qualify leads and understand their needs',
-      'Schedule meetings and demos for Account Executives',
-      'Maintain accurate records in our CRM system',
-      'Collaborate with marketing on lead generation campaigns',
-      'Meet and exceed monthly activity and pipeline targets',
+      'Prospect and identify service-based businesses that fit our ideal client profile',
+      'Conduct discovery conversations focused on understanding, not pitching',
+      'Educate prospects on retention infrastructure and what outcomes are possible',
+      'Qualify opportunities based on fit, not just interest (exclusivity matters)',
+      'Maintain disciplined CRM hygiene and pipeline documentation',
+      'Collaborate with closers to ensure smooth handoffs and context transfer',
     ],
     requirements: [
-      '0-2 years of experience in sales, customer service, or related field',
-      'Strong communication skills and ability to build rapport quickly',
-      'Self-motivated with a competitive drive to succeed',
-      'Coachable attitude and eagerness to learn',
-      'Comfortable with cold outreach via phone, email, and social',
-      'Interest in B2B SaaS and digital marketing',
+      '0-2 years in sales, business development, or client-facing roles',
+      'Strong written and verbal communication skills',
+      'Coachable mindset — eager to learn and implement feedback',
+      'Comfort with outbound prospecting (cold email, LinkedIn, phone)',
+      'Interest in B2B services, marketing technology, or business systems',
+      'Self-motivated with high personal accountability',
+    ],
+    whatWeOffer: [
+      'Learn consultative sales at a company that doesn\'t believe in sleazy tactics',
+      'Clear path to Account Executive role based on performance',
+      'Direct mentorship from experienced closers',
+      'Remote-first culture with structured training and support',
     ],
     department: 'Sales',
     location: 'Remote',
@@ -172,13 +204,13 @@ export default function JobPage() {
           <Link href="/hiring" className="flex items-center gap-2.5 group">
             <Image 
               src="/logo.svg" 
-              alt="DivineAcquisition" 
+              alt="Divine Acquisition" 
               width={24} 
               height={24}
               className="group-hover:opacity-80 transition-opacity"
             />
             <span className="text-lg font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors">
-              DivineAcquisition
+              Divine Acquisition
             </span>
           </Link>
           
@@ -245,7 +277,7 @@ export default function JobPage() {
 
               {/* Responsibilities */}
               <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">Responsibilities</h2>
+                <h2 className="text-xl font-medium text-white mb-4">What You&apos;ll Do</h2>
                 <ul className="space-y-3">
                   {job.responsibilities.map((item, index) => (
                     <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
@@ -260,7 +292,7 @@ export default function JobPage() {
 
               {/* Requirements */}
               <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">Requirements</h2>
+                <h2 className="text-xl font-medium text-white mb-4">What We&apos;re Looking For</h2>
                 <ul className="space-y-3">
                   {job.requirements.map((item, index) => (
                     <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
@@ -272,13 +304,36 @@ export default function JobPage() {
                   ))}
                 </ul>
               </div>
+
+              {/* What We Offer */}
+              <div className="mb-10">
+                <h2 className="text-xl font-medium text-white mb-4">What We Offer</h2>
+                <ul className="space-y-3">
+                  {job.whatWeOffer.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Culture Note */}
+              <div className="p-6 bg-neutral-900/30 border border-white/5 rounded-xl">
+                <p className="text-sm text-neutral-400 font-light leading-relaxed">
+                  <span className="text-white font-medium">We&apos;re not for everybody.</span> Divine Acquisition values 
+                  devotion, innovation, and exclusivity. We hire people who believe that process beats personality, 
+                  evidence beats assumption, and simplicity scales. If that resonates, we want to hear from you.
+                </p>
+              </div>
             </div>
 
             {/* Application Form */}
             <div className="lg:col-span-5">
               <div className="lg:sticky lg:top-28">
                 <div className="bg-neutral-900/40 backdrop-blur-2xl border border-white/10 rounded-2xl p-8 shadow-xl shadow-[#5500FF]/5">
-                  <h2 className="text-xl font-medium text-white mb-6">Apply for this position</h2>
+                  <h2 className="text-xl font-medium text-white mb-2">Apply for this position</h2>
+                  <p className="text-sm text-neutral-500 font-light mb-6">We review every application personally.</p>
                   
                   <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
@@ -387,7 +442,7 @@ export default function JobPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Cover Letter</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-2">Why Divine Acquisition?</label>
                       <textarea
                         value={formData.coverLetter}
                         onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
@@ -395,7 +450,7 @@ export default function JobPage() {
                         className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
                                    placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                    transition-all resize-none"
-                        placeholder="Tell us why you're interested in this role..."
+                        placeholder="Tell us why you want to build systems that compound trust and revenue..."
                       />
                     </div>
 
@@ -428,14 +483,14 @@ export default function JobPage() {
               <Link href="/hiring" className="flex items-center gap-2 group">
                 <Image 
                   src="/logo.svg" 
-                  alt="DivineAcquisition" 
+                  alt="Divine Acquisition" 
                   width={20} 
                   height={20}
                   className="opacity-70 group-hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
-                © 2026 DivineAcquisition. All rights reserved.
+                © 2026 Divine Acquisition. All rights reserved.
               </span>
             </div>
             <div className="flex items-center gap-8">
