@@ -9,7 +9,7 @@ const jobs = [
     id: 1,
     slug: 'media-buyer',
     title: 'Media Buyer',
-    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence-based campaigns that compound results over time.',
+    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence based campaigns that compound results over time.',
     department: 'growth-marketing',
     location: 'remote',
     level: 3,
@@ -19,7 +19,7 @@ const jobs = [
     id: 2,
     slug: 'system-integrator',
     title: 'System Integrator',
-    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI-enabled processes.',
+    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI enabled processes.',
     department: 'engineering',
     location: 'remote',
     level: 3,
@@ -39,7 +39,7 @@ const jobs = [
     id: 4,
     slug: 'sdr',
     title: 'SDR / Sales Development Representative',
-    description: 'Identify and qualify service-based businesses ready to install retention infrastructure. Belief-shaping over hard selling.',
+    description: 'Identify and qualify service based businesses ready to install retention infrastructure. Belief shaping over hard selling.',
     department: 'sales',
     location: 'remote',
     level: 1,
@@ -222,107 +222,96 @@ export default function HiringPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="px-6 md:px-8 pt-32 pb-20 md:pt-44 md:pb-28">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Status Badge */}
-          <div 
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium
-                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-10
-                        shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]
-                        ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
-            </span>
-            We&apos;re Not For Everybody
-          </div>
+      <section className="px-6 md:px-8 pt-32 pb-16 md:pt-40 md:pb-20">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            {/* Left Column - Main Content */}
+            <div className={mounted ? 'animate-fade-in' : 'opacity-0'}>
+              {/* Status Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium
+                              text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-8
+                              shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
+                </span>
+                Now Hiring
+              </div>
 
-          {/* Main Headline */}
-          <h1 
-            className={`text-[2.75rem] sm:text-6xl md:text-7xl lg:text-8xl font-medium text-white tracking-tighter mb-8 leading-[0.95]
-                        ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
-          >
-            Build systems that
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#907DFF] to-[#5500FF]">
-              compound trust & revenue.
-            </span>
-          </h1>
+              {/* Main Headline */}
+              <h1 className="text-[2.5rem] sm:text-5xl md:text-6xl font-medium text-white tracking-tighter mb-6 leading-[1.05]">
+                Build systems that
+                <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#907DFF] to-[#5500FF]">
+                  {" "}compound.
+                </span>
+              </h1>
 
-          {/* Subheadline */}
-          <p 
-            className={`text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto leading-relaxed font-light tracking-tight
-                        ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
-          >
-            We don&apos;t sell gimmicks — we build <span className="text-white font-medium">infrastructure</span>.
-            Strategy + automation + human support + AI. Join us in creating timeless business systems for service-based companies.
-          </p>
+              {/* Subheadline */}
+              <p className="text-lg text-neutral-400 leading-relaxed font-light tracking-tight mb-8">
+                We build infrastructure, not gimmicks. Strategy, automation, human support, and AI working together 
+                to create timeless business systems for service based companies.
+              </p>
 
-          {/* Values */}
-          <div 
-            className={`mt-12 flex flex-wrap justify-center gap-4
-                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
-          >
-            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
-              Devotion
-            </span>
-            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
-              Innovation
-            </span>
-            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
-              Value
-            </span>
-            <span className="px-4 py-2 rounded-full text-sm font-light bg-white/5 border border-white/10 text-neutral-300">
-              Exclusivity
-            </span>
-          </div>
+              {/* CTA Button */}
+              <a
+                href="#open-roles"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-sm font-medium
+                           bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white
+                           hover:opacity-90 hover:shadow-[0_0_30px_-5px_rgba(85,0,255,0.5)]
+                           transition-all duration-300"
+              >
+                Explore Opportunities
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
+            </div>
 
-          {/* Scroll Indicator */}
-          <div 
-            className={`mt-16 md:mt-20 flex justify-center w-full
-                        ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
-          >
-            <a
-              href="#open-roles"
-              className="flex items-center justify-center text-neutral-400
-                         transition-all duration-300 animate-bounce p-3 rounded-full bg-white/5
-                         border border-white/10 backdrop-blur-sm
-                         hover:text-[#907DFF] hover:border-[#907DFF]/50
-                         hover:bg-[#5500FF]/10 hover:shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]"
-            >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Culture Section */}
-      <section className="px-6 md:px-8 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-neutral-900/30 backdrop-blur-xl border border-white/5 rounded-2xl p-8 md:p-12">
-            <h2 className="text-2xl font-medium text-white mb-6 tracking-tight">How We Operate</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
-                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Evidence over assumption</span> — data-informed, experiment-driven, stress-test before scale.</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
-                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Belief shaping over hard selling</span> — education + insight → empowered buyers.</p>
+            {/* Right Column - Values & Culture */}
+            <div className={`space-y-6 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
+              {/* Values Card */}
+              <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-4">Our Principles</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
+                    <span className="text-sm font-medium text-white">Devotion</span>
+                    <p className="text-xs text-neutral-500 mt-1">Earn trust through care</p>
+                  </div>
+                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
+                    <span className="text-sm font-medium text-white">Innovation</span>
+                    <p className="text-xs text-neutral-500 mt-1">Evolve continuously</p>
+                  </div>
+                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
+                    <span className="text-sm font-medium text-white">Value</span>
+                    <p className="text-xs text-neutral-500 mt-1">Simplify the path</p>
+                  </div>
+                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
+                    <span className="text-sm font-medium text-white">Exclusivity</span>
+                    <p className="text-xs text-neutral-500 mt-1">Not for everybody</p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
-                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Systemic repeatability over random hustle</span> — process {">"} personality; predictable outcomes.</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
-                  <p className="text-neutral-400 font-light"><span className="text-white font-medium">Simplicity scales, clarity converts</span> — we win only when the client wins.</p>
+
+              {/* Culture Card */}
+              <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
+                <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-4">How We Think</h3>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
+                    <p className="text-neutral-400 font-light">Evidence over assumption</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
+                    <p className="text-neutral-400 font-light">Process over personality</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
+                    <p className="text-neutral-400 font-light">Simplicity scales</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
+                    <p className="text-neutral-400 font-light">We win when clients win</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -332,184 +321,170 @@ export default function HiringPage() {
 
       {/* Main Content */}
       <main className="w-full px-6 md:px-8 pb-16 md:pb-24 scroll-mt-24" id="open-roles">
-        <div className="max-w-[1800px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Sidebar */}
-          <aside 
-            className={`lg:col-span-3 lg:sticky lg:top-28 h-fit
-                        ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
-          >
-            <div className="bg-neutral-900/40 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 shadow-xl shadow-[#5500FF]/5">
-              {/* Department Filter */}
-              <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-4">
-                Department
-              </h3>
-              <div className="space-y-1 mb-8">
-                {departments.map((dept) => (
-                  <button
-                    key={dept.id}
-                    onClick={() => setSelectedDept(dept.id)}
-                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm flex justify-between items-center group transition-all duration-200 ${
-                      selectedDept === dept.id
-                        ? 'bg-white text-black font-medium shadow-sm'
-                        : 'text-neutral-400 hover:text-white hover:bg-white/5 font-light'
-                    }`}
-                  >
-                    <span>{dept.name}</span>
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full tabular-nums ${
-                        selectedDept === dept.id
-                          ? 'text-black/60 bg-black/10'
-                          : 'text-neutral-500 bg-white/5 group-hover:text-neutral-300 group-hover:bg-white/10'
-                      }`}
-                    >
-                      {dept.id === 'all' ? jobs.length : deptCounts[dept.id] || 0}
-                    </span>
-                  </button>
-                ))}
-              </div>
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header */}
+          <div className={`mb-10 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+            <h2 className="text-2xl md:text-3xl font-medium text-white tracking-tight mb-3">Open Positions</h2>
+            <p className="text-neutral-400 font-light">Join us in building infrastructure that compounds trust and revenue.</p>
+          </div>
 
-              {/* Location Filter */}
-              <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-4">
-                Location
-              </h3>
-              <label className="flex items-center gap-3 cursor-pointer group select-none py-1">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    checked={remoteOnly}
-                    onChange={(e) => setRemoteOnly(e.target.checked)}
-                    className="peer sr-only"
-                  />
-                  <div className={`w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center
-                                  ${remoteOnly
-                                    ? 'bg-[#5500FF] border-[#5500FF] shadow-[0_0_12px_rgba(85,0,255,0.5)]'
-                                    : 'border-neutral-600 bg-transparent group-hover:border-[#907DFF]/60'
-                                  }`}>
-                    <svg 
-                      className={`w-3 h-3 text-white transition-all duration-200 ${remoteOnly ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} 
-                      fill="none" 
-                      viewBox="0 0 24 24" 
-                      stroke="currentColor"
-                      strokeWidth={3}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                </div>
-                <span className="text-sm font-light text-neutral-400 group-hover:text-white transition-colors">
-                  Remote
-                </span>
-              </label>
-            </div>
-          </aside>
-
-          {/* Job Listings */}
-          <div 
-            className={`lg:col-span-9 space-y-12
-                        ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
-          >
-            {Object.entries(groupedJobs).map(([deptId, deptJobs]) => {
-              const dept = departments.find((d) => d.id === deptId);
-              return (
-                <section key={deptId}>
-                  <h2 className="text-base font-medium text-white tracking-tight mb-5 flex items-center gap-3">
-                    <span className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[#907DFF]">
-                      <DeptIcon icon={dept?.icon || 'all'} className="w-[18px] h-[18px]" />
-                    </span>
-                    {dept?.name}
-                  </h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {deptJobs.map((job) => (
-                      <Link
-                        key={job.id}
-                        href={`/hiring/${job.slug}`}
-                        className="job-card block group overflow-hidden rounded-xl p-6 relative"
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Sidebar Filters */}
+            <aside className={`lg:col-span-1 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+              <div className="lg:sticky lg:top-28 space-y-6">
+                {/* Department Filter */}
+                <div>
+                  <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-3">
+                    Department
+                  </h3>
+                  <div className="space-y-1">
+                    {departments.map((dept) => (
+                      <button
+                        key={dept.id}
+                        onClick={() => setSelectedDept(dept.id)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm flex justify-between items-center group transition-all duration-200 ${
+                          selectedDept === dept.id
+                            ? 'bg-[#5500FF] text-white font-medium'
+                            : 'text-neutral-400 hover:text-white hover:bg-white/5 font-light'
+                        }`}
                       >
-                        <div className="flex flex-col h-full justify-between gap-6">
-                          <div>
-                            <div className="flex justify-between items-start gap-4 mb-2">
-                              <h3 className="text-[15px] font-medium text-white group-hover:text-[#907DFF] transition-colors leading-snug">
-                                {job.title}
-                              </h3>
-                              <svg
-                                className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] transition-colors flex-shrink-0 mt-0.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                                strokeWidth={1.5}
-                              >
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
-                              </svg>
-                            </div>
-                            <p className="text-sm text-neutral-500 font-light leading-relaxed line-clamp-2">
-                              {job.description}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-4 text-[11px] text-neutral-500 font-medium tracking-wide">
-                            <span className="flex items-center gap-1.5 group-hover:text-[#907DFF]/70 transition-colors">
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                              {job.location === 'remote' ? 'Remote' : job.location}
-                            </span>
-                            <span className="group-hover:text-[#907DFF]/70 transition-colors">
-                              <LevelIndicator level={job.level} />
-                            </span>
-                            <span className="flex items-center gap-1.5 ml-auto group-hover:text-neutral-400 transition-colors">
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                              </svg>
-                              {formatDate(job.date)}
-                            </span>
-                          </div>
-                        </div>
-                      </Link>
+                        <span>{dept.name}</span>
+                        <span
+                          className={`text-[10px] px-1.5 py-0.5 rounded tabular-nums ${
+                            selectedDept === dept.id
+                              ? 'text-white/70'
+                              : 'text-neutral-500'
+                          }`}
+                        >
+                          {dept.id === 'all' ? jobs.length : deptCounts[dept.id] || 0}
+                        </span>
+                      </button>
                     ))}
                   </div>
-                </section>
-              );
-            })}
-
-            {filteredJobs.length === 0 && (
-              <div className="text-center py-20 bg-neutral-900/20 rounded-2xl border border-white/5">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/5 flex items-center justify-center">
-                  <svg className="w-8 h-8 text-neutral-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
                 </div>
-                <p className="text-neutral-400 font-light">No positions found matching your criteria.</p>
-                <button 
-                  onClick={() => { setSelectedDept('all'); setRemoteOnly(false); }}
-                  className="mt-4 text-sm text-[#907DFF] hover:text-white transition-colors"
-                >
-                  Clear filters
-                </button>
+
+                {/* Location Filter */}
+                <div>
+                  <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-3">
+                    Location
+                  </h3>
+                  <label className="flex items-center gap-3 cursor-pointer group select-none">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        checked={remoteOnly}
+                        onChange={(e) => setRemoteOnly(e.target.checked)}
+                        className="peer sr-only"
+                      />
+                      <div className={`w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center
+                                      ${remoteOnly
+                                        ? 'bg-[#5500FF] border-[#5500FF] shadow-[0_0_12px_rgba(85,0,255,0.5)]'
+                                        : 'border-neutral-600 bg-transparent group-hover:border-[#907DFF]/60'
+                                      }`}>
+                        <svg 
+                          className={`w-3 h-3 text-white transition-all duration-200 ${remoteOnly ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} 
+                          fill="none" 
+                          viewBox="0 0 24 24" 
+                          stroke="currentColor"
+                          strokeWidth={3}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    <span className="text-sm font-light text-neutral-400 group-hover:text-white transition-colors">
+                      Remote
+                    </span>
+                  </label>
+                </div>
               </div>
-            )}
+            </aside>
+
+            {/* Job Listings */}
+            <div className={`lg:col-span-3 space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
+              {filteredJobs.map((job) => {
+                const dept = departments.find((d) => d.id === job.department);
+                return (
+                  <Link
+                    key={job.id}
+                    href={`/hiring/${job.slug}`}
+                    className="job-card block group rounded-xl p-6 relative"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#907DFF]">
+                            <DeptIcon icon={dept?.icon || 'all'} className="w-4 h-4" />
+                          </span>
+                          <div>
+                            <h3 className="text-base font-medium text-white group-hover:text-[#907DFF] transition-colors">
+                              {job.title}
+                            </h3>
+                            <div className="flex items-center gap-3 text-xs text-neutral-500">
+                              <span>{dept?.name}</span>
+                              <span>•</span>
+                              <span>{job.location === 'remote' ? 'Remote' : job.location}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-sm text-neutral-500 font-light leading-relaxed pl-11">
+                          {job.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 pl-11 sm:pl-0">
+                        <div className="text-xs text-neutral-500">
+                          <LevelIndicator level={job.level} />
+                        </div>
+                        <svg
+                          className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] transition-colors"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={1.5}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+
+              {filteredJobs.length === 0 && (
+                <div className="text-center py-16 bg-neutral-900/20 rounded-2xl border border-white/5">
+                  <p className="text-neutral-400 font-light">No positions found matching your criteria.</p>
+                  <button 
+                    onClick={() => { setSelectedDept('all'); setRemoteOnly(false); }}
+                    className="mt-4 text-sm text-[#907DFF] hover:text-white transition-colors"
+                  >
+                    Clear filters
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-white/5 mt-auto">
-        <div className="max-w-[1800px] mx-auto px-6 md:px-8 py-12 md:py-16">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-4">
+        <div className="max-w-5xl mx-auto px-6 md:px-8 py-12">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
               <Link href="/hiring" className="flex items-center gap-2 group">
                 <Image 
                   src="/logo.svg" 
                   alt="Divine Acquisition" 
-                  width={20} 
-                  height={20}
+                  width={18} 
+                  height={18}
                   className="opacity-70 group-hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
-                © 2026 Divine Acquisition. All rights reserved.
+                © 2026 Divine Acquisition
               </span>
             </div>
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-6">
               <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Instagram
               </a>
@@ -521,9 +496,6 @@ export default function HiringPage() {
               </a>
               <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Privacy
-              </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
-                Terms
               </a>
             </div>
           </div>

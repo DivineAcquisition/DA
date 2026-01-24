@@ -10,74 +10,74 @@ const jobs = [
     id: 1,
     slug: 'media-buyer',
     title: 'Media Buyer',
-    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence-based campaigns that compound results over time.',
+    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence based campaigns that compound results over time.',
     fullDescription: `We're looking for a Media Buyer who understands that advertising is infrastructure, not guesswork.
 
-At Divine Acquisition, we build retention-first systems for service-based businesses. Our Media Buyers don't chase vanity metrics — they architect paid acquisition systems that deliver predictable, compounding returns.
+At Divine Acquisition, we build retention first systems for service based businesses. Our Media Buyers don't chase vanity metrics. They architect paid acquisition systems that deliver predictable, compounding returns.
 
 You'll work directly with our clients to understand their ideal customer profile, then build and optimize campaigns across Meta, Google, and emerging platforms that feed their sales infrastructure with qualified opportunities.`,
     responsibilities: [
       'Architect and optimize paid media campaigns that integrate with our clients\' retention systems',
-      'Build evidence-based targeting strategies using data, not assumptions',
+      'Build evidence based targeting strategies using data, not assumptions',
       'Manage and scale ad spend while maintaining or improving ROAS benchmarks',
       'Create systematic testing frameworks for creative, audiences, and landing pages',
       'Document and systematize winning campaign structures for repeatability',
       'Collaborate with our Systems team to ensure seamless lead flow into client CRMs',
     ],
     requirements: [
-      '3+ years managing paid media for service-based or B2B businesses',
+      '3+ years managing paid media for service based or B2B businesses',
       'Proven track record managing $50K+ monthly ad spend profitably',
       'Deep expertise in Meta Ads Manager; Google Ads experience preferred',
-      'Systems thinker — you build processes, not one-off campaigns',
-      'Strong analytical skills and comfort with data-driven decision making',
+      'Systems thinker. You build processes, not one off campaigns',
+      'Strong analytical skills and comfort with data driven decision making',
       'Clear communicator who can translate performance data into client insights',
     ],
     whatWeOffer: [
-      'Work on infrastructure that compounds — not throwaway campaigns',
-      'Direct access to leadership and fast decision-making',
-      'Remote-first culture with async communication',
+      'Work on infrastructure that compounds, not throwaway campaigns',
+      'Direct access to leadership and fast decision making',
+      'Remote first culture with async communication',
       'Opportunity to build systems used across our entire client portfolio',
     ],
     department: 'Growth',
     location: 'Remote',
-    type: 'Full-time',
+    type: 'Full Time',
     level: 'Senior',
   },
   {
     id: 2,
     slug: 'system-integrator',
     title: 'System Integrator',
-    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI-enabled processes.',
-    fullDescription: `We're looking for a System Integrator who believes that great infrastructure is invisible — it just works.
+    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI enabled processes.',
+    fullDescription: `We're looking for a System Integrator who believes that great infrastructure is invisible. It just works.
 
-Divine Acquisition builds retention-first systems for service-based businesses. Our System Integrators are the architects behind our Retention OS™ — designing and implementing the automation workflows, CRM configurations, and AI-enabled processes that help our clients acquire, convert, and retain customers.
+Divine Acquisition builds retention first systems for service based businesses. Our System Integrators are the architects behind our Retention OS. They design and implement the automation workflows, CRM configurations, and AI enabled processes that help our clients acquire, convert, and retain customers.
 
 You'll own the technical implementation of our proprietary frameworks, ensuring seamless data flow across every touchpoint in the client journey.`,
     responsibilities: [
       'Design and implement CRM systems, automation workflows, and client success infrastructure',
       'Build integrations between platforms (HubSpot, Salesforce, GoHighLevel, Zapier, Make, custom APIs)',
-      'Configure and optimize AI-enabled workflows for client communication and follow-up',
-      'Create systematic documentation for all implementations (process > personality)',
+      'Configure and optimize AI enabled workflows for client communication and follow up',
+      'Create systematic documentation for all implementations (process over personality)',
       'Troubleshoot and resolve integration issues with speed and precision',
       'Collaborate with Client Success to ensure systems deliver measurable outcomes',
     ],
     requirements: [
       '3+ years in systems integration, automation, or technical implementation',
-      'Expert-level proficiency with CRM platforms (HubSpot, Salesforce, or GoHighLevel)',
+      'Expert level proficiency with CRM platforms (HubSpot, Salesforce, or GoHighLevel)',
       'Strong experience with automation tools (Zapier, Make, n8n) and API integrations',
       'Understanding of sales and marketing funnels from a technical perspective',
       'Systematic approach to documentation and knowledge transfer',
-      'Comfort working in a fast-paced environment where quality control is non-negotiable',
+      'Comfort working in a fast paced environment where quality control is non negotiable',
     ],
     whatWeOffer: [
       'Build systems that become the backbone of client businesses',
-      'Work with cutting-edge AI and automation tools',
-      'Direct impact on client outcomes — not buried in a dev queue',
-      'Remote-first with flexible async collaboration',
+      'Work with cutting edge AI and automation tools',
+      'Direct impact on client outcomes, not buried in a dev queue',
+      'Remote first with flexible async collaboration',
     ],
     department: 'Systems',
     location: 'Remote',
-    type: 'Full-time',
+    type: 'Full Time',
     level: 'Senior',
   },
   {
@@ -87,11 +87,11 @@ You'll own the technical implementation of our proprietary frameworks, ensuring 
     description: 'Own the client relationship from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
     fullDescription: `We're looking for a Client Success Manager who understands that we win only when the client wins.
 
-At Divine Acquisition, Client Success isn't a support function — it's the heartbeat of our business. You'll own the client relationship from onboarding through ongoing success, ensuring our Retention OS™ delivers the measurable, compounding results we promise.
+At Divine Acquisition, Client Success isn't a support function. It's the heartbeat of our business. You'll own the client relationship from onboarding through ongoing success, ensuring our Retention OS delivers the measurable, compounding results we promise.
 
-You'll be the trusted advisor who helps clients adopt our systems, interprets their data, and proactively identifies opportunities for growth. Devotion to client outcomes isn't just a value — it's the job.`,
+You'll be the trusted advisor who helps clients adopt our systems, interprets their data, and proactively identifies opportunities for growth. Devotion to client outcomes isn't just a value. It's the job.`,
     responsibilities: [
-      'Own the end-to-end client relationship from onboarding to retention',
+      'Own the end to end client relationship from onboarding to retention',
       'Ensure clients successfully adopt and utilize our retention infrastructure',
       'Conduct regular business reviews focused on outcomes, not activity',
       'Proactively identify risks to client success and mobilize internal resources',
@@ -102,33 +102,33 @@ You'll be the trusted advisor who helps clients adopt our systems, interprets th
       '3+ years in client success, account management, or consulting (B2B preferred)',
       'Track record of retaining and growing client relationships',
       'Strong understanding of CRM systems and marketing/sales infrastructure',
-      'Excellent communication — you can explain complex systems simply',
-      'Data-literate: comfortable pulling insights from dashboards and reports',
-      'High accountability — you own outcomes, not just activities',
+      'Excellent communication. You can explain complex systems simply',
+      'Data literate: comfortable pulling insights from dashboards and reports',
+      'High accountability. You own outcomes, not just activities',
     ],
     whatWeOffer: [
-      'Direct ownership of client relationships — not ticket-taker work',
+      'Direct ownership of client relationships, not ticket taker work',
       'Work with sophisticated service businesses ready to invest in growth',
       'Compensation tied to client outcomes, not just retention',
-      'Remote-first culture built on trust and accountability',
+      'Remote first culture built on trust and accountability',
     ],
     department: 'Client Success',
     location: 'Remote',
-    type: 'Full-time',
+    type: 'Full Time',
     level: 'Senior',
   },
   {
     id: 4,
     slug: 'sdr',
     title: 'SDR / Sales Development Representative',
-    description: 'Identify and qualify service-based businesses ready to install retention infrastructure. Belief-shaping over hard selling.',
-    fullDescription: `We're looking for an SDR who understands that belief-shaping beats hard selling.
+    description: 'Identify and qualify service based businesses ready to install retention infrastructure. Belief shaping over hard selling.',
+    fullDescription: `We're looking for an SDR who understands that belief shaping beats hard selling.
 
-Divine Acquisition helps service-based businesses install retention infrastructure that compounds trust, revenue, and client lifetime value. As an SDR, you'll be the first point of contact for businesses exploring whether our systems are right for them.
+Divine Acquisition helps service based businesses install retention infrastructure that compounds trust, revenue, and client lifetime value. As an SDR, you'll be the first point of contact for businesses exploring whether our systems are right for them.
 
-This isn't about volume and pressure. It's about identifying fit, educating prospects on what's possible, and qualifying opportunities for our closers. We're not for everybody — and that's by design. Your job is to find the businesses that are ready.`,
+This isn't about volume and pressure. It's about identifying fit, educating prospects on what's possible, and qualifying opportunities for our closers. We're not for everybody, and that's by design. Your job is to find the businesses that are ready.`,
     responsibilities: [
-      'Prospect and identify service-based businesses that fit our ideal client profile',
+      'Prospect and identify service based businesses that fit our ideal client profile',
       'Conduct discovery conversations focused on understanding, not pitching',
       'Educate prospects on retention infrastructure and what outcomes are possible',
       'Qualify opportunities based on fit, not just interest (exclusivity matters)',
@@ -136,22 +136,22 @@ This isn't about volume and pressure. It's about identifying fit, educating pros
       'Collaborate with closers to ensure smooth handoffs and context transfer',
     ],
     requirements: [
-      '0-2 years in sales, business development, or client-facing roles',
+      '0 to 2 years in sales, business development, or client facing roles',
       'Strong written and verbal communication skills',
-      'Coachable mindset — eager to learn and implement feedback',
+      'Coachable mindset, eager to learn and implement feedback',
       'Comfort with outbound prospecting (cold email, LinkedIn, phone)',
       'Interest in B2B services, marketing technology, or business systems',
-      'Self-motivated with high personal accountability',
+      'Self motivated with high personal accountability',
     ],
     whatWeOffer: [
       'Learn consultative sales at a company that doesn\'t believe in sleazy tactics',
       'Clear path to Account Executive role based on performance',
       'Direct mentorship from experienced closers',
-      'Remote-first culture with structured training and support',
+      'Remote first culture with structured training and support',
     ],
     department: 'Sales',
     location: 'Remote',
-    type: 'Full-time',
+    type: 'Full Time',
     level: 'Entry',
   },
 ];
@@ -185,7 +185,6 @@ export default function JobPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
     console.log('Application submitted:', formData);
     alert('Application submitted successfully!');
   };
@@ -200,7 +199,7 @@ export default function JobPage() {
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-black/10 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto h-full px-6 md:px-8 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto h-full px-6 md:px-8 flex items-center justify-between">
           <Link href="/hiring" className="flex items-center gap-2.5 group">
             <Image 
               src="/logo.svg" 
@@ -216,12 +215,9 @@ export default function JobPage() {
           
           <Link
             href="/hiring"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-medium
-                       bg-white/10 border border-white/10 text-white
-                       hover:bg-white hover:text-black hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.2)]
-                       transition-all duration-300 hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
           >
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             All Positions
@@ -230,135 +226,129 @@ export default function JobPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-32 pb-20 px-6 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Back Link */}
-          <Link 
-            href="/hiring" 
-            className="inline-flex items-center gap-2 text-neutral-400 hover:text-[#907DFF] transition-colors mb-8 text-sm"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to all positions
-          </Link>
+      <main className="pt-28 pb-20 px-6 md:px-8">
+        <div className="max-w-5xl mx-auto">
+          {/* Header Section */}
+          <div className="mb-12">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#5500FF] text-white">
+                {job.department}
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
+                {job.location}
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
+                {job.type}
+              </span>
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
+                {job.level}
+              </span>
+            </div>
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium text-white tracking-tight mb-4">
+              {job.title}
+            </h1>
+            <p className="text-lg text-neutral-400 font-light leading-relaxed max-w-3xl">
+              {job.description}
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-            {/* Job Details */}
-            <div className="lg:col-span-7">
-              {/* Header */}
-              <div className="mb-10">
-                <div className="flex items-center gap-3 mb-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#907DFF]/10 text-[#907DFF] border border-[#907DFF]/30">
-                    {job.department}
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
-                    {job.location}
-                  </span>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
-                    {job.type}
-                  </span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-medium text-white tracking-tight mb-4">
-                  {job.title}
-                </h1>
-                <p className="text-lg text-neutral-400 font-light leading-relaxed">
-                  {job.description}
-                </p>
-              </div>
-
-              {/* About the Role */}
-              <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">About the Role</h2>
-                <div className="text-neutral-400 font-light leading-relaxed whitespace-pre-line">
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+            {/* Job Details - Left Column */}
+            <div className="lg:col-span-3 space-y-10">
+              {/* About */}
+              <section>
+                <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">About This Role</h2>
+                <div className="text-neutral-300 font-light leading-relaxed whitespace-pre-line">
                   {job.fullDescription}
                 </div>
-              </div>
+              </section>
 
-              {/* Responsibilities */}
-              <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">What You&apos;ll Do</h2>
-                <ul className="space-y-3">
-                  {job.responsibilities.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
-                      <svg className="w-5 h-5 text-[#907DFF] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {/* Responsibilities & Requirements Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <section>
+                  <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">What You&apos;ll Do</h2>
+                  <ul className="space-y-3">
+                    {job.responsibilities.map((item, index) => (
+                      <li key={index} className="flex items-start gap-3 text-neutral-400 font-light text-sm">
+                        <svg className="w-4 h-4 text-[#907DFF] flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
 
-              {/* Requirements */}
-              <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">What We&apos;re Looking For</h2>
-                <ul className="space-y-3">
-                  {job.requirements.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
-                      <svg className="w-5 h-5 text-[#5500FF] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
-                      </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <section>
+                  <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">What We Need</h2>
+                  <ul className="space-y-3">
+                    {job.requirements.map((item, index) => (
+                      <li key={index} className="flex items-start gap-3 text-neutral-400 font-light text-sm">
+                        <svg className="w-4 h-4 text-[#5500FF] flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z" />
+                        </svg>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </div>
 
               {/* What We Offer */}
-              <div className="mb-10">
-                <h2 className="text-xl font-medium text-white mb-4">What We Offer</h2>
-                <ul className="space-y-3">
+              <section className="p-6 bg-neutral-900/40 border border-white/5 rounded-xl">
+                <h2 className="text-sm font-medium text-white/50 uppercase tracking-wider mb-4">What You Get</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {job.whatWeOffer.map((item, index) => (
-                    <li key={index} className="flex items-start gap-3 text-neutral-400 font-light">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-2 flex-shrink-0" />
+                    <div key={index} className="flex items-start gap-3 text-neutral-400 font-light text-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] mt-1.5 flex-shrink-0" />
                       {item}
-                    </li>
+                    </div>
                   ))}
-                </ul>
-              </div>
+                </div>
+              </section>
 
-              {/* Culture Note */}
-              <div className="p-6 bg-neutral-900/30 border border-white/5 rounded-xl">
-                <p className="text-sm text-neutral-400 font-light leading-relaxed">
-                  <span className="text-white font-medium">We&apos;re not for everybody.</span> Divine Acquisition values 
-                  devotion, innovation, and exclusivity. We hire people who believe that process beats personality, 
-                  evidence beats assumption, and simplicity scales. If that resonates, we want to hear from you.
+              {/* Who We Are */}
+              <section className="p-6 bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20 rounded-xl">
+                <h2 className="text-sm font-medium text-[#907DFF] uppercase tracking-wider mb-3">Who We Are</h2>
+                <p className="text-sm text-neutral-300 font-light leading-relaxed">
+                  Divine Acquisition is not for everybody. We value devotion, innovation, and exclusivity. 
+                  We hire people who believe that process beats personality, evidence beats assumption, 
+                  and simplicity scales. If that resonates, we want to hear from you.
                 </p>
-              </div>
+              </section>
             </div>
 
-            {/* Application Form */}
-            <div className="lg:col-span-5">
+            {/* Application Form - Right Column */}
+            <div className="lg:col-span-2">
               <div className="lg:sticky lg:top-28">
-                <div className="bg-neutral-900/40 backdrop-blur-2xl border border-white/10 rounded-2xl p-8 shadow-xl shadow-[#5500FF]/5">
-                  <h2 className="text-xl font-medium text-white mb-2">Apply for this position</h2>
-                  <p className="text-sm text-neutral-500 font-light mb-6">We review every application personally.</p>
+                <div className="bg-neutral-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-xl shadow-[#5500FF]/5">
+                  <h2 className="text-lg font-medium text-white mb-1">Apply Now</h2>
+                  <p className="text-xs text-neutral-500 font-light mb-6">We review every application personally.</p>
                   
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="grid grid-cols-2 gap-4">
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-xs font-medium text-neutral-400 mb-2">First Name *</label>
+                        <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">First Name</label>
                         <input
                           type="text"
                           required
                           value={formData.firstName}
                           onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                     placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                     placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                      transition-all"
                           placeholder="John"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-neutral-400 mb-2">Last Name *</label>
+                        <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Last Name</label>
                         <input
                           type="text"
                           required
                           value={formData.lastName}
                           onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                          className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                     placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                     placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                      transition-all"
                           placeholder="Doe"
                         />
@@ -366,60 +356,47 @@ export default function JobPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Email *</label>
+                      <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Email</label>
                       <input
                         type="email"
                         required
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                   placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                   placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                    transition-all"
                         placeholder="john@example.com"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Phone</label>
+                      <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Phone</label>
                       <input
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                   placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                   placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                    transition-all"
-                        placeholder="+1 (555) 000-0000"
+                        placeholder="+1 (555) 000 0000"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">LinkedIn Profile</label>
+                      <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">LinkedIn</label>
                       <input
                         type="url"
                         value={formData.linkedin}
                         onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                   placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                   placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                    transition-all"
-                        placeholder="https://linkedin.com/in/johndoe"
+                        placeholder="linkedin.com/in/johndoe"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Portfolio / Website</label>
-                      <input
-                        type="url"
-                        value={formData.portfolio}
-                        onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                   placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
-                                   transition-all"
-                        placeholder="https://yourwebsite.com"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Resume *</label>
+                      <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Resume</label>
                       <div className="relative">
                         <input
                           type="file"
@@ -428,44 +405,43 @@ export default function JobPage() {
                           onChange={(e) => setFormData({ ...formData, resume: e.target.files?.[0] || null })}
                           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         />
-                        <div className="w-full bg-white/5 border border-white/10 border-dashed rounded-lg px-4 py-6 text-center
+                        <div className="w-full bg-white/5 border border-white/10 border-dashed rounded-lg px-3 py-4 text-center
                                         hover:border-[#907DFF]/50 hover:bg-[#5500FF]/5 transition-all">
-                          <svg className="w-8 h-8 text-neutral-500 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <svg className="w-6 h-6 text-neutral-600 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                           </svg>
-                          <p className="text-sm text-neutral-400">
-                            {formData.resume ? formData.resume.name : 'Click to upload or drag and drop'}
+                          <p className="text-xs text-neutral-500">
+                            {formData.resume ? formData.resume.name : 'Upload PDF or DOC'}
                           </p>
-                          <p className="text-xs text-neutral-500 mt-1">PDF, DOC, DOCX (max 10MB)</p>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-neutral-400 mb-2">Why Divine Acquisition?</label>
+                      <label className="block text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Why Divine Acquisition?</label>
                       <textarea
                         value={formData.coverLetter}
                         onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
-                        rows={4}
-                        className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm text-white
-                                   placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
+                        rows={3}
+                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white
+                                   placeholder-neutral-600 focus:outline-none focus:border-[#907DFF]/50 focus:ring-1 focus:ring-[#907DFF]/50
                                    transition-all resize-none"
-                        placeholder="Tell us why you want to build systems that compound trust and revenue..."
+                        placeholder="What draws you to building systems that compound?"
                       />
                     </div>
 
                     <button
                       type="submit"
-                      className="w-full py-4 rounded-xl text-sm font-medium
+                      className="w-full py-3.5 rounded-xl text-sm font-medium
                                  bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white
                                  hover:opacity-90 hover:shadow-[0_0_30px_-5px_rgba(85,0,255,0.5)]
-                                 transition-all duration-300"
+                                 transition-all duration-300 mt-2"
                     >
                       Submit Application
                     </button>
 
-                    <p className="text-xs text-neutral-500 text-center">
-                      By submitting, you agree to our Privacy Policy and Terms of Service.
+                    <p className="text-[10px] text-neutral-600 text-center">
+                      By submitting, you agree to our Privacy Policy and Terms.
                     </p>
                   </form>
                 </div>
@@ -477,23 +453,23 @@ export default function JobPage() {
 
       {/* Footer */}
       <footer className="border-t border-white/5">
-        <div className="max-w-[1800px] mx-auto px-6 md:px-8 py-12 md:py-16">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex items-center gap-4">
+        <div className="max-w-5xl mx-auto px-6 md:px-8 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
               <Link href="/hiring" className="flex items-center gap-2 group">
                 <Image 
                   src="/logo.svg" 
                   alt="Divine Acquisition" 
-                  width={20} 
-                  height={20}
+                  width={18} 
+                  height={18}
                   className="opacity-70 group-hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
-                © 2026 Divine Acquisition. All rights reserved.
+                © 2026 Divine Acquisition
               </span>
             </div>
-            <div className="flex items-center gap-8">
+            <div className="flex items-center gap-6">
               <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Instagram
               </a>
@@ -505,9 +481,6 @@ export default function JobPage() {
               </a>
               <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Privacy
-              </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
-                Terms
               </a>
             </div>
           </div>
