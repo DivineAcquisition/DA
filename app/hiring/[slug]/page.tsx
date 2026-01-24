@@ -53,7 +53,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form',
-    airtableHeight: '600',
+    airtableHeight: '2000',
   },
   'setter': {
     title: 'Setter',
@@ -121,7 +121,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
-    airtableHeight: '1080',
+    airtableHeight: '2400',
   },
   'closer': {
     title: 'Closer',
@@ -189,7 +189,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
-    airtableHeight: '1080',
+    airtableHeight: '2400',
   },
   'media-buyer': {
     title: 'Media Buyer',
@@ -225,7 +225,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagpc2PC375pTxiDS/form',
-    airtableHeight: '1080',
+    airtableHeight: '2400',
   },
   'client-success': {
     title: 'Client Success Manager',
@@ -260,7 +260,7 @@ const jobs: Record<string, {
       },
     ],
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag7FzW7LYVFxnAuT/form',
-    airtableHeight: '1080',
+    airtableHeight: '2400',
   },
 };
 
@@ -333,14 +333,14 @@ export default function JobPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
         <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={48} 
-              height={48}
+              width={72} 
+              height={72}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
@@ -360,7 +360,7 @@ export default function JobPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-32 pb-20 px-6">
+      <main className="relative z-10 pt-36 pb-20 px-6">
         <div className="max-w-4xl mx-auto">
           
           {/* Step 1: Role Description */}
@@ -495,8 +495,8 @@ export default function JobPage() {
                 <Image 
                   src="/logo.png" 
                   alt="Divine Acquisition" 
-                  width={32} 
-                  height={32}
+                  width={48} 
+                  height={48}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
