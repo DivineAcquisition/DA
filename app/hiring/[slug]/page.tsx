@@ -22,47 +22,18 @@ What we believe:
 Why join us:
 Divine Acquisition is not an agency. We're a consultancy of builders, architects, and operators who take pride in creating things that last. We don't chase trends. We don't glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.`;
 
-// Icons for different section types
-const sectionIcons: Record<string, React.ReactNode> = {
-  'Responsibilities': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
-    </svg>
-  ),
-  'Requirements': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
-    </svg>
-  ),
-  'What Success Looks Like': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
-    </svg>
-  ),
-  'Who This Is For': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  'Who This Is NOT For': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-    </svg>
-  ),
-  'Compensation': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-  ),
-  'About Divine Acquisition': (
-    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-    </svg>
-  ),
-};
+// Glowing dot component
+function GlowDot({ className = '' }: { className?: string }) {
+  return (
+    <span className={`relative flex h-2 w-2 ${className}`}>
+      <span className="absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75 animate-ping" />
+      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF] shadow-[0_0_10px_3px_rgba(85,0,255,0.6)]" />
+    </span>
+  );
+}
 
-// Item icons for responsibilities
-const itemIcons = [
+// Icons only for Responsibilities and Requirements
+const responsibilityIcons = [
   <svg key="1" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>,
   <svg key="2" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
   <svg key="3" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>,
@@ -157,8 +128,8 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Competitive + Upside',
-    mission: 'We\'re a revenue-focused growth company built on one principle: quality scales, volume lies. Our sales engine is designed to produce predictable cash, not calendar noise. Every role in Sales exists to protect efficiency, trust, and downstream outcomes.',
-    description: 'Protect revenue at the front door. Convert inbound attention into qualified, high-intent sales conversations that reliably turn into cash. You are not here to book calls at any cost — you are here to create leverage by qualifying decisively.',
+    mission: 'Your primary goal is to book the right calls with high quality prospects. You\'re the first point of contact for businesses exploring whether our retention infrastructure is right for them. This isn\'t about volume and pressure — it\'s about identifying fit, educating prospects, and qualifying opportunities for our closers.',
+    description: 'Book the right calls with high quality prospects. Identify fit, educate on possibilities, and qualify opportunities for our closers.',
     useAirtable: true,
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
     sections: [
@@ -166,10 +137,10 @@ const jobs: Record<string, {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Disqualify low-intent or bad-fit leads decisively and early',
-          'Book only high-quality, qualified calls that convert to opportunities',
+          'Prospect and identify service-based businesses that fit our ideal client profile',
           'Conduct discovery conversations focused on understanding, not pitching',
           'Educate prospects on retention infrastructure and possible outcomes',
+          'Qualify opportunities based on fit, not just interest',
           'Maintain disciplined CRM hygiene and pipeline documentation',
           'Protect closer time by refusing to pass low-quality leads downstream',
         ],
@@ -186,13 +157,14 @@ const jobs: Record<string, {
         ],
       },
       {
-        title: 'What Success Looks Like',
+        title: 'Who This Is For',
         type: 'list',
         items: [
-          'Consistently booking qualified calls that convert to opportunities',
-          'Building a pipeline of high-quality prospects who are genuinely interested',
-          'Mastering the discovery process and understanding client needs deeply',
-          'Closers spend time only on real buyers and cash collected per call increases',
+          'Hungry individuals who want to build a real sales career',
+          'People who understand that belief shaping beats hard selling',
+          'Self-starters who take ownership of their results',
+          'Those genuinely curious about businesses and their challenges',
+          'Individuals who communicate clearly and build rapport quickly',
         ],
       },
       {
@@ -203,6 +175,16 @@ const jobs: Record<string, {
           'Those who can\'t handle rejection or need constant validation',
           'Anyone who isn\'t coachable or thinks they already know everything',
           'People who make excuses instead of finding solutions',
+        ],
+      },
+      {
+        title: 'What Success Looks Like',
+        type: 'list',
+        items: [
+          'Consistently booking qualified calls that convert to opportunities',
+          'Building a pipeline of high-quality prospects who are genuinely interested',
+          'Mastering the discovery process and understanding client needs deeply',
+          'Closers spend time only on real buyers and cash collected per call increases',
         ],
       },
     ],
@@ -241,13 +223,13 @@ const jobs: Record<string, {
         ],
       },
       {
-        title: 'What Success Looks Like',
+        title: 'Who This Is For',
         type: 'list',
         items: [
-          'Closing deals with clients who are genuinely the right fit',
-          'Building a portfolio of successful, long-term client relationships',
-          'Maintaining high close rates on qualified opportunities',
-          'Becoming a trusted advisor that clients refer others to',
+          'Experienced sales professionals who genuinely care about client outcomes',
+          'Strategic thinkers who connect business problems to solutions',
+          'Those who excel at building trust and long-term relationships',
+          'People who understand that the right deal matters more than any deal',
         ],
       },
       {
@@ -258,6 +240,16 @@ const jobs: Record<string, {
           'Those who view sales as a numbers game without caring about fit',
           'People who aren\'t willing to deeply understand client businesses',
           'Anyone who cuts corners or overpromises to close deals',
+        ],
+      },
+      {
+        title: 'What Success Looks Like',
+        type: 'list',
+        items: [
+          'Closing deals with clients who are genuinely the right fit',
+          'Building a portfolio of successful, long-term client relationships',
+          'Maintaining high close rates on qualified opportunities',
+          'Becoming a trusted advisor that clients refer others to',
         ],
       },
     ],
@@ -299,6 +291,26 @@ const jobs: Record<string, {
         ],
       },
       {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'You\'ve managed meaningful ad spend before ($10K+ per month minimum)',
+          'You\'re equally comfortable in Ads Manager and analyzing data in spreadsheets',
+          'You understand media buying blends creative intuition and mathematical rigor',
+          'You\'re a student of direct response marketing',
+        ],
+      },
+      {
+        title: 'Who This Is NOT For',
+        type: 'list',
+        items: [
+          'If you\'ve only boosted posts or run small hobby campaigns',
+          'If you rely on "the algorithm" and can\'t explain why campaigns work',
+          'If you\'re a pure creative who hates numbers, or pure analyst who hates creative',
+          'If you think media buying is "set it and forget it"',
+        ],
+      },
+      {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
@@ -306,7 +318,6 @@ const jobs: Record<string, {
           'Positive ROAS on all mature campaigns (minimum 2x, target 3-5x)',
           'Testing velocity: minimum 5-10 new creative variations per week',
           '95%+ of budgets deployed — no underspend, no waste',
-          'You treat ad spend like it\'s your own money',
         ],
       },
       {
@@ -356,6 +367,26 @@ const jobs: Record<string, {
         ],
       },
       {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'You genuinely care about people and their success',
+          'You\'re obsessively organized — checklists, follow-ups, documentation',
+          'You\'re proactive — you anticipate problems, not wait for them',
+          'You can hold multiple client relationships without dropping balls',
+        ],
+      },
+      {
+        title: 'Who This Is NOT For',
+        type: 'list',
+        items: [
+          'If you\'re reactive — waiting for clients to complain before you act',
+          'If you hate documentation and think "I\'ll remember it" is a strategy',
+          'If you struggle to hold people accountable because you want to be liked',
+          'If you see client success as a stepping stone to "real" work',
+        ],
+      },
+      {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
@@ -364,7 +395,6 @@ const jobs: Record<string, {
           '90%+ clients in "green" health status at any given time',
           'Churn rate below 10%',
           'Renewal rate of 70%+ on eligible contracts',
-          '2+ referrals generated per quarter per 10 clients',
         ],
       },
       {
@@ -404,7 +434,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
   if (submitted) {
     return (
       <div className="p-12 text-center">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#5500FF]/20 flex items-center justify-center">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#5500FF]/20 flex items-center justify-center shadow-[0_0_30px_10px_rgba(85,0,255,0.3)]">
           <svg className="w-8 h-8 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -429,7 +459,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
             required
             value={formData.fullName}
             onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
             placeholder="John Doe"
           />
         </div>
@@ -442,7 +472,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
             required
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
             placeholder="john@example.com"
           />
         </div>
@@ -457,7 +487,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
             type="tel"
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
             placeholder="+1 (555) 000-0000"
           />
         </div>
@@ -469,7 +499,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
             type="url"
             value={formData.linkedin}
             onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
             placeholder="https://linkedin.com/in/username"
           />
         </div>
@@ -483,7 +513,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           type="url"
           value={formData.portfolio}
           onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
           placeholder="https://yourportfolio.com"
         />
       </div>
@@ -501,7 +531,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           type="url"
           value={formData.loomVideo}
           onChange={(e) => setFormData({ ...formData, loomVideo: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
           placeholder="https://www.loom.com/share/your-video-id"
         />
         <p className="mt-2 text-xs text-neutral-500">Record a 2-3 minute video introducing yourself and why you&apos;re interested in this role.</p>
@@ -516,7 +546,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           rows={4}
           value={formData.experience}
           onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all resize-none"
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
           placeholder="Tell us about your relevant experience and accomplishments..."
         />
       </div>
@@ -530,7 +560,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           rows={4}
           value={formData.whyYou}
           onChange={(e) => setFormData({ ...formData, whyYou: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all resize-none"
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
           placeholder="What makes you uniquely qualified for this role?"
         />
       </div>
@@ -543,7 +573,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           required
           value={formData.availability}
           onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
-          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
         >
           <option value="" className="bg-[#0a0a0a]">Select availability</option>
           <option value="immediate" className="bg-[#0a0a0a]">Immediately</option>
@@ -555,7 +585,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
 
       <button
         type="submit"
-        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-[#5500FF]/30"
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white font-semibold hover:opacity-90 transition-opacity shadow-[0_0_30px_rgba(85,0,255,0.5)]"
       >
         Submit Application
       </button>
@@ -585,42 +615,58 @@ export default function JobPage() {
     );
   }
 
+  // Check if section should use icons (only Responsibilities and Requirements)
+  const shouldUseIcons = (title: string) => {
+    return title === 'Responsibilities' || title === 'Requirements';
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
       {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: `linear-gradient(rgba(144,125,255,0.5) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(144,125,255,0.5) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
+            backgroundImage: `linear-gradient(rgba(144,125,255,0.8) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(144,125,255,0.8) 1px, transparent 1px)`,
+            backgroundSize: '50px 50px',
           }}
         />
       </div>
 
-      {/* Background Glow Effects */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Background Glow Effects - More vibrant and mobile-visible */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Main top glow - larger and more vibrant */}
         <div 
-          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-50"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[600px] md:h-[800px]"
           style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, rgba(85,0,255,0.15) 40%, transparent 70%)',
-            filter: 'blur(100px)',
+            background: 'radial-gradient(ellipse at center top, rgba(85,0,255,0.4) 0%, rgba(144,125,255,0.2) 30%, transparent 60%)',
+            filter: 'blur(60px)',
           }}
         />
+        {/* Bottom right glow */}
         <div 
-          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-30"
+          className="absolute bottom-0 right-0 w-full md:w-[800px] h-[400px] md:h-[600px]"
           style={{
-            background: 'radial-gradient(circle, rgba(85,0,255,0.4) 0%, rgba(144,125,255,0.15) 50%, transparent 70%)',
-            filter: 'blur(120px)',
-          }}
-        />
-        <div 
-          className="absolute top-[50%] left-[-15%] w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, transparent 60%)',
+            background: 'radial-gradient(ellipse at bottom right, rgba(85,0,255,0.35) 0%, rgba(144,125,255,0.15) 40%, transparent 60%)',
             filter: 'blur(80px)',
+          }}
+        />
+        {/* Left side glow */}
+        <div 
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-[300px] md:w-[500px] h-[400px] md:h-[600px]"
+          style={{
+            background: 'radial-gradient(ellipse at left center, rgba(144,125,255,0.25) 0%, transparent 50%)',
+            filter: 'blur(60px)',
+          }}
+        />
+        {/* Center accent glow */}
+        <div 
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px]"
+          style={{
+            background: 'radial-gradient(circle, rgba(85,0,255,0.2) 0%, transparent 50%)',
+            filter: 'blur(100px)',
           }}
         />
       </div>
@@ -657,9 +703,9 @@ export default function JobPage() {
           {/* Hero Section */}
           <section className="mb-16">
             {/* Department Badge */}
-            <div className="flex items-center gap-2 mb-6">
-              <span className="w-6 h-px bg-[#5500FF]"></span>
-              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">
+            <div className="flex items-center gap-3 mb-6">
+              <span className="w-8 h-px bg-gradient-to-r from-[#5500FF] to-transparent shadow-[0_0_10px_rgba(85,0,255,0.8)]"></span>
+              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">
                 {job.department}
               </span>
             </div>
@@ -675,7 +721,7 @@ export default function JobPage() {
             </p>
 
             {/* Meta Info Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
               <div>
                 <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Department</p>
                 <p className="text-sm font-medium text-white">{job.department}</p>
@@ -690,7 +736,7 @@ export default function JobPage() {
               </div>
               <div>
                 <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Compensation</p>
-                <p className="text-sm font-medium text-[#907DFF]">{job.compensation}</p>
+                <p className="text-sm font-medium text-[#907DFF] drop-shadow-[0_0_8px_rgba(144,125,255,0.5)]">{job.compensation}</p>
               </div>
             </div>
           </section>
@@ -698,12 +744,8 @@ export default function JobPage() {
           {/* Mission Section */}
           <section className="mb-16">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-[#5500FF]/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </div>
-              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">The Mission</h2>
+              <GlowDot />
+              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">The Mission</h2>
             </div>
             <p className="text-lg text-neutral-300 font-light leading-relaxed">
               {job.mission}
@@ -714,18 +756,14 @@ export default function JobPage() {
           {job.techStack && (
             <section className="mb-16">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#5500FF]/20 flex items-center justify-center">
-                  <svg className="w-4 h-4 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-                  </svg>
-                </div>
-                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">Tech Stack</h2>
+                <GlowDot />
+                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">Tech Stack</h2>
               </div>
               <div className="flex flex-wrap gap-3">
                 {job.techStack.map((tech, index) => (
                   <span 
                     key={index}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/10 text-[#907DFF] border border-[#5500FF]/20"
+                    className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/15 text-[#907DFF] border border-[#5500FF]/30 shadow-[0_0_15px_rgba(85,0,255,0.2)]"
                   >
                     {tech}
                   </span>
@@ -738,10 +776,22 @@ export default function JobPage() {
           {job.sections.map((section, sectionIndex) => (
             <section key={sectionIndex} className="mb-16">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF]">
-                  {sectionIcons[section.title] || sectionIcons['Responsibilities']}
-                </div>
-                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">{section.title}</h2>
+                {shouldUseIcons(section.title) ? (
+                  <div className="w-8 h-8 rounded-lg bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF] shadow-[0_0_20px_rgba(85,0,255,0.4)]">
+                    {section.title === 'Responsibilities' ? (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+                      </svg>
+                    )}
+                  </div>
+                ) : (
+                  <GlowDot />
+                )}
+                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">{section.title}</h2>
               </div>
               
               {section.type === 'text' && section.content && (
@@ -754,9 +804,15 @@ export default function JobPage() {
                 <div className="space-y-4">
                   {section.items.map((item, itemIndex) => (
                     <div key={itemIndex} className="flex items-start gap-4 group">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center text-[#907DFF] group-hover:bg-[#5500FF]/10 group-hover:border-[#5500FF]/20 transition-all">
-                        {itemIcons[itemIndex % itemIcons.length]}
-                      </div>
+                      {shouldUseIcons(section.title) ? (
+                        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center text-[#907DFF] group-hover:bg-[#5500FF]/10 group-hover:border-[#5500FF]/20 group-hover:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all">
+                          {responsibilityIcons[itemIndex % responsibilityIcons.length]}
+                        </div>
+                      ) : (
+                        <div className="flex-shrink-0 mt-2">
+                          <span className="block w-1.5 h-1.5 rounded-full bg-[#5500FF] shadow-[0_0_8px_3px_rgba(85,0,255,0.5)]" />
+                        </div>
+                      )}
                       <div className="flex-1 pt-1">
                         <p className="text-neutral-300 font-light leading-relaxed">{item}</p>
                       </div>
@@ -768,12 +824,10 @@ export default function JobPage() {
           ))}
 
           {/* About Section */}
-          <section className="mb-16 p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/5 to-transparent border border-[#5500FF]/10">
+          <section className="mb-16 p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20 shadow-[0_0_40px_rgba(85,0,255,0.15)]">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-full bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF]">
-                {sectionIcons['About Divine Acquisition']}
-              </div>
-              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">About Divine Acquisition</h2>
+              <GlowDot />
+              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">About Divine Acquisition</h2>
             </div>
             <p className="text-neutral-400 font-light leading-relaxed whitespace-pre-line text-sm">
               {aboutContent}
@@ -783,7 +837,7 @@ export default function JobPage() {
           {/* Application Form Section */}
           <section id="apply">
             <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white shadow-lg shadow-[#5500FF]/30">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white shadow-[0_0_30px_rgba(85,0,255,0.5)]">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -794,8 +848,8 @@ export default function JobPage() {
               </div>
             </div>
 
-            <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-[#5500FF]/5 blur-[80px] pointer-events-none" />
+            <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden shadow-[0_0_50px_rgba(85,0,255,0.1)]">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] bg-gradient-to-b from-[#5500FF]/10 to-transparent pointer-events-none" />
               
               <div className="relative">
                 {job.useAirtable && job.airtableEmbed ? (
