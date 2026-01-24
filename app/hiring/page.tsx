@@ -268,7 +268,7 @@ export default function HiringPage() {
             
             {/* Sidebar Filter */}
             <aside className={`lg:w-72 flex-shrink-0 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-white/[0.02] border border-white/5 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
+              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-[#111111] border border-white/10 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
                 
                 {/* Department Filter */}
                 <div>
@@ -329,7 +329,7 @@ export default function HiringPage() {
                 {/* Time Zone */}
                 <div>
                   <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Time Zone</h3>
-                  <div className="px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-neutral-300">
+                  <div className="px-4 py-3 rounded-xl bg-[#0d0d0d] border border-white/10 text-sm text-neutral-300">
                     EST (Eastern Standard Time)
                   </div>
                 </div>
@@ -341,7 +341,7 @@ export default function HiringPage() {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full appearance-none px-4 py-3 pr-10 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-neutral-300 focus:outline-none focus:border-[#5500FF]/50 cursor-pointer"
+                      className="w-full appearance-none px-4 py-3 pr-10 rounded-xl bg-[#0d0d0d] border border-white/10 text-sm text-neutral-300 focus:outline-none focus:border-[#907DFF]/50 cursor-pointer"
                     >
                       <option value="level-high" className="bg-[#0a0a0a]">Level: High to Low</option>
                       <option value="level-low" className="bg-[#0a0a0a]">Level: Low to High</option>
@@ -373,7 +373,7 @@ export default function HiringPage() {
                     href={`/hiring/${job.slug}`}
                     className="block group"
                   >
-                    <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
+                    <div className="relative p-6 rounded-2xl bg-[#111111] border border-white/10 hover:bg-[#151515] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
                       {/* Hover glow */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
@@ -424,7 +424,7 @@ export default function HiringPage() {
                 ))}
 
                 {filteredJobs.length === 0 && (
-                  <div className="text-center py-16 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div className="text-center py-16 rounded-2xl bg-[#111111] border border-white/10">
                     <p className="text-neutral-500 font-light">No positions found in this department.</p>
                     <button 
                       onClick={() => setSelectedDept('all')}
