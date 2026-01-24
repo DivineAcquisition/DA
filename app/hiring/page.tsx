@@ -58,7 +58,7 @@ const jobs = [
 ];
 
 const departments = [
-  { id: 'all', name: 'View All' },
+  { id: 'all', name: 'All Roles' },
   { id: 'systems', name: 'Systems' },
   { id: 'growth', name: 'Growth' },
   { id: 'sales', name: 'Sales' },
@@ -79,13 +79,13 @@ function LevelIndicator({ level }: { level: number }) {
         {[1, 2, 3, 4].map((i) => (
           <span
             key={i}
-            className={`w-1.5 h-1.5 rounded-full transition-all ${
-              i <= level ? 'bg-[#5500FF] shadow-[0_0_6px_rgba(85,0,255,0.6)]' : 'bg-white/10'
+            className={`w-1.5 h-1.5 rounded-full ${
+              i <= level ? 'bg-[#5500FF] shadow-[0_0_6px_rgba(85,0,255,0.8)]' : 'bg-white/10'
             }`}
           />
         ))}
       </span>
-      {levelLabels[level]}
+      <span className="text-neutral-500">{levelLabels[level]}</span>
     </span>
   );
 }
@@ -109,74 +109,73 @@ export default function HiringPage() {
   }, {} as Record<string, number>);
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50">
-      {/* Background Effects */}
-      <div className="fixed inset-0 -z-10 h-full w-full pointer-events-none">
-        {/* Main gradient glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(144,125,255,0.3),rgba(0,0,0,0))]" />
-        {/* Secondary glow bottom right */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,rgba(85,0,255,0.15),rgba(0,0,0,0))]" />
-        {/* Center glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(144,125,255,0.05),rgba(0,0,0,0))]" />
+    <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
+      
+      {/* Background Glow Effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Large top glow */}
+        <div 
+          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-60"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, rgba(85,0,255,0.2) 40%, transparent 70%)',
+            filter: 'blur(100px)',
+          }}
+        />
+        {/* Bottom right glow */}
+        <div 
+          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(85,0,255,0.5) 0%, rgba(144,125,255,0.2) 50%, transparent 70%)',
+            filter: 'blur(120px)',
+          }}
+        />
+        {/* Left side accent */}
+        <div 
+          className="absolute top-[30%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+          }}
+        />
       </div>
 
-      {/* Particles */}
-      <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
-        {mounted && [...Array(40)].map((_, i) => (
+      {/* Floating Particles */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {mounted && [...Array(30)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-1 h-1 rounded-full bg-[#907DFF]/20"
+            className="absolute rounded-full bg-[#907DFF]"
             style={{
+              width: `${2 + Math.random() * 3}px`,
+              height: `${2 + Math.random() * 3}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animation: `float ${8 + Math.random() * 12}s linear infinite`,
-              animationDelay: `${Math.random() * 5}s`,
+              opacity: 0.3 + Math.random() * 0.4,
+              animation: `floatParticle ${10 + Math.random() * 20}s linear infinite`,
+              animationDelay: `${Math.random() * 10}s`,
             }}
           />
         ))}
       </div>
 
-      {/* Particle Animation */}
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.6;
-          }
-          90% {
-            opacity: 0.6;
-          }
-          100% {
-            transform: translateY(-100vh) translateX(30px);
-            opacity: 0;
-          }
-        }
-      `}</style>
-
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
         <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/hiring" className="flex items-center gap-2.5 group">
+          <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={28} 
-              height={28}
+              width={48} 
+              height={48}
               className="group-hover:opacity-80 transition-opacity"
             />
-            <span className="text-base font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors hidden sm:block">
-              Divine Acquisition
-            </span>
           </Link>
           
           <a
             href="https://divineacquisition.io"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all"
           >
             Visit Website
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -187,12 +186,13 @@ export default function HiringPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="px-6 pt-28 pb-16 md:pt-32 md:pb-20">
+      <section className="relative z-10 px-6 pt-36 pb-20 md:pt-44 md:pb-24">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
-            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium
-                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-8
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
+                        text-[#907DFF] bg-[#5500FF]/10 border border-[#5500FF]/30 mb-8
+                        shadow-[0_0_30px_-5px_rgba(85,0,255,0.5)]
                         ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
             <span className="relative flex h-2 w-2">
@@ -204,7 +204,7 @@ export default function HiringPage() {
 
           {/* Headline */}
           <h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-medium text-white tracking-tight mb-6 leading-[1.1]
+            className={`text-5xl sm:text-6xl md:text-7xl font-semibold text-white tracking-tight mb-6 leading-[1.05]
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
           >
             Build systems that
@@ -213,7 +213,7 @@ export default function HiringPage() {
 
           {/* Subheadline */}
           <p 
-            className={`text-lg text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-10
+            className={`text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-12
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
             We build infrastructure, not gimmicks. Join us in creating timeless business systems 
@@ -222,32 +222,28 @@ export default function HiringPage() {
 
           {/* Values */}
           <div 
-            className={`flex flex-wrap justify-center gap-3 mb-8
+            className={`flex flex-wrap justify-center gap-3
                         ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
           >
-            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
-              Devotion
-            </span>
-            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
-              Innovation
-            </span>
-            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
-              Value
-            </span>
-            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
-              Exclusivity
-            </span>
+            {['Devotion', 'Innovation', 'Value', 'Exclusivity'].map((value) => (
+              <span 
+                key={value}
+                className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-neutral-300"
+              >
+                {value}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Positions Section */}
-      <main className="px-6 pb-20" id="positions">
+      <main className="relative z-10 px-6 pb-20" id="positions">
         <div className="max-w-4xl mx-auto">
           {/* Section Header */}
           <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
             <div>
-              <h2 className="text-2xl font-medium text-white tracking-tight">Open Positions</h2>
+              <h2 className="text-2xl font-semibold text-white tracking-tight">Open Positions</h2>
               <p className="text-neutral-500 text-sm mt-1">{jobs.length} roles available</p>
             </div>
             
@@ -257,10 +253,10 @@ export default function HiringPage() {
                 <button
                   key={dept.id}
                   onClick={() => setSelectedDept(dept.id)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
                     selectedDept === dept.id
-                      ? 'bg-[#5500FF] text-white'
-                      : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white'
+                      ? 'bg-[#5500FF] text-white shadow-lg shadow-[#5500FF]/30'
+                      : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white border border-white/5'
                   }`}
                 >
                   {dept.name}
@@ -273,31 +269,36 @@ export default function HiringPage() {
           </div>
 
           {/* Job Cards */}
-          <div className={`space-y-3 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
+          <div className={`space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
             {filteredJobs.map((job) => (
               <Link
                 key={job.id}
                 href={`/hiring/${job.slug}`}
                 className="block group"
               >
-                <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300 overflow-hidden">
+                  {/* Hover glow */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-[#5500FF]/10 blur-[80px]" />
+                  </div>
+                  
+                  <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-base font-medium text-white group-hover:text-[#907DFF] transition-colors">
+                        <h3 className="text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
                           {job.title}
                         </h3>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#5500FF]/20 text-[#907DFF]">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5500FF]/20 text-[#907DFF]">
                           {job.subtitle}
                         </span>
                       </div>
-                      <p className="text-sm text-neutral-500 font-light leading-relaxed line-clamp-2">
+                      <p className="text-sm text-neutral-500 font-light leading-relaxed">
                         {job.description}
                       </p>
                     </div>
-                    <div className="flex items-center gap-4 sm:gap-6">
-                      <div className="flex items-center gap-4 text-xs text-neutral-500">
-                        <span className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-4 text-xs">
+                        <span className="flex items-center gap-1.5 text-neutral-500">
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -322,7 +323,7 @@ export default function HiringPage() {
             ))}
 
             {filteredJobs.length === 0 && (
-              <div className="text-center py-12">
+              <div className="text-center py-16 rounded-2xl bg-white/[0.02] border border-white/5">
                 <p className="text-neutral-500 font-light">No positions found in this department.</p>
                 <button 
                   onClick={() => setSelectedDept('all')}
@@ -336,57 +337,18 @@ export default function HiringPage() {
         </div>
       </main>
 
-      {/* Culture Section */}
-      <section className="px-6 pb-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 via-transparent to-transparent border border-[#5500FF]/20">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-lg font-medium text-white mb-4">How We Operate</h2>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
-                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
-                    Evidence over assumption
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
-                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
-                    Process over personality
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
-                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
-                    Simplicity scales
-                  </li>
-                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
-                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
-                    We win when clients win
-                  </li>
-                </ul>
-              </div>
-              <div>
-                <h2 className="text-lg font-medium text-white mb-4">What We Build</h2>
-                <p className="text-sm text-neutral-400 font-light leading-relaxed">
-                  Divine Acquisition is a growth consulting and systems implementation firm. 
-                  We build retention first infrastructures, automation systems, and client success 
-                  engines for service based businesses. We don&apos;t sell gimmicks. We build infrastructure.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-white/5">
+      <footer className="relative z-10 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <Link href="/hiring" className="flex items-center gap-2 group">
+            <div className="flex items-center gap-4">
+              <Link href="/hiring">
                 <Image 
                   src="/logo.png" 
                   alt="Divine Acquisition" 
-                  width={20} 
-                  height={20}
-                  className="opacity-70 group-hover:opacity-100 transition-opacity"
+                  width={32} 
+                  height={32}
+                  className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
@@ -394,22 +356,39 @@ export default function HiringPage() {
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
-                LinkedIn
-              </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>
           </div>
         </div>
       </footer>
+
+      {/* Global Styles */}
+      <style jsx global>{`
+        @keyframes floatParticle {
+          0% {
+            transform: translateY(100vh) translateX(0);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.5;
+          }
+          90% {
+            opacity: 0.5;
+          }
+          100% {
+            transform: translateY(-100vh) translateX(50px);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }

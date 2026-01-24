@@ -264,26 +264,6 @@ const jobs: Record<string, {
   },
 };
 
-// Particle component
-function Particles() {
-  return (
-    <div className="fixed inset-0 -z-5 overflow-hidden pointer-events-none">
-      {[...Array(50)].map((_, i) => (
-        <div
-          key={i}
-          className="particle absolute w-1 h-1 rounded-full bg-[#907DFF]/30"
-          style={{
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 5}s`,
-            animationDuration: `${5 + Math.random() * 10}s`,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 export default function JobPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -291,7 +271,7 @@ export default function JobPage() {
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] text-white flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-medium mb-4">Position not found</h1>
           <Link href="/hiring" className="text-[#907DFF] hover:text-white transition-colors">
@@ -303,150 +283,194 @@ export default function JobPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50">
-      {/* Background Effects */}
-      <div className="fixed inset-0 -z-10 h-full w-full pointer-events-none">
-        {/* Main gradient glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(144,125,255,0.3),rgba(0,0,0,0))]" />
-        {/* Secondary glow bottom right */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,rgba(85,0,255,0.15),rgba(0,0,0,0))]" />
-        {/* Center glow */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(144,125,255,0.05),rgba(0,0,0,0))]" />
+    <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
+      
+      {/* Background Glow Effects */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Large top glow */}
+        <div 
+          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-60"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, rgba(85,0,255,0.2) 40%, transparent 70%)',
+            filter: 'blur(100px)',
+          }}
+        />
+        {/* Bottom right glow */}
+        <div 
+          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(85,0,255,0.5) 0%, rgba(144,125,255,0.2) 50%, transparent 70%)',
+            filter: 'blur(120px)',
+          }}
+        />
+        {/* Left side accent */}
+        <div 
+          className="absolute top-[30%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, transparent 60%)',
+            filter: 'blur(80px)',
+          }}
+        />
       </div>
 
-      {/* Particles */}
-      <Particles />
+      {/* Floating Particles */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {[...Array(30)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-[#907DFF]"
+            style={{
+              width: `${2 + Math.random() * 3}px`,
+              height: `${2 + Math.random() * 3}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              opacity: 0.3 + Math.random() * 0.4,
+              animation: `floatParticle ${10 + Math.random() * 20}s linear infinite`,
+              animationDelay: `${Math.random() * 10}s`,
+            }}
+          />
+        ))}
+      </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/60 backdrop-blur-2xl">
-        <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/hiring" className="flex items-center gap-2.5 group">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
+        <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
+          <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={28} 
-              height={28}
+              width={48} 
+              height={48}
               className="group-hover:opacity-80 transition-opacity"
             />
-            <span className="text-base font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors hidden sm:block">
-              Divine Acquisition
-            </span>
           </Link>
           
           <Link
             href="/hiring"
-            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
+                       bg-white/5 border border-white/10 text-white
+                       hover:bg-white/10 hover:border-white/20 transition-all"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            <span className="hidden sm:inline">Back to Careers</span>
+            All Positions
           </Link>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="pt-24 pb-20 px-6">
+      <main className="relative z-10 pt-32 pb-20 px-6">
         <div className="max-w-4xl mx-auto">
           
           {/* Step 1: Role Description */}
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#5500FF] text-white text-sm font-medium">1</span>
-              <span className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Role Overview</span>
-            </div>
-
-            {/* Role Header */}
-            <div className="mb-10">
-              <div className="flex flex-wrap items-center gap-3 mb-4">
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#5500FF] text-white">
-                  {job.subtitle}
-                </span>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
-                  {job.location}
-                </span>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 text-neutral-400 border border-white/10">
-                  {job.type}
-                </span>
+          <section className="mb-20">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#5500FF] to-[#907DFF] text-white text-sm font-bold shadow-lg shadow-[#5500FF]/30">
+                1
               </div>
-              <h1 className="text-4xl md:text-5xl font-medium text-white tracking-tight mb-6">
-                {job.title}
-              </h1>
-              <p className="text-lg text-neutral-300 font-light leading-relaxed">
-                {job.description}
-              </p>
+              <div>
+                <span className="text-xs font-medium text-[#907DFF] uppercase tracking-widest">Step One</span>
+                <h2 className="text-lg font-medium text-white">Review Position Details</h2>
+              </div>
             </div>
 
-            {/* Tech Stack */}
-            {job.techStack && (
-              <div className="mb-10">
-                <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4">Tech Stack</h2>
-                <div className="flex flex-wrap gap-2">
-                  {job.techStack.map((tech, index) => (
-                    <span 
-                      key={index}
-                      className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/10 text-[#907DFF] border border-[#5500FF]/20"
-                    >
-                      {tech}
-                    </span>
+            {/* Role Card */}
+            <div className="relative p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-sm overflow-hidden">
+              {/* Card glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#5500FF]/10 blur-[100px] pointer-events-none" />
+              
+              <div className="relative">
+                {/* Tags */}
+                <div className="flex flex-wrap items-center gap-3 mb-6">
+                  <span className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#5500FF] text-white shadow-lg shadow-[#5500FF]/30">
+                    {job.subtitle}
+                  </span>
+                  <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-white/5 text-neutral-300 border border-white/10">
+                    {job.location}
+                  </span>
+                  <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-white/5 text-neutral-300 border border-white/10">
+                    {job.type}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight mb-6">
+                  {job.title}
+                </h1>
+
+                {/* Description */}
+                <p className="text-lg text-neutral-400 font-light leading-relaxed mb-10">
+                  {job.description}
+                </p>
+
+                {/* Tech Stack */}
+                {job.techStack && (
+                  <div className="mb-10">
+                    <h3 className="text-xs font-semibold text-[#907DFF] uppercase tracking-widest mb-4">Tech Stack</h3>
+                    <div className="flex flex-wrap gap-3">
+                      {job.techStack.map((tech, index) => (
+                        <span 
+                          key={index}
+                          className="px-4 py-2 rounded-xl text-sm font-medium bg-[#5500FF]/10 text-[#907DFF] border border-[#5500FF]/30"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sections */}
+                <div className="space-y-10">
+                  {job.sections.map((section, index) => (
+                    <div key={index}>
+                      <h3 className="text-xs font-semibold text-[#907DFF] uppercase tracking-widest mb-5 flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#5500FF] shadow-lg shadow-[#5500FF]/50" />
+                        {section.title}
+                      </h3>
+                      {section.type === 'list' && section.items && (
+                        <ul className="space-y-4">
+                          {section.items.map((item, itemIndex) => (
+                            <li key={itemIndex} className="flex items-start gap-4 text-neutral-300 font-light">
+                              <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-[#907DFF] font-medium mt-0.5">
+                                {itemIndex + 1}
+                              </span>
+                              <span className="leading-relaxed">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* Sections in a grid on desktop */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {job.sections.map((section, index) => (
-                <div 
-                  key={index}
-                  className={`${job.sections.length % 2 !== 0 && index === job.sections.length - 1 ? 'md:col-span-2' : ''}`}
-                >
-                  <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-4 flex items-center gap-2">
-                    <span className="text-[#5500FF]">◆</span>
-                    {section.title}
-                  </h2>
-                  {section.type === 'list' && section.items && (
-                    <ul className="space-y-3">
-                      {section.items.map((item, itemIndex) => (
-                        <li key={itemIndex} className="flex items-start gap-3 text-neutral-300 font-light text-sm">
-                          <span className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-[#907DFF] shrink-0 mt-0.5">
-                            {itemIndex + 1}
-                          </span>
-                          <span className="leading-relaxed">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Culture Section */}
-            <div className="mt-10 p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20">
-              <h2 className="text-xs font-medium text-[#907DFF] uppercase tracking-wider mb-3">Who We Are</h2>
-              <p className="text-neutral-300 font-light leading-relaxed text-sm">
-                Divine Acquisition is not for everybody. We value devotion, innovation, and exclusivity. 
-                We hire people who believe that process beats personality, evidence beats assumption, 
-                and simplicity scales. If that resonates, we want to hear from you.
-              </p>
             </div>
           </section>
 
           {/* Step 2: Application Form */}
           <section id="apply">
-            <div className="flex items-center gap-3 mb-8">
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#5500FF] text-white text-sm font-medium">2</span>
-              <span className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Apply Now</span>
+            <div className="flex items-center gap-4 mb-10">
+              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-[#5500FF] to-[#907DFF] text-white text-sm font-bold shadow-lg shadow-[#5500FF]/30">
+                2
+              </div>
+              <div>
+                <span className="text-xs font-medium text-[#907DFF] uppercase tracking-widest">Step Two</span>
+                <h2 className="text-lg font-medium text-white">Submit Your Application</h2>
+              </div>
             </div>
 
-            <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
-              <div className="p-6 border-b border-white/5">
-                <h2 className="text-xl font-medium text-white mb-1">Submit Your Application</h2>
-                <p className="text-sm text-neutral-500 font-light">Fill out the form below to apply for the {job.title} position.</p>
+            <div className="relative rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-sm overflow-hidden">
+              {/* Card glow */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#5500FF]/10 blur-[100px] pointer-events-none" />
+              
+              <div className="relative p-6 border-b border-white/5">
+                <h3 className="text-xl font-semibold text-white mb-1">Apply for {job.title}</h3>
+                <p className="text-sm text-neutral-500 font-light">Complete the form below to submit your application.</p>
               </div>
-              <div className="p-2">
+              <div className="relative">
                 <iframe 
-                  className="airtable-embed w-full rounded-xl"
+                  className="airtable-embed w-full"
                   src={job.airtableEmbed}
                   frameBorder="0"
                   width="100%"
@@ -463,17 +487,17 @@ export default function JobPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/5">
-        <div className="max-w-5xl mx-auto px-6 py-10">
+      <footer className="relative z-10 border-t border-white/5">
+        <div className="max-w-6xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <Link href="/hiring" className="flex items-center gap-2 group">
+            <div className="flex items-center gap-4">
+              <Link href="/hiring">
                 <Image 
                   src="/logo.png" 
                   alt="Divine Acquisition" 
-                  width={20} 
-                  height={20}
-                  className="opacity-70 group-hover:opacity-100 transition-opacity"
+                  width={32} 
+                  height={32}
+                  className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
               <span className="text-neutral-600 text-sm font-light">
@@ -481,16 +505,13 @@ export default function JobPage() {
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
-                LinkedIn
-              </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>
@@ -498,27 +519,23 @@ export default function JobPage() {
         </div>
       </footer>
 
-      {/* Particle Animation Styles */}
+      {/* Global Styles */}
       <style jsx global>{`
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0) translateX(0);
+        @keyframes floatParticle {
+          0% {
+            transform: translateY(100vh) translateX(0);
             opacity: 0;
           }
           10% {
-            opacity: 1;
+            opacity: 0.5;
           }
           90% {
-            opacity: 1;
+            opacity: 0.5;
           }
           100% {
-            transform: translateY(-100vh) translateX(20px);
+            transform: translateY(-100vh) translateX(50px);
             opacity: 0;
           }
-        }
-        
-        .particle {
-          animation: float linear infinite;
         }
       `}</style>
     </div>
