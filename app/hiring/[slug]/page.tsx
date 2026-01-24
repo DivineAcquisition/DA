@@ -626,14 +626,14 @@ export default function JobPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
         <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={100} 
-              height={100}
+              width={160} 
+              height={160}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
@@ -824,7 +824,7 @@ export default function JobPage() {
             <div className="flex items-center gap-3">
               <Link href="/hiring">
                 <Image 
-                  src="/Comp 2 (0;00;00;00).png" 
+                  src="/6.png" 
                   alt="Divine Acquisition" 
                   width={32} 
                   height={32}

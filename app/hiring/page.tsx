@@ -11,8 +11,10 @@ const jobs = [
     title: 'Systems Architect',
     subtitle: 'Infrastructure',
     description: 'Build the machines that make everything work. Turn strategy into pipelines, automations, and integrations using GHL, Zapier, Make, and APIs.',
-    department: 'systems',
+    department: 'operations',
     location: 'remote',
+    region: 'United States, MD',
+    timezone: 'EST',
     level: 3,
   },
   {
@@ -23,16 +25,20 @@ const jobs = [
     description: 'Take capital and turn it into qualified conversations. Build philosophy driven campaigns across Meta, Google, and YouTube that compound results.',
     department: 'growth',
     location: 'remote',
+    region: 'United States, MD',
+    timezone: 'EST',
     level: 3,
   },
   {
     id: 3,
     slug: 'setter',
-    title: 'Setter',
+    title: 'Appointment Setter',
     subtitle: 'Sales Development',
     description: 'Book the right calls with high quality prospects. Identify fit, educate on possibilities, and qualify opportunities for our closers.',
     department: 'sales',
     location: 'remote',
+    region: 'United States, MD',
+    timezone: 'EST',
     level: 1,
   },
   {
@@ -43,6 +49,8 @@ const jobs = [
     description: 'Convert qualified opportunities into long term partnerships. Guide prospects through decisions and demonstrate how our infrastructure transforms businesses.',
     department: 'sales',
     location: 'remote',
+    region: 'United States, MD',
+    timezone: 'EST',
     level: 3,
   },
   {
@@ -53,16 +61,23 @@ const jobs = [
     description: 'Guardian of transformation. Own the relationship, the experience, and the outcome from onboarding through renewal and beyond.',
     department: 'client-success',
     location: 'remote',
+    region: 'United States, MD',
+    timezone: 'EST',
     level: 3,
   },
 ];
 
 const departments = [
-  { id: 'all', name: 'All Roles' },
-  { id: 'systems', name: 'Systems' },
-  { id: 'growth', name: 'Growth' },
+  { id: 'all', name: 'View All' },
+  { id: 'operations', name: 'Operations' },
+  { id: 'growth', name: 'Growth & Marketing' },
   { id: 'sales', name: 'Sales' },
   { id: 'client-success', name: 'Client Success' },
+];
+
+const locations = [
+  { id: 'remote', name: 'Remote' },
+  { id: 'us-md', name: 'United States, MD' },
 ];
 
 const levelLabels: Record<number, string> = {
@@ -92,16 +107,32 @@ function LevelIndicator({ level }: { level: number }) {
 
 export default function HiringPage() {
   const [selectedDept, setSelectedDept] = useState('all');
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(['remote', 'us-md']);
+  const [sortBy, setSortBy] = useState('level-high');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const filteredJobs = jobs.filter((job) => {
-    if (selectedDept !== 'all' && job.department !== selectedDept) return false;
-    return true;
-  });
+  const toggleLocation = (locationId: string) => {
+    setSelectedLocations(prev => 
+      prev.includes(locationId) 
+        ? prev.filter(l => l !== locationId)
+        : [...prev, locationId]
+    );
+  };
+
+  const filteredJobs = jobs
+    .filter((job) => {
+      if (selectedDept !== 'all' && job.department !== selectedDept) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'level-high') return b.level - a.level;
+      if (sortBy === 'level-low') return a.level - b.level;
+      return 0;
+    });
 
   const deptCounts = jobs.reduce((acc, job) => {
     acc[job.department] = (acc[job.department] || 0) + 1;
@@ -125,7 +156,6 @@ export default function HiringPage() {
 
       {/* Background Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Large top glow */}
         <div 
           className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-50"
           style={{
@@ -133,7 +163,6 @@ export default function HiringPage() {
             filter: 'blur(100px)',
           }}
         />
-        {/* Bottom right glow */}
         <div 
           className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-30"
           style={{
@@ -141,7 +170,6 @@ export default function HiringPage() {
             filter: 'blur(120px)',
           }}
         />
-        {/* Left side accent */}
         <div 
           className="absolute top-[50%] left-[-15%] w-[600px] h-[600px] rounded-full opacity-20"
           style={{
@@ -152,34 +180,33 @@ export default function HiringPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-2xl">
-        <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+        <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={120} 
-              height={120}
+              width={160} 
+              height={160}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
           
           <a
-            href="https://divineacquisition.io"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all"
+            href="#positions"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-[#5500FF] text-white hover:bg-[#6611FF] transition-all shadow-lg shadow-[#5500FF]/30"
           >
-            Visit Website
-            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            </span>
+            {jobs.length} Open Roles
           </a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-44 pb-20 md:pt-52 md:pb-24">
+      <section className="relative z-10 px-6 pt-40 pb-16 md:pt-48 md:pb-20">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
@@ -232,112 +259,191 @@ export default function HiringPage() {
 
       {/* Positions Section */}
       <main className="relative z-10 px-6 pb-20" id="positions">
-        <div className="max-w-4xl mx-auto">
-          {/* Section Header */}
-          <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-            <div>
-              <h2 className="text-2xl font-semibold text-white tracking-tight">Open Positions</h2>
-              <p className="text-neutral-500 text-sm mt-1">{jobs.length} roles available</p>
-            </div>
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col lg:flex-row gap-8">
             
-            {/* Filter Pills */}
-            <div className="flex flex-wrap gap-2">
-              {departments.map((dept) => (
-                <button
-                  key={dept.id}
-                  onClick={() => setSelectedDept(dept.id)}
-                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all ${
-                    selectedDept === dept.id
-                      ? 'bg-[#5500FF] text-white shadow-lg shadow-[#5500FF]/30'
-                      : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white border border-white/5'
-                  }`}
-                >
-                  {dept.name}
-                  {dept.id !== 'all' && (
-                    <span className="ml-1.5 opacity-60">{deptCounts[dept.id] || 0}</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Job Cards */}
-          <div className={`space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
-            {filteredJobs.map((job) => (
-              <Link
-                key={job.id}
-                href={`/hiring/${job.slug}`}
-                className="block group"
-              >
-                <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300 overflow-hidden">
-                  {/* Hover glow */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-[#5500FF]/10 blur-[80px]" />
-                  </div>
-                  
-                  <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
-                          {job.title}
-                        </h3>
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5500FF]/20 text-[#907DFF]">
-                          {job.subtitle}
-                        </span>
-                      </div>
-                      <p className="text-sm text-neutral-500 font-light leading-relaxed">
-                        {job.description}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-4 text-xs">
-                        <span className="flex items-center gap-1.5 text-neutral-500">
-                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          Remote
-                        </span>
-                        <LevelIndicator level={job.level} />
-                      </div>
-                      <svg
-                        className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] group-hover:translate-x-1 transition-all"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={1.5}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </div>
+            {/* Sidebar Filter */}
+            <aside className={`lg:w-72 flex-shrink-0 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                
+                {/* Department Filter */}
+                <div>
+                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Department</h3>
+                  <div className="space-y-1">
+                    {departments.map((dept) => {
+                      const count = dept.id === 'all' ? jobs.length : (deptCounts[dept.id] || 0);
+                      const isSelected = selectedDept === dept.id;
+                      return (
+                        <button
+                          key={dept.id}
+                          onClick={() => setSelectedDept(dept.id)}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                            isSelected
+                              ? 'bg-white/5 text-white border border-white/10'
+                              : 'text-neutral-400 hover:text-white hover:bg-white/[0.02]'
+                          }`}
+                        >
+                          <span>{dept.name}</span>
+                          <span className={`text-xs ${isSelected ? 'text-white' : 'text-neutral-600'}`}>{count}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-              </Link>
-            ))}
 
-            {filteredJobs.length === 0 && (
-              <div className="text-center py-16 rounded-2xl bg-white/[0.02] border border-white/5">
-                <p className="text-neutral-500 font-light">No positions found in this department.</p>
-                <button 
-                  onClick={() => setSelectedDept('all')}
-                  className="mt-3 text-sm text-[#907DFF] hover:text-white transition-colors"
-                >
-                  View all positions
-                </button>
+                {/* Location Filter */}
+                <div>
+                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Location</h3>
+                  <div className="space-y-2">
+                    {locations.map((location) => (
+                      <label
+                        key={location.id}
+                        className="flex items-center gap-3 cursor-pointer group"
+                      >
+                        <div 
+                          className={`w-5 h-5 rounded flex items-center justify-center transition-all ${
+                            selectedLocations.includes(location.id)
+                              ? 'bg-[#5500FF] border-[#5500FF]'
+                              : 'bg-white/5 border border-white/10 group-hover:border-white/20'
+                          }`}
+                          onClick={() => toggleLocation(location.id)}
+                        >
+                          {selectedLocations.includes(location.id) && (
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                        <span className="text-sm text-neutral-400 group-hover:text-white transition-colors">
+                          {location.name}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Time Zone */}
+                <div>
+                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Time Zone</h3>
+                  <div className="px-4 py-3 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-neutral-300">
+                    EST (Eastern Standard Time)
+                  </div>
+                </div>
+
+                {/* Sort By */}
+                <div>
+                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Sort By</h3>
+                  <div className="relative">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full appearance-none px-4 py-3 pr-10 rounded-xl bg-white/[0.02] border border-white/5 text-sm text-neutral-300 focus:outline-none focus:border-[#5500FF]/50 cursor-pointer"
+                    >
+                      <option value="level-high" className="bg-[#0a0a0a]">Level: High to Low</option>
+                      <option value="level-low" className="bg-[#0a0a0a]">Level: Low to High</option>
+                    </select>
+                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                    </svg>
+                  </div>
+                </div>
+
               </div>
-            )}
+            </aside>
+
+            {/* Job Listings */}
+            <div className="flex-1">
+              {/* Header */}
+              <div className={`flex items-center justify-between mb-6 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+                <div>
+                  <h2 className="text-2xl font-semibold text-white tracking-tight">Open Positions</h2>
+                  <p className="text-neutral-500 text-sm mt-1">{filteredJobs.length} roles available</p>
+                </div>
+              </div>
+
+              {/* Job Cards */}
+              <div className={`space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
+                {filteredJobs.map((job) => (
+                  <Link
+                    key={job.id}
+                    href={`/hiring/${job.slug}`}
+                    className="block group"
+                  >
+                    <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300 overflow-hidden">
+                      {/* Hover glow */}
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-[#5500FF]/10 blur-[80px]" />
+                      </div>
+                      
+                      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
+                              {job.title}
+                            </h3>
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5500FF]/20 text-[#907DFF]">
+                              {job.subtitle}
+                            </span>
+                          </div>
+                          <p className="text-sm text-neutral-500 font-light leading-relaxed mb-3">
+                            {job.description}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-500">
+                            <span className="flex items-center gap-1.5">
+                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              {job.region}
+                            </span>
+                            <span className="w-1 h-1 rounded-full bg-neutral-600" />
+                            <span>{job.timezone}</span>
+                            <span className="w-1 h-1 rounded-full bg-neutral-600" />
+                            <span className="capitalize">{job.location}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <LevelIndicator level={job.level} />
+                          <svg
+                            className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] group-hover:translate-x-1 transition-all"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={1.5}
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+
+                {filteredJobs.length === 0 && (
+                  <div className="text-center py-16 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <p className="text-neutral-500 font-light">No positions found in this department.</p>
+                    <button 
+                      onClick={() => setSelectedDept('all')}
+                      className="mt-3 text-sm text-[#907DFF] hover:text-white transition-colors"
+                    >
+                      View all positions
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5">
-        <div className="max-w-5xl mx-auto px-6 py-10">
+        <div className="max-w-7xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               <Link href="/hiring">
                 <Image 
-                  src="/Comp 2 (0;00;00;00).png" 
+                  src="/6.png" 
                   alt="Divine Acquisition" 
                   width={32} 
                   height={32}
