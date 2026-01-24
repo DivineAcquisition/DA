@@ -442,7 +442,7 @@ export default function JobPage() {
         <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
-              src="/logo.png" 
+              src="/sadsa.png" 
               alt="Divine Acquisition" 
               width={120} 
               height={120}
@@ -622,7 +622,7 @@ export default function JobPage() {
             <div className="flex items-center gap-4">
               <Link href="/hiring">
                 <Image 
-                  src="/logo.png" 
+                  src="/7_upscayl_4x_digital-art-4x.png" 
                   alt="Divine Acquisition" 
                   width={64} 
                   height={64}
