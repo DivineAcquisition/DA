@@ -7,54 +7,62 @@ import Link from 'next/link';
 const jobs = [
   {
     id: 1,
-    slug: 'media-buyer',
-    title: 'Media Buyer',
-    description: 'Architect paid acquisition systems that drive qualified pipeline for our clients. Build evidence based campaigns that compound results over time.',
-    department: 'growth-marketing',
+    slug: 'system-integrator',
+    title: 'System Integrator',
+    subtitle: 'Infrastructure',
+    description: 'Connect software platforms and create seamless workflows. Design, implement, and maintain integration solutions using Zapier, Airtable, GoHighLevel, and REST APIs.',
+    department: 'systems',
     location: 'remote',
     level: 3,
-    date: '2026-01-20',
   },
   {
     id: 2,
-    slug: 'system-integrator',
-    title: 'System Integrator',
-    description: 'Build the infrastructure that powers client success. Design and implement automation workflows, CRM systems, and AI enabled processes.',
-    department: 'engineering',
+    slug: 'media-buyer',
+    title: 'Media Buyer',
+    subtitle: 'Growth',
+    description: 'Architect paid acquisition systems that drive qualified pipeline. Build evidence based campaigns across Meta, Google, and TikTok that compound results over time.',
+    department: 'growth',
     location: 'remote',
     level: 3,
-    date: '2026-01-18',
   },
   {
     id: 3,
-    slug: 'client-success',
-    title: 'Client Success Manager',
-    description: 'Own the client relationship from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
-    department: 'client-success',
-    location: 'remote',
-    level: 3,
-    date: '2026-01-16',
-  },
-  {
-    id: 4,
-    slug: 'sdr',
-    title: 'SDR / Sales Development Representative',
-    description: 'Identify and qualify service based businesses ready to install retention infrastructure. Belief shaping over hard selling.',
+    slug: 'setter',
+    title: 'Setter',
+    subtitle: 'Sales Development',
+    description: 'Book the right calls with high quality prospects. Identify fit, educate on what\'s possible, and qualify opportunities for our closers.',
     department: 'sales',
     location: 'remote',
     level: 1,
-    date: '2026-01-14',
+  },
+  {
+    id: 4,
+    slug: 'closer',
+    title: 'Closer',
+    subtitle: 'Sales',
+    description: 'Convert qualified opportunities into long term client partnerships. Guide prospects through decision making and demonstrate how our infrastructure transforms businesses.',
+    department: 'sales',
+    location: 'remote',
+    level: 3,
+  },
+  {
+    id: 5,
+    slug: 'client-success',
+    title: 'Client Success Manager',
+    subtitle: 'Client Success',
+    description: 'Own client relationships from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
+    department: 'client-success',
+    location: 'remote',
+    level: 3,
   },
 ];
 
-export { jobs };
-
 const departments = [
-  { id: 'all', name: 'View All', icon: 'all' },
-  { id: 'engineering', name: 'Systems', icon: 'code' },
-  { id: 'growth-marketing', name: 'Growth', icon: 'trending' },
-  { id: 'sales', name: 'Sales', icon: 'users' },
-  { id: 'client-success', name: 'Client Success', icon: 'heart' },
+  { id: 'all', name: 'View All' },
+  { id: 'systems', name: 'Systems' },
+  { id: 'growth', name: 'Growth' },
+  { id: 'sales', name: 'Sales' },
+  { id: 'client-success', name: 'Client Success' },
 ];
 
 const levelLabels: Record<number, string> = {
@@ -63,54 +71,6 @@ const levelLabels: Record<number, string> = {
   3: 'Senior',
   4: 'Lead',
 };
-
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function DeptIcon({ icon, className = '' }: { icon: string; className?: string }) {
-  switch (icon) {
-    case 'code':
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="16 18 22 12 16 6" />
-          <polyline points="8 6 2 12 8 18" />
-        </svg>
-      );
-    case 'trending':
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
-          <polyline points="17 6 23 6 23 12" />
-        </svg>
-      );
-    case 'users':
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-          <circle cx="9" cy="7" r="4" />
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-      );
-    case 'heart':
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-        </svg>
-      );
-    default:
-      return (
-        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
-        </svg>
-      );
-  }
-}
 
 function LevelIndicator({ level }: { level: number }) {
   return (
@@ -132,9 +92,7 @@ function LevelIndicator({ level }: { level: number }) {
 
 export default function HiringPage() {
   const [selectedDept, setSelectedDept] = useState('all');
-  const [remoteOnly, setRemoteOnly] = useState(true);
   const [mounted, setMounted] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -142,15 +100,8 @@ export default function HiringPage() {
 
   const filteredJobs = jobs.filter((job) => {
     if (selectedDept !== 'all' && job.department !== selectedDept) return false;
-    if (remoteOnly && job.location !== 'remote') return false;
     return true;
   });
-
-  const groupedJobs = filteredJobs.reduce((acc, job) => {
-    if (!acc[job.department]) acc[job.department] = [];
-    acc[job.department].push(job);
-    return acc;
-  }, {} as Record<string, typeof jobs>);
 
   const deptCounts = jobs.reduce((acc, job) => {
     acc[job.department] = (acc[job.department] || 0) + 1;
@@ -166,317 +117,235 @@ export default function HiringPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/5 bg-black/10 backdrop-blur-xl">
-        <div className="max-w-[1800px] mx-auto h-full px-6 md:px-8 flex items-center justify-between">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+        <div className="max-w-5xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="flex items-center gap-2.5 group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={24} 
-              height={24}
+              width={28} 
+              height={28}
               className="group-hover:opacity-80 transition-opacity"
             />
-            <span className="text-lg font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors">
+            <span className="text-base font-semibold tracking-tight text-white group-hover:text-[#907DFF] transition-colors hidden sm:block">
               Divine Acquisition
             </span>
           </Link>
           
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden p-2 text-neutral-400 hover:text-white transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
-          {/* Desktop CTA */}
           <a
-            href="#open-roles"
-            className="hidden md:inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-medium
-                       bg-white/10 border border-white/10 text-white
-                       hover:bg-white hover:text-black hover:shadow-[0_0_25px_-5px_rgba(255,255,255,0.2)]
-                       transition-all duration-300 hover:-translate-y-0.5"
+            href="https://divineacquisition.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
           >
-            View Open Roles
+            Visit Website
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 13l-5 5m0 0l-5-5m5 5V6" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
             </svg>
           </a>
         </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 right-0 bg-black/95 backdrop-blur-xl border-b border-white/5 p-6">
-            <a
-              href="#open-roles"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block w-full text-center py-3 rounded-full text-sm font-medium
-                         bg-white/10 border border-white/10 text-white"
-            >
-              View Open Roles
-            </a>
-          </div>
-        )}
       </nav>
 
       {/* Hero Section */}
-      <section className="px-6 md:px-8 pt-32 pb-16 md:pt-40 md:pb-20">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left Column - Main Content */}
-            <div className={mounted ? 'animate-fade-in' : 'opacity-0'}>
-              {/* Status Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium
-                              text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-8
-                              shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
-                </span>
-                Now Hiring
-              </div>
+      <section className="px-6 pt-28 pb-16 md:pt-32 md:pb-20">
+        <div className="max-w-3xl mx-auto text-center">
+          {/* Badge */}
+          <div 
+            className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium
+                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-8
+                        ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
+          >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#5500FF]" />
+            </span>
+            We&apos;re Hiring
+          </div>
 
-              {/* Main Headline */}
-              <h1 className="text-[2.5rem] sm:text-5xl md:text-6xl font-medium text-white tracking-tighter mb-6 leading-[1.05]">
-                Build systems that
-                <span className="text-transparent bg-clip-text bg-gradient-to-br from-white via-[#907DFF] to-[#5500FF]">
-                  {" "}compound.
-                </span>
-              </h1>
+          {/* Headline */}
+          <h1 
+            className={`text-4xl sm:text-5xl md:text-6xl font-medium text-white tracking-tight mb-6 leading-[1.1]
+                        ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
+          >
+            Build systems that
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#907DFF] to-[#5500FF]"> compound.</span>
+          </h1>
 
-              {/* Subheadline */}
-              <p className="text-lg text-neutral-400 leading-relaxed font-light tracking-tight mb-8">
-                We build infrastructure, not gimmicks. Strategy, automation, human support, and AI working together 
-                to create timeless business systems for service based companies.
-              </p>
+          {/* Subheadline */}
+          <p 
+            className={`text-lg text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-10
+                        ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
+          >
+            We build infrastructure, not gimmicks. Join us in creating timeless business systems 
+            for service based companies.
+          </p>
 
-              {/* CTA Button */}
-              <a
-                href="#open-roles"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-sm font-medium
-                           bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white
-                           hover:opacity-90 hover:shadow-[0_0_30px_-5px_rgba(85,0,255,0.5)]
-                           transition-all duration-300"
-              >
-                Explore Opportunities
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
+          {/* Values */}
+          <div 
+            className={`flex flex-wrap justify-center gap-3 mb-8
+                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
+          >
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
+              Devotion
+            </span>
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
+              Innovation
+            </span>
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
+              Value
+            </span>
+            <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-neutral-400">
+              Exclusivity
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Positions Section */}
+      <main className="px-6 pb-20" id="positions">
+        <div className="max-w-4xl mx-auto">
+          {/* Section Header */}
+          <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+            <div>
+              <h2 className="text-2xl font-medium text-white tracking-tight">Open Positions</h2>
+              <p className="text-neutral-500 text-sm mt-1">{jobs.length} roles available</p>
             </div>
+            
+            {/* Filter Pills */}
+            <div className="flex flex-wrap gap-2">
+              {departments.map((dept) => (
+                <button
+                  key={dept.id}
+                  onClick={() => setSelectedDept(dept.id)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                    selectedDept === dept.id
+                      ? 'bg-[#5500FF] text-white'
+                      : 'bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white'
+                  }`}
+                >
+                  {dept.name}
+                  {dept.id !== 'all' && (
+                    <span className="ml-1.5 opacity-60">{deptCounts[dept.id] || 0}</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
 
-            {/* Right Column - Values & Culture */}
-            <div className={`space-y-6 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
-              {/* Values Card */}
-              <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-4">Our Principles</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-sm font-medium text-white">Devotion</span>
-                    <p className="text-xs text-neutral-500 mt-1">Earn trust through care</p>
-                  </div>
-                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-sm font-medium text-white">Innovation</span>
-                    <p className="text-xs text-neutral-500 mt-1">Evolve continuously</p>
-                  </div>
-                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-sm font-medium text-white">Value</span>
-                    <p className="text-xs text-neutral-500 mt-1">Simplify the path</p>
-                  </div>
-                  <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
-                    <span className="text-sm font-medium text-white">Exclusivity</span>
-                    <p className="text-xs text-neutral-500 mt-1">Not for everybody</p>
+          {/* Job Cards */}
+          <div className={`space-y-3 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
+            {filteredJobs.map((job) => (
+              <Link
+                key={job.id}
+                href={`/hiring/${job.slug}`}
+                className="block group"
+              >
+                <div className="p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-base font-medium text-white group-hover:text-[#907DFF] transition-colors">
+                          {job.title}
+                        </h3>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-medium bg-[#5500FF]/20 text-[#907DFF]">
+                          {job.subtitle}
+                        </span>
+                      </div>
+                      <p className="text-sm text-neutral-500 font-light leading-relaxed line-clamp-2">
+                        {job.description}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4 sm:gap-6">
+                      <div className="flex items-center gap-4 text-xs text-neutral-500">
+                        <span className="flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          Remote
+                        </span>
+                        <LevelIndicator level={job.level} />
+                      </div>
+                      <svg
+                        className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] group-hover:translate-x-1 transition-all"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </div>
                   </div>
                 </div>
+              </Link>
+            ))}
+
+            {filteredJobs.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-neutral-500 font-light">No positions found in this department.</p>
+                <button 
+                  onClick={() => setSelectedDept('all')}
+                  className="mt-3 text-sm text-[#907DFF] hover:text-white transition-colors"
+                >
+                  View all positions
+                </button>
               </div>
+            )}
+          </div>
+        </div>
+      </main>
 
-              {/* Culture Card */}
-              <div className="bg-neutral-900/40 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-                <h3 className="text-xs font-medium text-white/50 uppercase tracking-wider mb-4">How We Think</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
-                    <p className="text-neutral-400 font-light">Evidence over assumption</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
-                    <p className="text-neutral-400 font-light">Process over personality</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
-                    <p className="text-neutral-400 font-light">Simplicity scales</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#907DFF] flex-shrink-0" />
-                    <p className="text-neutral-400 font-light">We win when clients win</p>
-                  </div>
-                </div>
+      {/* Culture Section */}
+      <section className="px-6 pb-20">
+        <div className="max-w-4xl mx-auto">
+          <div className="p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 via-transparent to-transparent border border-[#5500FF]/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
+                <h2 className="text-lg font-medium text-white mb-4">How We Operate</h2>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
+                    Evidence over assumption
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
+                    Process over personality
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
+                    Simplicity scales
+                  </li>
+                  <li className="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                    <span className="w-1 h-1 rounded-full bg-[#907DFF]" />
+                    We win when clients win
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h2 className="text-lg font-medium text-white mb-4">What We Build</h2>
+                <p className="text-sm text-neutral-400 font-light leading-relaxed">
+                  Divine Acquisition is a growth consulting and systems implementation firm. 
+                  We build retention first infrastructures, automation systems, and client success 
+                  engines for service based businesses. We don&apos;t sell gimmicks. We build infrastructure.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Content */}
-      <main className="w-full px-6 md:px-8 pb-16 md:pb-24 scroll-mt-24" id="open-roles">
-        <div className="max-w-5xl mx-auto">
-          {/* Section Header */}
-          <div className={`mb-10 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-            <h2 className="text-2xl md:text-3xl font-medium text-white tracking-tight mb-3">Open Positions</h2>
-            <p className="text-neutral-400 font-light">Join us in building infrastructure that compounds trust and revenue.</p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Sidebar Filters */}
-            <aside className={`lg:col-span-1 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="lg:sticky lg:top-28 space-y-6">
-                {/* Department Filter */}
-                <div>
-                  <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-3">
-                    Department
-                  </h3>
-                  <div className="space-y-1">
-                    {departments.map((dept) => (
-                      <button
-                        key={dept.id}
-                        onClick={() => setSelectedDept(dept.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm flex justify-between items-center group transition-all duration-200 ${
-                          selectedDept === dept.id
-                            ? 'bg-[#5500FF] text-white font-medium'
-                            : 'text-neutral-400 hover:text-white hover:bg-white/5 font-light'
-                        }`}
-                      >
-                        <span>{dept.name}</span>
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded tabular-nums ${
-                            selectedDept === dept.id
-                              ? 'text-white/70'
-                              : 'text-neutral-500'
-                          }`}
-                        >
-                          {dept.id === 'all' ? jobs.length : deptCounts[dept.id] || 0}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Location Filter */}
-                <div>
-                  <h3 className="text-[11px] font-medium text-white/50 uppercase tracking-wider mb-3">
-                    Location
-                  </h3>
-                  <label className="flex items-center gap-3 cursor-pointer group select-none">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={remoteOnly}
-                        onChange={(e) => setRemoteOnly(e.target.checked)}
-                        className="peer sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center
-                                      ${remoteOnly
-                                        ? 'bg-[#5500FF] border-[#5500FF] shadow-[0_0_12px_rgba(85,0,255,0.5)]'
-                                        : 'border-neutral-600 bg-transparent group-hover:border-[#907DFF]/60'
-                                      }`}>
-                        <svg 
-                          className={`w-3 h-3 text-white transition-all duration-200 ${remoteOnly ? 'opacity-100 scale-100' : 'opacity-0 scale-75'}`} 
-                          fill="none" 
-                          viewBox="0 0 24 24" 
-                          stroke="currentColor"
-                          strokeWidth={3}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    </div>
-                    <span className="text-sm font-light text-neutral-400 group-hover:text-white transition-colors">
-                      Remote
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </aside>
-
-            {/* Job Listings */}
-            <div className={`lg:col-span-3 space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
-              {filteredJobs.map((job) => {
-                const dept = departments.find((d) => d.id === job.department);
-                return (
-                  <Link
-                    key={job.id}
-                    href={`/hiring/${job.slug}`}
-                    className="job-card block group rounded-xl p-6 relative"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-[#907DFF]">
-                            <DeptIcon icon={dept?.icon || 'all'} className="w-4 h-4" />
-                          </span>
-                          <div>
-                            <h3 className="text-base font-medium text-white group-hover:text-[#907DFF] transition-colors">
-                              {job.title}
-                            </h3>
-                            <div className="flex items-center gap-3 text-xs text-neutral-500">
-                              <span>{dept?.name}</span>
-                              <span>•</span>
-                              <span>{job.location === 'remote' ? 'Remote' : job.location}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-sm text-neutral-500 font-light leading-relaxed pl-11">
-                          {job.description}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-4 pl-11 sm:pl-0">
-                        <div className="text-xs text-neutral-500">
-                          <LevelIndicator level={job.level} />
-                        </div>
-                        <svg
-                          className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] transition-colors"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={1.5}
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
-
-              {filteredJobs.length === 0 && (
-                <div className="text-center py-16 bg-neutral-900/20 rounded-2xl border border-white/5">
-                  <p className="text-neutral-400 font-light">No positions found matching your criteria.</p>
-                  <button 
-                    onClick={() => { setSelectedDept('all'); setRemoteOnly(false); }}
-                    className="mt-4 text-sm text-[#907DFF] hover:text-white transition-colors"
-                  >
-                    Clear filters
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </main>
-
       {/* Footer */}
-      <footer className="border-t border-white/5 mt-auto">
-        <div className="max-w-5xl mx-auto px-6 md:px-8 py-12">
+      <footer className="border-t border-white/5">
+        <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div className="flex items-center gap-3">
               <Link href="/hiring" className="flex items-center gap-2 group">
                 <Image 
                   src="/logo.png" 
                   alt="Divine Acquisition" 
-                  width={18} 
-                  height={18}
+                  width={20} 
+                  height={20}
                   className="opacity-70 group-hover:opacity-100 transition-opacity"
                 />
               </Link>
@@ -485,16 +354,16 @@ export default function HiringPage() {
               </span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Instagram
               </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Twitter
               </a>
               <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 LinkedIn
               </a>
-              <a href="#" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors font-light">
                 Privacy
               </a>
             </div>
