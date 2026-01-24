@@ -635,58 +635,58 @@ export default function JobPage() {
         />
       </div>
 
-      {/* Background Glow Effects - More vibrant and mobile-visible */}
+      {/* Background Glow Effects - Deep #6200FF */}
       <div className="fixed inset-0 pointer-events-none">
-        {/* Main top glow - larger and more vibrant */}
+        {/* Main top glow - deep purple #6200FF */}
         <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[600px] md:h-[800px]"
+          className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[700px] md:h-[900px]"
           style={{
-            background: 'radial-gradient(ellipse at center top, rgba(85,0,255,0.4) 0%, rgba(144,125,255,0.2) 30%, transparent 60%)',
-            filter: 'blur(60px)',
+            background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.5) 0%, rgba(98,0,255,0.25) 30%, rgba(144,125,255,0.1) 50%, transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
-        {/* Bottom right glow */}
+        {/* Bottom right glow - #907DFF accent */}
         <div 
-          className="absolute bottom-0 right-0 w-full md:w-[800px] h-[400px] md:h-[600px]"
+          className="absolute bottom-[-10%] right-0 w-full md:w-[700px] h-[500px] md:h-[600px]"
           style={{
-            background: 'radial-gradient(ellipse at bottom right, rgba(85,0,255,0.35) 0%, rgba(144,125,255,0.15) 40%, transparent 60%)',
+            background: 'radial-gradient(ellipse at bottom right, rgba(144,125,255,0.5) 0%, rgba(98,0,255,0.2) 40%, transparent 60%)',
             filter: 'blur(80px)',
           }}
         />
         {/* Left side glow */}
         <div 
-          className="absolute top-1/2 left-0 -translate-y-1/2 w-[300px] md:w-[500px] h-[400px] md:h-[600px]"
+          className="absolute top-1/2 left-0 -translate-y-1/2 w-[300px] md:w-[500px] h-[500px] md:h-[600px]"
           style={{
-            background: 'radial-gradient(ellipse at left center, rgba(144,125,255,0.25) 0%, transparent 50%)',
+            background: 'radial-gradient(ellipse at left center, rgba(144,125,255,0.4) 0%, transparent 50%)',
             filter: 'blur(60px)',
           }}
         />
         {/* Center accent glow */}
         <div 
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[400px] h-[400px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px]"
           style={{
-            background: 'radial-gradient(circle, rgba(85,0,255,0.2) 0%, transparent 50%)',
+            background: 'radial-gradient(circle, rgba(98,0,255,0.15) 0%, transparent 50%)',
             filter: 'blur(100px)',
           }}
         />
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
         <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={160} 
-              height={160}
+              width={200} 
+              height={200}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
           
           <Link
             href="/hiring"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-gradient-to-r from-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_25px_rgba(98,0,255,0.4)]"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -697,7 +697,7 @@ export default function JobPage() {
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-32 pb-20 px-6">
+      <main className="relative z-10 pt-36 pb-20 px-6">
         <div className="max-w-4xl mx-auto">
           
           {/* Hero Section */}
@@ -885,18 +885,18 @@ export default function JobPage() {
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <span className="text-neutral-600 text-xs font-light">
+              <span className="text-neutral-500 text-xs font-medium">
                 © 2026 Divine Acquisition
               </span>
             </div>
             <div className="flex items-center gap-5">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>

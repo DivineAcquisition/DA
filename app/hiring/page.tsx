@@ -154,47 +154,50 @@ export default function HiringPage() {
         />
       </div>
 
-      {/* Background Glow Effects */}
+      {/* Background Glow Effects - Deep #6200FF for banner */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Main banner glow - deep purple #6200FF */}
         <div 
-          className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-50"
+          className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[900px] md:h-[1100px]"
           style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, rgba(85,0,255,0.15) 40%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.5) 0%, rgba(98,0,255,0.25) 30%, rgba(144,125,255,0.1) 50%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+        {/* Bottom right glow - #907DFF accent */}
+        <div 
+          className="absolute bottom-[-15%] right-[-5%] w-[700px] h-[700px] rounded-full opacity-50"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.5) 0%, rgba(98,0,255,0.2) 50%, transparent 70%)',
             filter: 'blur(100px)',
           }}
         />
+        {/* Left side glow */}
         <div 
-          className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-30"
+          className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-30"
           style={{
-            background: 'radial-gradient(circle, rgba(85,0,255,0.4) 0%, rgba(144,125,255,0.15) 50%, transparent 70%)',
-            filter: 'blur(120px)',
-          }}
-        />
-        <div 
-          className="absolute top-[50%] left-[-15%] w-[600px] h-[600px] rounded-full opacity-20"
-          style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.3) 0%, transparent 60%)',
-            filter: 'blur(80px)',
+            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, transparent 60%)',
+            filter: 'blur(60px)',
           }}
         />
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-24 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
         <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
           <Link href="/hiring" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={160} 
-              height={160}
+              width={200} 
+              height={200}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
           
           <a
             href="#positions"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-[#5500FF] text-white hover:bg-[#6611FF] transition-all shadow-lg shadow-[#5500FF]/30"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(98,0,255,0.5)]"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
@@ -206,7 +209,7 @@ export default function HiringPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-40 pb-16 md:pt-48 md:pb-20">
+      <section className="relative z-10 px-6 pt-44 pb-16 md:pt-52 md:pb-20">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
@@ -369,10 +372,10 @@ export default function HiringPage() {
                     href={`/hiring/${job.slug}`}
                     className="block group"
                   >
-                    <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#5500FF]/30 transition-all duration-300 overflow-hidden">
+                    <div className="relative p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
                       {/* Hover glow */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-[#5500FF]/10 blur-[80px]" />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
                       </div>
                       
                       <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -450,18 +453,18 @@ export default function HiringPage() {
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <span className="text-neutral-600 text-xs font-light">
+              <span className="text-neutral-500 text-xs font-medium">
                 © 2026 Divine Acquisition
               </span>
             </div>
             <div className="flex items-center gap-5">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>
