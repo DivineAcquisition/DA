@@ -857,9 +857,10 @@ export default function JobPage() {
                     className="airtable-embed w-full border-0"
                     src={job.airtableEmbed}
                     width="100%"
-                    height="2400"
+                    height="5000"
                     style={{ 
                       background: 'transparent',
+                      minHeight: '5000px',
                     }}
                   />
                 ) : (
