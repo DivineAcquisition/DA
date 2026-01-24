@@ -836,21 +836,32 @@ export default function JobPage() {
 
           {/* Application Form Section */}
           <section id="apply">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white shadow-[0_0_30px_rgba(85,0,255,0.5)]">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">Apply for {job.title}</h2>
-                <p className="text-sm text-neutral-500">Complete the form below to submit your application.</p>
-              </div>
-            </div>
-
             <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden shadow-[0_0_50px_rgba(85,0,255,0.1)]">
+              {/* Background glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] bg-gradient-to-b from-[#5500FF]/10 to-transparent pointer-events-none" />
               
+              {/* Mac-style title bar */}
+              <div className="relative flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+                {/* Traffic light dots */}
+                <div className="flex items-center gap-2">
+                  <span className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.5)]" />
+                  <span className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-[0_0_8px_rgba(255,189,46,0.5)]" />
+                  <span className="w-3 h-3 rounded-full bg-[#27C93F] shadow-[0_0_8px_rgba(39,201,63,0.5)]" />
+                </div>
+                
+                {/* Step indicator and title */}
+                <div className="flex items-center gap-3 flex-1">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white text-sm font-bold shadow-[0_0_20px_rgba(85,0,255,0.4)]">
+                    2
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-white">Apply for {job.title}</h2>
+                    <p className="text-xs text-neutral-500">Complete the form below to submit your application</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Form content */}
               <div className="relative">
                 {job.useAirtable && job.airtableEmbed ? (
                   <iframe 
