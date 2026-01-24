@@ -1,0 +1,21 @@
+{
+  "name": "Divine Acquisition Careers",
+  "short_name": "DA Careers",
+  "description": "Join Divine Acquisition and help build Acquisition, Retention & AI Growth Infrastructure for service-based businesses.",
+  "start_url": "/hiring",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#6200FF",
+  "icons": [
+    {
+      "src": "/6.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/6.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
