@@ -227,11 +227,11 @@ export default function HiringPage() {
 
           {/* Headline */}
           <h1 
-            className={`text-5xl sm:text-6xl md:text-7xl font-semibold text-white tracking-tight mb-6 leading-[1.05]
+            className={`text-4xl sm:text-5xl md:text-6xl font-semibold text-white tracking-tight mb-6 leading-[1.1]
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
           >
-            Build systems that
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#907DFF] to-[#5500FF]"> compound.</span>
+            Curating The Engine To Create{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#907DFF] to-[#5500FF]">Trust, Revenue & Retention.</span>
           </h1>
 
           {/* Subheadline */}
@@ -239,8 +239,7 @@ export default function HiringPage() {
             className={`text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-12
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
-            B2B growth infrastructure for service based businesses. We build systems that turn 
-            one time transactions into long term retained clients.
+            We are building infrastructure that compounds trust, revenue & retention for service based businesses. We are looking for those devoted to building DivineAcquisition™ & our future projects.
           </p>
 
           {/* Values */}
