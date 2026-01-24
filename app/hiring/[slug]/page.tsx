@@ -836,12 +836,12 @@ export default function JobPage() {
 
           {/* Application Form Section */}
           <section id="apply">
-            <div className="relative rounded-2xl bg-white/[0.02] border border-white/10 overflow-hidden shadow-[0_0_50px_rgba(85,0,255,0.1)]">
+            <div className="relative rounded-2xl bg-[#111111] border border-white/10 overflow-hidden shadow-[0_0_50px_rgba(85,0,255,0.1)]">
               {/* Background glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] bg-gradient-to-b from-[#5500FF]/10 to-transparent pointer-events-none" />
               
               {/* Mac-style title bar */}
-              <div className="relative flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-white/[0.02]">
+              <div className="relative flex items-center gap-4 px-6 py-4 border-b border-white/10 bg-[#0d0d0d]">
                 {/* Traffic light dots */}
                 <div className="flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.5)]" />

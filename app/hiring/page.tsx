@@ -227,11 +227,10 @@ export default function HiringPage() {
 
           {/* Headline */}
           <h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-semibold italic tracking-tight mb-6 leading-[1.15]
+            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-white via-50% to-[#907DFF]
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
           >
-            <span className="text-white">Curating The Engine To Create </span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#907DFF] via-[#907DFF] to-[#5500FF]">Trust, Revenue & Retention.</span>
+            Curating The Engine To Create Trust, Revenue & Retention.
           </h1>
 
           {/* Subheadline */}
