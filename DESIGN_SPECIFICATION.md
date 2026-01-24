@@ -10,11 +10,27 @@ This document outlines the exact design components to replicate from https://hir
 | Element | Color | CSS Value |
 |---------|-------|-----------|
 | Background | Pure Black | `#000000` / `bg-black` |
-| Primary Accent | Emerald Green | `#34d399` / `emerald-400/500` |
+| Primary Accent | Deep Purple | `#5500FF` |
+| Secondary Accent | Light Purple | `#907DFF` |
 | Text Primary | White | `#ffffff` / `text-white` |
 | Text Secondary | Neutral Gray | `text-neutral-300`, `text-neutral-400`, `text-neutral-500` |
 | Borders | White with opacity | `border-white/5`, `border-white/10` |
-| Selection | Emerald tinted | `selection:bg-emerald-900/50 selection:text-emerald-50` |
+| Selection | Purple tinted | `selection:bg-[#5500FF]/50 selection:text-purple-50` |
+
+### Custom Tailwind Colors (add to config)
+```javascript
+// tailwind.config.js or inline with Tailwind CDN
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        'divine-purple': '#5500FF',
+        'divine-light': '#907DFF',
+      }
+    }
+  }
+}
+```
 
 ### Typography
 - **Primary Font**: `Geist` (sans-serif)
@@ -27,7 +43,7 @@ This document outlines the exact design components to replicate from https://hir
 - Smooth scrolling (`scroll-smooth`)
 - Antialiased text rendering
 - Glassmorphism effects with backdrop blur
-- Subtle glow effects using emerald accent color
+- Subtle glow effects using purple accent colors (#907DFF / #5500FF)
 
 ---
 
@@ -37,12 +53,22 @@ This document outlines the exact design components to replicate from https://hir
 ```html
 <!-- Fixed background container -->
 <div class="fixed inset-0 -z-10 h-full w-full pointer-events-none">
-  <!-- Top Green Glow - Large elliptical gradient from top -->
-  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(52,211,153,0.35),rgba(0,0,0,0))]"></div>
+  <!-- Top Purple Glow - Large elliptical gradient from top -->
+  <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-20%,rgba(144,125,255,0.35),rgba(0,0,0,0))]"></div>
   
-  <!-- Bottom/Right Secondary Glow -->
-  <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(52,211,153,0.2),rgba(0,0,0,0))]"></div>
+  <!-- Bottom/Right Secondary Glow (deeper purple) -->
+  <div class="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(85,0,255,0.2),rgba(0,0,0,0))]"></div>
 </div>
+```
+
+### CSS Custom Properties
+```css
+:root {
+  --divine-purple: #5500FF;
+  --divine-light: #907DFF;
+  --divine-purple-rgb: 85, 0, 255;
+  --divine-light-rgb: 144, 125, 255;
+}
 ```
 
 ---
@@ -101,12 +127,12 @@ This document outlines the exact design components to replicate from https://hir
 #### 4.1 Status Badge
 ```html
 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium 
-            text-emerald-300 bg-emerald-400/10 border border-emerald-400/30 mb-10 
-            shadow-[0_0_20px_-5px_rgba(52,211,153,0.3)]">
+            text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-10 
+            shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]">
   <!-- Animated ping dot -->
   <span class="relative flex h-1.5 w-1.5">
-    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-400"></span>
+    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75"></span>
+    <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#5500FF]"></span>
   </span>
   Recruiting Top 1% Talent
 </div>
@@ -119,7 +145,7 @@ This document outlines the exact design components to replicate from https://hir
   Build the engine of
   <br class="hidden md:block">
   <span class="text-transparent bg-clip-text bg-gradient-to-br 
-               from-white via-emerald-200 to-emerald-400">
+               from-white via-[#907DFF] to-[#5500FF]">
     autonomous revenue.
   </span>
 </h1>
@@ -140,8 +166,8 @@ This document outlines the exact design components to replicate from https://hir
      transition-all duration-300 animate-bounce p-3 rounded-full bg-white/5 
      border border-white/10 backdrop-blur-sm 
      shadow-[0_0_20px_-5px_rgba(0,0,0,0.5)] 
-     hover:text-emerald-300 hover:border-emerald-400/50 
-     hover:bg-emerald-400/10 hover:shadow-[0_0_20px_-5px_rgba(52,211,153,0.3)]">
+     hover:text-[#907DFF] hover:border-[#907DFF]/50 
+     hover:bg-[#5500FF]/10 hover:shadow-[0_0_20px_-5px_rgba(144,125,255,0.3)]">
     <iconify-icon icon="lucide:arrow-down" width="32" height="32"></iconify-icon>
   </a>
 </div>
@@ -189,7 +215,7 @@ This document outlines the exact design components to replicate from https://hir
 ### Container Style
 ```html
 <div class="bg-neutral-900/40 backdrop-blur-2xl border border-white/10 
-            rounded-2xl p-6 shadow-xl shadow-emerald-900/10">
+            rounded-2xl p-6 shadow-xl shadow-[#5500FF]/10">
 ```
 
 ### Section Headers
@@ -224,9 +250,9 @@ This document outlines the exact design components to replicate from https://hir
   <input type="checkbox" class="peer sr-only" checked value="remote">
   <div class="relative flex items-center justify-center w-4 h-4 
               border border-neutral-600 rounded bg-transparent 
-              transition-all duration-200 group-hover:border-emerald-500">
+              transition-all duration-200 group-hover:border-[#907DFF]">
     <iconify-icon icon="solar:check-read-linear" 
-                  class="text-black opacity-0 transition-all duration-200 text-xs">
+                  class="text-white opacity-0 transition-all duration-200 text-xs">
     </iconify-icon>
   </div>
   <span class="text-sm font-light text-neutral-400 group-hover:text-white transition-colors">
@@ -238,9 +264,9 @@ This document outlines the exact design components to replicate from https://hir
 ### Checkbox Checked State CSS
 ```css
 .custom-checkbox input:checked + div {
-  background-color: #34d399;
-  border-color: #34d399;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+  background-color: #5500FF;
+  border-color: #5500FF;
+  box-shadow: 0 0 10px rgba(85, 0, 255, 0.4);
 }
 .custom-checkbox input:checked + div iconify-icon {
   opacity: 1;
@@ -252,8 +278,8 @@ This document outlines the exact design components to replicate from https://hir
 ```html
 <div class="relative group">
   <select class="w-full bg-white/5 border border-white/10 text-neutral-300 text-sm 
-                 rounded-xl focus:ring-1 focus:ring-emerald-500/50 
-                 focus:border-emerald-500/50 block py-3 pl-4 pr-10 
+                 rounded-xl focus:ring-1 focus:ring-[#907DFF]/50 
+                 focus:border-[#907DFF]/50 block py-3 pl-4 pr-10 
                  appearance-none cursor-pointer hover:bg-white/10 
                  transition-all outline-none font-light shadow-sm backdrop-blur-md">
     <option value="level-desc">Level: High to Low</option>
@@ -262,7 +288,7 @@ This document outlines the exact design components to replicate from https://hir
     <option value="date-old">Date: Oldest First</option>
   </select>
   <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 
-              text-neutral-500 group-hover:text-emerald-400 transition-colors">
+              text-neutral-500 group-hover:text-[#907DFF] transition-colors">
     <iconify-icon icon="solar:sort-vertical-linear" width="16"></iconify-icon>
   </div>
 </div>
@@ -275,7 +301,7 @@ This document outlines the exact design components to replicate from https://hir
 ```html
 <h2 class="text-lg font-medium text-white tracking-tight mb-6 flex items-center gap-3">
   <span class="w-8 h-8 rounded-full bg-white/5 border border-white/5 
-               flex items-center justify-center text-emerald-500">
+               flex items-center justify-center text-[#907DFF]">
     <iconify-icon icon="lucide:code-2" width="18" height="18"></iconify-icon>
   </span>
   Engineering
@@ -312,11 +338,11 @@ This document outlines the exact design components to replicate from https://hir
     <!-- Content section -->
     <div>
       <div class="flex justify-between items-start mb-2">
-        <h3 class="text-base font-medium text-white group-hover:text-emerald-400 transition-colors">
+        <h3 class="text-base font-medium text-white group-hover:text-[#907DFF] transition-colors">
           Job Title Here
         </h3>
         <iconify-icon icon="solar:arrow-right-up-linear" 
-                      class="text-neutral-600 group-hover:text-emerald-400 transition-colors" 
+                      class="text-neutral-600 group-hover:text-[#907DFF] transition-colors" 
                       width="20" height="20"></iconify-icon>
       </div>
       <p class="text-sm text-neutral-400 font-light line-clamp-2">
@@ -327,17 +353,17 @@ This document outlines the exact design components to replicate from https://hir
     <!-- Meta section -->
     <div class="flex items-center gap-4 text-xs text-neutral-500 font-medium">
       <!-- Location -->
-      <span class="flex items-center gap-1.5 group-hover:text-emerald-500/80 transition-colors">
+      <span class="flex items-center gap-1.5 group-hover:text-[#907DFF]/80 transition-colors">
         <iconify-icon icon="solar:map-point-linear" width="14" height="14"></iconify-icon>
         Remote
       </span>
       
       <!-- Level indicator -->
-      <span class="flex items-center gap-1.5 group-hover:text-emerald-500/80 transition-colors">
+      <span class="flex items-center gap-1.5 group-hover:text-[#907DFF]/80 transition-colors">
         <div class="flex gap-0.5">
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-[#5500FF]"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-[#5500FF]"></div>
+          <div class="w-1.5 h-1.5 rounded-full bg-[#5500FF]"></div>
           <div class="w-1.5 h-1.5 rounded-full bg-white/10"></div>
         </div>
         Senior
@@ -365,14 +391,14 @@ This document outlines the exact design components to replicate from https://hir
 .job-card:hover {
   transform: translateY(-4px);
   background-color: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(52, 211, 153, 0.6) !important;
-  box-shadow: 0 20px 40px -10px rgba(52, 211, 153, 0.2);
+  border-color: rgba(144, 125, 255, 0.6) !important;  /* #907DFF */
+  box-shadow: 0 20px 40px -10px rgba(85, 0, 255, 0.2);  /* #5500FF */
 }
 
-/* Emerald dot glow */
-.job-card .bg-emerald-500 {
-  background-color: #34d399 !important;
-  box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+/* Purple dot glow */
+.job-card .level-dot-filled {
+  background-color: #5500FF !important;
+  box-shadow: 0 0 8px rgba(85, 0, 255, 0.6);
 }
 ```
 
@@ -402,16 +428,16 @@ This document outlines the exact design components to replicate from https://hir
     
     <!-- Right: Links -->
     <div class="flex items-center gap-8">
-      <a href="#" class="text-xs text-neutral-500 hover:text-emerald-400 transition-colors">
+      <a href="#" class="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
         Instagram
       </a>
-      <a href="#" class="text-xs text-neutral-500 hover:text-emerald-400 transition-colors">
+      <a href="#" class="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
         Twitter
       </a>
-      <a href="#" class="text-xs text-neutral-500 hover:text-emerald-400 transition-colors">
+      <a href="#" class="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
         Privacy
       </a>
-      <a href="#" class="text-xs text-neutral-500 hover:text-emerald-400 transition-colors">
+      <a href="#" class="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
         Terms
       </a>
     </div>
@@ -527,23 +553,39 @@ Apply incrementing `animation-delay` to staggered elements:
 ## Summary Checklist
 
 - [ ] Dark theme with pure black background
-- [ ] Emerald (#34d399) accent color
+- [ ] Purple accent colors (#907DFF light, #5500FF deep)
 - [ ] Geist font family
-- [ ] Radial gradient glows from top and bottom-right
+- [ ] Radial gradient glows from top and bottom-right (purple tint)
 - [ ] Fixed navigation with glassmorphism
-- [ ] Animated status badge with ping effect
-- [ ] Gradient text headline
+- [ ] Animated status badge with ping effect (purple)
+- [ ] Gradient text headline (white to purple)
 - [ ] Bouncing scroll indicator
 - [ ] Sticky sidebar with filters
 - [ ] Glassmorphism filter container
 - [ ] Department filter buttons
-- [ ] Custom checkbox styling
+- [ ] Custom checkbox styling (purple when checked)
 - [ ] Dropdown select with custom arrow
-- [ ] Section headers with icons
+- [ ] Section headers with purple icons
 - [ ] Glassmorphism job cards
-- [ ] Hover lift effect on cards
-- [ ] Level indicator dots
-- [ ] Footer with social links
+- [ ] Hover lift effect on cards (purple border glow)
+- [ ] Level indicator dots (purple filled)
+- [ ] Footer with social links (purple hover)
 - [ ] Custom slim scrollbar
 - [ ] Fade-in entry animations
 - [ ] Mobile responsive design
+
+---
+
+## Color Quick Reference
+
+| Usage | Light Purple | Deep Purple |
+|-------|--------------|-------------|
+| Hex | `#907DFF` | `#5500FF` |
+| RGB | `144, 125, 255` | `85, 0, 255` |
+| Tailwind | `text-[#907DFF]` | `bg-[#5500FF]` |
+| Hover states | ✓ | |
+| Text accents | ✓ | |
+| Badges/Labels | ✓ | |
+| Level dots | | ✓ |
+| Checkboxes | | ✓ |
+| Deep glows | | ✓ |
