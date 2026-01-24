@@ -227,8 +227,11 @@ export default function HiringPage() {
 
           {/* Headline */}
           <h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text bg-gradient-to-r from-white via-white via-45% via-[#907DFF] via-85% to-[#5500FF]
+            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
+            style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 45%, #907DFF 75%, #5500FF 100%)',
+            }}
           >
             Curating The Engine To Create Trust, Revenue & Retention.
           </h1>
