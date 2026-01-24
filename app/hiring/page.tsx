@@ -8,9 +8,9 @@ const jobs = [
   {
     id: 1,
     slug: 'system-integrator',
-    title: 'System Integrator',
+    title: 'Systems Architect',
     subtitle: 'Infrastructure',
-    description: 'Connect software platforms and create seamless workflows. Design, implement, and maintain integration solutions using Zapier, Airtable, GoHighLevel, and REST APIs.',
+    description: 'Build the machines that make everything work. Turn strategy into pipelines, automations, and integrations using GHL, Zapier, Make, and APIs.',
     department: 'systems',
     location: 'remote',
     level: 3,
@@ -19,8 +19,8 @@ const jobs = [
     id: 2,
     slug: 'media-buyer',
     title: 'Media Buyer',
-    subtitle: 'Growth',
-    description: 'Architect paid acquisition systems that drive qualified pipeline. Build evidence based campaigns across Meta, Google, and TikTok that compound results over time.',
+    subtitle: 'Growth Architect',
+    description: 'Take capital and turn it into qualified conversations. Build philosophy driven campaigns across Meta, Google, and YouTube that compound results.',
     department: 'growth',
     location: 'remote',
     level: 3,
@@ -30,7 +30,7 @@ const jobs = [
     slug: 'setter',
     title: 'Setter',
     subtitle: 'Sales Development',
-    description: 'Book the right calls with high quality prospects. Identify fit, educate on what\'s possible, and qualify opportunities for our closers.',
+    description: 'Book the right calls with high quality prospects. Identify fit, educate on possibilities, and qualify opportunities for our closers.',
     department: 'sales',
     location: 'remote',
     level: 1,
@@ -40,7 +40,7 @@ const jobs = [
     slug: 'closer',
     title: 'Closer',
     subtitle: 'Sales',
-    description: 'Convert qualified opportunities into long term client partnerships. Guide prospects through decision making and demonstrate how our infrastructure transforms businesses.',
+    description: 'Convert qualified opportunities into long term partnerships. Guide prospects through decisions and demonstrate how our infrastructure transforms businesses.',
     department: 'sales',
     location: 'remote',
     level: 3,
@@ -49,8 +49,8 @@ const jobs = [
     id: 5,
     slug: 'client-success',
     title: 'Client Success Manager',
-    subtitle: 'Client Success',
-    description: 'Own client relationships from onboarding to outcomes. Ensure our retention systems deliver measurable, compounding results.',
+    subtitle: 'Retention',
+    description: 'Guardian of transformation. Own the relationship, the experience, and the outcome from onboarding through renewal and beyond.',
     department: 'client-success',
     location: 'remote',
     level: 3,
@@ -216,8 +216,8 @@ export default function HiringPage() {
             className={`text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-12
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
-            We build infrastructure, not gimmicks. Join us in creating timeless business systems 
-            for service based companies.
+            B2B growth infrastructure for service based businesses. We build systems that turn 
+            one time transactions into long term retained clients.
           </p>
 
           {/* Values */}
@@ -225,7 +225,7 @@ export default function HiringPage() {
             className={`flex flex-wrap justify-center gap-3
                         ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
           >
-            {['Devotion', 'Innovation', 'Value', 'Exclusivity'].map((value) => (
+            {['Devotion', 'Value', 'Exclusivity'].map((value) => (
               <span 
                 key={value}
                 className="px-4 py-2 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-neutral-300"

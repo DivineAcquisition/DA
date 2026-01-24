@@ -12,43 +12,79 @@ const jobs: Record<string, {
   description: string;
   sections: Array<{
     title: string;
-    type: 'list' | 'text' | 'grid' | 'tags';
+    type: 'list' | 'text';
     items?: string[];
     content?: string;
-    columns?: number;
   }>;
   techStack?: string[];
   airtableEmbed: string;
   airtableHeight: string;
 }> = {
   'system-integrator': {
-    title: 'System Integrator',
+    title: 'Systems Architect',
     subtitle: 'Infrastructure',
     location: 'Remote',
     type: 'Full Time',
-    description: 'As a System Integrator at Divine Acquisition, you will be responsible for connecting various software platforms and tools to create seamless workflows that support our clients\' business processes. Your role involves designing, implementing, and maintaining efficient and scalable integration solutions that enable our firm and clients to operate at peak performance. You will work closely with our internal teams and clients to understand their needs, optimize systems, and ensure smooth data flows between tools like GoHighLevel, Zapier, and other key software.',
-    techStack: ['Zapier', 'Airtable', 'GoHighLevel', 'Lovable', 'REST APIs', 'Webhooks'],
+    description: 'You are the builder of machines. You take strategy and turn it into infrastructure — the pipelines, automations, workflows, and integrations that make our solutions actually work. You understand that every automation exists to serve a human outcome. Every workflow exists to create clarity. Every integration exists to eliminate friction.',
+    techStack: ['GoHighLevel', 'Zapier', 'Make', 'Airtable', 'APIs', 'Webhooks', 'Framer'],
     sections: [
+      {
+        title: 'About Divine Acquisition',
+        type: 'text',
+        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe are not a marketing agency. We build the infrastructure that turns one-time transactions into long-term retained clients — systems that compound, processes that scale, and operations that outlive the hustle.',
+      },
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'System Design & Implementation: Develop and implement integration workflows tailored to clients\' needs, connecting CRMs, marketing platforms, and other systems.',
-          'Automation Management: Leverage automation tools like Zapier to optimize client operations and improve efficiency across systems.',
-          'Troubleshooting & Issue Resolution: Identify, analyze, and resolve system integration issues, ensuring minimal downtime and optimal performance.',
-          'Client Collaboration: Work closely with clients to understand their specific requirements, provide training, and offer ongoing support for integrations.',
-          'System Scalability: Ensure that the solutions implemented are scalable and can adapt to clients\' growing business needs.',
+          'Translate business requirements into technical specifications and system architectures',
+          'Build and configure GHL sub-accounts: pipelines, workflows, automations, triggers, and reporting dashboards',
+          'Create Zapier/Make integrations connecting GHL with external tools (Airtable, Stripe, calendars)',
+          'Build landing pages, VSL pages, and booking pages — mobile-optimized and fast-loading',
+          'Test every build before delivery — walk through every path, trigger, and edge case',
+          'Create Loom walkthroughs and documentation for every build',
+          'Monitor live systems, troubleshoot issues within 24 hours, and optimize based on performance data',
         ],
       },
       {
-        title: 'Requirements',
+        title: 'What Success Looks Like',
         type: 'list',
         items: [
-          'Technical Proficiency: Expertise in system integration tools such as GoHighLevel, Zapier, and similar automation platforms.',
-          'Problem Solving Skills: Proven ability to troubleshoot and resolve integration and workflow issues quickly and effectively.',
-          'Experience in System Integration: A minimum of 2 to 3 years of experience in designing, implementing, and maintaining system integrations.',
-          'Client Centric Mindset: Strong communication skills with a focus on delivering solutions that meet the specific needs of clients.',
-          'Adaptability: Ability to work in a fast paced environment and quickly adapt to new technologies, platforms, and client demands.',
+          '95%+ project delivery rate (on time, on spec)',
+          'Zero critical errors per project — must pass testing checklist before delivery',
+          '100% of builds documented with Loom walkthroughs',
+          'Issues resolved within 24 hours of report',
+          'Systems run so smoothly that no one notices them — until they\'re gone',
+        ],
+      },
+      {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'You\'re deeply technical — GHL, Zapier, Make, APIs, webhooks are your playground',
+          'You think in systems and logic flows, not just features and buttons',
+          'You\'re obsessive about quality — "good enough" makes you uncomfortable',
+          'You can translate business requirements into technical solutions independently',
+          'You document everything because you know future-you will thank you',
+        ],
+      },
+      {
+        title: 'Who This Is NOT For',
+        type: 'list',
+        items: [
+          'If you\'re a "move fast and break things" person who hates testing',
+          'If you can only follow instructions and can\'t architect solutions independently',
+          'If you hate documentation and think "the build speaks for itself"',
+          'If you can\'t communicate technical things to non-technical people',
+        ],
+      },
+      {
+        title: 'Compensation',
+        type: 'list',
+        items: [
+          'Project-based: $75-$400 per project depending on complexity',
+          'Retainer option: $1,000-$2,500/month for ongoing maintenance and builds',
+          'Bonuses for on-time delivery and zero-error streaks',
         ],
       },
     ],
@@ -60,8 +96,24 @@ const jobs: Record<string, {
     subtitle: 'Sales Development',
     location: 'Remote',
     type: 'Full Time',
-    description: 'As a Setter at Divine Acquisition, your primary goal is to book the right calls with high quality prospects. You\'ll be the first point of contact for businesses exploring whether our retention infrastructure is right for them. This isn\'t about volume and pressure. It\'s about identifying fit, educating prospects on what\'s possible, and qualifying opportunities for our closers.',
+    description: 'Your primary goal is to book the right calls with high-quality prospects. You\'re the first point of contact for businesses exploring whether our retention infrastructure is right for them. This isn\'t about volume and pressure — it\'s about identifying fit, educating prospects, and qualifying opportunities for our closers.',
     sections: [
+      {
+        title: 'About Divine Acquisition',
+        type: 'text',
+        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t sell leads or traffic. We build infrastructure that turns one-time transactions into long-term retained clients.',
+      },
+      {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'Hungry individuals who want to build a real sales career',
+          'People who understand that belief shaping beats hard selling',
+          'Self-starters who take ownership of their results',
+          'Those genuinely curious about businesses and their challenges',
+          'Individuals who communicate clearly and build rapport quickly',
+        ],
+      },
       {
         title: 'Who This Is NOT For',
         type: 'list',
@@ -70,18 +122,6 @@ const jobs: Record<string, {
           'Those who can\'t handle rejection or need constant validation',
           'Anyone who isn\'t coachable or thinks they already know everything',
           'People who make excuses instead of finding solutions',
-          'Those who aren\'t willing to put in the work to master their craft',
-        ],
-      },
-      {
-        title: 'Who This IS For',
-        type: 'list',
-        items: [
-          'Hungry individuals who want to build a real sales career',
-          'People who understand that belief shaping beats hard selling',
-          'Self starters who take ownership of their results',
-          'Those who are genuinely curious about businesses and their challenges',
-          'Individuals who can communicate clearly and build rapport quickly',
         ],
       },
       {
@@ -89,34 +129,30 @@ const jobs: Record<string, {
         type: 'list',
         items: [
           'Consistently booking qualified calls that convert to opportunities',
-          'Building a pipeline of high quality prospects who are genuinely interested',
+          'Building a pipeline of high-quality prospects who are genuinely interested',
           'Mastering the discovery process and understanding client needs deeply',
-          'Developing relationships that lead to long term business partnerships',
-          'Contributing to team knowledge and helping improve our processes',
+          'Developing relationships that lead to long-term partnerships',
         ],
       },
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Prospect and identify service based businesses that fit our ideal client profile',
+          'Prospect and identify service-based businesses that fit our ideal client profile',
           'Conduct discovery conversations focused on understanding, not pitching',
-          'Educate prospects on retention infrastructure and what outcomes are possible',
-          'Qualify opportunities based on fit, not just interest (exclusivity matters)',
+          'Educate prospects on retention infrastructure and possible outcomes',
+          'Qualify opportunities based on fit, not just interest',
           'Maintain disciplined CRM hygiene and pipeline documentation',
-          'Collaborate with closers to ensure smooth handoffs and context transfer',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          '0 to 2 years in sales, business development, or client facing roles',
+          '0-2 years in sales, business development, or client-facing roles',
           'Strong written and verbal communication skills',
-          'Coachable mindset, eager to learn and implement feedback',
+          'Coachable mindset — eager to learn and implement feedback',
           'Comfort with outbound prospecting (cold email, LinkedIn, phone)',
-          'Interest in B2B services, marketing technology, or business systems',
-          'Self motivated with high personal accountability',
         ],
       },
     ],
@@ -128,28 +164,32 @@ const jobs: Record<string, {
     subtitle: 'Sales',
     location: 'Remote',
     type: 'Full Time',
-    description: 'As a Closer at Divine Acquisition, you\'ll be responsible for converting qualified opportunities into long term client partnerships. You understand that sales is about solving problems, not pushing products. You\'ll work with prospects who have already been qualified by our Setters, guiding them through the decision making process and helping them understand how our retention infrastructure can transform their business.',
+    description: 'You convert qualified opportunities into long-term client partnerships. You understand that sales is about solving problems, not pushing products. You guide prospects through decision-making and help them understand how our retention infrastructure can transform their business.',
     sections: [
+      {
+        title: 'About Divine Acquisition',
+        type: 'text',
+        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe build infrastructure that turns one-time transactions into long-term retained clients — systems that compound and processes that scale.',
+      },
+      {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'Experienced sales professionals who genuinely care about client outcomes',
+          'Strategic thinkers who connect business problems to solutions',
+          'Those who excel at building trust and long-term relationships',
+          'People who understand that the right deal matters more than any deal',
+          'Individuals who articulate complex value propositions simply',
+        ],
+      },
       {
         title: 'Who This Is NOT For',
         type: 'list',
         items: [
-          'High pressure salespeople who rely on manipulation tactics',
+          'High-pressure salespeople who rely on manipulation tactics',
           'Those who view sales as a numbers game without caring about fit',
           'People who aren\'t willing to deeply understand client businesses',
           'Anyone who cuts corners or overpromises to close deals',
-          'Those who can\'t handle a consultative, longer sales cycle',
-        ],
-      },
-      {
-        title: 'Who This IS For',
-        type: 'list',
-        items: [
-          'Experienced sales professionals who genuinely care about client outcomes',
-          'Strategic thinkers who can connect business problems to solutions',
-          'Those who excel at building trust and long term relationships',
-          'People who understand that the right deal matters more than any deal',
-          'Individuals who can articulate complex value propositions simply',
         ],
       },
       {
@@ -157,9 +197,8 @@ const jobs: Record<string, {
         type: 'list',
         items: [
           'Closing deals with clients who are genuinely the right fit',
-          'Building a portfolio of successful, long term client relationships',
+          'Building a portfolio of successful, long-term client relationships',
           'Maintaining high close rates on qualified opportunities',
-          'Contributing to accurate forecasting and pipeline management',
           'Becoming a trusted advisor that clients refer others to',
         ],
       },
@@ -168,11 +207,10 @@ const jobs: Record<string, {
         type: 'list',
         items: [
           'Conduct consultative sales calls with qualified prospects',
-          'Present our retention infrastructure solutions and demonstrate value',
-          'Navigate complex decision making processes and handle objections',
+          'Present retention infrastructure solutions and demonstrate value',
+          'Navigate complex decision-making processes and handle objections',
           'Negotiate and close deals that are right for both parties',
           'Ensure smooth handoff to Client Success for onboarding',
-          'Maintain accurate CRM records and pipeline forecasting',
         ],
       },
       {
@@ -183,8 +221,6 @@ const jobs: Record<string, {
           'Proven track record of meeting or exceeding quota',
           'Experience with consultative or solution selling methodologies',
           'Strong presentation and negotiation skills',
-          'Understanding of marketing, sales, and business operations',
-          'Self motivated with excellent time management',
         ],
       },
     ],
@@ -193,34 +229,69 @@ const jobs: Record<string, {
   },
   'media-buyer': {
     title: 'Media Buyer',
-    subtitle: 'Growth',
+    subtitle: 'Growth Architect',
     location: 'Remote',
     type: 'Full Time',
-    description: 'As a Media Buyer at Divine Acquisition, you will architect paid acquisition systems that drive qualified pipeline for our clients. You\'ll build evidence based campaigns that compound results over time, working directly with clients to understand their ideal customer profile and create data driven advertising strategies that deliver predictable returns.',
-    techStack: ['Meta Ads', 'Google Ads', 'TikTok Ads', 'Analytics', 'Tracking'],
+    description: 'You are the engine of lead flow. You take capital and turn it into qualified conversations — predictably, profitably, at scale. We practice Philosophy Before Ad Spend: every campaign must be rooted in strategic clarity before a single dollar is spent.',
+    techStack: ['Meta Ads', 'Google Ads', 'YouTube', 'Analytics', 'Attribution'],
     sections: [
+      {
+        title: 'About Divine Acquisition',
+        type: 'text',
+        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t spray and pray. We don\'t worship the algorithm. We don\'t chase vanity metrics. We build campaigns rooted in strategic clarity.',
+      },
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Architect and optimize paid media campaigns that integrate with our clients\' retention systems',
-          'Build evidence based targeting strategies using data, not assumptions',
-          'Manage and scale ad spend while maintaining or improving ROAS benchmarks',
-          'Create systematic testing frameworks for creative, audiences, and landing pages',
-          'Document and systematize winning campaign structures for repeatability',
-          'Collaborate with our Systems team to ensure seamless lead flow into client CRMs',
+          'Develop media buying strategies aligned with offer economics and positioning',
+          'Build campaign architectures: audience targeting, funnel structure, budget allocation, testing frameworks',
+          'Launch and manage paid campaigns across Meta, Google, and YouTube',
+          'Implement proper tracking, attribution, and pixel configuration',
+          'Monitor performance daily — CPL, CPA, ROAS, CTR, hook rates',
+          'Run structured A/B tests and scale winners aggressively',
+          'Deliver weekly performance reports with insights, not just data',
         ],
       },
       {
-        title: 'Requirements',
+        title: 'What Success Looks Like',
         type: 'list',
         items: [
-          '3+ years managing paid media for service based or B2B businesses',
-          'Proven track record managing $50K+ monthly ad spend profitably',
-          'Deep expertise in Meta Ads Manager; Google Ads experience preferred',
-          'Systems thinker. You build processes, not one off campaigns',
-          'Strong analytical skills and comfort with data driven decision making',
-          'Clear communicator who can translate performance data into client insights',
+          'Consistent lead flow at target CPL ($20-50 for B2B)',
+          'Positive ROAS on all mature campaigns (minimum 2x, target 3-5x)',
+          'Testing velocity: minimum 5-10 new creative variations per week',
+          '95%+ of budgets deployed — no underspend, no waste',
+          'You treat ad spend like it\'s your own money',
+        ],
+      },
+      {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'You\'ve managed meaningful ad spend before ($10K+ per month minimum)',
+          'You\'re equally comfortable in Ads Manager and analyzing data in spreadsheets',
+          'You understand media buying blends creative intuition and mathematical rigor',
+          'You\'re a student of direct response marketing',
+          'You\'re obsessed with efficiency — you hate wasted spend',
+        ],
+      },
+      {
+        title: 'Who This Is NOT For',
+        type: 'list',
+        items: [
+          'If you\'ve only boosted posts or run small hobby campaigns',
+          'If you rely on "the algorithm" and can\'t explain why campaigns work',
+          'If you\'re a pure creative who hates numbers, or pure analyst who hates creative',
+          'If you think media buying is "set it and forget it"',
+        ],
+      },
+      {
+        title: 'Compensation',
+        type: 'list',
+        items: [
+          'Base salary: $2,000-$4,000/month depending on experience',
+          'Performance bonus tied to CPL/CPA targets',
+          'Potential profit share on campaigns you manage',
         ],
       },
     ],
@@ -229,33 +300,70 @@ const jobs: Record<string, {
   },
   'client-success': {
     title: 'Client Success Manager',
-    subtitle: 'Client Success',
+    subtitle: 'Retention',
     location: 'Remote',
     type: 'Full Time',
-    description: 'As a Client Success Manager at Divine Acquisition, you\'ll own the client relationship from onboarding to outcomes. You understand that we win only when the client wins. You\'ll be the trusted advisor who helps clients adopt our systems, interprets their data, and proactively identifies opportunities for growth.',
+    description: 'You are the guardian of transformation. Your job begins the moment a client signs and continues until they renew — and beyond. You own the relationship. You own the experience. You own the outcome. At Divine Acquisition, retention is not a department — it\'s a philosophy.',
     sections: [
+      {
+        title: 'About Divine Acquisition',
+        type: 'text',
+        content: 'We are a B2B growth infrastructure consultancy that builds systematic acquisition, conversion, and retention engines for service-based businesses — primarily info product businesses (coaches, consultants, course creators) with occasional local market engagements.\n\nWe don\'t acquire clients to extract revenue. We acquire them to create transformation. Your job is to ensure that transformation actually happens.',
+      },
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Own the end to end client relationship from onboarding to retention',
-          'Ensure clients successfully adopt and utilize our retention infrastructure',
-          'Conduct regular business reviews focused on outcomes, not activity',
-          'Proactively identify risks to client success and mobilize internal resources',
-          'Translate complex system data into actionable insights for clients',
-          'Collaborate with Systems and Growth teams to optimize client results',
+          'Run onboarding calls within 48 hours of close — collect assets, clarify goals, set expectations',
+          'Complete 100% of onboarding checklists within 7 days — no exceptions',
+          'Deliver weekly check-ins for every active client (async Loom or sync call)',
+          'Maintain client dashboards — track KPIs, milestones, deliverables, and health scores',
+          'Proactively flag at-risk clients before they churn',
+          'Begin renewal conversations 30-60 days before contract end',
+          'Ask for referrals at peak satisfaction moments',
         ],
       },
       {
-        title: 'Requirements',
+        title: 'What Success Looks Like',
         type: 'list',
         items: [
-          '3+ years in client success, account management, or consulting (B2B preferred)',
-          'Track record of retaining and growing client relationships',
-          'Strong understanding of CRM systems and marketing/sales infrastructure',
-          'Excellent communication. You can explain complex systems simply',
-          'Data literate: comfortable pulling insights from dashboards and reports',
-          'High accountability. You own outcomes, not just activities',
+          '100% onboarding completion within 7 days',
+          'Weekly check-ins delivered for every client, every week',
+          '90%+ clients in "green" health status at any given time',
+          'Churn rate below 10%',
+          'Renewal rate of 70%+ on eligible contracts',
+          '2+ referrals generated per quarter per 10 clients',
+        ],
+      },
+      {
+        title: 'Who This Is For',
+        type: 'list',
+        items: [
+          'You genuinely care about people and their success',
+          'You\'re obsessively organized — checklists, follow-ups, documentation',
+          'You\'re proactive — you anticipate problems, not wait for them',
+          'You can hold multiple client relationships without dropping balls',
+          'You\'re comfortable with difficult conversations — hard truths with empathy',
+        ],
+      },
+      {
+        title: 'Who This Is NOT For',
+        type: 'list',
+        items: [
+          'If you\'re reactive — waiting for clients to complain before you act',
+          'If you hate documentation and think "I\'ll remember it" is a strategy',
+          'If you struggle to hold people accountable because you want to be liked',
+          'If you see client success as a stepping stone to "real" work',
+        ],
+      },
+      {
+        title: 'Compensation',
+        type: 'list',
+        items: [
+          'Per-client retainer: $75-$125 per active client per month',
+          'Bonuses for retention metrics (churn below target, renewals above target)',
+          'Bonuses for referrals generated',
+          'Scales to $1,500-$3,000+/month as client load increases',
         ],
       },
     ],
@@ -287,7 +395,6 @@ export default function JobPage() {
       
       {/* Background Glow Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Large top glow */}
         <div 
           className="absolute top-[-40%] left-1/2 -translate-x-1/2 w-[1200px] h-[1200px] rounded-full opacity-60"
           style={{
@@ -295,7 +402,6 @@ export default function JobPage() {
             filter: 'blur(100px)',
           }}
         />
-        {/* Bottom right glow */}
         <div 
           className="absolute bottom-[-20%] right-[-10%] w-[800px] h-[800px] rounded-full opacity-40"
           style={{
@@ -303,7 +409,6 @@ export default function JobPage() {
             filter: 'blur(120px)',
           }}
         />
-        {/* Left side accent */}
         <div 
           className="absolute top-[30%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-30"
           style={{
@@ -347,9 +452,7 @@ export default function JobPage() {
           
           <Link
             href="/hiring"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium
-                       bg-white/5 border border-white/10 text-white
-                       hover:bg-white/10 hover:border-white/20 transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -377,7 +480,6 @@ export default function JobPage() {
 
             {/* Role Card */}
             <div className="relative p-8 md:p-10 rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-sm overflow-hidden">
-              {/* Card glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#5500FF]/10 blur-[100px] pointer-events-none" />
               
               <div className="relative">
@@ -425,15 +527,20 @@ export default function JobPage() {
                 <div className="space-y-10">
                   {job.sections.map((section, index) => (
                     <div key={index}>
-                      <h3 className="text-xs font-semibold text-[#907DFF] uppercase tracking-widest mb-5 flex items-center gap-2">
+                      <h3 className="text-xs font-semibold text-[#907DFF] uppercase tracking-widest mb-4 flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-[#5500FF] shadow-lg shadow-[#5500FF]/50" />
                         {section.title}
                       </h3>
+                      {section.type === 'text' && section.content && (
+                        <p className="text-neutral-400 font-light leading-relaxed whitespace-pre-line">
+                          {section.content}
+                        </p>
+                      )}
                       {section.type === 'list' && section.items && (
-                        <ul className="space-y-4">
+                        <ul className="space-y-3">
                           {section.items.map((item, itemIndex) => (
                             <li key={itemIndex} className="flex items-start gap-4 text-neutral-300 font-light">
-                              <span className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-[#907DFF] font-medium mt-0.5">
+                              <span className="flex-shrink-0 w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs text-[#907DFF] font-medium mt-0.5">
                                 {itemIndex + 1}
                               </span>
                               <span className="leading-relaxed">{item}</span>
@@ -443,6 +550,29 @@ export default function JobPage() {
                       )}
                     </div>
                   ))}
+                </div>
+
+                {/* Divine Standard */}
+                <div className="mt-12 p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20">
+                  <h3 className="text-xs font-semibold text-[#907DFF] uppercase tracking-widest mb-4">The Divine Acquisition Standard</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-neutral-400 font-light">
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#5500FF]">◆</span>
+                      <span><strong className="text-white">Ownership Over Excuses</strong> — We fix it, not blame it</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#5500FF]">◆</span>
+                      <span><strong className="text-white">Systems Over Hustle</strong> — Repeatable excellence</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#5500FF]">◆</span>
+                      <span><strong className="text-white">Truth Over Comfort</strong> — Growth requires honesty</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-[#5500FF]">◆</span>
+                      <span><strong className="text-white">Legacy Over Hype</strong> — We build things that last</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -461,7 +591,6 @@ export default function JobPage() {
             </div>
 
             <div className="relative rounded-3xl bg-white/[0.02] border border-white/10 backdrop-blur-sm overflow-hidden">
-              {/* Card glow */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#5500FF]/10 blur-[100px] pointer-events-none" />
               
               <div className="relative p-6 border-b border-white/5">
