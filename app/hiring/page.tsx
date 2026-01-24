@@ -32,7 +32,7 @@ const jobs = [
   {
     id: 3,
     slug: 'setter',
-    title: 'Appointment Setter',
+    title: 'SDR / Setter',
     subtitle: 'Sales Development',
     description: 'Book the right calls with high quality prospects. Identify fit, educate on possibilities, and qualify opportunities for our closers.',
     department: 'sales',

@@ -8,8 +8,8 @@ const jobMetadata: Record<string, { title: string; description: string; departme
     department: 'Operations',
   },
   'setter': {
-    title: 'Appointment Setter',
-    description: 'Join Divine Acquisition as an Appointment Setter. Book qualified calls with high-quality prospects and help grow our client base. Remote position with competitive compensation and upside.',
+    title: 'SDR / Setter',
+    description: 'Join Divine Acquisition as an SDR / Setter. Book qualified calls with high-quality prospects and help grow our client base. Remote position with competitive compensation and upside.',
     department: 'Sales',
   },
   'closer': {

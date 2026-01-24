@@ -122,7 +122,7 @@ const jobs: Record<string, {
     ],
   },
   'setter': {
-    title: 'Appointment Setter',
+    title: 'SDR / Setter',
     subtitle: 'Sales Development',
     department: 'Sales',
     location: 'Remote',
