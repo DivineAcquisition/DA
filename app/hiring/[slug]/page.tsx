@@ -1,8 +1,26 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+
+const aboutContent = `Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.
+
+Our philosophy rests on three pillars:
+• Devotion — We build trust so deep it becomes conviction.
+• Value — We simplify complexity. We make the right path the easy path.
+• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.
+
+What we believe:
+• Fit over force — we only win when the client wins
+• Simplicity scales — complexity is the enemy of repeatability
+• Process over personality — a great system outperforms charisma
+• Systems over hustle — we build infrastructure, not burnout
+• Legacy over hype — we play the long game
+
+Why join us:
+Divine Acquisition is not an agency. We're a consultancy of builders, architects, and operators who take pride in creating things that last. We don't chase trends. We don't glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.`;
 
 const jobs: Record<string, {
   title: string;
@@ -17,8 +35,8 @@ const jobs: Record<string, {
     content?: string;
   }>;
   techStack?: string[];
-  airtableEmbed: string;
-  airtableHeight: string;
+  useAirtable: boolean;
+  airtableEmbed?: string;
 }> = {
   'system-integrator': {
     title: 'Systems Architect',
@@ -27,11 +45,13 @@ const jobs: Record<string, {
     type: 'Full Time',
     description: 'You are the builder of machines. You take strategy and turn it into infrastructure — the pipelines, automations, workflows, and integrations that make our solutions actually work. You understand that every automation exists to serve a human outcome. Every workflow exists to create clarity. Every integration exists to eliminate friction.',
     techStack: ['GoHighLevel', 'Zapier', 'Make', 'Airtable', 'APIs', 'Webhooks', 'Framer'],
+    useAirtable: true,
+    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form',
     sections: [
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
+        content: aboutContent,
       },
       {
         title: 'Responsibilities',
@@ -88,8 +108,6 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form',
-    airtableHeight: '3500',
   },
   'setter': {
     title: 'Setter',
@@ -97,11 +115,13 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full Time',
     description: 'Your primary goal is to book the right calls with high-quality prospects. You\'re the first point of contact for businesses exploring whether our retention infrastructure is right for them. This isn\'t about volume and pressure — it\'s about identifying fit, educating prospects, and qualifying opportunities for our closers.',
+    useAirtable: true,
+    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
     sections: [
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
+        content: aboutContent,
       },
       {
         title: 'Who This Is For',
@@ -156,8 +176,6 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
-    airtableHeight: '3500',
   },
   'closer': {
     title: 'Closer',
@@ -165,11 +183,12 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full Time',
     description: 'You convert qualified opportunities into long-term client partnerships. You understand that sales is about solving problems, not pushing products. You guide prospects through decision-making and help them understand how our retention infrastructure can transform their business.',
+    useAirtable: false,
     sections: [
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
+        content: aboutContent,
       },
       {
         title: 'Who This Is For',
@@ -224,8 +243,6 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
-    airtableHeight: '3500',
   },
   'media-buyer': {
     title: 'Media Buyer',
@@ -234,11 +251,12 @@ const jobs: Record<string, {
     type: 'Full Time',
     description: 'You are the engine of lead flow. You take capital and turn it into qualified conversations — predictably, profitably, at scale. We practice Philosophy Before Ad Spend: every campaign must be rooted in strategic clarity before a single dollar is spent.',
     techStack: ['Meta Ads', 'Google Ads', 'YouTube', 'Analytics', 'Attribution'],
+    useAirtable: false,
     sections: [
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
+        content: aboutContent,
       },
       {
         title: 'Responsibilities',
@@ -295,8 +313,6 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagpc2PC375pTxiDS/form',
-    airtableHeight: '3500',
   },
   'client-success': {
     title: 'Client Success Manager',
@@ -304,11 +320,12 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full Time',
     description: 'You are the guardian of transformation. Your job begins the moment a client signs and continues until they renew — and beyond. You own the relationship. You own the experience. You own the outcome. At Divine Acquisition, retention is not a department — it\'s a philosophy.',
+    useAirtable: false,
     sections: [
       {
         title: 'About Divine Acquisition',
         type: 'text',
-        content: 'Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients\' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.\n\nOur philosophy rests on three pillars:\n• Devotion — We build trust so deep it becomes conviction.\n• Value — We simplify complexity. We make the right path the easy path.\n• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.\n\nWhat we believe:\n• Fit over force — we only win when the client wins\n• Simplicity scales — complexity is the enemy of repeatability\n• Process over personality — a great system outperforms charisma\n• Systems over hustle — we build infrastructure, not burnout\n• Legacy over hype — we play the long game\n\nWhy join us:\nDivine Acquisition is not an agency. We\'re a consultancy of builders, architects, and operators who take pride in creating things that last. We don\'t chase trends. We don\'t glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.',
+        content: aboutContent,
       },
       {
         title: 'Responsibilities',
@@ -367,10 +384,175 @@ const jobs: Record<string, {
         ],
       },
     ],
-    airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag7FzW7LYVFxnAuT/form',
-    airtableHeight: '3500',
   },
 };
+
+function ApplicationForm({ jobTitle }: { jobTitle: string }) {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    linkedin: '',
+    portfolio: '',
+    experience: '',
+    whyYou: '',
+    availability: '',
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In production, this would submit to an API
+    console.log('Form submitted:', formData);
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div className="p-12 text-center">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#5500FF]/20 flex items-center justify-center">
+          <svg className="w-8 h-8 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-semibold text-white mb-3">Application Submitted</h3>
+        <p className="text-neutral-400 font-light">
+          Thank you for applying for the {jobTitle} position. We&apos;ll review your application and get back to you within 5-7 business days.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.fullName}
+            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            placeholder="John Doe"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            placeholder="john@example.com"
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            placeholder="+1 (555) 000-0000"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            LinkedIn Profile
+          </label>
+          <input
+            type="url"
+            value={formData.linkedin}
+            onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+            placeholder="https://linkedin.com/in/username"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Portfolio / Website
+        </label>
+        <input
+          type="url"
+          value={formData.portfolio}
+          onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+          placeholder="https://yourportfolio.com"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Relevant Experience *
+        </label>
+        <textarea
+          required
+          rows={4}
+          value={formData.experience}
+          onChange={(e) => setFormData({ ...formData, experience: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all resize-none"
+          placeholder="Tell us about your relevant experience and accomplishments..."
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Why are you the right fit? *
+        </label>
+        <textarea
+          required
+          rows={4}
+          value={formData.whyYou}
+          onChange={(e) => setFormData({ ...formData, whyYou: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all resize-none"
+          placeholder="What makes you uniquely qualified for this role?"
+        />
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Availability *
+        </label>
+        <select
+          required
+          value={formData.availability}
+          onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#5500FF]/50 focus:ring-1 focus:ring-[#5500FF]/50 transition-all"
+        >
+          <option value="" className="bg-[#0a0a0a]">Select availability</option>
+          <option value="immediate" className="bg-[#0a0a0a]">Immediately</option>
+          <option value="1-2weeks" className="bg-[#0a0a0a]">1-2 weeks</option>
+          <option value="2-4weeks" className="bg-[#0a0a0a]">2-4 weeks</option>
+          <option value="1month+" className="bg-[#0a0a0a]">1 month+</option>
+        </select>
+      </div>
+
+      <button
+        type="submit"
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-[#5500FF]/30"
+      >
+        Submit Application
+      </button>
+
+      <p className="text-xs text-neutral-500 text-center font-light">
+        By submitting, you agree to our privacy policy and consent to being contacted about this opportunity.
+      </p>
+    </form>
+  );
+}
 
 export default function JobPage() {
   const params = useParams();
@@ -597,18 +779,21 @@ export default function JobPage() {
                 <h3 className="text-xl font-semibold text-white mb-1">Apply for {job.title}</h3>
                 <p className="text-sm text-neutral-500 font-light">Complete the form below to submit your application.</p>
               </div>
+              
               <div className="relative">
-                <iframe 
-                  className="airtable-embed w-full"
-                  src={job.airtableEmbed}
-                  frameBorder="0"
-                  width="100%"
-                  height={job.airtableHeight}
-                  style={{ 
-                    background: 'transparent',
-                    minHeight: `${job.airtableHeight}px`
-                  }}
-                />
+                {job.useAirtable && job.airtableEmbed ? (
+                  <iframe 
+                    className="airtable-embed w-full border-0"
+                    src={job.airtableEmbed}
+                    width="100%"
+                    height="2400"
+                    style={{ 
+                      background: 'transparent',
+                    }}
+                  />
+                ) : (
+                  <ApplicationForm jobTitle={job.title} />
+                )}
               </div>
             </div>
           </section>
@@ -617,30 +802,30 @@ export default function JobPage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5">
-        <div className="max-w-6xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link href="/hiring">
                 <Image 
                   src="/Comp 2 (0;00;00;00).png" 
                   alt="Divine Acquisition" 
-                  width={64} 
-                  height={64}
+                  width={32} 
+                  height={32}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <span className="text-neutral-600 text-sm font-light">
+              <span className="text-neutral-600 text-xs font-light">
                 © 2026 Divine Acquisition
               </span>
             </div>
-            <div className="flex items-center gap-6">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+            <div className="flex items-center gap-5">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>

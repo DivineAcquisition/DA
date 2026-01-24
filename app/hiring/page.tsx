@@ -341,28 +341,28 @@ export default function HiringPage() {
       <footer className="relative z-10 border-t border-white/5">
         <div className="max-w-5xl mx-auto px-6 py-10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <Link href="/hiring">
                 <Image 
                   src="/Comp 2 (0;00;00;00).png" 
                   alt="Divine Acquisition" 
-                  width={64} 
-                  height={64}
+                  width={32} 
+                  height={32}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <span className="text-neutral-600 text-sm font-light">
+              <span className="text-neutral-600 text-xs font-light">
                 © 2026 Divine Acquisition
               </span>
             </div>
-            <div className="flex items-center gap-6">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+            <div className="flex items-center gap-5">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-xs text-neutral-500 hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-500 hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>
