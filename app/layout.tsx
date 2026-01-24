@@ -48,13 +48,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/6.png', sizes: '32x32', type: 'image/png' },
-      { url: '/6.png', sizes: '16x16', type: 'image/png' },
+      { url: '/6 (0-00-00-00)_1.png', sizes: '32x32', type: 'image/png' },
+      { url: '/6 (0-00-00-00)_1.png', sizes: '16x16', type: 'image/png' },
     ],
     apple: [
-      { url: '/6.png', sizes: '180x180', type: 'image/png' },
+      { url: '/6 (0-00-00-00)_1.png', sizes: '180x180', type: 'image/png' },
     ],
-    shortcut: '/6.png',
+    shortcut: '/6 (0-00-00-00)_1.png',
   },
   manifest: '/manifest.json',
 }
@@ -67,8 +67,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="icon" href="/6.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/6.png" />
+        <link rel="icon" href="/6 (0-00-00-00)_1.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/6 (0-00-00-00)_1.png" />
         <meta name="theme-color" content="#0a0a0a" />
       </head>
       <body className="bg-[#0a0a0a]">{children}</body>

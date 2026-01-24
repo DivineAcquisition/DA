@@ -878,7 +878,7 @@ export default function JobPage() {
             <div className="flex items-center gap-3">
               <Link href="/hiring">
                 <Image 
-                  src="/6.png" 
+                  src="/6 (0-00-00-00)_1.png" 
                   alt="Divine Acquisition" 
                   width={32} 
                   height={32}
@@ -886,7 +886,7 @@ export default function JobPage() {
                 />
               </Link>
               <span className="text-neutral-500 text-xs font-medium">
-                © 2026 Divine Acquisition
+                2025 © DivineAcquisition™, All rights reserved.
               </span>
             </div>
             <div className="flex items-center gap-5">
