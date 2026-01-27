@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 
 const benefits = [
   "Identify where your leads are leaking",
@@ -21,6 +22,12 @@ export default function BookingBCSPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
+      {/* iClosed Script */}
+      <Script 
+        src="https://app.iclosed.io/assets/widget.js" 
+        strategy="lazyOnload"
+      />
+
       {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
@@ -149,19 +156,20 @@ export default function BookingBCSPage() {
                 </div>
                 
                 <div className="relative">
-                  <h2 className="text-xl font-semibold text-white mb-6 text-center">Select a Time</h2>
+                  <h2 className="text-xl font-semibold text-white mb-6 text-center flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                    </svg>
+                    Select a Time
+                  </h2>
                   
-                  {/* Calendar embed placeholder */}
-                  <div className="bg-[#0a0a0a] rounded-xl border border-white/5 min-h-[500px] flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="w-16 h-16 rounded-full bg-[#907DFF]/10 border border-[#907DFF]/30 flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                        </svg>
-                      </div>
-                      <p className="text-neutral-500">Calendar embed loads here</p>
-                    </div>
-                  </div>
+                  {/* iClosed Calendar Widget */}
+                  <div 
+                    className="iclosed-widget rounded-xl overflow-hidden" 
+                    data-url="https://app.iclosed.io/e/divineacquisitionn/homeservice" 
+                    title="Backend Conversion System" 
+                    style={{ width: '100%', height: '620px' }}
+                  />
                 </div>
               </div>
             </div>

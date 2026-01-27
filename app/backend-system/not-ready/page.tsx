@@ -73,7 +73,9 @@ export default function NotReadyPage() {
             className={`flex justify-center mb-8 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#907DFF]/20 to-[#5500FF]/10 border border-[#907DFF]/30 flex items-center justify-center shadow-[0_0_40px_rgba(144,125,255,0.2)]">
-              <span className="text-4xl">👋</span>
+              <svg className="w-10 h-10 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.05 4.575a1.575 1.575 0 10-3.15 0v3m3.15-3v-1.5a1.575 1.575 0 013.15 0v1.5m-3.15 0l.075 5.925m3.075.75V4.575m0 0a1.575 1.575 0 013.15 0V15M6.9 7.575a1.575 1.575 0 10-3.15 0v8.175a6.75 6.75 0 006.75 6.75h2.018a5.25 5.25 0 003.712-1.538l1.732-1.732a5.25 5.25 0 001.538-3.712l.003-2.024a.668.668 0 01.198-.471 1.575 1.575 0 10-2.228-2.228 3.818 3.818 0 00-1.12 2.687M6.9 7.575V12m6.27 4.318A4.49 4.49 0 0116.35 15m.002 0h-.002" />
+              </svg>
             </div>
           </div>
 
@@ -118,7 +120,10 @@ export default function NotReadyPage() {
             
             <div className="relative">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-green-400 bg-green-500/10 border border-green-500/30 mb-6">
-                <span>🆓</span> Free Tool
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                </svg>
+                Free Tool
               </div>
               
               <h2 className="text-2xl md:text-3xl font-semibold text-white mb-3">

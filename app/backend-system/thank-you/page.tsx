@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
 
 const callBenefits = [
   "Look at your current lead flow and where you're losing revenue",
@@ -21,6 +22,12 @@ export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
+      {/* iClosed Script */}
+      <Script 
+        src="https://app.iclosed.io/assets/widget.js" 
+        strategy="lazyOnload"
+      />
+
       {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
@@ -74,7 +81,9 @@ export default function ThankYouPage() {
             className={`flex justify-center mb-8 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-green-500/20 to-green-600/10 border border-green-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(34,197,94,0.3)]">
-              <span className="text-4xl">🎉</span>
+              <svg className="w-10 h-10 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
           </div>
 
@@ -123,25 +132,31 @@ export default function ThankYouPage() {
             </div>
           </div>
 
-          {/* Calendar Embed Placeholder */}
+          {/* Calendar Embed */}
           <div 
             className={`relative p-8 md:p-10 rounded-2xl bg-[#111111]/80 border border-[#907DFF]/30 shadow-[0_0_60px_rgba(144,125,255,0.1)]
                         ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
           >
-            <div className="text-center">
-              <h3 className="text-lg font-semibold text-white mb-4">Select a Time That Works For You</h3>
-              {/* Calendar embed would go here */}
-              <div className="bg-[#0a0a0a] rounded-xl p-8 border border-white/5 min-h-[400px] flex items-center justify-center">
-                <p className="text-neutral-500">Calendar embed loads here</p>
-              </div>
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold text-white">Select a Time That Works For You</h3>
             </div>
+            {/* iClosed Calendar Widget */}
+            <div 
+              className="iclosed-widget rounded-xl overflow-hidden" 
+              data-url="https://app.iclosed.io/e/divineacquisitionn/homeservice" 
+              title="Backend Conversion System" 
+              style={{ width: '100%', height: '620px' }}
+            />
           </div>
 
           {/* Footer Note */}
           <p 
-            className={`text-center text-neutral-500 text-sm mt-10
+            className={`text-center text-neutral-500 text-sm mt-10 flex items-center justify-center gap-2
                         ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
           >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
             Can&apos;t find a time that works? Email us at{' '}
             <a href="mailto:hello@divineacquisition.com" className="text-[#907DFF] hover:text-white transition-colors">
               hello@divineacquisition.com

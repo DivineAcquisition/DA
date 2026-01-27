@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import Script from 'next/script';
+import WistiaPlayer from '@/app/components/WistiaPlayer';
 
 const painPoints = [
   {
     icon: (
       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H3.75a.75.75 0 01-.75-.75V5.25zm3.75 9a.75.75 0 000 1.5h.008a.75.75 0 000-1.5H6.75zm3.75.75a.75.75 0 01.75-.75h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75h-.008a.75.75 0 01-.75-.75v-.008zm4.5-.75a.75.75 0 000 1.5h.008a.75.75 0 000-1.5h-.008z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-3m0 3a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
       </svg>
     ),
     title: "Leads Going to Voicemail",
@@ -86,32 +87,21 @@ const stats = [
 
 export default function HomeServicesPage() {
   const [mounted, setMounted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    company: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsSubmitting(false);
-    setSubmitted(true);
-  };
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
+      {/* Wistia Scripts */}
+      <Script src="https://fast.wistia.com/player.js" strategy="lazyOnload" />
+      <Script src="https://fast.wistia.com/embed/o2tstyl6cj.js" strategy="lazyOnload" />
+      
+      {/* iClosed Script */}
+      <Script src="https://app.iclosed.io/assets/widget.js" strategy="lazyOnload" />
+
       {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
@@ -258,6 +248,27 @@ export default function HomeServicesPage() {
         </div>
       </section>
 
+      {/* Video Section */}
+      <section className="relative z-10 px-6 py-16 md:py-20">
+        <div className="max-w-4xl mx-auto">
+          <div 
+            className={`relative p-6 md:p-8 rounded-2xl bg-[#111111]/80 border border-[#907DFF]/30 shadow-[0_0_60px_rgba(144,125,255,0.1)]
+                        ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
+          >
+            <h2 className="text-xl font-semibold text-white mb-6 text-center flex items-center justify-center gap-3">
+              <svg className="w-6 h-6 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
+              </svg>
+              See How We Fix Revenue Leaks
+            </h2>
+            {/* Wistia Video Player */}
+            <div className="rounded-xl overflow-hidden">
+              <WistiaPlayer mediaId="o2tstyl6cj" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pain Points Section */}
       <section className="relative z-10 px-6 py-20 md:py-28">
         <div className="max-w-6xl mx-auto">
@@ -301,6 +312,9 @@ export default function HomeServicesPage() {
         <div className="max-w-6xl mx-auto">
           <div className={`text-center mb-16 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
               The Solution
             </div>
             <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4 text-transparent bg-clip-text" style={{
@@ -346,7 +360,7 @@ export default function HomeServicesPage() {
         </div>
       </section>
 
-      {/* CTA / Form Section */}
+      {/* CTA / Calendar Section */}
       <section className="relative z-10 px-6 py-20 md:py-28" id="book-call">
         <div className="max-w-4xl mx-auto">
           <div className={`relative p-8 md:p-12 rounded-3xl bg-[#111111]/90 border border-[#907DFF]/30 shadow-[0_0_80px_rgba(144,125,255,0.15)] overflow-hidden ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
@@ -374,93 +388,17 @@ export default function HomeServicesPage() {
                 </p>
               </div>
 
-              {!submitted ? (
-                <form onSubmit={handleSubmit} className="max-w-md mx-auto space-y-5">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-neutral-300 mb-2">
-                      Your Name
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl bg-[#0a0a0a] border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:shadow-[0_0_20px_rgba(144,125,255,0.15)] transition-all"
-                      placeholder="John Smith"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-neutral-300 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      required
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl bg-[#0a0a0a] border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:shadow-[0_0_20px_rgba(144,125,255,0.15)] transition-all"
-                      placeholder="(555) 123-4567"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="company" className="block text-sm font-medium text-neutral-300 mb-2">
-                      Company Name
-                    </label>
-                    <input
-                      type="text"
-                      id="company"
-                      required
-                      value={formData.company}
-                      onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                      className="w-full px-5 py-4 rounded-xl bg-[#0a0a0a] border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#907DFF]/50 focus:shadow-[0_0_20px_rgba(144,125,255,0.15)] transition-all"
-                      placeholder="ABC Plumbing"
-                    />
-                  </div>
+              {/* iClosed Calendar Widget */}
+              <div 
+                className="iclosed-widget rounded-xl overflow-hidden" 
+                data-url="https://app.iclosed.io/e/divineacquisitionn/homeservice" 
+                title="Backend Conversion System" 
+                style={{ width: '100%', height: '620px' }}
+              />
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full group inline-flex items-center justify-center gap-3 px-8 py-4 rounded-xl text-base font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.5)] hover:shadow-[0_0_60px_rgba(85,0,255,0.7)] disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        Book My 15-Min Call
-                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-
-                  <p className="text-center text-xs text-neutral-500 mt-4">
-                    No obligation. No credit card required.
-                  </p>
-                </form>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(144,125,255,0.5)]">
-                    <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-semibold text-white mb-3">You&apos;re All Set!</h3>
-                  <p className="text-neutral-400 font-light">
-                    We&apos;ll reach out within 60 seconds to schedule your call.
-                  </p>
-                </div>
-              )}
+              <p className="text-center text-xs text-neutral-500 mt-6">
+                No obligation. No credit card required.
+              </p>
             </div>
           </div>
         </div>
