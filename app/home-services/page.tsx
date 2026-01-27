@@ -208,10 +208,21 @@ export default function HomeServicesPage() {
             We get you leads and call them in under 60 seconds — so you close more jobs without hiring more staff.
           </p>
 
+          {/* Video Section - Below Headline */}
+          <div 
+            className={`relative p-4 md:p-6 rounded-2xl bg-[#111111]/80 border border-[#907DFF]/30 shadow-[0_0_60px_rgba(144,125,255,0.1)] mb-10
+                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
+          >
+            {/* Wistia Video Player */}
+            <div className="rounded-xl overflow-hidden">
+              <WistiaPlayer mediaId="o2tstyl6cj" />
+            </div>
+          </div>
+
           {/* CTA Buttons */}
           <div 
             className={`flex flex-col sm:flex-row items-center justify-center gap-4
-                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
+                        ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
           >
             <a
               href="#book-call"
@@ -226,7 +237,7 @@ export default function HomeServicesPage() {
 
           {/* Stats */}
           <div 
-            className={`flex flex-wrap justify-center gap-8 md:gap-16 mt-16
+            className={`flex flex-wrap justify-center gap-8 md:gap-16 mt-12
                         ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
           >
             {stats.map((stat, index) => (
@@ -244,27 +255,6 @@ export default function HomeServicesPage() {
                 <p className="text-sm text-neutral-500 mt-1">{stat.label}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Video Section */}
-      <section className="relative z-10 px-6 py-16 md:py-20">
-        <div className="max-w-4xl mx-auto">
-          <div 
-            className={`relative p-6 md:p-8 rounded-2xl bg-[#111111]/80 border border-[#907DFF]/30 shadow-[0_0_60px_rgba(144,125,255,0.1)]
-                        ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}
-          >
-            <h2 className="text-xl font-semibold text-white mb-6 text-center flex items-center justify-center gap-3">
-              <svg className="w-6 h-6 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z" />
-              </svg>
-              See How We Fix Revenue Leaks
-            </h2>
-            {/* Wistia Video Player */}
-            <div className="rounded-xl overflow-hidden">
-              <WistiaPlayer mediaId="o2tstyl6cj" />
-            </div>
           </div>
         </div>
       </section>
