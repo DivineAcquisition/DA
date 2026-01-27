@@ -178,116 +178,121 @@ export default function FreeAuditPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
       
       {/* MsgSndr Calendar Script */}
       <Script src="https://link.msgsndr.divineacquisition.io/js/form_embed.js" strategy="lazyOnload" />
 
-      {/* Subtle noise texture overlay */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.015]" style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-      }} />
-
-      {/* Premium Grid Background */}
+      {/* Grid Background */}
       <div className="fixed inset-0 pointer-events-none">
         <div 
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: `linear-gradient(rgba(144,125,255,0.8) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(144,125,255,0.8) 1px, transparent 1px)`,
-            backgroundSize: '80px 80px',
+            backgroundImage: `linear-gradient(rgba(144,125,255,0.5) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(144,125,255,0.5) 1px, transparent 1px)`,
+            backgroundSize: '60px 60px',
           }}
         />
       </div>
 
-      {/* Premium Glow Effects */}
+      {/* Background Glow Effects - Deep #6200FF for banner */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Central hero glow */}
+        {/* Main banner glow - deep purple #6200FF */}
         <div 
-          className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-full md:w-[1800px] h-[1200px] md:h-[1400px]"
+          className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[900px] md:h-[1100px]"
           style={{
-            background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.25) 0%, rgba(98,0,255,0.08) 35%, transparent 65%)',
+            background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.5) 0%, rgba(98,0,255,0.25) 30%, rgba(144,125,255,0.1) 50%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+        {/* Bottom right glow - #907DFF accent */}
+        <div 
+          className="absolute bottom-[-15%] right-[-5%] w-[700px] h-[700px] rounded-full opacity-50"
+          style={{
+            background: 'radial-gradient(circle, rgba(144,125,255,0.5) 0%, rgba(98,0,255,0.2) 50%, transparent 70%)',
             filter: 'blur(100px)',
           }}
         />
-        {/* Accent glow - bottom */}
+        {/* Left side glow */}
         <div 
-          className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[1200px] h-[800px] opacity-30"
+          className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-30"
           style={{
-            background: 'radial-gradient(ellipse at center, rgba(144,125,255,0.4) 0%, transparent 60%)',
-            filter: 'blur(120px)',
+            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, transparent 60%)',
+            filter: 'blur(60px)',
           }}
         />
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-20 border-b border-white/[0.06] bg-[#050505]/80 backdrop-blur-2xl">
-        <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/free-audit" className="group flex items-center gap-2">
+      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/70 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
+          <Link href="/free-audit" className="group">
             <Image 
               src="/logo.png" 
               alt="Divine Acquisition" 
-              width={150} 
-              height={150}
+              width={200} 
+              height={200}
               className="group-hover:opacity-80 transition-opacity"
             />
           </Link>
           
           <a
             href="#book-audit"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium bg-white text-[#0a0a0a] hover:bg-white/90 transition-all shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)]"
           >
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+            </span>
             Book Free Audit
           </a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-36 pb-20 md:pt-44 md:pb-28">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative z-10 px-6 pt-44 pb-16 md:pt-52 md:pb-20">
+        <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
           <div 
-            className={`inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full text-xs font-medium tracking-wide uppercase
-                        text-amber-200/90 bg-amber-500/[0.08] border border-amber-500/20 mb-10
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
+                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/40 mb-8
+                        shadow-[0_0_40px_-5px_rgba(144,125,255,0.6)]
                         ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-400" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.8)]" />
             </span>
             Limited: 5 Free Spots This Month
           </div>
 
           {/* Headline */}
           <h1 
-            className={`text-[2.75rem] sm:text-5xl md:text-6xl lg:text-[4.25rem] font-medium tracking-[-0.02em] mb-8 leading-[1.1]
+            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
+            style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 30%, #907DFF 60%, #5500FF 100%)',
+            }}
           >
-            <span className="text-white">Find Out Exactly Why</span>
-            <br />
-            <span className="text-transparent bg-clip-text" style={{
-              backgroundImage: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 50%, #5b21b6 100%)',
-            }}>
-              Your Users Are Churning
-            </span>
+            Find Out Exactly Why Your Users Are Churning
           </h1>
 
           {/* Subheadline */}
           <p 
-            className={`text-lg md:text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-10
+            className={`text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-12
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
-            Get a free 30-minute retention audit and walk away with 3-5 specific fixes you can implement this week. <span className="text-neutral-300">No pitch. Just actionable feedback.</span>
+            Get a free 30-minute retention audit and walk away with 3-5 specific fixes you can implement this week. No pitch. Just actionable feedback.
           </p>
 
-          {/* CTA */}
+          {/* CTA & Trust Line */}
           <div 
             className={`flex flex-col items-center gap-6
                         ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
           >
             <a
               href="#book-audit"
-              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-medium bg-gradient-to-b from-white to-neutral-200 text-[#0a0a0a] hover:from-neutral-100 hover:to-neutral-300 transition-all shadow-[0_0_50px_rgba(255,255,255,0.15),0_4px_12px_rgba(0,0,0,0.3)] hover:shadow-[0_0_60px_rgba(255,255,255,0.25),0_4px_16px_rgba(0,0,0,0.4)]"
+              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full text-base font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.5)]"
             >
               Book Your Free Audit
               <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -302,11 +307,15 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Problem Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-4xl mx-auto">
-          <div className={`mb-16 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">The Problem</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              The Problem
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               You&apos;re paying to acquire customers you can&apos;t keep
             </h2>
           </div>
@@ -315,17 +324,22 @@ export default function FreeAuditPage() {
             {problemPoints.map((point, index) => (
               <div
                 key={index}
-                className="group relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-red-500/20 hover:bg-red-500/[0.02] transition-all duration-500"
+                className="group relative p-6 rounded-2xl bg-[#111111] border border-white/10 hover:border-red-500/30 hover:shadow-[0_0_30px_rgba(239,68,68,0.1)] transition-all duration-300 overflow-hidden"
               >
-                <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 flex-shrink-0 mt-1">
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-red-500/10 blur-[60px]" />
+                </div>
+                
+                <div className="relative flex items-start gap-5">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 flex-shrink-0 mt-1">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
                     </svg>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-2">{point.title}</h3>
-                    <p className="text-neutral-400 font-light leading-relaxed">{point.description}</p>
+                    <h3 className="text-lg font-medium text-white mb-2 group-hover:text-red-300 transition-colors">{point.title}</h3>
+                    <p className="text-neutral-500 font-light leading-relaxed">{point.description}</p>
                   </div>
                 </div>
               </div>
@@ -335,20 +349,24 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Cost of Churn Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-5xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">The Cost</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              The Cost
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               The math on ignoring retention
             </h2>
           </div>
 
-          <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
+          <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
             {stats.map((stat, index) => (
-              <div key={index} className="relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-center">
-                <p className="text-3xl md:text-4xl font-medium text-transparent bg-clip-text mb-3" style={{
-                  backgroundImage: 'linear-gradient(135deg, white 0%, #a78bfa 100%)',
+              <div key={index} className="relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-white/10 text-center hover:border-[#907DFF]/30 hover:shadow-[0_0_30px_rgba(144,125,255,0.1)] transition-all duration-300">
+                <p className="text-3xl md:text-4xl font-semibold text-transparent bg-clip-text mb-3" style={{
+                  backgroundImage: 'linear-gradient(to right, white 0%, #907DFF 100%)',
                 }}>
                   {stat.number}
                 </p>
@@ -357,8 +375,11 @@ export default function FreeAuditPage() {
             ))}
           </div>
 
-          <div className={`relative p-8 md:p-10 rounded-2xl bg-gradient-to-b from-red-500/[0.05] to-transparent border border-red-500/10 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-            <p className="text-center text-lg text-neutral-300 font-light leading-relaxed">
+          <div className={`relative p-8 md:p-10 rounded-2xl bg-[#111111] border border-red-500/20 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[200px] bg-red-500/10 blur-[80px]" />
+            </div>
+            <p className="relative text-center text-lg text-neutral-300 font-light leading-relaxed">
               Every dollar you spend acquiring customers who churn is a dollar wasted. <span className="text-white font-medium">Retention isn&apos;t a &quot;nice to have&quot; — it&apos;s survival.</span>
             </p>
           </div>
@@ -366,27 +387,38 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Opportunity Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-5xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">The Opportunity</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              The Opportunity
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               Small retention improvements create massive results
             </h2>
           </div>
 
           <div className={`grid md:grid-cols-2 gap-4 md:gap-6 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
             {opportunities.map((item, index) => (
-              <div key={index} className="relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#907DFF]/20 hover:bg-[#907DFF]/[0.02] transition-all duration-500">
-                <div className="flex items-baseline gap-2 mb-3">
-                  <span className="text-3xl font-medium text-transparent bg-clip-text" style={{
-                    backgroundImage: 'linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)',
-                  }}>
-                    {item.stat}
-                  </span>
-                  <span className="text-lg text-white font-light">{item.title}</span>
+              <div key={index} className="group relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-white/10 hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
                 </div>
-                <p className="text-neutral-500 font-light">{item.description}</p>
+                
+                <div className="relative">
+                  <div className="flex items-baseline gap-2 mb-3">
+                    <span className="text-3xl font-semibold text-transparent bg-clip-text" style={{
+                      backgroundImage: 'linear-gradient(to right, #907DFF 0%, #5500FF 100%)',
+                    }}>
+                      {item.stat}
+                    </span>
+                    <span className="text-lg text-white font-light group-hover:text-[#907DFF] transition-colors">{item.title}</span>
+                  </div>
+                  <p className="text-neutral-500 font-light">{item.description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -394,11 +426,15 @@ export default function FreeAuditPage() {
       </section>
 
       {/* What You Get Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-5xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">What&apos;s Included</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              What&apos;s Included
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               What&apos;s included in your free audit
             </h2>
           </div>
@@ -407,13 +443,20 @@ export default function FreeAuditPage() {
             {auditItems.map((item, index) => (
               <div
                 key={index}
-                className="group relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-[#907DFF]/30 transition-all duration-500"
+                className="group relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-white/10 hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#907DFF]/20 to-[#5500FF]/10 border border-[#907DFF]/20 flex items-center justify-center text-[#a78bfa] mb-5 group-hover:scale-105 transition-transform">
-                  {item.icon}
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
                 </div>
-                <h3 className="text-lg font-medium text-white mb-3">{item.title}</h3>
-                <p className="text-neutral-500 font-light text-sm leading-relaxed">{item.description}</p>
+                
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-xl bg-[#907DFF]/15 border border-[#907DFF]/20 flex items-center justify-center text-[#907DFF] mb-5 group-hover:scale-105 group-hover:shadow-[0_0_20px_rgba(144,125,255,0.4)] transition-all">
+                    {item.icon}
+                  </div>
+                  <h3 className="text-lg font-medium text-white mb-3 group-hover:text-[#907DFF] transition-colors">{item.title}</h3>
+                  <p className="text-neutral-500 font-light text-sm leading-relaxed">{item.description}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -421,11 +464,15 @@ export default function FreeAuditPage() {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-3xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">How It Works</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              How It Works
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               Simple. Fast. Actionable.
             </h2>
           </div>
@@ -434,14 +481,19 @@ export default function FreeAuditPage() {
             {steps.map((step, index) => (
               <div
                 key={index}
-                className="relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
+                className="group relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-white/10 hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden"
               >
-                <div className="flex items-start gap-6">
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#907DFF]/20 to-[#5500FF]/10 border border-[#907DFF]/20 flex items-center justify-center flex-shrink-0">
-                    <span className="text-lg font-medium text-[#a78bfa]">{step.number}</span>
+                {/* Hover glow */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
+                </div>
+                
+                <div className="relative flex items-start gap-6">
+                  <div className="w-14 h-14 rounded-xl bg-[#907DFF]/15 border border-[#907DFF]/20 flex items-center justify-center flex-shrink-0 group-hover:shadow-[0_0_20px_rgba(144,125,255,0.4)] transition-all">
+                    <span className="text-lg font-semibold text-[#907DFF]">{step.number}</span>
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-2">{step.title}</h3>
+                    <h3 className="text-lg font-medium text-white mb-2 group-hover:text-[#907DFF] transition-colors">{step.title}</h3>
                     <p className="text-neutral-400 font-light leading-relaxed">{step.description}</p>
                   </div>
                 </div>
@@ -452,74 +504,94 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Who This Is For Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-4xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">Fit Check</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              Fit Check
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               Is this for you?
             </h2>
           </div>
 
           <div className={`grid md:grid-cols-2 gap-6 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
             {/* Good Fit */}
-            <div className="relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-emerald-500/20">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-emerald-400">Good Fit</h3>
+            <div className="relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-emerald-500/30 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)] transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-emerald-500/10 blur-[60px]" />
               </div>
-              <ul className="space-y-4">
-                {goodFit.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <svg className="w-4 h-4 text-emerald-500/70 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-neutral-400 font-light text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
+                  </div>
+                  <h3 className="text-lg font-semibold text-emerald-400">Good Fit</h3>
+                </div>
+                <ul className="space-y-4">
+                  {goodFit.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-neutral-400 font-light text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
             {/* Not a Fit */}
-            <div className="relative p-6 md:p-8 rounded-2xl bg-white/[0.02] border border-red-500/20">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-medium text-red-400">Not a Fit</h3>
+            <div className="relative p-6 md:p-8 rounded-2xl bg-[#111111] border border-red-500/30 hover:shadow-[0_0_30px_rgba(239,68,68,0.15)] transition-all duration-300 overflow-hidden">
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[300px] h-[150px] bg-red-500/10 blur-[60px]" />
               </div>
-              <ul className="space-y-4">
-                {notFit.map((item, index) => (
-                  <li key={index} className="flex items-start gap-3">
-                    <svg className="w-4 h-4 text-red-500/70 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-red-500/15 border border-red-500/20 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span className="text-neutral-400 font-light text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
+                  </div>
+                  <h3 className="text-lg font-semibold text-red-400">Not a Fit</h3>
+                </div>
+                <ul className="space-y-4">
+                  {notFit.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <svg className="w-4 h-4 text-red-500 flex-shrink-0 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      <span className="text-neutral-400 font-light text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* About Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-3xl mx-auto">
           <div className={`mb-10 ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">About</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              About
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               Who&apos;s behind the audit?
             </h2>
           </div>
 
-          <div className={`relative p-8 md:p-10 rounded-2xl bg-white/[0.02] border border-white/[0.06] ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
+          <div className={`relative p-8 md:p-10 rounded-2xl bg-[#111111] border border-white/10 ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}>
             <div className="space-y-5 text-neutral-400 font-light leading-relaxed">
               <p>
                 I&apos;m <span className="text-white font-medium">Malik</span>, founder of Divine Acquisition.
@@ -545,11 +617,15 @@ export default function FreeAuditPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32">
+      <section className="relative z-10 px-6 py-20 md:py-24">
         <div className="max-w-3xl mx-auto">
-          <div className={`mb-16 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            <p className="text-xs font-medium tracking-[0.2em] uppercase text-[#907DFF] mb-4">FAQ</p>
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-white">
+          <div className={`mb-12 text-center ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30 mb-6">
+              FAQ
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-transparent bg-clip-text" style={{
+              backgroundImage: 'linear-gradient(to right, white 0%, white 50%, #907DFF 100%)',
+            }}>
               Questions
             </h2>
           </div>
@@ -558,16 +634,16 @@ export default function FreeAuditPage() {
             {faqs.map((faq, index) => (
               <div
                 key={index}
-                className="relative rounded-2xl bg-white/[0.02] border border-white/[0.06] overflow-hidden transition-all duration-300 hover:border-white/[0.1]"
+                className="relative rounded-2xl bg-[#111111] border border-white/10 overflow-hidden transition-all duration-300 hover:border-[#907DFF]/30"
               >
                 <button
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full p-6 text-left flex items-center justify-between gap-4"
                 >
                   <span className="text-white font-medium">{faq.q}</span>
-                  <div className={`w-8 h-8 rounded-full bg-white/[0.05] flex items-center justify-center flex-shrink-0 transition-transform ${openFaq === index ? 'rotate-180' : ''}`}>
+                  <div className={`w-8 h-8 rounded-full bg-[#907DFF]/10 border border-[#907DFF]/20 flex items-center justify-center flex-shrink-0 transition-transform ${openFaq === index ? 'rotate-180' : ''}`}>
                     <svg 
-                      className="w-4 h-4 text-neutral-400" 
+                      className="w-4 h-4 text-[#907DFF]" 
                       fill="none" 
                       viewBox="0 0 24 24" 
                       stroke="currentColor" 
@@ -589,39 +665,43 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="relative z-10 px-6 py-24 md:py-32" id="book-audit">
+      <section className="relative z-10 px-6 py-20 md:py-24" id="book-audit">
         <div className="max-w-4xl mx-auto">
-          <div className={`relative rounded-3xl overflow-hidden ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
-            {/* Gradient border effect */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-b from-[#907DFF]/30 via-[#907DFF]/10 to-transparent p-[1px]">
-              <div className="w-full h-full rounded-3xl bg-[#0a0a0a]" />
+          <div className={`relative p-8 md:p-12 rounded-2xl bg-[#111111] border border-white/10 overflow-hidden ${mounted ? 'animate-fade-in' : 'opacity-0'}`}>
+            {/* Background glow */}
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute top-[-50%] left-1/2 -translate-x-1/2 w-[800px] h-[600px]" style={{
+                background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.3) 0%, rgba(144,125,255,0.15) 40%, transparent 70%)',
+                filter: 'blur(60px)',
+              }} />
             </div>
             
-            <div className="relative p-8 md:p-12">
-              {/* Background glow */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#5500FF]/15 blur-[100px]" />
+            <div className="relative">
+              <div className="text-center mb-10">
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-tight mb-4 text-transparent bg-clip-text" style={{
+                  backgroundImage: 'linear-gradient(to right, white 0%, white 40%, #907DFF 80%, #5500FF 100%)',
+                }}>
+                  Ready to find out what&apos;s killing your retention?
+                </h2>
+                <p className="text-neutral-400 font-light max-w-lg mx-auto mb-3">
+                  30 minutes. 3-5 actionable fixes. Zero pitch.
+                </p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/30">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.8)]" />
+                  </span>
+                  5 spots available this month
+                </div>
               </div>
-              
-              <div className="relative">
-                <div className="text-center mb-10">
-                  <h2 className="text-3xl md:text-4xl font-medium tracking-tight mb-4 text-white">
-                    Ready to find out what&apos;s killing your retention?
-                  </h2>
-                  <p className="text-neutral-400 font-light max-w-lg mx-auto mb-3">
-                    30 minutes. 3-5 actionable fixes. Zero pitch.
-                  </p>
-                  <p className="text-amber-300/90 text-sm font-medium">5 spots available this month.</p>
-                </div>
 
-                {/* MsgSndr Calendar Widget */}
-                <div className="rounded-xl overflow-hidden bg-white/[0.02]">
-                  <iframe 
-                    src="https://link.msgsndr.divineacquisition.io/widget/booking/1aYFzQE1WdCv1FUKsZsQ" 
-                    style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
-                    scrolling="no"
-                  />
-                </div>
+              {/* MsgSndr Calendar Widget */}
+              <div className="rounded-xl overflow-hidden border border-white/10">
+                <iframe 
+                  src="https://link.msgsndr.divineacquisition.io/widget/booking/1aYFzQE1WdCv1FUKsZsQ" 
+                  style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
+                  scrolling="no"
+                />
               </div>
             </div>
           </div>
@@ -629,37 +709,34 @@ export default function FreeAuditPage() {
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/[0.06]">
-        <div className="max-w-6xl mx-auto px-6 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-            <div className="flex flex-col items-center md:items-start gap-2">
+      <footer className="relative z-10 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div className="flex items-center gap-3">
               <Link href="/free-audit">
                 <Image 
-                  src="/logo.png" 
+                  src="/6 (0-00-00-00)_1.png" 
                   alt="Divine Acquisition" 
-                  width={130} 
-                  height={130}
-                  className="opacity-60 hover:opacity-80 transition-opacity"
+                  width={32} 
+                  height={32}
+                  className="opacity-70 hover:opacity-100 transition-opacity"
                 />
               </Link>
-              <span className="text-neutral-600 text-sm">Retention systems for SaaS</span>
+              <span className="text-neutral-500 text-xs font-medium">
+                2026 © DivineAcquisition™, All rights reserved.
+              </span>
             </div>
-            <div className="flex items-center gap-8">
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-500 hover:text-white transition-colors">
+            <div className="flex items-center gap-5">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="mailto:hello@divineacquisition.com" className="text-sm text-neutral-500 hover:text-white transition-colors">
+              <a href="mailto:hello@divineacquisition.com" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Contact
               </a>
-              <a href="https://go.divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-sm text-neutral-500 hover:text-white transition-colors">
-                Privacy Policy
+              <a href="https://go.divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+                Privacy
               </a>
             </div>
-          </div>
-          <div className="mt-10 pt-8 border-t border-white/[0.04] text-center">
-            <span className="text-neutral-600 text-sm">
-              © 2026 Divine Acquisition. All rights reserved.
-            </span>
           </div>
         </div>
       </footer>
