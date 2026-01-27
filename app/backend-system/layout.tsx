@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Backend Conversion System | Divine Acquisition',
     description: 'Recover lost revenue with AI-powered lead capture and automated follow-up systems.',
-    url: 'https://hs.divineacquisition.io/backend-system',
+    url: 'https://hiring.divineacquisition.io/backend-system',
     images: [
       {
         url: '/logo.png',

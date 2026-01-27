@@ -11,11 +11,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'Divine Acquisition' }],
   creator: 'Divine Acquisition',
   publisher: 'Divine Acquisition',
-  metadataBase: new URL('https://hs.divineacquisition.io'),
+  metadataBase: new URL('https://hiring.divineacquisition.io'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://hs.divineacquisition.io',
+    url: 'https://hiring.divineacquisition.io',
     siteName: 'Divine Acquisition Careers',
     title: 'Careers at Divine Acquisition | Build Systems That Compound',
     description: 'Join our team of builders, architects, and operators. We build Acquisition, Retention & AI Growth Infrastructure for service-based businesses.',
