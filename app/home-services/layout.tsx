@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Stop Losing Jobs to the Contractor Who Called Back First',
     description: 'We get you leads and call them in under 60 seconds — so you close more jobs without hiring more staff. AI-powered lead generation for home service contractors.',
-    url: 'https://hiring.divineacquisition.io/home-services',
+    url: 'https://go.divineacquisition.io/home-services',
     images: [
       {
         url: '/logo.png',

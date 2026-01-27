@@ -199,7 +199,7 @@ export default function NotAFitPage() {
               </span>
             </div>
             <div className="flex items-center gap-5">
-              <a href="https://hiring.divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://go.divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>

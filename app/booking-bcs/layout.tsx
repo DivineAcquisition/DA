@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Book Your Strategy Call | Divine Acquisition',
     description: 'Schedule a time to discuss how we can help you recover lost revenue and scale your home service business.',
-    url: 'https://hiring.divineacquisition.io/booking-bcs',
+    url: 'https://go.divineacquisition.io/booking-bcs',
     images: [
       {
         url: '/logo.png',
