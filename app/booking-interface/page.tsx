@@ -80,27 +80,6 @@ const painPoints = [
   'Manual reminder calls wasting your valuable time',
 ];
 
-const testimonials = [
-  {
-    quote: "Our bookings increased 40% in the first month. The automated reminders alone saved us 10+ hours a week.",
-    name: "Sarah Mitchell",
-    company: "Sparkle Clean Co.",
-    metric: "40% more bookings"
-  },
-  {
-    quote: "We went from 25% no-show rate to less than 5%. The deposit feature changed everything for us.",
-    name: "Marcus Johnson",
-    company: "Elite Cleaning Services",
-    metric: "80% fewer no-shows"
-  },
-  {
-    quote: "Setup was incredibly easy. Within a week, we had a professional booking system that makes us look like a major company.",
-    name: "Jennifer Lopez",
-    company: "Fresh Start Maids",
-    metric: "Live in 7 days"
-  },
-];
-
 export default function BookingInterfacePage() {
   const [mounted, setMounted] = useState(false);
 
@@ -335,43 +314,6 @@ export default function BookingInterfacePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="relative z-10 px-6 py-16 md:py-24">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <GlowDot />
-              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">Results</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
-              Trusted by Cleaning Companies
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <div 
-                key={index}
-                className="p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20 shadow-[0_0_30px_rgba(85,0,255,0.1)]"
-              >
-                <div className="mb-4">
-                  <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#5500FF]/20 text-[#907DFF]">
-                    {testimonial.metric}
-                  </span>
-                </div>
-                <p className="text-neutral-300 font-light leading-relaxed mb-6 text-sm">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </p>
-                <div>
-                  <p className="text-white font-medium">{testimonial.name}</p>
-                  <p className="text-neutral-500 text-sm">{testimonial.company}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* What's Included Section */}
       <section className="relative z-10 px-6 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
@@ -511,12 +453,12 @@ export default function BookingInterfacePage() {
               </div>
             </div>
             
-            {/* Calendar Embed */}
+            {/* Calendar Embed - iClosed */}
             <iframe 
-              src="https://api.leadconnectorhq.com/widget/booking/sXa1BwNUHVmAbLfaJDDC" 
+              src="https://app.iclosed.io/e/divine-acquisition/booking-interface-demo"
               style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
-              scrolling="no" 
-              id="sXa1BwNUHVmAbLfaJDDC_1738624800000"
+              scrolling="no"
+              allow="payment"
             />
           </div>
         </div>
