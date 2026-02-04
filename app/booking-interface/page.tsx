@@ -415,6 +415,59 @@ export default function BookingInterfacePage() {
         </div>
       </section>
 
+      {/* For Ad Traffic Section */}
+      <section className="relative z-10 px-6 py-16 md:py-24">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <GlowDot />
+              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">For Ad Traffic</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
+              For Residential Home Service Companies
+            </h2>
+            <p className="text-neutral-400 font-light text-lg max-w-2xl mx-auto">
+              Looking or planning on running ads? This booking interface is built to maximize your ROI.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Optimized for Ad Traffic */}
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
+              <div className="text-4xl mb-4">🎯</div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Optimized for Ad Traffic
+              </h3>
+              <p className="text-neutral-400 font-light leading-relaxed text-sm">
+                This booking interface works best when paired with your ad campaigns. Convert more clicks into booked appointments.
+              </p>
+            </div>
+
+            {/* Proven Partner Results */}
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
+              <div className="text-4xl mb-4">📈</div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Proven Partner Results
+              </h3>
+              <p className="text-neutral-400 font-light leading-relaxed text-sm">
+                Our partners in residential cleaning secure more sales by implementing a custom booking experience tailored to their brand.
+              </p>
+            </div>
+
+            {/* Built-in Retention Systems */}
+            <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
+              <div className="text-4xl mb-4">🔄</div>
+              <h3 className="text-xl font-semibold text-white mb-3">
+                Built-in Retention Systems
+              </h3>
+              <p className="text-neutral-400 font-light leading-relaxed text-sm">
+                Includes client retention tools that prompt upsells and encourage recurring service subscriptions for maximum lifetime value.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Calendar Booking Section */}
       <section id="book-call" className="relative z-10 px-6 py-16 md:py-24">
         <div className="max-w-4xl mx-auto">
@@ -426,10 +479,20 @@ export default function BookingInterfacePage() {
             <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
               Book Your Demo Call
             </h2>
-            <p className="text-neutral-400 font-light text-lg max-w-2xl mx-auto">
+            <p className="text-neutral-400 font-light text-lg max-w-2xl mx-auto mb-6">
               See exactly how the booking interface will work for your cleaning company. 
               We&apos;ll walk you through the setup process and answer all your questions.
             </p>
+            
+            {/* Phone Notice */}
+            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-[#5500FF]/10 border border-[#5500FF]/30 mb-8">
+              <svg className="w-5 h-5 text-[#907DFF] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+              </svg>
+              <p className="text-sm text-neutral-300 font-light">
+                <span className="text-white font-medium">Please use a valid phone number</span> — you&apos;ll receive a text with a form to customize your booking interface before the call!
+              </p>
+            </div>
           </div>
 
           <div className="relative rounded-2xl overflow-hidden bg-[#111111] border border-white/10 shadow-[0_0_60px_rgba(85,0,255,0.2)]">
