@@ -404,7 +404,7 @@ export default function BookingInterfacePage() {
           </Link>
           
           <a
-            href="#book-call"
+            href="/booking-bcs"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)]"
           >
             <span className="relative flex h-2 w-2">
@@ -456,7 +456,7 @@ export default function BookingInterfacePage() {
           {/* CTA Buttons */}
           <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
             <a
-              href="#book-call"
+              href="/booking-bcs"
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.6)] hover:shadow-[0_0_50px_rgba(85,0,255,0.8)]"
             >
               Watch The Demo
@@ -586,49 +586,6 @@ export default function BookingInterfacePage() {
         </div>
       </section>
 
-      {/* What's Included Section */}
-      <section className="relative z-10 px-6 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <GlowDot />
-              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">What You Get</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
-              Everything Included
-            </h2>
-          </div>
-
-          <div className="p-8 rounded-2xl bg-[#111111] border border-white/10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                'Custom branded booking page',
-                'Mobile-optimized design',
-                'Google Calendar integration',
-                'Automated SMS reminders',
-                'Automated email reminders',
-                'Deposit collection system',
-                'Service selection menu',
-                'Real-time availability',
-                'Customer database',
-                'Analytics dashboard',
-                'Unlimited bookings',
-                'Priority support',
-              ].map((item, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-[#5500FF]/20 flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-neutral-300 font-light">{item}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* For Ad Traffic Section */}
       <section className="relative z-10 px-6 py-16 md:py-24">
         <div className="max-w-5xl mx-auto">
@@ -648,7 +605,12 @@ export default function BookingInterfacePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Optimized for Ad Traffic */}
             <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
-              <div className="text-4xl mb-4">🎯</div>
+              <div className="w-12 h-12 rounded-xl bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF] mb-4 group-hover:bg-[#5500FF]/30 group-hover:shadow-[0_0_20px_rgba(85,0,255,0.4)] transition-all">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Optimized for Ad Traffic
               </h3>
@@ -659,7 +621,11 @@ export default function BookingInterfacePage() {
 
             {/* Proven Partner Results */}
             <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
-              <div className="text-4xl mb-4">📈</div>
+              <div className="w-12 h-12 rounded-xl bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF] mb-4 group-hover:bg-[#5500FF]/30 group-hover:shadow-[0_0_20px_rgba(85,0,255,0.4)] transition-all">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Proven Partner Results
               </h3>
@@ -670,7 +636,11 @@ export default function BookingInterfacePage() {
 
             {/* Built-in Retention Systems */}
             <div className="group p-6 rounded-2xl bg-gradient-to-br from-[#5500FF]/15 to-transparent border border-[#5500FF]/30 hover:border-[#907DFF]/60 hover:shadow-[0_0_40px_rgba(144,125,255,0.2)] transition-all duration-300">
-              <div className="text-4xl mb-4">🔄</div>
+              <div className="w-12 h-12 rounded-xl bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF] mb-4 group-hover:bg-[#5500FF]/30 group-hover:shadow-[0_0_20px_rgba(85,0,255,0.4)] transition-all">
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold text-white mb-3">
                 Built-in Retention Systems
               </h3>
@@ -678,64 +648,6 @@ export default function BookingInterfacePage() {
                 Includes client retention tools that prompt upsells and encourage recurring service subscriptions for maximum lifetime value.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Calendar Booking Section */}
-      <section id="book-call" className="relative z-10 px-6 py-16 md:py-24">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <GlowDot />
-              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">Next Step</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
-              Book Your Demo Call
-            </h2>
-            <p className="text-neutral-400 font-light text-lg max-w-2xl mx-auto mb-6">
-              See exactly how the booking interface will work for your cleaning company. 
-              We&apos;ll walk you through the setup process and answer all your questions.
-            </p>
-            
-            {/* Phone Notice */}
-            <div className="inline-flex items-center gap-3 px-5 py-3 rounded-xl bg-[#5500FF]/10 border border-[#5500FF]/30 mb-8">
-              <svg className="w-5 h-5 text-[#907DFF] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-              </svg>
-              <p className="text-sm text-neutral-300 font-light">
-                <span className="text-white font-medium">Please use a valid phone number</span> — you&apos;ll receive a text with a form to customize your booking interface before the call!
-              </p>
-            </div>
-          </div>
-
-          <div className="relative rounded-2xl overflow-hidden bg-[#111111] border border-white/10 shadow-[0_0_60px_rgba(85,0,255,0.2)]">
-            {/* Mac-style title bar */}
-            <div className="flex items-center gap-4 px-6 py-4 border-b border-white/10 bg-[#0d0d0d]">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.5)]" />
-                <span className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-[0_0_8px_rgba(255,189,46,0.5)]" />
-                <span className="w-3 h-3 rounded-full bg-[#27C93F] shadow-[0_0_8px_rgba(39,201,63,0.5)]" />
-              </div>
-              <div className="flex items-center gap-2 text-neutral-400 text-sm">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Select a time that works for you
-              </div>
-            </div>
-            
-            {/* Calendar Embed - Airtable */}
-            <iframe 
-              className="airtable-embed w-full border-0"
-              src="https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form"
-              width="100%"
-              height="1200"
-              style={{ 
-                background: 'transparent',
-                minHeight: '1200px',
-              }}
-            />
           </div>
         </div>
       </section>
@@ -847,7 +759,7 @@ export default function BookingInterfacePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="#book-call"
+              href="/booking-bcs"
               className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.6)] hover:shadow-[0_0_50px_rgba(85,0,255,0.8)]"
             >
               Book Your Demo Call
