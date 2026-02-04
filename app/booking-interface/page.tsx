@@ -14,6 +14,269 @@ function GlowDot({ className = '' }: { className?: string }) {
   );
 }
 
+// Customization Form Component
+function CustomizationForm() {
+  const [formData, setFormData] = useState({
+    companyName: '',
+    contactName: '',
+    email: '',
+    phone: '',
+    website: '',
+    services: '',
+    serviceAreas: '',
+    pricingStructure: '',
+    brandColors: '',
+    depositAmount: '',
+    reminderPreference: '',
+    calendarIntegration: '',
+    additionalNotes: '',
+  });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log('Form submitted:', formData);
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div className="p-12 text-center">
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-[#5500FF]/20 flex items-center justify-center shadow-[0_0_30px_10px_rgba(85,0,255,0.3)]">
+          <svg className="w-8 h-8 text-[#907DFF]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="text-2xl font-semibold text-white mb-3">Customization Request Submitted!</h3>
+        <p className="text-neutral-400 font-light">
+          Thank you! We&apos;ll review your information and reach out within 24-48 hours to discuss your custom booking interface.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+      {/* Company Information */}
+      <div>
+        <h3 className="text-sm font-semibold text-[#907DFF] uppercase tracking-wider mb-4">Company Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Company Name *
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.companyName}
+              onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+              placeholder="Sparkle Clean Co."
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Contact Name *
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.contactName}
+              onChange={(e) => setFormData({ ...formData, contactName: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+              placeholder="John Smith"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            Email Address *
+          </label>
+          <input
+            type="email"
+            required
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+            placeholder="john@sparkleclean.com"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+            Phone Number *
+          </label>
+          <input
+            type="tel"
+            required
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+            placeholder="+1 (555) 000-0000"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Company Website
+        </label>
+        <input
+          type="url"
+          value={formData.website}
+          onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+          placeholder="https://sparkleclean.com"
+        />
+      </div>
+
+      {/* Service Details */}
+      <div className="pt-4">
+        <h3 className="text-sm font-semibold text-[#907DFF] uppercase tracking-wider mb-4">Service Details</h3>
+        
+        <div className="space-y-6">
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Services Offered *
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={formData.services}
+              onChange={(e) => setFormData({ ...formData, services: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
+              placeholder="e.g., Standard Cleaning, Deep Cleaning, Move-in/Move-out, Office Cleaning, Post-Construction..."
+            />
+            <p className="mt-2 text-xs text-neutral-500">List all cleaning services you offer</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Service Areas *
+            </label>
+            <textarea
+              required
+              rows={2}
+              value={formData.serviceAreas}
+              onChange={(e) => setFormData({ ...formData, serviceAreas: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
+              placeholder="e.g., Baltimore, MD and surrounding areas (25 mile radius)"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Pricing Structure *
+            </label>
+            <textarea
+              required
+              rows={3}
+              value={formData.pricingStructure}
+              onChange={(e) => setFormData({ ...formData, pricingStructure: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
+              placeholder="e.g., Standard: $150-250, Deep Clean: $300-450, or hourly rates, square footage pricing..."
+            />
+            <p className="mt-2 text-xs text-neutral-500">Include pricing for each service type</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Branding & Preferences */}
+      <div className="pt-4">
+        <h3 className="text-sm font-semibold text-[#907DFF] uppercase tracking-wider mb-4">Branding & Preferences</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Brand Colors
+            </label>
+            <input
+              type="text"
+              value={formData.brandColors}
+              onChange={(e) => setFormData({ ...formData, brandColors: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+              placeholder="e.g., Blue (#0066CC), White, Green"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Deposit Amount
+            </label>
+            <input
+              type="text"
+              value={formData.depositAmount}
+              onChange={(e) => setFormData({ ...formData, depositAmount: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+              placeholder="e.g., $50 or 25%"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Reminder Preference
+            </label>
+            <select
+              value={formData.reminderPreference}
+              onChange={(e) => setFormData({ ...formData, reminderPreference: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+            >
+              <option value="" className="bg-[#0a0a0a]">Select preference</option>
+              <option value="sms" className="bg-[#0a0a0a]">SMS Only</option>
+              <option value="email" className="bg-[#0a0a0a]">Email Only</option>
+              <option value="both" className="bg-[#0a0a0a]">Both SMS & Email</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+              Calendar Integration
+            </label>
+            <select
+              value={formData.calendarIntegration}
+              onChange={(e) => setFormData({ ...formData, calendarIntegration: e.target.value })}
+              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all"
+            >
+              <option value="" className="bg-[#0a0a0a]">Select calendar</option>
+              <option value="google" className="bg-[#0a0a0a]">Google Calendar</option>
+              <option value="outlook" className="bg-[#0a0a0a]">Outlook / Microsoft</option>
+              <option value="apple" className="bg-[#0a0a0a]">Apple Calendar</option>
+              <option value="other" className="bg-[#0a0a0a]">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Additional Notes */}
+      <div className="pt-4">
+        <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
+          Additional Notes or Requirements
+        </label>
+        <textarea
+          rows={4}
+          value={formData.additionalNotes}
+          onChange={(e) => setFormData({ ...formData, additionalNotes: e.target.value })}
+          className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-[#5500FF] focus:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all resize-none"
+          placeholder="Any specific features, integrations, or requirements you need..."
+        />
+      </div>
+
+      <button
+        type="submit"
+        className="w-full py-4 rounded-xl bg-gradient-to-r from-[#5500FF] to-[#907DFF] text-white font-semibold hover:opacity-90 transition-opacity shadow-[0_0_30px_rgba(85,0,255,0.5)]"
+      >
+        Submit Customization Request
+      </button>
+
+      <p className="text-xs text-neutral-500 text-center font-light">
+        We&apos;ll review your information and reach out within 24-48 hours to discuss your custom booking interface.
+      </p>
+    </form>
+  );
+}
+
 const features = [
   {
     icon: (
@@ -190,7 +453,7 @@ export default function BookingInterfacePage() {
             <span className="text-white font-medium"> automatically</span>.
           </p>
 
-          {/* CTA Button */}
+          {/* CTA Buttons */}
           <div className={`flex flex-col sm:flex-row items-center justify-center gap-4 mb-8 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
             <a
               href="#book-call"
@@ -200,6 +463,15 @@ export default function BookingInterfacePage() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </a>
+            <a
+              href="#customize"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-transparent border-2 border-[#5500FF] text-white hover:bg-[#5500FF]/10 transition-all"
+            >
+              Customize My Interface
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
             </a>
           </div>
@@ -453,13 +725,65 @@ export default function BookingInterfacePage() {
               </div>
             </div>
             
-            {/* Calendar Embed - iClosed */}
+            {/* Calendar Embed - Airtable */}
             <iframe 
-              src="https://app.iclosed.io/e/divine-acquisition/booking-interface-demo"
-              style={{ width: '100%', border: 'none', overflow: 'hidden', minHeight: '700px' }}
-              scrolling="no"
-              allow="payment"
+              className="airtable-embed w-full border-0"
+              src="https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form"
+              width="100%"
+              height="1200"
+              style={{ 
+                background: 'transparent',
+                minHeight: '1200px',
+              }}
             />
+          </div>
+        </div>
+      </section>
+
+      {/* Customize My Interface Section */}
+      <section id="customize" className="relative z-10 px-6 py-16 md:py-24">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <GlowDot />
+              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em]">Get Started</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-semibold text-white mb-4">
+              Customize My Interface
+            </h2>
+            <p className="text-neutral-400 font-light text-lg max-w-2xl mx-auto">
+              Tell us about your cleaning company and we&apos;ll build a custom booking interface tailored to your brand and services.
+            </p>
+          </div>
+
+          <div className="relative rounded-2xl bg-[#111111] border border-white/10 overflow-hidden shadow-[0_0_50px_rgba(85,0,255,0.1)]">
+            {/* Background glow */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] bg-gradient-to-b from-[#5500FF]/10 to-transparent pointer-events-none" />
+            
+            {/* Mac-style title bar */}
+            <div className="relative flex items-center gap-4 px-6 py-4 border-b border-white/10 bg-[#0d0d0d]">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.5)]" />
+                <span className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-[0_0_8px_rgba(255,189,46,0.5)]" />
+                <span className="w-3 h-3 rounded-full bg-[#27C93F] shadow-[0_0_8px_rgba(39,201,63,0.5)]" />
+              </div>
+              <div className="flex items-center gap-3 flex-1">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white shadow-[0_0_20px_rgba(85,0,255,0.4)]">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Booking Interface Customization</h3>
+                  <p className="text-xs text-neutral-500">Fill out the details below to get started</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Form content */}
+            <div className="relative">
+              <CustomizationForm />
+            </div>
           </div>
         </div>
       </section>
@@ -521,15 +845,26 @@ export default function BookingInterfacePage() {
           <p className="text-neutral-400 font-light text-lg mb-8">
             Join the cleaning companies that are growing faster with automated booking.
           </p>
-          <a
-            href="#book-call"
-            className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.6)] hover:shadow-[0_0_50px_rgba(85,0,255,0.8)]"
-          >
-            Book Your Demo Call
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="#book-call"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_40px_rgba(85,0,255,0.6)] hover:shadow-[0_0_50px_rgba(85,0,255,0.8)]"
+            >
+              Book Your Demo Call
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a
+              href="#customize"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full text-lg font-semibold bg-transparent border-2 border-[#5500FF] text-white hover:bg-[#5500FF]/10 transition-all"
+            >
+              Customize My Interface
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </a>
+          </div>
         </div>
       </section>
 
