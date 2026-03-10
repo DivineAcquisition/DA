@@ -1,25 +1,25 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Divine Acquisition | Fractional Growth Operations for Service Businesses',
-  description: 'We audit your entire operation, identify every revenue leak, and build AI-powered systems that turn your service business into a compounding growth machine — in 14 days or less.',
+  title: 'Open Positions | Divine Acquisition Careers',
+  description: 'Explore career opportunities at Divine Acquisition. We\'re hiring Systems Architects, Media Buyers, SDR / Setters, Closers, and Client Success Managers. Remote positions with competitive compensation.',
   openGraph: {
-    title: 'Divine Acquisition | Growth Infrastructure That Scales',
-    description: 'Stop losing revenue to broken operations. We build AI-powered systems, data architecture, and retention engines for service businesses doing $10K-$250K/month.',
-    url: 'https://divineacquisition.io',
+    title: 'Open Positions at Divine Acquisition',
+    description: 'Join our team of builders and operators. Build systems that compound trust, revenue, and retention for service-based businesses.',
+    url: 'https://hiring.divineacquisition.io/hiring',
     images: [
       {
         url: '/logo.png',
         width: 800,
         height: 800,
-        alt: 'Divine Acquisition',
+        alt: 'Divine Acquisition Careers',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Divine Acquisition | Growth Infrastructure That Scales',
-    description: 'Fractional Growth Operations for service businesses. From audit to infrastructure in 14 days.',
+    title: 'Open Positions at Divine Acquisition',
+    description: 'Join our team of builders and operators. Remote positions available.',
   },
 }
 
