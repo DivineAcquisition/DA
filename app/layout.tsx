@@ -3,22 +3,22 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Careers at Divine Acquisition | Join Our Team',
-    template: '%s | Divine Acquisition Careers',
+    default: 'Divine Acquisition | Fractional Growth Operations',
+    template: '%s | Divine Acquisition',
   },
-  description: 'Join Divine Acquisition and help build Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We\'re hiring Systems Architects, Media Buyers, Sales professionals, and Client Success Managers.',
-  keywords: ['careers', 'jobs', 'hiring', 'Divine Acquisition', 'growth infrastructure', 'B2B', 'remote jobs', 'sales jobs', 'marketing jobs'],
+  description: 'We audit your entire operation, identify every revenue leak, and build AI-powered systems that turn your service business into a compounding growth machine — in 14 days or less.',
+  keywords: ['growth operations', 'Divine Acquisition', 'AI automation', 'service business', 'fractional COO', 'growth infrastructure', 'retention systems', 'lead automation'],
   authors: [{ name: 'Divine Acquisition' }],
   creator: 'Divine Acquisition',
   publisher: 'Divine Acquisition',
-  metadataBase: new URL('https://hiring.divineacquisition.io'),
+  metadataBase: new URL('https://divineacquisition.io'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://hiring.divineacquisition.io',
-    siteName: 'Divine Acquisition Careers',
-    title: 'Careers at Divine Acquisition | Build Systems That Compound',
-    description: 'Join our team of builders, architects, and operators. We build Acquisition, Retention & AI Growth Infrastructure for service-based businesses.',
+    url: 'https://divineacquisition.io',
+    siteName: 'Divine Acquisition',
+    title: 'Divine Acquisition | Growth Infrastructure That Scales',
+    description: 'Stop losing revenue to broken operations. We build AI-powered systems, data architecture, and retention engines for service businesses.',
     images: [
       {
         url: '/logo.png',
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Careers at Divine Acquisition',
-    description: 'Join our team and help build systems that compound. Remote positions available.',
+    title: 'Divine Acquisition | Growth Infrastructure That Scales',
+    description: 'Fractional Growth Operations for service businesses. From audit to infrastructure in 14 days.',
     creator: '@maliksannie',
     images: ['/logo.png'],
   },
