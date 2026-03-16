@@ -20,6 +20,7 @@ type OutcomeCard = {
 
 type Capability = {
   headline: string;
+  imagePath: string;
   visual: string;
   copy: string;
 };
@@ -58,36 +59,42 @@ const outcomes: OutcomeCard[] = [
 const capabilities: Capability[] = [
   {
     headline: 'Every client monitored 24/7',
+    imagePath: '/demo/airtable-client-roster.png',
     visual:
       'Screenshot target: Airtable Client Roster with health scores in green/yellow/orange/red and trend arrows.',
     copy: 'Health scores calculated daily from interaction frequency, sentiment, deliverable status, billing health, and contract timeline. When a client starts slipping, the system catches it the same day — not three weeks later when they send the cancellation email.',
   },
   {
     headline: 'Check-ins that write themselves',
+    imagePath: '/demo/slack-checkin-draft.png',
     visual:
       "Screenshot target: Slack message with AI-drafted check-in email that references client's name and active project.",
     copy: "The AI drafts personalized check-in messages using everything it knows about the client — their project, their last call, their preferences, their communication style. Not templates. Messages that reference real context. Your CSM reviews in 30 seconds and sends, or the system sends automatically.",
   },
   {
     headline: 'Reports built in seconds, not hours',
+    imagePath: '/demo/slack-weekly-brief.png',
     visual:
       'Screenshot target: Monday weekly brief in Slack with client names, health scores, and recommended next actions.',
     copy: 'Weekly operational briefs land in Slack every Monday at 8am. Client performance reports auto-generate monthly. CSM priority lists arrive daily — ranked by urgency with exact actions. Every report uses real data, real client names, real numbers. No manual spreadsheet building.',
   },
   {
     headline: 'Retention that runs while you sleep',
+    imagePath: '/demo/ghl-retention-workflow.png',
     visual:
       'Screenshot target: GHL workflow view with sequence steps (email, wait, SMS, wait, escalation).',
     copy: "When a client's health drops, a multi-step retention sequence fires automatically. Check-in email within 4 hours. SMS follow-up if no reply in 3 days. Escalation to the owner if still silent. The system runs the sequence. Humans intervene only when the system says they're needed.",
   },
   {
     headline: 'Renewals that never get missed',
+    imagePath: '/demo/airtable-renewals-coming.png',
     visual:
       'Screenshot target: Airtable Renewals Coming view showing contracts and days-until-expiry calculations.',
     copy: 'Every contract is tracked. At 60 days out, the team gets alerted. At 30 days, the AI drafts a renewal touch email. At 15 days, the owner gets an urgent notification. No contract ever expires because nobody was watching the calendar.',
   },
   {
     headline: 'Your entire team knows what to do every morning',
+    imagePath: '/demo/slack-morning-priority.png',
     visual:
       "Screenshot target: Slack morning priority post with at-risk clients, follow-ups due, and renewals listed.",
     copy: 'Every CSM gets a daily priority list in Slack. Every morning. Ranked by urgency. At-risk clients at the top, healthy clients at the bottom. No guessing. No Monday morning scramble. Open Slack, read the list, start working.',
@@ -283,6 +290,7 @@ function ScreenPlaceholder({ text }: { text: string }) {
 export default function DemoPage() {
   const [activeFaqIndex, setActiveFaqIndex] = useState<number | null>(0);
   const [openIncludedIndex, setOpenIncludedIndex] = useState<number | null>(0);
+  const [missingScreenshots, setMissingScreenshots] = useState<Record<string, boolean>>({});
   const trackedMilestonesRef = useRef<Set<number>>(new Set());
   const playersRef = useRef<VimeoPlayerInstance[]>([]);
   const heroVideoRef = useRef<HTMLIFrameElement | null>(null);
@@ -475,7 +483,21 @@ export default function DemoPage() {
                   <p className="mt-3 text-neutral-700">{item.copy}</p>
                 </div>
                 <div className={index % 2 === 1 ? 'md:order-1' : ''}>
-                  <ScreenPlaceholder text={item.visual} />
+                  {missingScreenshots[item.imagePath] ? (
+                    <ScreenPlaceholder text={item.visual} />
+                  ) : (
+                    <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+                      <img
+                        src={item.imagePath}
+                        alt={item.headline}
+                        className="aspect-[16/10] h-full w-full object-cover"
+                        loading="lazy"
+                        onError={() =>
+                          setMissingScreenshots((current) => ({ ...current, [item.imagePath]: true }))
+                        }
+                      />
+                    </div>
+                  )}
                 </div>
               </article>
             ))}
