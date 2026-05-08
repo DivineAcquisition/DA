@@ -448,8 +448,8 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form onSubmit={handleSubmit} className="p-5 sm:p-6 md:p-8 space-y-5 sm:space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
         <div>
           <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
             Full Name *
@@ -478,7 +478,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
         <div>
           <label className="block text-xs font-medium text-neutral-400 uppercase tracking-wider mb-2">
             Phone Number
@@ -672,56 +672,58 @@ export default function JobPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
-        <div className="max-w-6xl mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/hiring" className="group">
-            <Image 
-              src="/logo.png" 
-              alt="Divine Acquisition" 
-              width={200} 
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 md:h-28 border-b border-white/5 bg-[#0a0a0a]/90 backdrop-blur-2xl">
+        <div className="max-w-6xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
+          <Link href="/hiring" className="group flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Divine Acquisition"
+              width={200}
               height={200}
-              className="group-hover:opacity-80 transition-opacity"
+              priority
+              className="h-9 sm:h-12 md:h-16 w-auto group-hover:opacity-80 transition-opacity"
             />
           </Link>
-          
+
           <Link
             href="/hiring"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold bg-gradient-to-r from-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_25px_rgba(98,0,255,0.4)]"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_25px_rgba(98,0,255,0.4)] whitespace-nowrap"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            All Positions
+            <span className="hidden sm:inline">All Positions</span>
+            <span className="sm:hidden">Back</span>
           </Link>
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-36 pb-20 px-6">
+      <main className="relative z-10 pt-24 sm:pt-32 md:pt-36 pb-16 sm:pb-20 px-5 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          
+
           {/* Hero Section */}
-          <section className="mb-16">
+          <section className="mb-12 sm:mb-16">
             {/* Department Badge */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <span className="w-8 h-px bg-gradient-to-r from-[#5500FF] to-transparent shadow-[0_0_10px_rgba(85,0,255,0.8)]"></span>
-              <span className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">
+              <span className="text-[11px] sm:text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">
                 {job.department}
               </span>
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-5 sm:mb-6 leading-[1.05]">
               {job.title}
             </h1>
 
             {/* Description */}
-            <p className="text-xl text-neutral-400 font-light leading-relaxed mb-10 max-w-3xl">
+            <p className="text-base sm:text-lg md:text-xl text-neutral-400 font-light leading-relaxed mb-8 sm:mb-10 max-w-3xl">
               {job.description}
             </p>
 
             {/* Meta Info Bar */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 p-5 sm:p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
               <div>
                 <p className="text-[10px] font-medium text-neutral-500 uppercase tracking-wider mb-1">Department</p>
                 <p className="text-sm font-medium text-white">{job.department}</p>
@@ -742,28 +744,28 @@ export default function JobPage() {
           </section>
 
           {/* Mission Section */}
-          <section className="mb-16">
-            <div className="flex items-center gap-3 mb-6">
+          <section className="mb-12 sm:mb-16">
+            <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <GlowDot />
-              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">The Mission</h2>
+              <h2 className="text-[11px] sm:text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">The Mission</h2>
             </div>
-            <p className="text-lg text-neutral-300 font-light leading-relaxed">
+            <p className="text-base sm:text-lg text-neutral-300 font-light leading-relaxed">
               {job.mission}
             </p>
           </section>
 
           {/* Tech Stack */}
           {job.techStack && (
-            <section className="mb-16">
-              <div className="flex items-center gap-3 mb-6">
+            <section className="mb-12 sm:mb-16">
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
                 <GlowDot />
-                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">Tech Stack</h2>
+                <h2 className="text-[11px] sm:text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">Tech Stack</h2>
               </div>
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2.5 sm:gap-3">
                 {job.techStack.map((tech, index) => (
-                  <span 
+                  <span
                     key={index}
-                    className="px-4 py-2 rounded-lg text-sm font-medium bg-[#5500FF]/15 text-[#907DFF] border border-[#5500FF]/30 shadow-[0_0_15px_rgba(85,0,255,0.2)]"
+                    className="px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium bg-[#5500FF]/15 text-[#907DFF] border border-[#5500FF]/30 shadow-[0_0_15px_rgba(85,0,255,0.2)]"
                   >
                     {tech}
                   </span>
@@ -774,8 +776,8 @@ export default function JobPage() {
 
           {/* Content Sections */}
           {job.sections.map((section, sectionIndex) => (
-            <section key={sectionIndex} className="mb-16">
-              <div className="flex items-center gap-3 mb-6">
+            <section key={sectionIndex} className="mb-12 sm:mb-16">
+              <div className="flex items-center gap-3 mb-5 sm:mb-6">
                 {shouldUseIcons(section.title) ? (
                   <div className="w-8 h-8 rounded-lg bg-[#5500FF]/20 flex items-center justify-center text-[#907DFF] shadow-[0_0_20px_rgba(85,0,255,0.4)]">
                     {section.title === 'Responsibilities' ? (
@@ -791,19 +793,19 @@ export default function JobPage() {
                 ) : (
                   <GlowDot />
                 )}
-                <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">{section.title}</h2>
+                <h2 className="text-[11px] sm:text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">{section.title}</h2>
               </div>
-              
+
               {section.type === 'text' && section.content && (
-                <p className="text-neutral-400 font-light leading-relaxed whitespace-pre-line">
+                <p className="text-sm sm:text-base text-neutral-400 font-light leading-relaxed whitespace-pre-line">
                   {section.content}
                 </p>
               )}
-              
+
               {section.type === 'list' && section.items && (
-                <div className="space-y-4">
+                <div className="space-y-3.5 sm:space-y-4">
                   {section.items.map((item, itemIndex) => (
-                    <div key={itemIndex} className="flex items-start gap-4 group">
+                    <div key={itemIndex} className="flex items-start gap-3.5 sm:gap-4 group">
                       {shouldUseIcons(section.title) ? (
                         <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/[0.03] border border-white/5 flex items-center justify-center text-[#907DFF] group-hover:bg-[#5500FF]/10 group-hover:border-[#5500FF]/20 group-hover:shadow-[0_0_15px_rgba(85,0,255,0.3)] transition-all">
                           {responsibilityIcons[itemIndex % responsibilityIcons.length]}
@@ -813,8 +815,8 @@ export default function JobPage() {
                           <span className="block w-1.5 h-1.5 rounded-full bg-[#5500FF] shadow-[0_0_8px_3px_rgba(85,0,255,0.5)]" />
                         </div>
                       )}
-                      <div className="flex-1 pt-1">
-                        <p className="text-neutral-300 font-light leading-relaxed">{item}</p>
+                      <div className="flex-1 pt-1 min-w-0">
+                        <p className="text-sm sm:text-base text-neutral-300 font-light leading-relaxed">{item}</p>
                       </div>
                     </div>
                   ))}
@@ -824,12 +826,12 @@ export default function JobPage() {
           ))}
 
           {/* About Section */}
-          <section className="mb-16 p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20 shadow-[0_0_40px_rgba(85,0,255,0.15)]">
-            <div className="flex items-center gap-3 mb-6">
+          <section className="mb-12 sm:mb-16 p-6 sm:p-8 rounded-2xl bg-gradient-to-br from-[#5500FF]/10 to-transparent border border-[#5500FF]/20 shadow-[0_0_40px_rgba(85,0,255,0.15)]">
+            <div className="flex items-center gap-3 mb-5 sm:mb-6">
               <GlowDot />
-              <h2 className="text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">About Divine Acquisition</h2>
+              <h2 className="text-[11px] sm:text-xs font-semibold text-[#907DFF] uppercase tracking-[0.2em] drop-shadow-[0_0_10px_rgba(144,125,255,0.5)]">About Divine Acquisition</h2>
             </div>
-            <p className="text-neutral-400 font-light leading-relaxed whitespace-pre-line text-sm">
+            <p className="text-sm text-neutral-400 font-light leading-relaxed whitespace-pre-line">
               {aboutContent}
             </p>
           </section>
@@ -841,22 +843,22 @@ export default function JobPage() {
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[200px] bg-gradient-to-b from-[#5500FF]/10 to-transparent pointer-events-none" />
               
               {/* Mac-style title bar */}
-              <div className="relative flex items-center gap-4 px-6 py-4 border-b border-white/10 bg-[#0d0d0d]">
+              <div className="relative flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 bg-[#0d0d0d]">
                 {/* Traffic light dots */}
-                <div className="flex items-center gap-2">
+                <div className="hidden sm:flex items-center gap-2">
                   <span className="w-3 h-3 rounded-full bg-[#FF5F56] shadow-[0_0_8px_rgba(255,95,86,0.5)]" />
                   <span className="w-3 h-3 rounded-full bg-[#FFBD2E] shadow-[0_0_8px_rgba(255,189,46,0.5)]" />
                   <span className="w-3 h-3 rounded-full bg-[#27C93F] shadow-[0_0_8px_rgba(39,201,63,0.5)]" />
                 </div>
-                
+
                 {/* Step indicator and title */}
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white text-sm font-bold shadow-[0_0_20px_rgba(85,0,255,0.4)]">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-[#5500FF] to-[#907DFF] flex items-center justify-center text-white text-sm font-bold shadow-[0_0_20px_rgba(85,0,255,0.4)]">
                     2
                   </div>
-                  <div>
-                    <h2 className="text-lg font-semibold text-white">Apply for {job.title}</h2>
-                    <p className="text-xs text-neutral-500">Complete the form below to submit your application</p>
+                  <div className="min-w-0">
+                    <h2 className="text-base sm:text-lg font-semibold text-white truncate">Apply for {job.title}</h2>
+                    <p className="text-[11px] sm:text-xs text-neutral-500">Complete the form below to submit your application</p>
                   </div>
                 </div>
               </div>
@@ -885,14 +887,14 @@ export default function JobPage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-6 sm:py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-5 md:gap-4">
             <div className="flex items-center gap-3">
               <Link href="/hiring">
-                <Image 
-                  src="/6 (0-00-00-00)_1.png" 
-                  alt="Divine Acquisition" 
-                  width={32} 
+                <Image
+                  src="/6 (0-00-00-00)_1.png"
+                  alt="Divine Acquisition"
+                  width={32}
                   height={32}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
@@ -902,13 +904,13 @@ export default function JobPage() {
               </span>
             </div>
             <div className="flex items-center gap-5">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>

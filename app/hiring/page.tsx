@@ -183,38 +183,40 @@ export default function HiringPage() {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-28 border-b border-white/5 bg-[#0a0a0a]/70 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto h-full px-6 flex items-center justify-between">
-          <Link href="/hiring" className="group">
-            <Image 
-              src="/logo.png" 
-              alt="Divine Acquisition" 
-              width={200} 
+      <nav className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 md:h-28 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
+          <Link href="/hiring" className="group flex items-center">
+            <Image
+              src="/logo.png"
+              alt="Divine Acquisition"
+              width={200}
               height={200}
-              className="group-hover:opacity-80 transition-opacity"
+              priority
+              className="h-9 sm:h-12 md:h-16 w-auto group-hover:opacity-80 transition-opacity"
             />
           </Link>
-          
+
           <a
             href="#positions"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)]"
+            className="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)] whitespace-nowrap"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
             </span>
-            {jobs.length} Open Roles
+            <span className="hidden sm:inline">{jobs.length} Open Roles</span>
+            <span className="sm:hidden">{jobs.length} Roles</span>
           </a>
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section className="relative z-10 px-6 pt-44 pb-16 md:pt-52 md:pb-20">
+      <section className="relative z-10 px-5 sm:px-6 pt-28 pb-12 sm:pt-36 sm:pb-16 md:pt-52 md:pb-20">
         <div className="max-w-3xl mx-auto text-center">
           {/* Badge */}
-          <div 
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold
-                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/40 mb-8
+          <div
+            className={`inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] sm:text-xs font-semibold
+                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/40 mb-6 sm:mb-8
                         shadow-[0_0_40px_-5px_rgba(144,125,255,0.6)]
                         ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
           >
@@ -226,8 +228,8 @@ export default function HiringPage() {
           </div>
 
           {/* Headline */}
-          <h1 
-            className={`text-4xl sm:text-5xl md:text-6xl font-semibold tracking-tight mb-6 leading-[1.15] text-transparent bg-clip-text
+          <h1
+            className={`text-[2rem] leading-[1.1] sm:text-5xl md:text-6xl font-semibold mb-5 sm:mb-6 sm:leading-[1.15] text-transparent bg-clip-text
                         ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
             style={{
               backgroundImage: 'linear-gradient(to right, white 0%, white 30%, #907DFF 60%, #5500FF 100%)',
@@ -237,22 +239,22 @@ export default function HiringPage() {
           </h1>
 
           {/* Subheadline */}
-          <p 
-            className={`text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-12
+          <p
+            className={`text-base sm:text-lg md:text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-8 sm:mb-12
                         ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
           >
             We are building infrastructure that compounds trust, revenue & retention for service based businesses. We are looking for those devoted to building DivineAcquisition™ & our future projects.
           </p>
 
           {/* Values */}
-          <div 
-            className={`flex flex-wrap justify-center gap-3
+          <div
+            className={`flex flex-wrap justify-center gap-2.5 sm:gap-3
                         ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
           >
             {['Devotion', 'Value', 'Exclusivity'].map((value) => (
-              <span 
+              <span
                 key={value}
-                className="px-4 py-2 rounded-full text-sm font-medium bg-[#907DFF]/5 border border-[#907DFF]/20 text-neutral-300 hover:border-[#907DFF]/40 hover:shadow-[0_0_20px_rgba(144,125,255,0.2)] transition-all"
+                className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-[#907DFF]/5 border border-[#907DFF]/20 text-neutral-300 hover:border-[#907DFF]/40 hover:shadow-[0_0_20px_rgba(144,125,255,0.2)] transition-all"
               >
                 {value}
               </span>
@@ -262,13 +264,13 @@ export default function HiringPage() {
       </section>
 
       {/* Positions Section */}
-      <main className="relative z-10 px-6 pb-20" id="positions">
+      <main className="relative z-10 px-5 sm:px-6 pb-16 sm:pb-20" id="positions">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8">
-            
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
+
             {/* Sidebar Filter */}
             <aside className={`lg:w-72 flex-shrink-0 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="lg:sticky lg:top-32 space-y-8 p-6 rounded-2xl bg-[#111111] border border-white/10 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
+              <div className="lg:sticky lg:top-32 space-y-6 sm:space-y-8 p-5 sm:p-6 rounded-2xl bg-[#111111] border border-white/10 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
                 
                 {/* Department Filter */}
                 <div>
@@ -358,41 +360,41 @@ export default function HiringPage() {
             {/* Job Listings */}
             <div className="flex-1">
               {/* Header */}
-              <div className={`flex items-center justify-between mb-6 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
+              <div className={`flex items-center justify-between mb-5 sm:mb-6 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
                 <div>
-                  <h2 className="text-2xl font-semibold text-white tracking-tight">Open Positions</h2>
+                  <h2 className="text-xl sm:text-2xl font-semibold text-white">Open Positions</h2>
                   <p className="text-neutral-500 text-sm mt-1">{filteredJobs.length} roles available</p>
                 </div>
               </div>
 
               {/* Job Cards */}
-              <div className={`space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
+              <div className={`space-y-3 sm:space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
                 {filteredJobs.map((job) => (
                   <Link
                     key={job.id}
                     href={`/hiring/${job.slug}`}
                     className="block group"
                   >
-                    <div className="relative p-6 rounded-2xl bg-[#111111] border border-white/10 hover:bg-[#151515] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
+                    <div className="relative p-5 sm:p-6 rounded-2xl bg-[#111111] border border-white/10 hover:bg-[#151515] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
                       {/* Hover glow */}
                       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
                       </div>
-                      
-                      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
+
+                      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
+                            <h3 className="text-base sm:text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
                               {job.title}
                             </h3>
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#907DFF]/15 text-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.3)]">
-                          {job.subtitle}
-                        </span>
+                            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#907DFF]/15 text-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.3)]">
+                              {job.subtitle}
+                            </span>
                           </div>
                           <p className="text-sm text-neutral-500 font-light leading-relaxed mb-3">
                             {job.description}
                           </p>
-                          <div className="flex flex-wrap items-center gap-3 text-xs text-neutral-500">
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-neutral-500">
                             <span className="flex items-center gap-1.5">
                               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -406,7 +408,7 @@ export default function HiringPage() {
                             <span className="capitalize">{job.location}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-6">
+                        <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 flex-shrink-0">
                           <LevelIndicator level={job.level} />
                           <svg
                             className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] group-hover:translate-x-1 transition-all"
@@ -424,9 +426,9 @@ export default function HiringPage() {
                 ))}
 
                 {filteredJobs.length === 0 && (
-                  <div className="text-center py-16 rounded-2xl bg-[#111111] border border-white/10">
+                  <div className="text-center py-12 sm:py-16 rounded-2xl bg-[#111111] border border-white/10">
                     <p className="text-neutral-500 font-light">No positions found in this department.</p>
-                    <button 
+                    <button
                       onClick={() => setSelectedDept('all')}
                       className="mt-3 text-sm text-[#907DFF] hover:text-white transition-colors"
                     >
@@ -442,14 +444,14 @@ export default function HiringPage() {
 
       {/* Footer */}
       <footer className="relative z-10 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="max-w-7xl mx-auto px-5 sm:px-6 py-8 sm:py-10">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-5 md:gap-6">
             <div className="flex items-center gap-3">
               <Link href="/hiring">
-                <Image 
-                  src="/6 (0-00-00-00)_1.png" 
-                  alt="Divine Acquisition" 
-                  width={32} 
+                <Image
+                  src="/6 (0-00-00-00)_1.png"
+                  alt="Divine Acquisition"
+                  width={32}
                   height={32}
                   className="opacity-70 hover:opacity-100 transition-opacity"
                 />
@@ -459,13 +461,13 @@ export default function HiringPage() {
               </span>
             </div>
             <div className="flex items-center gap-5">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Instagram
               </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Twitter
               </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[10px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
+              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
                 Privacy
               </a>
             </div>
