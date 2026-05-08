@@ -5,22 +5,19 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-const aboutContent = `Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We exist to build timeless business infrastructures that compound trust, revenue & retention, turning our clients' offerings into operating systems that print trust, revenue, and long-term loyalty. We work across two verticals: online businesses & occasionally local businesses.
+const aboutContent = `Divine Acquisition builds Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We turn offerings into operating systems that compound trust, revenue, and loyalty. Two verticals: online businesses and select local businesses.
 
-Our philosophy rests on three pillars:
-• Devotion — We build trust so deep it becomes conviction.
-• Value — We simplify complexity. We make the right path the easy path.
-• Exclusivity — We are not for everyone. We work with businesses ready for transformation, not quick fixes.
+Three pillars:
+• Devotion — trust deep enough to become conviction
+• Value — simplify complexity; make the right path the easy path
+• Exclusivity — we work with businesses ready for transformation, not quick fixes
 
 What we believe:
-• Fit over force — we only win when the client wins
+• Fit over force — we win only when the client wins
 • Simplicity scales — complexity is the enemy of repeatability
-• Process over personality — a great system outperforms charisma
-• Systems over hustle — we build infrastructure, not burnout
-• Legacy over hype — we play the long game
+• Process over personality, systems over hustle, legacy over hype
 
-Why join us:
-Divine Acquisition is not an agency. We're a consultancy of builders, architects, and operators who take pride in creating things that last. We don't chase trends. We don't glorify grinding. We build systems that compound — for our clients and for ourselves. If you want to be part of something that matters — not just something that sells — keep reading.`;
+We're not an agency. We're a consultancy of builders, architects, and operators who take pride in things that last. If you want to be part of something that matters — keep reading.`;
 
 // Glowing dot component
 function GlowDot({ className = '' }: { className?: string }) {
@@ -69,8 +66,8 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Project + Retainer',
-    mission: 'We build systems that create repeatable excellence. Every automation exists to serve a human outcome. Every workflow exists to create clarity. Every integration exists to eliminate friction.',
-    description: 'You are the builder of machines. You take strategy and turn it into infrastructure — the pipelines, automations, workflows, and integrations that make our solutions actually work.',
+    mission: 'Build systems that create repeatable excellence. Every automation serves a human outcome — clarity over complexity, every time.',
+    description: 'Builder of machines. Take strategy and turn it into infrastructure — the pipelines, automations, and integrations that make everything work.',
     techStack: ['GoHighLevel', 'Zapier', 'Make', 'Airtable', 'APIs', 'Webhooks', 'Framer'],
     useAirtable: true,
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pagPWbnh31lQsrT7C/form',
@@ -79,43 +76,41 @@ const jobs: Record<string, {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Translate business requirements into technical specifications and system architectures',
-          'Build and configure GHL sub-accounts: pipelines, workflows, automations, triggers, and reporting dashboards',
-          'Create Zapier/Make integrations connecting GHL with external tools (Airtable, Stripe, calendars)',
-          'Build landing pages, VSL pages, and booking pages — mobile-optimized and fast-loading',
-          'Test every build before delivery — walk through every path, trigger, and edge case',
-          'Create Loom walkthroughs and documentation for every build',
-          'Monitor live systems, troubleshoot issues within 24 hours, and optimize based on performance data',
+          'Translate business requirements into clean technical specs and system architectures',
+          'Build GHL sub-accounts: pipelines, workflows, automations, triggers, dashboards',
+          'Wire Zapier / Make integrations between GHL and Airtable, Stripe, calendars',
+          'Ship landing, VSL, and booking pages — fast-loading, mobile-first',
+          'QA every build — walk every path, trigger, and edge case before delivery',
+          'Document with Loom walkthroughs; resolve live issues within 24 hours',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          'Deep technical expertise — GHL, Zapier, Make, APIs, webhooks are your playground',
-          'Systems thinking — you see logic flows, not just features and buttons',
-          'Quality obsession — "good enough" makes you uncomfortable',
-          'Independent problem-solving — translate requirements into solutions without hand-holding',
-          'Documentation discipline — you know future-you will thank you',
+          'Deep technical fluency — GHL, Zapier, Make, APIs, webhooks',
+          'Systems thinking — you see logic flows, not just buttons',
+          'Quality obsession — "good enough" doesn\'t sit right',
+          'Independent problem-solving without hand-holding',
+          'Documentation discipline — future-you will thank you',
         ],
       },
       {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
-          '95%+ project delivery rate (on time, on spec)',
-          'Zero critical errors per project — must pass testing checklist before delivery',
+          '95%+ on-time, on-spec delivery',
+          'Zero critical errors — testing checklist passed before delivery',
           '100% of builds documented with Loom walkthroughs',
-          'Issues resolved within 24 hours of report',
-          'Systems run so smoothly that no one notices them — until they\'re gone',
+          'Live issues resolved within 24 hours',
         ],
       },
       {
         title: 'Compensation',
         type: 'list',
         items: [
-          'Project-based: $75-$400 per project depending on complexity',
-          'Retainer option: $1,000-$2,500/month for ongoing maintenance and builds',
+          'Project-based: $75–$400 per build, scaled by complexity',
+          'Retainer option: $1,000–$2,500/mo for ongoing builds + maintenance',
           'Bonuses for on-time delivery and zero-error streaks',
         ],
       },
@@ -128,8 +123,8 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Competitive + Upside',
-    mission: 'Your primary goal is to book the right calls with high quality prospects. You\'re the first point of contact for businesses exploring whether our retention infrastructure is right for them. This isn\'t about volume and pressure — it\'s about identifying fit, educating prospects, and qualifying opportunities for our closers.',
-    description: 'Book the right calls with high quality prospects. Identify fit, educate on possibilities, and qualify opportunities for our closers.',
+    mission: 'Book the right calls with high-quality prospects. Less volume, more fit — belief shaping beats hard selling.',
+    description: 'First point of contact for businesses exploring our retention infrastructure. Identify fit, educate, qualify.',
     useAirtable: true,
     airtableEmbed: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form',
     sections: [
@@ -137,54 +132,48 @@ const jobs: Record<string, {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Prospect and identify service-based businesses that fit our ideal client profile',
-          'Conduct discovery conversations focused on understanding, not pitching',
-          'Educate prospects on retention infrastructure and possible outcomes',
-          'Qualify opportunities based on fit, not just interest',
+          'Prospect service-based businesses that fit our ideal client profile',
+          'Run discovery conversations focused on understanding, not pitching',
+          'Educate prospects on retention infrastructure and likely outcomes',
+          'Qualify on fit, not just interest — protect closer time',
           'Maintain disciplined CRM hygiene and pipeline documentation',
-          'Protect closer time by refusing to pass low-quality leads downstream',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          '0-2 years in sales, business development, or client-facing roles',
-          'Strong written and verbal communication skills',
-          'Coachable mindset — eager to learn and implement feedback',
-          'Comfort with outbound prospecting (cold email, LinkedIn, phone)',
-          'Understanding that belief shaping beats hard selling',
+          '0–2 years in sales, BD, or client-facing roles',
+          'Strong written and verbal communication',
+          'Coachable — eager to take feedback and run with it',
+          'Comfortable with cold outreach (email, LinkedIn, phone)',
         ],
       },
       {
         title: 'Who This Is For',
         type: 'list',
         items: [
-          'Hungry individuals who want to build a real sales career',
-          'People who understand that belief shaping beats hard selling',
-          'Self-starters who take ownership of their results',
-          'Those genuinely curious about businesses and their challenges',
-          'Individuals who communicate clearly and build rapport quickly',
+          'Hungry self-starters building a real sales career',
+          'Genuinely curious about businesses and their challenges',
+          'Communicators who build rapport quickly',
         ],
       },
       {
         title: 'Who This Is NOT For',
         type: 'list',
         items: [
-          'People looking for a "get rich quick" opportunity',
-          'Those who can\'t handle rejection or need constant validation',
-          'Anyone who isn\'t coachable or thinks they already know everything',
-          'People who make excuses instead of finding solutions',
+          'Looking for "get rich quick"',
+          'Can\'t handle rejection or need constant validation',
+          'Not coachable or already "know it all"',
         ],
       },
       {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
-          'Consistently booking qualified calls that convert to opportunities',
-          'Building a pipeline of high-quality prospects who are genuinely interested',
-          'Mastering the discovery process and understanding client needs deeply',
-          'Closers spend time only on real buyers and cash collected per call increases',
+          'Consistently booking qualified calls that convert',
+          'Pipeline of genuinely interested, high-quality prospects',
+          'Closers spend time on real buyers; cash-per-call rises',
         ],
       },
     ],
@@ -196,60 +185,56 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Base + Commission',
-    mission: 'We close deals that are right for both parties. Sales is about solving problems, not pushing products. When you do this job well, clients get results, they renew, they refer, and they become the foundation of a business that compounds.',
-    description: 'Convert qualified opportunities into long-term client partnerships. Guide prospects through decision-making and help them understand how our retention infrastructure can transform their business.',
+    mission: 'Close deals that are right for both parties. Sales is solving problems, not pushing products. Done well, clients renew, refer, and compound.',
+    description: 'Convert qualified opportunities into long-term partnerships. Show prospects how our infrastructure transforms their business.',
     useAirtable: false,
     sections: [
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Conduct consultative sales calls with qualified prospects',
-          'Present retention infrastructure solutions and demonstrate value',
-          'Navigate complex decision-making processes and handle objections',
-          'Negotiate and close deals that are right for both parties',
-          'Ensure smooth handoff to Client Success for onboarding',
+          'Run consultative sales calls with qualified prospects',
+          'Present retention infrastructure and demonstrate ROI',
+          'Navigate complex decisions and handle objections cleanly',
+          'Negotiate and close deals that fit both sides',
+          'Hand off smoothly to Client Success for onboarding',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          '3+ years of B2B sales experience, preferably in services or SaaS',
-          'Proven track record of meeting or exceeding quota',
-          'Experience with consultative or solution selling methodologies',
-          'Strong presentation and negotiation skills',
-          'Ability to articulate complex value propositions simply',
+          '3+ years B2B sales, ideally services or SaaS',
+          'Track record of meeting or exceeding quota',
+          'Consultative or solution-selling experience',
+          'Articulate complex value propositions simply',
         ],
       },
       {
         title: 'Who This Is For',
         type: 'list',
         items: [
-          'Experienced sales professionals who genuinely care about client outcomes',
-          'Strategic thinkers who connect business problems to solutions',
-          'Those who excel at building trust and long-term relationships',
-          'People who understand that the right deal matters more than any deal',
+          'Strategic thinkers who connect problems to solutions',
+          'Trust-builders who play the long game',
+          'Believe the right deal matters more than any deal',
         ],
       },
       {
         title: 'Who This Is NOT For',
         type: 'list',
         items: [
-          'High-pressure salespeople who rely on manipulation tactics',
-          'Those who view sales as a numbers game without caring about fit',
-          'People who aren\'t willing to deeply understand client businesses',
-          'Anyone who cuts corners or overpromises to close deals',
+          'High-pressure manipulators',
+          'View sales as pure numbers, not fit',
+          'Cut corners or overpromise to close',
         ],
       },
       {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
-          'Closing deals with clients who are genuinely the right fit',
-          'Building a portfolio of successful, long-term client relationships',
-          'Maintaining high close rates on qualified opportunities',
-          'Becoming a trusted advisor that clients refer others to',
+          'Close deals only with clients who are the right fit',
+          'Build a portfolio of long-term, successful relationships',
+          'Become the trusted advisor clients refer others to',
         ],
       },
     ],
@@ -261,8 +246,8 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Base + Performance',
-    mission: 'We practice Philosophy Before Ad Spend: every campaign must be rooted in strategic clarity before a single dollar is spent. We know who we\'re talking to, what belief we\'re shifting, and what action we\'re driving.',
-    description: 'You are the engine of lead flow. Take capital and turn it into qualified conversations — predictably, profitably, at scale. Be both scientist and artist.',
+    mission: 'Philosophy Before Ad Spend. Every campaign rooted in strategic clarity before a dollar moves — we know the audience, the belief we\'re shifting, the action we\'re driving.',
+    description: 'Engine of lead flow. Turn capital into qualified conversations — predictably, profitably, at scale. Scientist and artist.',
     techStack: ['Meta Ads', 'Google Ads', 'YouTube', 'Analytics', 'Attribution'],
     useAirtable: false,
     sections: [
@@ -270,63 +255,58 @@ const jobs: Record<string, {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Develop media buying strategies aligned with offer economics and positioning',
-          'Build campaign architectures: audience targeting, funnel structure, budget allocation, testing frameworks',
-          'Launch and manage paid campaigns across Meta, Google, and YouTube',
-          'Implement proper tracking, attribution, and pixel configuration',
-          'Monitor performance daily — CPL, CPA, ROAS, CTR, hook rates',
-          'Run structured A/B tests and scale winners aggressively',
-          'Deliver weekly performance reports with insights, not just data',
+          'Develop strategies aligned with offer economics and positioning',
+          'Build campaign architectures: targeting, funnels, budgets, testing',
+          'Launch and manage paid campaigns across Meta, Google, YouTube',
+          'Implement tracking, attribution, and pixel configuration',
+          'Monitor CPL, CPA, ROAS, CTR, hook rates daily',
+          'Run structured A/B tests; scale winners aggressively',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          'Managed meaningful ad spend before ($10K+ per month minimum)',
-          'Equally comfortable in Ads Manager and analyzing data in spreadsheets',
-          'Understanding that media buying blends creative intuition and mathematical rigor',
-          'Student of direct response marketing — you study what works and why',
-          'Obsessed with efficiency — you hate wasted spend more than you love big budgets',
+          'Managed $10K+/mo in ad spend before',
+          'Equally fluent in Ads Manager and spreadsheets',
+          'Student of direct response — you know why things work',
+          'Hate wasted spend more than you love big budgets',
         ],
       },
       {
         title: 'Who This Is For',
         type: 'list',
         items: [
-          'You\'ve managed meaningful ad spend before ($10K+ per month minimum)',
-          'You\'re equally comfortable in Ads Manager and analyzing data in spreadsheets',
-          'You understand media buying blends creative intuition and mathematical rigor',
-          'You\'re a student of direct response marketing',
+          'Blend creative intuition with mathematical rigor',
+          'Report insights, not just data',
         ],
       },
       {
         title: 'Who This Is NOT For',
         type: 'list',
         items: [
-          'If you\'ve only boosted posts or run small hobby campaigns',
-          'If you rely on "the algorithm" and can\'t explain why campaigns work',
-          'If you\'re a pure creative who hates numbers, or pure analyst who hates creative',
-          'If you think media buying is "set it and forget it"',
+          'Only boosted posts or hobby-budget campaigns',
+          'Rely on "the algorithm" without understanding why',
+          'Think media buying is set-and-forget',
         ],
       },
       {
         title: 'What Success Looks Like',
         type: 'list',
         items: [
-          'Consistent lead flow at target CPL ($20-50 for B2B)',
-          'Positive ROAS on all mature campaigns (minimum 2x, target 3-5x)',
-          'Testing velocity: minimum 5-10 new creative variations per week',
-          '95%+ of budgets deployed — no underspend, no waste',
+          'Consistent lead flow at target CPL',
+          'Mature campaigns ≥ 2x ROAS, target 3–5x',
+          '5–10 new creative variations tested per week',
+          '95%+ of budgets deployed — no waste',
         ],
       },
       {
         title: 'Compensation',
         type: 'list',
         items: [
-          'Base salary: $2,000-$4,000/month depending on experience',
-          'Performance bonus tied to CPL/CPA targets',
-          'Potential profit share on campaigns you manage',
+          'Base: $2,000–$4,000/mo by experience',
+          'Performance bonus tied to CPL / CPA targets',
+          'Potential profit share on managed campaigns',
         ],
       },
     ],
@@ -338,52 +318,47 @@ const jobs: Record<string, {
     location: 'Remote',
     type: 'Full-time',
     compensation: 'Per-Client + Bonuses',
-    mission: 'Retention is not a department — it\'s a philosophy. We don\'t acquire clients to extract revenue. We acquire them to create transformation. The work after the sale is more important than the work before it.',
-    description: 'You are the guardian of transformation. Your job begins the moment a client signs and continues until they renew — and beyond. You own the relationship, the experience, and the outcome.',
+    mission: 'Retention is a philosophy, not a department. The work after the sale matters more than the work before.',
+    description: 'Guardian of transformation. Own the relationship, the experience, and the outcome — from sign-off through renewal and beyond.',
     useAirtable: false,
     sections: [
       {
         title: 'Responsibilities',
         type: 'list',
         items: [
-          'Run onboarding calls within 48 hours of close — collect assets, clarify goals, set expectations',
-          'Complete 100% of onboarding checklists within 7 days — no exceptions',
-          'Deliver weekly check-ins for every active client (async Loom or sync call)',
-          'Maintain client dashboards — track KPIs, milestones, deliverables, and health scores',
-          'Proactively flag at-risk clients before they churn',
-          'Begin renewal conversations 30-60 days before contract end',
-          'Ask for referrals at peak satisfaction moments',
+          'Onboard within 48 hours of close — assets, goals, expectations set',
+          'Complete 100% of onboarding checklists in 7 days, no exceptions',
+          'Deliver weekly check-ins for every active client',
+          'Maintain dashboards: KPIs, milestones, deliverables, health scores',
+          'Flag at-risk clients proactively, before churn',
+          'Open renewal conversations 30–60 days before contract end',
         ],
       },
       {
         title: 'Requirements',
         type: 'list',
         items: [
-          'Genuinely care about people and their success — not just retention metrics',
-          'Obsessively organized — checklists, follow-ups, documentation are second nature',
-          'Proactive mindset — you anticipate problems, not wait for them',
-          'Can hold multiple client relationships without dropping balls',
-          'Comfortable with difficult conversations — hard truths delivered with empathy',
+          'Genuinely care about people and their outcomes',
+          'Obsessively organized — checklists are second nature',
+          'Proactive — anticipate problems, don\'t wait for them',
+          'Comfortable with hard truths delivered with empathy',
         ],
       },
       {
         title: 'Who This Is For',
         type: 'list',
         items: [
-          'You genuinely care about people and their success',
-          'You\'re obsessively organized — checklists, follow-ups, documentation',
-          'You\'re proactive — you anticipate problems, not wait for them',
-          'You can hold multiple client relationships without dropping balls',
+          'Hold many client relationships without dropping balls',
+          'See client success as the mission, not a stepping stone',
         ],
       },
       {
         title: 'Who This Is NOT For',
         type: 'list',
         items: [
-          'If you\'re reactive — waiting for clients to complain before you act',
-          'If you hate documentation and think "I\'ll remember it" is a strategy',
-          'If you struggle to hold people accountable because you want to be liked',
-          'If you see client success as a stepping stone to "real" work',
+          'Reactive — wait for complaints to act',
+          'Hate documentation; "I\'ll remember it" is your strategy',
+          'Avoid hard conversations to be liked',
         ],
       },
       {
@@ -391,20 +366,18 @@ const jobs: Record<string, {
         type: 'list',
         items: [
           '100% onboarding completion within 7 days',
-          'Weekly check-ins delivered for every client, every week',
-          '90%+ clients in "green" health status at any given time',
-          'Churn rate below 10%',
-          'Renewal rate of 70%+ on eligible contracts',
+          'Weekly check-ins delivered every week, every client',
+          '90%+ clients in green health status at any time',
+          'Churn below 10%, renewals above 70%',
         ],
       },
       {
         title: 'Compensation',
         type: 'list',
         items: [
-          'Per-client retainer: $75-$125 per active client per month',
-          'Bonuses for retention metrics (churn below target, renewals above target)',
-          'Bonuses for referrals generated',
-          'Scales to $1,500-$3,000+/month as client load increases',
+          'Per-client retainer: $75–$125/mo per active client',
+          'Bonuses for retention and referrals',
+          'Scales to $1,500–$3,000+/mo as client load grows',
         ],
       },
     ],
