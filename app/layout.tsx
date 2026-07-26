@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
     default: 'Careers at Divine Acquisition | Join Our Team',
     template: '%s | Divine Acquisition Careers',
   },
-  description: 'Join Divine Acquisition and help build Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We\'re hiring Systems Architects, Media Buyers, Sales professionals, and Client Success Managers.',
-  keywords: ['careers', 'jobs', 'hiring', 'Divine Acquisition', 'growth infrastructure', 'B2B', 'remote jobs', 'sales jobs', 'marketing jobs'],
+  description: 'Join Divine Acquisition and help build Acquisition, Retention & AI Growth Infrastructure for service-based businesses. We\'re hiring SDRs, Systems Architects, Media Buyers, Closers, and Client Success Managers.',
+  keywords: ['careers', 'jobs', 'hiring', 'Divine Acquisition', 'SDR placement', 'growth infrastructure', 'B2B', 'remote jobs', 'sales jobs', 'marketing jobs'],
   authors: [{ name: 'Divine Acquisition' }],
   creator: 'Divine Acquisition',
   publisher: 'Divine Acquisition',
@@ -28,9 +28,9 @@ export const metadata: Metadata = {
     description: 'Join our team of builders, architects, and operators. We build Acquisition, Retention & AI Growth Infrastructure for service-based businesses.',
     images: [
       {
-        url: '/logo.png',
-        width: 800,
-        height: 800,
+        url: '/icon-512.png',
+        width: 512,
+        height: 512,
         alt: 'Divine Acquisition',
       },
     ],
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     title: 'Careers at Divine Acquisition',
     description: 'Join our team and help build systems that compound. Remote positions available.',
     creator: '@maliksannie',
-    images: ['/logo.png'],
+    images: ['/icon-512.png'],
   },
   robots: {
     index: true,
@@ -55,15 +55,19 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/6 (0-00-00-00)_1.png', sizes: '32x32', type: 'image/png' },
-      { url: '/6 (0-00-00-00)_1.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
-    apple: [
-      { url: '/6 (0-00-00-00)_1.png', sizes: '180x180', type: 'image/png' },
-    ],
-    shortcut: '/6 (0-00-00-00)_1.png',
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    shortcut: '/favicon-32x32.png',
   },
   manifest: '/manifest.json',
+}
+
+export const viewport: Viewport = {
+  themeColor: '#07070b',
+  colorScheme: 'dark',
 }
 
 export default function RootLayout({
@@ -74,11 +78,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
-        <link rel="icon" href="/6 (0-00-00-00)_1.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/6 (0-00-00-00)_1.png" />
-        <meta name="theme-color" content="#0a0a0a" />
+        <link rel="preconnect" href="https://fast.wistia.com" />
       </head>
-      <body className="bg-[#0a0a0a] font-sans">{children}</body>
+      <body className="bg-ink-950 font-sans">{children}</body>
     </html>
   )
 }

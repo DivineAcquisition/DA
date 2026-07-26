@@ -1,480 +1,436 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import Backdrop from '../components/Backdrop';
+import SiteHeader from '../components/SiteHeader';
+import SiteFooter from '../components/SiteFooter';
+import {
+  departments,
+  levelLabels,
+  locations,
+  roleHref,
+  roles,
+  type DepartmentId,
+  type LocationId,
+  type Role,
+} from '../data/roles';
+import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, eyebrow, sectionLabel } from '../components/ui';
 
-const jobs = [
-  {
-    id: 1,
-    slug: 'system-integrator',
-    title: 'Systems Architect',
-    subtitle: 'Infrastructure',
-    description: 'Turn strategy into infrastructure — pipelines, automations, and integrations across GHL, Zapier, Make, and APIs.',
-    department: 'operations',
-    location: 'remote',
-    region: 'United States, MD',
-    timezone: 'EST',
-    level: 3,
-  },
-  {
-    id: 2,
-    slug: 'media-buyer',
-    title: 'Media Buyer',
-    subtitle: 'Growth Architect',
-    description: 'Turn capital into qualified conversations. Philosophy-driven campaigns across Meta, Google, and YouTube.',
-    department: 'growth',
-    location: 'remote',
-    region: 'United States, MD',
-    timezone: 'EST',
-    level: 3,
-  },
-  {
-    id: 3,
-    slug: 'setter',
-    title: 'SDR / Setter',
-    subtitle: 'Sales Development',
-    description: 'Book the right calls with high-quality prospects. Identify fit, educate, qualify for our closers.',
-    department: 'sales',
-    location: 'remote',
-    region: 'United States, MD',
-    timezone: 'EST',
-    level: 1,
-  },
-  {
-    id: 4,
-    slug: 'closer',
-    title: 'Closer',
-    subtitle: 'Sales',
-    description: 'Convert qualified opportunities into long-term partnerships. Show how our infrastructure transforms businesses.',
-    department: 'sales',
-    location: 'remote',
-    region: 'United States, MD',
-    timezone: 'EST',
-    level: 3,
-  },
-  {
-    id: 5,
-    slug: 'client-success',
-    title: 'Client Success Manager',
-    subtitle: 'Retention',
-    description: 'Guardian of transformation. Own the relationship, experience, and outcome from sign-off through renewal.',
-    department: 'client-success',
-    location: 'remote',
-    region: 'United States, MD',
-    timezone: 'EST',
-    level: 3,
-  },
+const values = [
+  { name: 'Devotion', detail: 'Trust deep enough to become conviction.' },
+  { name: 'Value', detail: 'Make the right path the easy path.' },
+  { name: 'Exclusivity', detail: 'Transformation, never quick fixes.' },
 ];
 
-const departments = [
-  { id: 'all', name: 'View All' },
-  { id: 'operations', name: 'Operations' },
-  { id: 'growth', name: 'Growth & Marketing' },
-  { id: 'sales', name: 'Sales' },
-  { id: 'client-success', name: 'Client Success' },
-];
-
-const locations = [
-  { id: 'remote', name: 'Remote' },
-  { id: 'us-md', name: 'United States, MD' },
-];
-
-const levelLabels: Record<number, string> = {
-  1: 'Entry',
-  2: 'Mid',
-  3: 'Senior',
-  4: 'Lead',
-};
-
-function LevelIndicator({ level }: { level: number }) {
+function LevelMeter({ level }: { level: number }) {
   return (
-    <span className="flex items-center gap-1.5">
-      <span className="flex gap-0.5">
-        {[1, 2, 3, 4].map((i) => (
+    <span className="flex items-center gap-2" title={`${levelLabels[level]} level`}>
+      <span className="flex items-end gap-[3px]">
+        {[1, 2, 3, 4].map((step) => (
           <span
-            key={i}
-            className={`w-1.5 h-1.5 rounded-full ${
-              i <= level ? 'bg-[#907DFF] shadow-[0_0_8px_rgba(144,125,255,0.9)]' : 'bg-white/10'
-            }`}
+            key={step}
+            style={{ height: `${5 + step * 2.5}px` }}
+            className={`w-[3px] rounded-full ${step <= level ? 'bg-brand-500' : 'bg-white/12'}`}
           />
         ))}
       </span>
-      <span className="text-neutral-500">{levelLabels[level]}</span>
+      <span className="text-xs text-neutral-500">{levelLabels[level]}</span>
     </span>
   );
 }
 
-export default function HiringPage() {
-  const [selectedDept, setSelectedDept] = useState('all');
-  const [selectedLocations, setSelectedLocations] = useState<string[]>(['remote', 'us-md']);
-  const [sortBy, setSortBy] = useState('level-high');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const toggleLocation = (locationId: string) => {
-    setSelectedLocations(prev => 
-      prev.includes(locationId) 
-        ? prev.filter(l => l !== locationId)
-        : [...prev, locationId]
-    );
-  };
-
-  const filteredJobs = jobs
-    .filter((job) => {
-      if (selectedDept !== 'all' && job.department !== selectedDept) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'level-high') return b.level - a.level;
-      if (sortBy === 'level-low') return a.level - b.level;
-      return 0;
-    });
-
-  const deptCounts = jobs.reduce((acc, job) => {
-    acc[job.department] = (acc[job.department] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
+function PinIcon() {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white antialiased selection:bg-[#5500FF]/50 selection:text-purple-50 overflow-x-hidden">
-      
-      {/* Grid Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(144,125,255,0.5) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(144,125,255,0.5) 1px, transparent 1px)`,
-            backgroundSize: '60px 60px',
-          }}
-        />
-      </div>
+    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.6}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17.657 16.657 13.414 20.9a2 2 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0Z"
+      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+    </svg>
+  );
+}
 
-      {/* Background Glow Effects - Deep #6200FF for banner */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        {/* Main banner glow - deep purple #6200FF */}
-        <div 
-          className="absolute top-[-30%] left-1/2 -translate-x-1/2 w-full md:w-[1400px] h-[900px] md:h-[1100px]"
-          style={{
-            background: 'radial-gradient(ellipse at center, rgba(98,0,255,0.5) 0%, rgba(98,0,255,0.25) 30%, rgba(144,125,255,0.1) 50%, transparent 70%)',
-            filter: 'blur(80px)',
-          }}
-        />
-        {/* Bottom right glow - #907DFF accent */}
-        <div 
-          className="absolute bottom-[-15%] right-[-5%] w-[700px] h-[700px] rounded-full opacity-50"
-          style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.5) 0%, rgba(98,0,255,0.2) 50%, transparent 70%)',
-            filter: 'blur(100px)',
-          }}
-        />
-        {/* Left side glow */}
-        <div 
-          className="absolute top-[40%] left-[-10%] w-[500px] h-[500px] rounded-full opacity-30"
-          style={{
-            background: 'radial-gradient(circle, rgba(144,125,255,0.4) 0%, transparent 60%)',
-            filter: 'blur(60px)',
-          }}
-        />
-      </div>
+function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" />
+    </svg>
+  );
+}
 
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 h-16 sm:h-20 md:h-28 border-b border-white/5 bg-[#0a0a0a]/80 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 flex items-center justify-between">
-          <Link href="/hiring" className="group flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Divine Acquisition"
-              width={200}
-              height={200}
-              priority
-              className="h-9 sm:h-12 md:h-16 w-auto group-hover:opacity-80 transition-opacity"
-            />
-          </Link>
-
-          <a
-            href="#positions"
-            className="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold bg-gradient-to-r from-[#5500FF] via-[#6200FF] to-[#907DFF] text-white hover:opacity-90 transition-all shadow-[0_0_30px_rgba(85,0,255,0.5)] whitespace-nowrap"
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+function FeaturedRoleCard({ role }: { role: Role }) {
+  return (
+    <Link href={roleHref(role)} className="group block">
+      <article className="panel panel-hover relative overflow-hidden rounded-3xl p-6 sm:p-7">
+        <div
+          aria-hidden
+          className="absolute -right-24 -top-24 h-64 w-64 rounded-full opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+          style={{ background: 'radial-gradient(circle, rgba(154,136,252,0.30) 0%, transparent 70%)' }}
+        />
+        <div className="relative">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-ink-950">
+              <svg className="h-3 w-3" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5.14v14l11-7-11-7Z" />
+              </svg>
+              Watch first
             </span>
-            <span className="hidden sm:inline">{jobs.length} Open Roles</span>
-            <span className="sm:hidden">{jobs.length} Roles</span>
-          </a>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <section className="relative z-10 px-5 sm:px-6 pt-28 pb-12 sm:pt-36 sm:pb-16 md:pt-52 md:pb-20">
-        <div className="max-w-3xl mx-auto text-center">
-          {/* Badge */}
-          <div
-            className={`inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[11px] sm:text-xs font-semibold
-                        text-[#907DFF] bg-[#907DFF]/10 border border-[#907DFF]/40 mb-6 sm:mb-8
-                        shadow-[0_0_40px_-5px_rgba(144,125,255,0.6)]
-                        ${mounted ? 'animate-fade-in' : 'opacity-0'}`}
-          >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#907DFF] opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.8)]" />
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-300">
+              {role.subtitle}
             </span>
-            We&apos;re Hiring
           </div>
 
-          {/* Headline */}
-          <h1
-            className={`text-[2rem] leading-[1.1] sm:text-5xl md:text-6xl font-semibold mb-5 sm:mb-6 sm:leading-[1.15] text-transparent bg-clip-text
-                        ${mounted ? 'animate-fade-in animation-delay-100' : 'opacity-0'}`}
-            style={{
-              backgroundImage: 'linear-gradient(to right, white 0%, white 30%, #907DFF 60%, #5500FF 100%)',
-            }}
-          >
-            Curating The Engine To Create Trust, Revenue & Retention.
-          </h1>
+          <h3 className="mt-4 text-xl font-semibold text-white transition-colors group-hover:text-brand-200 sm:text-2xl">
+            {role.title}
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{role.summary}</p>
 
-          {/* Subheadline */}
-          <p
-            className={`text-base sm:text-lg md:text-xl text-neutral-400 leading-relaxed font-light max-w-2xl mx-auto mb-8 sm:mb-12
-                        ${mounted ? 'animate-fade-in animation-delay-200' : 'opacity-0'}`}
-          >
-            We are building infrastructure that compounds trust, revenue & retention for service based businesses. We are looking for those devoted to building DivineAcquisition™ & our future projects.
-          </p>
-
-          {/* Values */}
-          <div
-            className={`flex flex-wrap justify-center gap-2.5 sm:gap-3
-                        ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}
-          >
-            {['Devotion', 'Value', 'Exclusivity'].map((value) => (
-              <span
-                key={value}
-                className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-[#907DFF]/5 border border-[#907DFF]/20 text-neutral-300 hover:border-[#907DFF]/40 hover:shadow-[0_0_20px_rgba(144,125,255,0.2)] transition-all"
-              >
-                {value}
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-500">
+            <span className="font-semibold text-brand-300">$400–$600/mo base + commission</span>
+            {role.tags.map((tag) => (
+              <span key={tag} className="flex items-center gap-1.5">
+                <span className="h-1 w-1 rounded-full bg-neutral-700" />
+                {tag}
               </span>
             ))}
           </div>
+
+          <span className={`${btnPrimary} ${btnSizeSm} mt-6`}>
+            Watch the walkthrough
+            <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </span>
         </div>
-      </section>
+      </article>
+    </Link>
+  );
+}
 
-      {/* Positions Section */}
-      <main className="relative z-10 px-5 sm:px-6 pb-16 sm:pb-20" id="positions">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
+function RoleCard({ role }: { role: Role }) {
+  return (
+    <Link href={roleHref(role)} className="group block">
+      <article className="panel panel-hover rounded-2xl p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2.5">
+              <h3 className="text-base font-semibold text-white transition-colors group-hover:text-brand-200 sm:text-[17px]">
+                {role.title}
+              </h3>
+              <span className="rounded-full border border-brand-500/25 bg-brand-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-300">
+                {role.subtitle}
+              </span>
+            </div>
 
-            {/* Sidebar Filter */}
-            <aside className={`lg:w-72 flex-shrink-0 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-              <div className="lg:sticky lg:top-32 space-y-6 sm:space-y-8 p-5 sm:p-6 rounded-2xl bg-[#111111] border border-white/10 shadow-[0_0_30px_rgba(144,125,255,0.05)]">
-                
-                {/* Department Filter */}
-                <div>
-                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Department</h3>
-                  <div className="space-y-1">
-                    {departments.map((dept) => {
-                      const count = dept.id === 'all' ? jobs.length : (deptCounts[dept.id] || 0);
-                      const isSelected = selectedDept === dept.id;
-                      return (
-                        <button
-                          key={dept.id}
-                          onClick={() => setSelectedDept(dept.id)}
-                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                            isSelected
-                              ? 'bg-white/5 text-white border border-white/10'
-                              : 'text-neutral-400 hover:text-white hover:bg-white/[0.02]'
-                          }`}
-                        >
-                          <span>{dept.name}</span>
-                          <span className={`text-xs ${isSelected ? 'text-white' : 'text-neutral-600'}`}>{count}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+            <p className="mb-3.5 text-sm leading-relaxed text-neutral-400">{role.summary}</p>
 
-                {/* Location Filter */}
-                <div>
-                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Location</h3>
-                  <div className="space-y-2">
-                    {locations.map((location) => (
-                      <label
-                        key={location.id}
-                        className="flex items-center gap-3 cursor-pointer group"
-                      >
-                        <div 
-                          className={`w-5 h-5 rounded flex items-center justify-center transition-all ${
-                            selectedLocations.includes(location.id)
-                              ? 'bg-[#5500FF] border-[#5500FF]'
-                              : 'bg-white/5 border border-white/10 group-hover:border-white/20'
-                          }`}
-                          onClick={() => toggleLocation(location.id)}
-                        >
-                          {selectedLocations.includes(location.id) && (
-                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </div>
-                        <span className="text-sm text-neutral-400 group-hover:text-white transition-colors">
-                          {location.name}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-neutral-500">
+              {role.tags.map((tag, index) => (
+                <span key={tag} className="flex items-center gap-1.5">
+                  {index === 0 ? <PinIcon /> : <span className="h-1 w-1 rounded-full bg-neutral-700" />}
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
 
-                {/* Time Zone */}
-                <div>
-                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Time Zone</h3>
-                  <div className="px-4 py-3 rounded-xl bg-[#0d0d0d] border border-white/10 text-sm text-neutral-300">
-                    EST (Eastern Standard Time)
-                  </div>
-                </div>
+          <div className="flex shrink-0 items-center justify-between gap-5 sm:justify-end">
+            <LevelMeter level={role.level} />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-neutral-400 transition-all group-hover:border-brand-500/50 group-hover:bg-brand-500 group-hover:text-ink-950">
+              <ArrowIcon />
+            </span>
+          </div>
+        </div>
+      </article>
+    </Link>
+  );
+}
 
-                {/* Sort By */}
-                <div>
-                  <h3 className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-4">Sort By</h3>
-                  <div className="relative">
-                    <select
-                      value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
-                      className="w-full appearance-none px-4 py-3 pr-10 rounded-xl bg-[#0d0d0d] border border-white/10 text-sm text-neutral-300 focus:outline-none focus:border-[#907DFF]/50 cursor-pointer"
-                    >
-                      <option value="level-high" className="bg-[#0a0a0a]">Level: High to Low</option>
-                      <option value="level-low" className="bg-[#0a0a0a]">Level: Low to High</option>
-                    </select>
-                    <svg className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
-                    </svg>
-                  </div>
-                </div>
+export default function HiringPage() {
+  const [selectedDept, setSelectedDept] = useState<DepartmentId | 'all'>('all');
+  const [selectedLocations, setSelectedLocations] = useState<LocationId[]>(['remote', 'us-md']);
+  const [sortBy, setSortBy] = useState('level-high');
 
+  const toggleLocation = (locationId: LocationId) => {
+    setSelectedLocations((previous) =>
+      previous.includes(locationId)
+        ? previous.filter((id) => id !== locationId)
+        : [...previous, locationId],
+    );
+  };
+
+  const deptCounts = useMemo(
+    () =>
+      roles.reduce<Record<string, number>>((acc, role) => {
+        acc[role.department] = (acc[role.department] || 0) + 1;
+        return acc;
+      }, {}),
+    [],
+  );
+
+  const filteredRoles = useMemo(() => {
+    const matches = roles.filter((role) => {
+      if (selectedDept !== 'all' && role.department !== selectedDept) return false;
+      return role.locations.some((location) => selectedLocations.includes(location));
+    });
+
+    return matches.sort((a, b) =>
+      sortBy === 'level-low' ? a.level - b.level : b.level - a.level,
+    );
+  }, [selectedDept, selectedLocations, sortBy]);
+
+  const featured = filteredRoles.find((role) => role.featured);
+  const standard = filteredRoles.filter((role) => !role.featured);
+
+  const stats = [
+    { value: String(roles.length), label: 'Open roles' },
+    { value: '100%', label: 'Remote-first' },
+    { value: '4', label: 'Departments' },
+    { value: 'EST', label: 'Core time zone' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+
+      <div className="relative z-10">
+        <SiteHeader
+          action={
+            <>
+              <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeSm} hidden sm:inline-flex`}>
+                SDR Placement
+              </Link>
+              <a href="#positions" className={`${btnPrimary} ${btnSizeSm}`}>
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ink-950 opacity-75" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink-950" />
+                </span>
+                {roles.length} open roles
+              </a>
+            </>
+          }
+        />
+
+        {/* Hero */}
+        <section className="px-5 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-24 md:pb-24 md:pt-32">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className={`${eyebrow} animate-rise`}>
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-400" />
+              </span>
+              Now hiring
+            </p>
+
+            <h1 className="animate-rise delay-1 mt-6 text-[2.1rem] font-semibold leading-[1.08] sm:text-5xl md:text-[3.5rem]">
+              <span className="text-gradient">Curating the engine</span>
+              <br className="hidden sm:block" /> to create trust, revenue &amp; retention.
+            </h1>
+
+            <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
+              We are building infrastructure that compounds trust, revenue &amp; retention for service
+              based businesses. We are looking for those devoted to building DivineAcquisition™ &amp; our
+              future projects.
+            </p>
+
+            <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href="#positions" className={`${btnPrimary} ${btnSizeMd} w-full sm:w-auto`}>
+                Browse open roles
+                <ArrowIcon />
+              </a>
+              <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeMd} w-full sm:w-auto`}>
+                <svg className="h-3.5 w-3.5 text-brand-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5.14v14l11-7-11-7Z" />
+                </svg>
+                Watch the SDR walkthrough
+              </Link>
+            </div>
+          </div>
+
+          {/* Stats strip */}
+          <dl className="animate-rise delay-4 mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.04] sm:mt-16 sm:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="bg-ink-950/80 px-5 py-5 text-center">
+                <dt className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500">
+                  {stat.label}
+                </dt>
+                <dd className="mt-1.5 text-2xl font-semibold tabular-nums text-white">{stat.value}</dd>
               </div>
-            </aside>
+            ))}
+          </dl>
 
-            {/* Job Listings */}
-            <div className="flex-1">
-              {/* Header */}
-              <div className={`flex items-center justify-between mb-5 sm:mb-6 ${mounted ? 'animate-fade-in animation-delay-300' : 'opacity-0'}`}>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-semibold text-white">Open Positions</h2>
-                  <p className="text-neutral-500 text-sm mt-1">{filteredJobs.length} roles available</p>
-                </div>
+          {/* Values */}
+          <div className="animate-rise delay-5 mx-auto mt-6 grid max-w-4xl gap-3 sm:grid-cols-3">
+            {values.map((value) => (
+              <div key={value.name} className="panel rounded-2xl px-5 py-4">
+                <p className="flex items-center gap-2 text-sm font-semibold text-white">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand-500" />
+                  {value.name}
+                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">{value.detail}</p>
               </div>
+            ))}
+          </div>
+        </section>
 
-              {/* Job Cards */}
-              <div className={`space-y-3 sm:space-y-4 ${mounted ? 'animate-fade-in animation-delay-400' : 'opacity-0'}`}>
-                {filteredJobs.map((job) => (
-                  <Link
-                    key={job.id}
-                    href={`/hiring/${job.slug}`}
-                    className="block group"
-                  >
-                    <div className="relative p-5 sm:p-6 rounded-2xl bg-[#111111] border border-white/10 hover:bg-[#151515] hover:border-[#907DFF]/50 hover:shadow-[0_0_30px_rgba(144,125,255,0.25),inset_0_0_20px_rgba(144,125,255,0.05)] transition-all duration-300 overflow-hidden">
-                      {/* Hover glow */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-[#907DFF]/20 blur-[60px]" />
-                      </div>
+        {/* Positions */}
+        <main id="positions" className="scroll-mt-24 px-5 pb-20 sm:px-6">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-8 flex flex-col gap-2 border-t border-white/[0.07] pt-10 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className={sectionLabel}>Open positions</p>
+                <h2 className="mt-3 text-2xl font-semibold text-white sm:text-3xl">
+                  Find where you fit
+                </h2>
+              </div>
+              <p className="text-sm text-neutral-500">
+                Showing <span className="font-semibold text-white">{filteredRoles.length}</span> of{' '}
+                {roles.length} roles
+              </p>
+            </div>
 
-                      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                            <h3 className="text-base sm:text-lg font-medium text-white group-hover:text-[#907DFF] transition-colors">
-                              {job.title}
-                            </h3>
-                            <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#907DFF]/15 text-[#907DFF] shadow-[0_0_10px_rgba(144,125,255,0.3)]">
-                              {job.subtitle}
-                            </span>
-                          </div>
-                          <p className="text-sm text-neutral-500 font-light leading-relaxed mb-3">
-                            {job.description}
-                          </p>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-neutral-500">
-                            <span className="flex items-center gap-1.5">
-                              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                              </svg>
-                              {job.region}
-                            </span>
-                            <span className="w-1 h-1 rounded-full bg-neutral-600" />
-                            <span>{job.timezone}</span>
-                            <span className="w-1 h-1 rounded-full bg-neutral-600" />
-                            <span className="capitalize">{job.location}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 flex-shrink-0">
-                          <LevelIndicator level={job.level} />
-                          <svg
-                            className="w-5 h-5 text-neutral-600 group-hover:text-[#907DFF] group-hover:translate-x-1 transition-all"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth={1.5}
+            <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+              {/* Filter rail */}
+              <aside className="lg:w-64 lg:shrink-0">
+                <div className="panel sticky top-24 space-y-7 rounded-2xl p-5">
+                  <div>
+                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      Department
+                    </h3>
+                    <div className="space-y-1">
+                      {departments.map((dept) => {
+                        const count = dept.id === 'all' ? roles.length : deptCounts[dept.id] || 0;
+                        const isSelected = selectedDept === dept.id;
+                        return (
+                          <button
+                            key={dept.id}
+                            type="button"
+                            onClick={() => setSelectedDept(dept.id)}
+                            className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                              isSelected
+                                ? 'bg-brand-500/12 text-brand-100 ring-1 ring-inset ring-brand-500/30'
+                                : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
+                            }`}
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                          </svg>
-                        </div>
-                      </div>
+                            <span>{dept.name}</span>
+                            <span
+                              className={`tabular-nums text-xs ${isSelected ? 'text-brand-300' : 'text-neutral-600'}`}
+                            >
+                              {count}
+                            </span>
+                          </button>
+                        );
+                      })}
                     </div>
-                  </Link>
+                  </div>
+
+                  <div>
+                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      Location
+                    </h3>
+                    <div className="space-y-1">
+                      {locations.map((location) => {
+                        const checked = selectedLocations.includes(location.id);
+                        return (
+                          <label
+                            key={location.id}
+                            className="group flex cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2 hover:bg-white/[0.03]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={() => toggleLocation(location.id)}
+                              className="sr-only"
+                            />
+                            <span
+                              aria-hidden
+                              className={`flex h-4.5 w-4.5 items-center justify-center rounded-[5px] border transition-all ${
+                                checked
+                                  ? 'border-brand-500 bg-brand-500 text-ink-950'
+                                  : 'border-white/15 bg-white/[0.03] group-hover:border-white/30'
+                              }`}
+                            >
+                              {checked && (
+                                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+                                </svg>
+                              )}
+                            </span>
+                            <span className="text-sm text-neutral-400 transition-colors group-hover:text-white">
+                              {location.name}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      Sort by
+                    </h3>
+                    <div className="relative">
+                      <select
+                        value={sortBy}
+                        onChange={(event) => setSortBy(event.target.value)}
+                        aria-label="Sort roles"
+                        className="w-full cursor-pointer appearance-none rounded-xl border border-white/10 bg-ink-900 px-3.5 py-2.5 pr-9 text-sm text-neutral-300 transition-colors hover:border-white/20 focus:border-brand-500/60 focus:outline-none"
+                      >
+                        <option value="level-high">Seniority: high to low</option>
+                        <option value="level-low">Seniority: low to high</option>
+                      </select>
+                      <svg
+                        aria-hidden
+                        className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m8 9 4-4 4 4m0 6-4 4-4-4" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-3">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
+                      Time zone
+                    </p>
+                    <p className="mt-1 text-sm text-neutral-300">EST (Eastern Standard Time)</p>
+                  </div>
+                </div>
+              </aside>
+
+              {/* Listings */}
+              <div className="min-w-0 flex-1 space-y-3.5">
+                {featured && <FeaturedRoleCard role={featured} />}
+                {standard.map((role) => (
+                  <RoleCard key={role.slug} role={role} />
                 ))}
 
-                {filteredJobs.length === 0 && (
-                  <div className="text-center py-12 sm:py-16 rounded-2xl bg-[#111111] border border-white/10">
-                    <p className="text-neutral-500 font-light">No positions found in this department.</p>
+                {filteredRoles.length === 0 && (
+                  <div className="panel rounded-2xl px-6 py-16 text-center">
+                    <p className="text-neutral-400">No positions match these filters.</p>
                     <button
-                      onClick={() => setSelectedDept('all')}
-                      className="mt-3 text-sm text-[#907DFF] hover:text-white transition-colors"
+                      type="button"
+                      onClick={() => {
+                        setSelectedDept('all');
+                        setSelectedLocations(['remote', 'us-md']);
+                      }}
+                      className={`${btnSecondary} ${btnSizeSm} mt-5`}
                     >
-                      View all positions
+                      Reset filters
                     </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
-        </div>
-      </main>
+        </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 py-8 sm:py-10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-5 md:gap-6">
-            <div className="flex items-center gap-3">
-              <Link href="/hiring">
-                <Image
-                  src="/6 (0-00-00-00)_1.png"
-                  alt="Divine Acquisition"
-                  width={32}
-                  height={32}
-                  className="opacity-70 hover:opacity-100 transition-opacity"
-                />
-              </Link>
-              <span className="text-neutral-500 text-xs font-medium">
-                2025 © DivineAcquisition™, All rights reserved.
-              </span>
-            </div>
-            <div className="flex items-center gap-5">
-              <a href="https://instagram.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
-                Instagram
-              </a>
-              <a href="https://x.com/@maliksannie" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
-                Twitter
-              </a>
-              <a href="https://divineacquisition.io/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-[11px] text-neutral-400 font-medium hover:text-[#907DFF] transition-colors">
-                Privacy
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
-
+        <SiteFooter />
+      </div>
     </div>
   );
 }
