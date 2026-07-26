@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useMemo, useReducer } from 'react';
+import { createContext, useContext, useEffect, useMemo, useReducer } from 'react';
 import { addDays, toDay } from './dates';
 import { createGateway, type Gateway } from './gateway';
 import { reconcilePlacement } from './rules/bookings';
@@ -542,12 +542,35 @@ type StoreValue = {
 
 const StoreContext = createContext<StoreValue | null>(null);
 
+const ACTOR_STORAGE_KEY = 'vistrial.actor';
+
 export function OpsProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, () => ({
     actor: ADMIN,
     activePlacementId: null,
     data: createSeedData(),
   }));
+
+  /**
+   * Records are in memory for the session, but who you signed in as survives a
+   * reload so that deep links and refreshes do not silently drop you back to
+   * the admin view. Restored after mount to keep hydration honest.
+   */
+  useEffect(() => {
+    const stored = window.localStorage.getItem(ACTOR_STORAGE_KEY);
+    if (!stored) return;
+    if (stored === ADMIN.id) return;
+    const operator = state.data.operators.find((candidate) => candidate.id === stored);
+    if (operator) {
+      dispatch({ type: 'set-actor', actor: { role: 'operator', id: operator.id, name: operator.name } });
+    }
+    // Runs once: this restores a prior session, it does not track later changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(ACTOR_STORAGE_KEY, state.actor.id);
+  }, [state.actor.id]);
 
   const gateway = useMemo(() => createGateway(state.data, state.actor), [state.data, state.actor]);
 

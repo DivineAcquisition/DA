@@ -17,11 +17,16 @@ export function canTransitionOperator(from: OperatorStatus, to: OperatorStatus):
   return OPERATOR_TRANSITIONS[from].includes(to);
 }
 
+/**
+ * A renewal opens a *new* placement, so `renewed` is terminal on the old one —
+ * it exists as a state distinct from `ended` so a natural renewal can be told
+ * apart from a lost client at a glance.
+ */
 const PLACEMENT_TRANSITIONS: Record<Placement['status'], Placement['status'][]> = {
   draft: ['active'],
   active: ['ended', 'renewed'],
   ended: [],
-  renewed: ['ended'],
+  renewed: [],
 };
 
 export function canTransitionPlacement(from: Placement['status'], to: Placement['status']): boolean {
@@ -43,7 +48,7 @@ export function daysUntilEnd(placement: Placement, now: string): number {
 }
 
 export function isPlacementLive(placement: Placement): boolean {
-  return placement.status === 'active' || placement.status === 'renewed';
+  return placement.status === 'active';
 }
 
 /**

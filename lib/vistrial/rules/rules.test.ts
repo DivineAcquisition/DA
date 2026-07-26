@@ -21,7 +21,7 @@ import {
 } from './bookings';
 import { assertConfiguredFieldsDoNotShadowCore, correctEod, currentVersions } from './eod';
 import { buildExceptionQueue, EXCEPTION_RANK } from './exceptions';
-import { canTransitionOperator, endPlacement, placementStatus } from './lifecycle';
+import { canTransitionOperator, endPlacement, isPlacementLive, placementStatus } from './lifecycle';
 import { deliver, resolveChannels } from './notifications';
 import { computeBase, computeCommission, computeSpeedBonus, computeStatement, lockStatement } from './pay';
 
@@ -187,6 +187,35 @@ describe('booking reconciliation', () => {
       booking({ state: 'rejected' }),
     ];
     expect(commissionableBookings(set)).toHaveLength(2);
+  });
+
+  // The point of reconciling rather than summing: one appointment, one credit.
+  it('credits a reconciled pair once, not twice', () => {
+    const resolved = reconcilePlacement([
+      booking({ id: 'ghl-1', source: 'ghl' }),
+      booking({ id: 'man-1', source: 'manual', customerEmail: null }),
+    ]);
+
+    expect(resolved.filter((b) => b.state === 'confirmed')).toHaveLength(2);
+    expect(commissionableBookings(resolved)).toHaveLength(1);
+    expect(commissionableBookings(resolved)[0].source).toBe('ghl');
+    expect(summarise(resolved).confirmed).toBe(1);
+  });
+
+  it('does not let a logged booking inflate quota against an unlogged one', () => {
+    const resolved = reconcilePlacement([
+      booking({ id: 'ghl-a', source: 'ghl', scheduledFor: '2026-07-05T14:00:00.000Z' }),
+      booking({ id: 'man-a', source: 'manual', customerEmail: null, scheduledFor: '2026-07-05T14:00:00.000Z' }),
+      booking({
+        id: 'ghl-b',
+        source: 'ghl',
+        scheduledFor: '2026-07-06T14:00:00.000Z',
+        customerName: 'Marcus Blake',
+        customerPhone: '+1 312 555 0999',
+      }),
+    ]);
+    // Two appointments happened, one of which the operator also logged.
+    expect(commissionableBookings(resolved)).toHaveLength(2);
   });
 
   it('leaves an admin rejection alone on re-reconciliation', () => {
@@ -558,6 +587,22 @@ describe('lifecycle', () => {
     expect(canTransitionOperator('applicant', 'placed')).toBe(false);
     expect(canTransitionOperator('certified', 'placed')).toBe(true);
     expect(canTransitionOperator('on-bench', 'placed')).toBe(true);
+  });
+
+  // A renewal opens a new placement, so the superseded one is not still running.
+  it('does not treat a renewed placement as live', () => {
+    expect(isPlacementLive({ ...placement, status: 'renewed' })).toBe(false);
+    expect(isPlacementLive({ ...placement, status: 'active' })).toBe(true);
+    expect(isPlacementLive({ ...placement, status: 'ended' })).toBe(false);
+  });
+
+  it('counts one live placement per operator in the seed', () => {
+    const data = createSeedData();
+    const liveByOperator = new Map<string, number>();
+    for (const item of data.placements.filter(isPlacementLive)) {
+      liveByOperator.set(item.operatorId, (liveByOperator.get(item.operatorId) ?? 0) + 1);
+    }
+    for (const count of liveByOperator.values()) expect(count).toBe(1);
   });
 });
 

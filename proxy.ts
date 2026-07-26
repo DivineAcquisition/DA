@@ -16,7 +16,7 @@ const VISTRIAL_HOSTS = (process.env.VISTRIAL_HOSTS ?? 'ops.divineacquisition.io,
 
 const HUB_PREFIX = '/vistrial';
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
   const isHubHost = VISTRIAL_HOSTS.includes(host);
   const { pathname } = request.nextUrl;

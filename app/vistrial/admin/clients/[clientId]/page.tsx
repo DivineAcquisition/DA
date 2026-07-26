@@ -26,6 +26,8 @@ import {
 
 type LogFilter = 'all' | 'eod' | 'bookings' | 'escalations' | 'notes' | 'evidence';
 
+const PAGE_SIZE = 20;
+
 const FILTERS: { id: LogFilter; label: string }[] = [
   { id: 'all', label: 'Everything' },
   { id: 'eod', label: 'EOD reports' },
@@ -51,6 +53,7 @@ function CaseFile() {
   const [filter, setFilter] = useState<LogFilter>('all');
   const [openReport, setOpenReport] = useState<string | null>(null);
   const [comment, setComment] = useState('');
+  const [visible, setVisible] = useState(PAGE_SIZE);
 
   const client = gateway.client(clientId);
   if (!client) {
@@ -354,7 +357,10 @@ function CaseFile() {
                 <button
                   key={option.id}
                   type="button"
-                  onClick={() => setFilter(option.id)}
+                  onClick={() => {
+                    setFilter(option.id);
+                    setVisible(PAGE_SIZE);
+                  }}
                   className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
                     filter === option.id
                       ? 'bg-brand-500/[0.14] text-brand-100 ring-1 ring-inset ring-brand-500/25'
@@ -372,7 +378,7 @@ function CaseFile() {
           <EmptyState title="Nothing logged of this type yet" />
         ) : (
           <ol className="space-y-2.5">
-            {timeline.map((entry) => (
+            {timeline.slice(0, visible).map((entry) => (
               <li key={entry.id}>
                 <Panel className="px-5 py-4">
                   <div className="flex flex-wrap items-center justify-between gap-2">
@@ -414,6 +420,16 @@ function CaseFile() {
               </li>
             ))}
           </ol>
+        )}
+
+        {timeline.length > visible && (
+          <button
+            type="button"
+            onClick={() => setVisible((count) => count + PAGE_SIZE)}
+            className={`${btnSecondary} ${btnSizeSm} mt-3 w-full`}
+          >
+            Show {Math.min(PAGE_SIZE, timeline.length - visible)} more of {timeline.length}
+          </button>
         )}
       </section>
     </div>

@@ -116,9 +116,16 @@ export function reconcilePlacement(bookings: Booking[]): Booking[] {
 /**
  * Rule 3: commission pays only on confirmed bookings. `system-only` is credited
  * because GHL saw it; `pending-review` and `rejected` are not.
+ *
+ * Crucially, a matched manual entry is the *second* record of one appointment.
+ * Counting it as well as its ingested twin would pay twice for a single booking,
+ * which is the whole reason the two sources are reconciled rather than summed —
+ * so credit sits with the ingested record and the manual echo is skipped.
  */
 export function isCommissionable(booking: Booking): boolean {
-  return booking.state === 'confirmed' || booking.state === 'system-only';
+  if (booking.state === 'system-only') return true;
+  if (booking.state !== 'confirmed') return false;
+  return !(booking.source === 'manual' && booking.matchedBookingId !== null);
 }
 
 /** Bookings that count toward quota. Same set as commission, by design. */
@@ -153,8 +160,11 @@ export type ReconciliationSummary = {
   unloggedRate: number;
 };
 
+/** Counts describe appointments, not records, so a reconciled pair counts once. */
 export function summarise(bookings: Booking[]): ReconciliationSummary {
-  const confirmed = bookings.filter((booking) => booking.state === 'confirmed').length;
+  const confirmed = bookings.filter(
+    (booking) => booking.state === 'confirmed' && isCommissionable(booking),
+  ).length;
   const systemOnly = bookings.filter((booking) => booking.state === 'system-only').length;
   const credited = confirmed + systemOnly;
 
