@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, EmptyState, PageHeader, Panel, SectionHeader, StatGrid, StatTile } from '@/app/vistrial/components/ui';
-import { AdminOnly } from '@/app/vistrial/components/AppShell';
+import AdminGate from '../components/AdminGate';
 import { listClientMessages } from '@/lib/da/billing';
 import AnswerMessageForm from '../components/AnswerMessageForm';
 
@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function MessagesPage() {
   return (
-    <AdminOnly>
+    <AdminGate>
       <Messages />
-    </AdminOnly>
+    </AdminGate>
   );
 }
 

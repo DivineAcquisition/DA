@@ -9,7 +9,7 @@ import {
   StatGrid,
   StatTile,
 } from '@/app/vistrial/components/ui';
-import { AdminOnly } from '@/app/vistrial/components/AppShell';
+import AdminGate from '../components/AdminGate';
 import { listMargin, listMonthlyMargin, listOperatorMargin } from '@/lib/da/billing';
 
 export const dynamic = 'force-dynamic';
@@ -19,9 +19,9 @@ const money = (value: number | string | null) =>
 
 export default async function MarginPage() {
   return (
-    <AdminOnly>
+    <AdminGate>
       <Margin />
-    </AdminOnly>
+    </AdminGate>
   );
 }
 

@@ -10,7 +10,7 @@ import {
   StatTile,
   type Tone,
 } from '@/app/vistrial/components/ui';
-import { AdminOnly } from '@/app/vistrial/components/AppShell';
+import AdminGate from '../components/AdminGate';
 import { listCaseFilesForBilling, listInvoices, listSubscriptions } from '@/lib/da/billing';
 import InvoiceActions from '../components/InvoiceActions';
 import NewInvoiceForms from '../components/NewInvoiceForms';
@@ -32,9 +32,9 @@ const STATUS_TONE: Record<string, Tone> = {
 
 export default async function BillingPage() {
   return (
-    <AdminOnly>
+    <AdminGate>
       <Billing />
-    </AdminOnly>
+    </AdminGate>
   );
 }
 

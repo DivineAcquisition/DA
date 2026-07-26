@@ -49,7 +49,13 @@ export type FunnelSummary = {
   weekly: { week: string; leads: number; booked: number; revenue: number; avg_response_minutes: number | null }[];
 };
 
-/** The one engagement this account is bound to. Rule 1. */
+/**
+ * The one engagement this account is bound to. Rule 1.
+ *
+ * Returns null rather than throwing when there is no session: a page still
+ * executes even when its layout has decided to render the sign-in screen instead
+ * of children, and an unauthenticated read of this table is correctly refused.
+ */
 export async function getMyAccount() {
   const supabase = await createClient();
 
@@ -58,7 +64,7 @@ export async function getMyAccount() {
     .select('*, client_case_file(id, name, slug, vertical, status, engagement_start, install_started_at)')
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) return null;
   return data;
 }
 

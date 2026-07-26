@@ -10,7 +10,7 @@ import {
   StatTile,
   type Tone,
 } from '@/app/vistrial/components/ui';
-import { AdminOnly } from '@/app/vistrial/components/AppShell';
+import AdminGate from '../components/AdminGate';
 import { listOperators, listPayPeriods, listPayoutBatches, listPayouts } from '@/lib/da/billing';
 import BatchActions from '../components/BatchActions';
 import PayoutRow from '../components/PayoutRow';
@@ -30,9 +30,9 @@ const BATCH_TONE: Record<string, Tone> = {
 
 export default async function PayoutsPage() {
   return (
-    <AdminOnly>
+    <AdminGate>
       <Payouts />
-    </AdminOnly>
+    </AdminGate>
   );
 }
 
