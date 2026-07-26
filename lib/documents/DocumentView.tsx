@@ -44,7 +44,11 @@ export default function DocumentView({ payload }: { payload: DocumentPayload }) 
 
   return (
     <div className="doc mx-auto">
-      {/* Repeats on every printed page. Pages get separated and forwarded. */}
+      <PageFurniture clientName={client.name} title={doc.title} producerLine={producerLine} generatedOn={generatedOn} />
+
+      {/* On screen these show the admin the branding a client will get. In print
+          they are replaced by the @page margin boxes above, which are the only
+          thing Chrome will give a real page number to. */}
       <RunningHeader clientName={client.name} title={doc.title} />
 
       <div className="doc-sheet border border-[#e6e3ef] px-[18mm] py-[16mm] shadow-[0_24px_60px_-40px_rgba(36,29,73,0.45)]">
@@ -72,6 +76,73 @@ export default function DocumentView({ payload }: { payload: DocumentPayload }) 
       <RunningFooter producerLine={producerLine} generatedOn={generatedOn} />
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Page furniture
+// ---------------------------------------------------------------------------
+
+/** CSS string literals need their quotes and backslashes escaped. */
+const cssString = (value: string) =>
+  `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\u00b7/g, '\\00B7 ')}"`;
+
+/**
+ * Rule 5: every page carries the DA producer line and the generation date, along
+ * with the client name, the document title and the page number.
+ *
+ * These live in `@page` margin boxes rather than in a fixed element, because a
+ * fixed element repeats on every page but Chrome resolves `counter(page)` inside
+ * one to zero. A page number that is wrong on every page is worse than none at
+ * all, particularly on a document whose whole premise is accuracy.
+ */
+function PageFurniture({
+  clientName,
+  title,
+  producerLine,
+  generatedOn,
+}: {
+  clientName: string;
+  title: string;
+  producerLine: string;
+  generatedOn: string;
+}) {
+  const css = `@media print {
+  @page {
+    size: A4;
+    margin: 26mm 16mm 22mm;
+    @top-left {
+      content: ${cssString(clientName.toUpperCase())};
+      font: 700 7.5pt var(--font-inter), sans-serif;
+      letter-spacing: 0.08em;
+      color: #5d5a6b;
+      vertical-align: bottom;
+      padding-bottom: 3mm;
+    }
+    @top-right {
+      content: ${cssString(title)};
+      font: 7.5pt var(--font-inter), sans-serif;
+      color: #5d5a6b;
+      vertical-align: bottom;
+      padding-bottom: 3mm;
+    }
+    @bottom-left {
+      content: ${cssString(producerLine)};
+      font: 7.5pt var(--font-inter), sans-serif;
+      color: #5d5a6b;
+      vertical-align: top;
+      padding-top: 3mm;
+    }
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages) ${cssString(` \u00b7 Generated ${generatedOn}`)};
+      font: 7.5pt var(--font-inter), sans-serif;
+      color: #5d5a6b;
+      vertical-align: top;
+      padding-top: 3mm;
+    }
+  }
+}`;
+
+  return <style>{css}</style>;
 }
 
 // ---------------------------------------------------------------------------
@@ -157,7 +228,7 @@ function Cover({
 
 function RunningHeader({ clientName, title }: { clientName: string; title: string }) {
   return (
-    <div className="doc-running doc-running-header flex items-center justify-between gap-4 border-b pb-1.5">
+    <div className="doc-running doc-hide-in-print flex items-center justify-between gap-4 border-b pb-1.5">
       <span className="truncate font-semibold uppercase tracking-[0.1em]">{clientName}</span>
       <span className="truncate">{title}</span>
     </div>
@@ -166,11 +237,9 @@ function RunningHeader({ clientName, title }: { clientName: string; title: strin
 
 function RunningFooter({ producerLine, generatedOn }: { producerLine: string; generatedOn: string }) {
   return (
-    <div className="doc-running doc-running-footer mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-1.5">
+    <div className="doc-running doc-hide-in-print mt-3 flex flex-wrap items-center justify-between gap-3 border-t pt-1.5">
       <span>{producerLine}</span>
-      <span>
-        Page <span className="doc-page-number" /> · Generated {generatedOn}
-      </span>
+      <span>Generated {generatedOn}</span>
     </div>
   );
 }
@@ -327,7 +396,10 @@ function BoundMetrics({ block }: { block: BoundBlock | null }) {
 /** Any block whose rows are plain bound fields: the funnel, the leak, the terms. */
 function BoundTable({ block }: { block: BoundBlock | null }) {
   const rows = (block?.rows ?? []) as unknown[];
-  if (rows.length === 0) return <NoData />;
+
+  // The trajectory block carries metrics rather than rows, because a growth arc is
+  // a series per measure rather than a flat table.
+  if (rows.length === 0) return block?.metrics ? <Trajectory metrics={block.metrics} /> : <NoData />;
 
   const first = rows[0] as Record<string, unknown>;
 
@@ -413,8 +485,6 @@ function BoundTable({ block }: { block: BoundBlock | null }) {
       </table>
     );
   }
-
-  if (block?.metrics) return <Trajectory metrics={block.metrics} />;
 
   return <NoData />;
 }

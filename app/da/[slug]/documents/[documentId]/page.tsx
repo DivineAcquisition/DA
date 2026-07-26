@@ -138,7 +138,7 @@ export default async function DocumentPage({
                 <AnonymisationPanel
                   flags={flags}
                   editable={editable}
-                  resolve={(flagId, formData) => resolveFlagAction(flagId, documentId, slug, formData)}
+                  resolve={resolveFlagAction.bind(null, documentId, slug)}
                 />
               </Panel>
             </section>

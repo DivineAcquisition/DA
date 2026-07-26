@@ -41,6 +41,45 @@ it: a fall in response time is an improvement, a rise in cost per lead is not.
 `app` is a private schema, not exposed through the Data API, so the
 security-definer helpers in it cannot be called by a client.
 
+## Document generation
+
+Client documents are produced from the tracked record rather than assembled by
+hand, so the same ten rules apply and the same approach holds: they live in the
+database, not in a form.
+
+| Rule | Enforcement |
+|---|---|
+| 1. Bound numbers come from the tracked record and are never manually typed | `app.resolve_bindings()` is the only path data takes into a document. `set_document_narrative()` is the only write path into a section body and refuses any section that is not `narrative`. |
+| 2. Missing data renders as an explicit gap, never zero or blank | `app.bind()` stamps `status: 'gap'` on a null value, `app.has_gap()` propagates it to `document_section.has_gap`, and the renderer prints "Not captured". A derived figure with a missing input is a gap too, rather than a confident wrong number. |
+| 3. Published documents freeze, including their numbers | `publish_document()` writes `app.document_payload()` into `frozen_payload`. `app.guard_document_update` then rejects every column change but the Drive reference and the supersede pointer, `app.guard_document_section` freezes the sections, and `refresh_document_bindings()` requires a draft. |
+| 4. Corrections publish a new version with a visible note; originals are never edited | `correct_document()` requires the note, clones the sections into a fresh draft, and links both rows in both directions. The note renders on the cover. |
+| 5. Every page carries the DA producer line and the generation date | `@page` margin boxes emitted per document by the renderer. Not a fixed element: Chrome repeats those on every page but resolves `counter(page)` inside one to zero, and a page number that is wrong on every page is worse than none. |
+| 6. Vistrial is never the primary brand | `document_template.producer_line`. Vistrial appears after Divine Acquisition, and only on the documents whose numbers are machine generated. |
+| 7. Nothing from the client never-see list appears | The resolver reads no operator, no internal note, no decision log, and no DA figure beyond the client's own. Effort hours stay internal even when the effort log is disclosed, and `app.scrub_operator_names()` catches an operator named in a milestone or effort description, where naming them is correct internally. |
+| 8. Template changes never alter previously generated documents | A document stores its own copy of every section plus the `template_version` it came from. |
+| 9. Case study anonymisation requires admin confirmation | `app.flag_identifiers()` deliberately over-flags. `mark_case_study_ready()` refuses while any flag is undecided, and `publish_document()` refuses a case study outright. |
+| 10. No em dashes in generated prose | `app.reject_em_dash()`, a trigger on both `document_section` and `document_template_section`. |
+
+Two details worth knowing before changing this area.
+
+**An audit findings report has to work before an engagement exists.** In this
+model the case file is created at the audit, so a prospect is simply a case file
+in `audit` status with no install, no placement and no invoices. There is no
+separate prospect record to keep in step.
+
+**Resolving a partial identifier before the whole one mangles the prose.** The
+scanner flags "Lumen Aesthetics" and also "Lumen" and "Aesthetics" alone, because
+either part still identifies the client. Rewriting a part first leaves a fragment
+behind, so the panel offers the longest snippet first and
+`resolve_anonymisation_flag()` retires any outstanding flag whose text is no
+longer in the section.
+
+The Drive copy is written by `lib/documents/serialise.ts` and carries its own
+stylesheet, because a reference into an application is not an archive. Google Docs
+will not honour `@page` margin boxes, so the archived copy carries the producer
+line once at the end rather than on every page; the paginated artefact is the one
+printed from the application.
+
 ## Automation
 
 `pg_cron` runs `app.take_automatic_snapshots()` every Monday at 06:00 UTC, which

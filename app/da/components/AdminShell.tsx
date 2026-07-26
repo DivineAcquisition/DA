@@ -14,7 +14,7 @@ export default function AdminShell({
 }) {
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl">
+      <header className="doc-hide-in-print sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-6">
           <Link href="/da" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80">
             <Logo markOnly className="h-6 w-auto" />
@@ -59,7 +59,7 @@ export default function AdminShell({
         </div>
       </header>
 
-      <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2.5 lg:hidden">
+      <nav className="doc-hide-in-print mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2.5 lg:hidden">
         {[
           { href: '/da', label: 'Engagements' },
           { href: '/da/documents', label: 'Documents' },
@@ -80,7 +80,7 @@ export default function AdminShell({
 
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6">{children}</main>
 
-      <footer className="border-t border-white/[0.06] px-5 py-5 sm:px-6">
+      <footer className="doc-hide-in-print border-t border-white/[0.06] px-5 py-5 sm:px-6">
         <p className="mx-auto max-w-6xl text-xs text-neutral-600">
           Divine Acquisition internal. Clients and operators have no access to this surface. Evidence files
           live in Google Drive; this application stores references.

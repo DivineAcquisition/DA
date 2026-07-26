@@ -373,20 +373,11 @@ a {
   letter-spacing: 0.04em;
 }
 
-/* On screen the running header and footer sit at the top and bottom of the sheet
-   so the admin sees the branding a client will get. In print they repeat on every
-   page, which is the rule that actually matters, because pages get separated and
-   forwarded. */
-.doc-page-number::after {
-  content: 'each page';
-}
-
+/* In print the running header and footer come from the `@page` margin boxes the
+   renderer emits, since those are the only place Chrome resolves a real page
+   number. Everything that belongs to the application rather than the document goes
+   away. */
 @media print {
-  @page {
-    size: A4;
-    margin: 26mm 16mm 22mm;
-  }
-
   html,
   body {
     background: #fff !important;
@@ -406,32 +397,6 @@ a {
     box-shadow: none !important;
     border: 0 !important;
     padding: 0 !important;
-  }
-
-  .doc-running-header,
-  .doc-running-footer {
-    position: fixed;
-    inset-inline: 0;
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-
-  .doc-running-header {
-    top: -16mm;
-    padding-bottom: 2mm;
-    border-bottom: 1px solid var(--doc-rule);
-  }
-
-  .doc-running-footer {
-    bottom: -14mm;
-    padding-top: 2mm;
-    border-top: 1px solid var(--doc-rule);
-  }
-
-  .doc-page-number::after {
-    content: counter(page);
   }
 
   .doc-cover {

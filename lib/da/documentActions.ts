@@ -201,10 +201,15 @@ export async function createCaseStudyAction(
   redirect(documentPath(slug, document.id));
 }
 
+/**
+ * Argument order matters: the document and slug are bound on the server so the
+ * component receives a real server action reference per flag, rather than a
+ * closure the boundary cannot serialise.
+ */
 export async function resolveFlagAction(
-  flagId: string,
   documentId: string,
   slug: string,
+  flagId: string,
   formData: FormData,
 ): Promise<ActionResult> {
   const supabase = await createClient();

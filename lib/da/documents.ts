@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, isAdminSession } from '@/lib/supabase/server';
 import { asPayload, type DocumentPayload, type DocumentSection } from '@/lib/documents/payload';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -15,6 +15,7 @@ export type DocumentTemplate = Database['public']['Tables']['document_template']
 export type DocumentType = Database['public']['Enums']['document_type'];
 
 export async function listDocuments(caseFileId: string) {
+  if (!(await isAdminSession())) return [];
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('v_document_index')
@@ -27,6 +28,7 @@ export async function listDocuments(caseFileId: string) {
 
 /** The register: what was sent to whom, and when, across every engagement. */
 export async function listAllDocuments(limit = 200) {
+  if (!(await isAdminSession())) return [];
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('v_document_index')
@@ -38,6 +40,7 @@ export async function listAllDocuments(limit = 200) {
 }
 
 export async function listDocumentAttention() {
+  if (!(await isAdminSession())) return [];
   const supabase = await createClient();
   const { data, error } = await supabase.from('v_document_attention').select('*').order('client_name');
   if (error) throw error;
@@ -45,6 +48,7 @@ export async function listDocumentAttention() {
 }
 
 export async function listTemplates() {
+  if (!(await isAdminSession())) return [];
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('document_template')
@@ -70,6 +74,7 @@ export type DocumentDetail = {
 };
 
 export async function getDocument(documentId: string): Promise<DocumentDetail | null> {
+  if (!(await isAdminSession())) return null;
   const supabase = await createClient();
 
   const { data: document, error } = await supabase
@@ -134,7 +139,12 @@ export async function getDocument(documentId: string): Promise<DocumentDetail | 
     document: document as unknown as DocumentRow,
     sections: liveSections,
     prompts,
-    flags: (flags.data ?? []) as AnonymisationFlag[],
+    // Longest snippet first, so the admin is offered "Lumen Aesthetics" before
+    // "Lumen" on its own. Rewriting a part before the whole leaves a fragment of
+    // the original behind.
+    flags: ((flags.data ?? []) as AnonymisationFlag[]).sort(
+      (a, b) => b.snippet.length - a.snippet.length,
+    ),
     opens: opens.data ?? [],
     deliveries: deliveries.data ?? [],
     payload:

@@ -33,7 +33,7 @@ export default function ClientShell({
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl">
+      <header className="doc-hide-in-print sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:px-6">
           <Link href="/acct" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80">
             <Logo markOnly className="h-6 w-auto" />
@@ -93,7 +93,7 @@ export default function ClientShell({
         {children}
       </main>
 
-      <footer className="border-t border-white/[0.06] px-5 py-5 sm:px-6">
+      <footer className="doc-hide-in-print border-t border-white/[0.06] px-5 py-5 sm:px-6">
         <p className="mx-auto max-w-6xl text-xs leading-relaxed text-neutral-600">
           Divine Acquisition. This dashboard shows your own operation only. Card details are handled by our
           payment processor and are never stored here.
