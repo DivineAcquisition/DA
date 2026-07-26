@@ -26,6 +26,7 @@ export default function AdminShell({
           <nav className="hidden items-center gap-1 lg:flex">
             {[
               { href: '/da', label: 'Engagements' },
+              { href: '/da/documents', label: 'Documents' },
               { href: '/da/billing', label: 'Billing' },
               { href: '/da/payouts', label: 'Payouts' },
               { href: '/da/margin', label: 'Margin' },
@@ -61,6 +62,7 @@ export default function AdminShell({
       <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2.5 lg:hidden">
         {[
           { href: '/da', label: 'Engagements' },
+          { href: '/da/documents', label: 'Documents' },
           { href: '/da/billing', label: 'Billing' },
           { href: '/da/payouts', label: 'Payouts' },
           { href: '/da/margin', label: 'Margin' },

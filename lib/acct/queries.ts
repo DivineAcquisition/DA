@@ -110,6 +110,40 @@ export async function getPublishedReports(caseFileId: string) {
   return data ?? [];
 }
 
+/**
+ * Documents published to this client.
+ *
+ * RLS on `document` already restricts this to their own engagement, to published
+ * state, and away from case study drafts. The filters below repeat that intent so
+ * the query reads honestly, but the boundary is the policy, not this function.
+ */
+export async function getPublishedDocuments(caseFileId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('document')
+    .select('id, type, title, version, period_start, period_end, published_at, correction_note, drive_url')
+    .eq('case_file_id', caseFileId)
+    .eq('state', 'published')
+    .eq('is_case_study', false)
+    .order('published_at', { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** One published document, rendered from the payload frozen when it was sent. */
+export async function getPublishedDocument(documentId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('document')
+    .select('id, title, state, frozen_payload, drive_url')
+    .eq('id', documentId)
+    .eq('state', 'published')
+    .eq('is_case_study', false)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function getInvoices(caseFileId: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

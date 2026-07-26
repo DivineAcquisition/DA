@@ -20,6 +20,7 @@ import {
   listReports,
   listSnapshots,
 } from '@/lib/da/queries';
+import { listDocuments } from '@/lib/da/documents';
 import BeginInstallButton from '../components/BeginInstallButton';
 import { GrowthTable, HeadlineDelta } from '../components/growth';
 
@@ -30,16 +31,18 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
-  const [health, baseline, growth, snapshots, milestones, evidence, effort, reports] = await Promise.all([
-    getHealth(caseFile.id),
-    getBaseline(caseFile.id),
-    getGrowth(caseFile.id),
-    listSnapshots(caseFile.id),
-    listMilestones(caseFile.id),
-    listEvidence(caseFile.id),
-    listEffort(caseFile.id),
-    listReports(caseFile.id),
-  ]);
+  const [health, baseline, growth, snapshots, milestones, evidence, effort, reports, documents] =
+    await Promise.all([
+      getHealth(caseFile.id),
+      getBaseline(caseFile.id),
+      getGrowth(caseFile.id),
+      listSnapshots(caseFile.id),
+      listMilestones(caseFile.id),
+      listEvidence(caseFile.id),
+      listEffort(caseFile.id),
+      listReports(caseFile.id),
+      listDocuments(caseFile.id),
+    ]);
 
   const hasBaseline = Boolean(baseline);
   const baselineLocked = Boolean(baseline?.snapshot.locked_at);
@@ -54,7 +57,18 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
     { href: `/da/${slug}/effort`, label: 'Effort', hint: `${effort.filter((e) => !e.superseded_by_id).length} entries` },
     { href: `/da/${slug}/scope`, label: 'Scope', hint: `${health?.out_of_scope_count ?? 0} out of scope` },
     { href: `/da/${slug}/decisions`, label: 'Decisions', hint: 'Material choices' },
-    { href: `/da/${slug}/reports`, label: 'Reports', hint: `${reports.length} generated` },
+    {
+      href: `/da/${slug}/documents`,
+      label: 'Documents',
+      hint: (() => {
+        const sent = documents.filter((document) => document.state === 'published').length;
+        const open = documents.filter((document) => document.state !== 'published' && document.state !== 'archived')
+          .length;
+        if (sent === 0 && open === 0) return 'None produced';
+        return `${sent} sent${open ? `, ${open} in progress` : ''}`;
+      })(),
+    },
+    { href: `/da/${slug}/reports`, label: 'Growth payloads', hint: `${reports.length} generated` },
   ];
 
   return (
@@ -75,11 +89,9 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
             {hasBaseline && !baselineLocked && (
               <BeginInstallButton caseFileId={caseFile.id} slug={slug} />
             )}
-            {baselineLocked && (
-              <Link href={`/da/${slug}/reports`} className={`${btnPrimary} ${btnSizeSm}`}>
-                Generate report
-              </Link>
-            )}
+            <Link href={`/da/${slug}/documents`} className={`${btnPrimary} ${btnSizeSm}`}>
+              {baselineLocked ? 'Generate a report' : 'Documents'}
+            </Link>
           </>
         }
       />

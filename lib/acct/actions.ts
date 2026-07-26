@@ -63,6 +63,20 @@ export async function recordUploadAction(caseFileId: string, formData: FormData)
   return { ok: true, message: 'Uploaded. It is now with DA for review.' };
 }
 
+/**
+ * Records that the client opened a published document. Not a write to their own
+ * record so much as a read receipt, which is why it is the one exception to the
+ * two-things rule above.
+ */
+export async function recordDocumentOpenAction(documentId: string): Promise<void> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc('record_document_open', {
+    p_document_id: documentId,
+    p_via: 'account',
+  });
+  if (error) console.error('document open not recorded', error.message);
+}
+
 export async function updatePreferencesAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const {

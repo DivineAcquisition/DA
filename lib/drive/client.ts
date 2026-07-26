@@ -197,6 +197,49 @@ export async function uploadFile(
   return (await response.json()) as DriveFile;
 }
 
+/**
+ * Uploads a generated document as HTML and asks Drive to convert it to a Google
+ * Doc. A published report is archived exactly as it was sent, so the file has to
+ * stand on its own: converting means the admin can open, share and export it to
+ * PDF in Drive without the application being available.
+ */
+export async function uploadGeneratedDocument(
+  folderId: string,
+  filename: string,
+  html: string,
+): Promise<DriveFile> {
+  const config = readDriveConfig();
+  if (!config) throw new Error('drive_not_configured');
+
+  const token = await getAccessToken(config);
+  const form = new FormData();
+  form.append(
+    'metadata',
+    new Blob(
+      [
+        JSON.stringify({
+          name: filename,
+          parents: [folderId],
+          mimeType: 'application/vnd.google-apps.document',
+        }),
+      ],
+      { type: 'application/json' },
+    ),
+  );
+  form.append('file', new Blob([html], { type: 'text/html' }));
+
+  const response = await fetch(
+    `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true&fields=${FILE_FIELDS}`,
+    { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: form },
+  );
+
+  if (!response.ok) {
+    throw new Error(`drive_upload_failed: ${response.status} ${await response.text()}`);
+  }
+
+  return (await response.json()) as DriveFile;
+}
+
 /** Lists a folder's files, so the sync can find anything added outside the app. */
 export async function listFolder(folderId: string): Promise<DriveFile[]> {
   const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
