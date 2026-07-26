@@ -7,7 +7,7 @@ import {
 } from '../access';
 import { CORE_FIELD_KEYS, getIndustryTemplate } from '../industries';
 import { createGateway } from '../gateway';
-import { createSeedData, NOW } from '../seed';
+import { makeOpsData, NOW } from './testData';
 import type { Actor, Booking, CaseFileConfig, Operator, PayPeriod, Placement } from '../types';
 import {
   commissionableBookings,
@@ -477,7 +477,7 @@ describe('EOD', () => {
 // ---------------------------------------------------------------------------
 
 describe('access control', () => {
-  const data = createSeedData();
+  const data = makeOpsData();
   const admin: Actor = { role: 'admin', id: 'admin-1', name: 'DA Admin' };
   const diego: Actor = { role: 'operator', id: 'op-diego', name: 'Diego Salcedo' };
 
@@ -597,7 +597,7 @@ describe('lifecycle', () => {
   });
 
   it('counts one live placement per operator in the seed', () => {
-    const data = createSeedData();
+    const data = makeOpsData();
     const liveByOperator = new Map<string, number>();
     for (const item of data.placements.filter(isPlacementLive)) {
       liveByOperator.set(item.operatorId, (liveByOperator.get(item.operatorId) ?? 0) + 1);
@@ -611,7 +611,7 @@ describe('lifecycle', () => {
 // ---------------------------------------------------------------------------
 
 describe('exception queue', () => {
-  const data = createSeedData();
+  const data = makeOpsData();
   const queue = buildExceptionQueue({
     operators: data.operators,
     clients: data.clients,
@@ -643,7 +643,7 @@ describe('exception queue', () => {
 
 // Rule 5: everything logs against a placement, never directly against a client.
 describe('seed integrity', () => {
-  const data = createSeedData();
+  const data = makeOpsData();
   const placementIds = new Set(data.placements.map((item) => item.id));
 
   it('attaches every log to a real placement', () => {

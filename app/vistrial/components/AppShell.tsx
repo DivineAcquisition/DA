@@ -1,22 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import { formatDayLong } from '@/lib/vistrial/format';
 import { useOps } from '@/lib/vistrial/store';
-import type { Actor } from '@/lib/vistrial/types';
 import { Avatar, Badge, Panel } from './ui';
 
 type NavItem = { href: string; label: string; badge?: number };
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { gateway, actor, data, admin, setActor } = useOps();
+  const { gateway, actor } = useOps();
   const pathname = usePathname();
-  const router = useRouter();
-  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   const nav: NavItem[] = gateway.isAdmin
     ? [
@@ -45,20 +42,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       ? pathname === href
       : pathname.startsWith(href);
 
-  const switchTo = (next: Actor) => {
-    setActor(next);
-    setSwitcherOpen(false);
-    router.push(next.role === 'admin' ? '/vistrial/admin' : '/vistrial/operator');
-  };
-
-  const workspaces: Actor[] = [
-    admin,
-    ...data.operators.map((operator) => ({
-      role: 'operator' as const,
-      id: operator.id,
-      name: operator.name,
-    })),
-  ];
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
@@ -125,61 +108,15 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 <Badge tone={gateway.isAdmin ? 'brand' : 'neutral'}>
                   {gateway.isAdmin ? 'Admin' : 'Operator'}
                 </Badge>
-                <button
-                  type="button"
-                  onClick={() => setSwitcherOpen((open) => !open)}
-                  aria-expanded={switcherOpen}
-                  className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3 transition-colors hover:border-white/25 hover:bg-white/[0.06]"
-                >
+                <span className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3">
                   <Avatar name={actor.name} size="sm" />
                   <span className="max-w-32 truncate text-[13px] font-medium text-white">{actor.name}</span>
-                  <svg
-                    aria-hidden
-                    className="h-3 w-3 text-neutral-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2.5}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-
-                {switcherOpen && (
-                  <Panel className="absolute right-0 top-12 z-50 w-72 overflow-hidden p-1.5">
-                    <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-600">
-                      Sign in as
-                    </p>
-                    {workspaces.map((workspace) => {
-                      const operator =
-                        workspace.role === 'operator'
-                          ? data.operators.find((candidate) => candidate.id === workspace.id)
-                          : undefined;
-                      return (
-                        <button
-                          key={`${workspace.role}-${workspace.id}`}
-                          type="button"
-                          onClick={() => switchTo(workspace)}
-                          className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors ${
-                            workspace.id === actor.id
-                              ? 'bg-brand-500/[0.12] text-brand-100'
-                              : 'text-neutral-300 hover:bg-white/[0.04] hover:text-white'
-                          }`}
-                        >
-                          <Avatar name={workspace.name} size="sm" />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-medium">{workspace.name}</span>
-                            <span className="block truncate text-[11px] text-neutral-500">
-                              {workspace.role === 'admin'
-                                ? 'Full access'
-                                : `Operator · ${operator?.status.replace('-', ' ')}`}
-                            </span>
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </Panel>
-                )}
+                </span>
+                <form action={hubSignOutAction}>
+                  <button type="submit" className={`${btnSecondary} ${btnSizeSm}`}>
+                    Sign out
+                  </button>
+                </form>
               </div>
             </div>
 
@@ -211,9 +148,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <p className="text-xs text-neutral-600">
                 Vistrial VA Ops Hub · internal to Divine Acquisition
               </p>
-              <Link href="/vistrial" className={`${btnSecondary} ${btnSizeSm}`}>
-                Switch workspace
-              </Link>
+              <p className="text-xs text-neutral-600">Signed in as {actor.name}</p>
             </div>
           </footer>
         </div>

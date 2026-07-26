@@ -23,6 +23,24 @@ export default function AdminShell({
             </span>
           </Link>
 
+          <nav className="hidden items-center gap-1 lg:flex">
+            {[
+              { href: '/da', label: 'Engagements' },
+              { href: '/da/billing', label: 'Billing' },
+              { href: '/da/payouts', label: 'Payouts' },
+              { href: '/da/margin', label: 'Margin' },
+              { href: '/da/messages', label: 'Requests' },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-full px-3.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
           <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Badge tone="brand">Admin</Badge>
             <span className="hidden items-center gap-2 sm:flex">
@@ -39,6 +57,24 @@ export default function AdminShell({
           </div>
         </div>
       </header>
+
+      <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 pb-2.5 lg:hidden">
+        {[
+          { href: '/da', label: 'Engagements' },
+          { href: '/da/billing', label: 'Billing' },
+          { href: '/da/payouts', label: 'Payouts' },
+          { href: '/da/margin', label: 'Margin' },
+          { href: '/da/messages', label: 'Requests' },
+        ].map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className="shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium text-neutral-400 transition-colors hover:bg-white/[0.04] hover:text-white"
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
 
       <main className="mx-auto max-w-6xl px-5 py-8 sm:px-6">{children}</main>
 
