@@ -64,8 +64,14 @@ export default function DocumentActions({
               Re-read the figures
             </button>
             {isCaseStudy && !anonymisationConfirmed && (
-              <button onClick={run(markReady)} disabled={pending} className={`${btnPrimary} ${btnSizeSm}`}>
-                Confirm anonymisation
+              <button
+                onClick={run(markReady)}
+                disabled={pending || openFlags > 0}
+                className={`${btnPrimary} ${btnSizeSm}`}
+              >
+                {openFlags > 0
+                  ? `${openFlags} reference${openFlags === 1 ? '' : 's'} still to decide`
+                  : 'Confirm anonymisation'}
               </button>
             )}
             <button
