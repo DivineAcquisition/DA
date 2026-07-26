@@ -2,19 +2,43 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Brand — #9A88FC is the prime colour (brand-500). */
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ebe7ff;
+  --color-brand-200: #d9d1fe;
+  --color-brand-300: #c3b6fe;
+  --color-brand-400: #ae9dfd;
+  --color-brand-500: #9a88fc;
+  --color-brand-600: #7e67f2;
+  --color-brand-700: #6650d8;
+  --color-brand-800: #5140a9;
+  --color-brand-900: #3a2f78;
+  --color-brand-950: #1e1940;
+
+  /* Neutrals — very slightly violet-shifted so the brand sits naturally on top. */
+  --color-ink-950: #07070b;
+  --color-ink-900: #0b0a11;
+  --color-ink-850: #100f18;
+  --color-ink-800: #16151f;
+  --color-ink-700: #1e1d29;
+
+  --radius-4xl: 1.75rem;
 }
 
 :root {
-  --divine-purple: #5500FF;
-  --divine-light: #907DFF;
-  --divine-purple-rgb: 85, 0, 255;
-  --divine-light-rgb: 144, 125, 255;
+  --brand: #9a88fc;
+  --brand-rgb: 154, 136, 252;
+  --brand-deep: #6650d8;
+  --page: #07070b;
+  --hairline: rgba(255, 255, 255, 0.07);
 }
 
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
+  scroll-padding-top: 6rem;
 }
 
 html,
@@ -29,17 +53,27 @@ body {
   font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #0a0a0a;
+  background-color: var(--page);
   color: #fff;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.02em;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: -0.022em;
   font-feature-settings: 'cv11', 'ss03', 'cv02', 'ss08', 'ss01';
   font-optical-sizing: auto;
 }
 
-h1, h2 {
+h1 {
+  letter-spacing: -0.032em;
+}
+
+h1,
+h2 {
   text-wrap: balance;
 }
 
@@ -52,8 +86,20 @@ a {
   text-decoration: none;
 }
 
+::selection {
+  background-color: rgba(var(--brand-rgb), 0.35);
+  color: #f6f4ff;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(var(--brand-rgb), 0.7);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -61,183 +107,163 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #222;
-  border-radius: 10px;
+  background: #232131;
+  border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #333;
+  background: #322f45;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes fadeInSlow {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2);
     opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -18px, 0);
+  }
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(85, 0, 255, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(85, 0, 255, 0.6); }
+.animate-rise {
+  animation: riseIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.animate-fade {
+  animation: fadeIn 0.9s ease both;
 }
 
-@keyframes count-up {
-  from { opacity: 0; transform: scale(0.5); }
-  to { opacity: 1; transform: scale(1); }
+.animate-ping {
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.animate-drift {
+  animation: drift 14s ease-in-out infinite;
 }
 
-.animate-fade-in-slow {
-  animation: fadeInSlow 1.2s ease forwards;
+.delay-1 {
+  animation-delay: 0.06s;
+}
+.delay-2 {
+  animation-delay: 0.12s;
+}
+.delay-3 {
+  animation-delay: 0.18s;
+}
+.delay-4 {
+  animation-delay: 0.24s;
+}
+.delay-5 {
+  animation-delay: 0.3s;
+}
+.delay-6 {
+  animation-delay: 0.36s;
 }
 
-.animate-slide-up {
-  animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
+/* ---------- Surfaces ---------- */
 
-.animate-pulse-glow {
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 6s ease infinite;
-}
-
-.animation-delay-100 { animation-delay: 0.1s; }
-.animation-delay-200 { animation-delay: 0.2s; }
-.animation-delay-300 { animation-delay: 0.3s; }
-.animation-delay-400 { animation-delay: 0.4s; }
-.animation-delay-500 { animation-delay: 0.5s; }
-.animation-delay-600 { animation-delay: 0.6s; }
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(12px);
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(144, 125, 255, 0.3);
-  transform: translateY(-4px);
-  box-shadow: 0 20px 40px -15px rgba(85, 0, 255, 0.2);
-}
-
-.gradient-text {
-  background: linear-gradient(135deg, #fff 0%, #907DFF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-text-hero {
-  background: linear-gradient(to right, #ffffff 0%, #ffffff 40%, #907DFF 70%, #5500FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.gradient-border {
+/* Card with a 1px gradient edge that catches light at the top, the way most
+   modern dashboards render panels on dark backgrounds. */
+.panel {
   position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%),
+    #0b0a11;
+  border: 1px solid var(--hairline);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
-.gradient-border::before {
+.panel-hover {
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel-hover:hover {
+  border-color: rgba(var(--brand-rgb), 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 18px 40px -24px rgba(var(--brand-rgb), 0.55);
+  transform: translateY(-2px);
+}
+
+/* Thin luminous rule used to separate major bands. */
+.hairline-glow::before {
   content: '';
   position: absolute;
+  inset-inline: 0;
   top: 0;
-  left: 0;
-  right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(144, 125, 255, 0.5), transparent);
+  background: linear-gradient(90deg, transparent, rgba(var(--brand-rgb), 0.45), transparent);
 }
 
-::selection {
-  background-color: rgba(85, 0, 255, 0.4);
-  color: #f5f3ff;
-}
-
-*:focus-visible {
-  outline: 2px solid rgba(144, 125, 255, 0.5);
-  outline-offset: 2px;
-}
-
-button, a {
-  transition: all 0.2s ease;
+.text-gradient {
+  background: linear-gradient(102deg, #ffffff 0%, #f1eeff 38%, var(--brand) 78%, var(--brand-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* ---------- Wistia ---------- */
+
+wistia-player[media-id='lrplfrikyd']:not(:defined) {
+  background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/lrplfrikyd/swatch');
+  display: block;
+  filter: blur(5px);
+  padding-top: 56.25%;
 }
 
-@keyframes ping {
-  75%, 100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-.animate-ping {
-  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(-15%);
-    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
-  }
-  50% {
-    transform: translateY(0);
-    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-  }
-}
-
-.animate-bounce {
-  animation: bounce 2s infinite;
+wistia-player {
+  display: block;
+  width: 100%;
 }
