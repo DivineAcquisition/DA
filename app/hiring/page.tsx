@@ -17,6 +17,8 @@ import {
 } from '../data/roles';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, eyebrow, sectionLabel } from '../components/ui';
 
+const filterLabel = 'mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500';
+
 const values = [
   { name: 'Devotion', detail: 'Trust deep enough to become conviction.' },
   { name: 'Value', detail: 'Make the right path the easy path.' },
@@ -88,7 +90,7 @@ function FeaturedRoleCard({ role }: { role: Role }) {
           </h3>
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{role.summary}</p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-500">
+          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-400">
             <span className="font-semibold text-brand-300">$400–$600/mo base + commission</span>
             {role.tags.map((tag) => (
               <span key={tag} className="flex items-center gap-1.5">
@@ -125,7 +127,7 @@ function RoleCard({ role }: { role: Role }) {
 
             <p className="mb-3.5 text-sm leading-relaxed text-neutral-400">{role.summary}</p>
 
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-neutral-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-neutral-400">
               {role.tags.map((tag, index) => (
                 <span key={tag} className="flex items-center gap-1.5">
                   {index === 0 ? <PinIcon /> : <span className="h-1 w-1 rounded-full bg-neutral-700" />}
@@ -198,15 +200,18 @@ export default function HiringPage() {
         <SiteHeader
           action={
             <>
-              <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeSm} hidden sm:inline-flex`}>
-                SDR Placement
-              </Link>
+              <span className="hidden sm:contents">
+                <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeSm}`}>
+                  SDR Placement
+                </Link>
+              </span>
               <a href="#positions" className={`${btnPrimary} ${btnSizeSm}`}>
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ink-950 opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink-950" />
                 </span>
-                {roles.length} open roles
+                <span className="hidden sm:inline">{roles.length} open roles</span>
+                <span className="sm:hidden">{roles.length} roles</span>
               </a>
             </>
           }
@@ -224,8 +229,8 @@ export default function HiringPage() {
             </p>
 
             <h1 className="animate-rise delay-1 mt-6 text-[2.1rem] font-semibold leading-[1.08] sm:text-5xl md:text-[3.5rem]">
-              <span className="text-gradient">Curating the engine</span>
-              <br className="hidden sm:block" /> to create trust, revenue &amp; retention.
+              Curating the engine to create{' '}
+              <span className="text-gradient">trust, revenue &amp; retention.</span>
             </h1>
 
             <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
@@ -292,13 +297,13 @@ export default function HiringPage() {
 
             <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
               {/* Filter rail */}
+              {/* A vertical rail on desktop; below `lg` the same controls flatten
+                  into a compact toolbar so the roles stay above the fold. */}
               <aside className="lg:w-64 lg:shrink-0">
-                <div className="panel sticky top-24 space-y-7 rounded-2xl p-5">
+                <div className="panel flex flex-col gap-5 rounded-2xl p-4 lg:sticky lg:top-24 lg:gap-7 lg:p-5">
                   <div>
-                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                      Department
-                    </h3>
-                    <div className="space-y-1">
+                    <h3 className={filterLabel}>Department</h3>
+                    <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0">
                       {departments.map((dept) => {
                         const count = dept.id === 'all' ? roles.length : deptCounts[dept.id] || 0;
                         const isSelected = selectedDept === dept.id;
@@ -307,7 +312,7 @@ export default function HiringPage() {
                             key={dept.id}
                             type="button"
                             onClick={() => setSelectedDept(dept.id)}
-                            className={`flex w-full items-center justify-between rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors ${
+                            className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors lg:w-full lg:justify-between ${
                               isSelected
                                 ? 'bg-brand-500/12 text-brand-100 ring-1 ring-inset ring-brand-500/30'
                                 : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
@@ -325,78 +330,74 @@ export default function HiringPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                      Location
-                    </h3>
-                    <div className="space-y-1">
-                      {locations.map((location) => {
-                        const checked = selectedLocations.includes(location.id);
-                        return (
-                          <label
-                            key={location.id}
-                            className="group flex cursor-pointer items-center gap-3 rounded-xl px-3.5 py-2 hover:bg-white/[0.03]"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => toggleLocation(location.id)}
-                              className="sr-only"
-                            />
-                            <span
-                              aria-hidden
-                              className={`flex h-4.5 w-4.5 items-center justify-center rounded-[5px] border transition-all ${
-                                checked
-                                  ? 'border-brand-500 bg-brand-500 text-ink-950'
-                                  : 'border-white/15 bg-white/[0.03] group-hover:border-white/30'
-                              }`}
+                  <div className="flex flex-col gap-5 border-t border-white/[0.06] pt-5 sm:flex-row sm:items-start sm:gap-8 lg:flex-col lg:gap-7 lg:border-0 lg:pt-0">
+                    <div className="sm:flex-1 lg:flex-none">
+                      <h3 className={filterLabel}>Location</h3>
+                      <div className="flex flex-wrap gap-1.5 lg:flex-col lg:gap-1">
+                        {locations.map((location) => {
+                          const checked = selectedLocations.includes(location.id);
+                          return (
+                            <label
+                              key={location.id}
+                              className="group flex cursor-pointer items-center gap-2.5 rounded-xl border border-white/[0.07] px-3 py-2 transition-colors hover:bg-white/[0.03] lg:border-0 lg:px-3.5"
                             >
-                              {checked && (
-                                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
-                                </svg>
-                              )}
-                            </span>
-                            <span className="text-sm text-neutral-400 transition-colors group-hover:text-white">
-                              {location.name}
-                            </span>
-                          </label>
-                        );
-                      })}
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleLocation(location.id)}
+                                className="peer sr-only"
+                              />
+                              <span
+                                aria-hidden
+                                className={`flex h-4 w-4 items-center justify-center rounded-[5px] border transition-all peer-focus-visible:ring-2 peer-focus-visible:ring-brand-500/70 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-ink-900 ${
+                                  checked
+                                    ? 'border-brand-500 bg-brand-500 text-ink-950'
+                                    : 'border-white/15 bg-white/[0.03] group-hover:border-white/30'
+                                }`}
+                              >
+                                {checked && (
+                                  <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
+                                  </svg>
+                                )}
+                              </span>
+                              <span className="whitespace-nowrap text-sm text-neutral-400 transition-colors group-hover:text-white">
+                                {location.name}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="sm:w-56 lg:w-auto">
+                      <h3 className={filterLabel}>Sort by</h3>
+                      <div className="relative">
+                        <select
+                          value={sortBy}
+                          onChange={(event) => setSortBy(event.target.value)}
+                          aria-label="Sort roles"
+                          className="w-full cursor-pointer appearance-none rounded-xl border border-white/10 bg-ink-900 px-3.5 py-2.5 pr-9 text-sm text-neutral-300 transition-colors hover:border-white/20 focus:border-brand-500/60 focus:outline-none"
+                        >
+                          <option value="level-high">Seniority: high to low</option>
+                          <option value="level-low">Seniority: low to high</option>
+                        </select>
+                        <svg
+                          aria-hidden
+                          className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8 9 4-4 4 4m0 6-4 4-4-4" />
+                        </svg>
+                      </div>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                      Sort by
-                    </h3>
-                    <div className="relative">
-                      <select
-                        value={sortBy}
-                        onChange={(event) => setSortBy(event.target.value)}
-                        aria-label="Sort roles"
-                        className="w-full cursor-pointer appearance-none rounded-xl border border-white/10 bg-ink-900 px-3.5 py-2.5 pr-9 text-sm text-neutral-300 transition-colors hover:border-white/20 focus:border-brand-500/60 focus:outline-none"
-                      >
-                        <option value="level-high">Seniority: high to low</option>
-                        <option value="level-low">Seniority: low to high</option>
-                      </select>
-                      <svg
-                        aria-hidden
-                        className="pointer-events-none absolute right-3.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-500"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m8 9 4-4 4 4m0 6-4 4-4-4" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                      Time zone
-                    </p>
+                  <div className="hidden rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-3 lg:block">
+                    <p className={`${filterLabel} mb-0`}>Time zone</p>
                     <p className="mt-1 text-sm text-neutral-300">EST (Eastern Standard Time)</p>
                   </div>
                 </div>

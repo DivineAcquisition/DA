@@ -54,9 +54,12 @@ function FactsStrip({ className = '' }: { className?: string }) {
   return (
     <ul className={`flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[13px] text-neutral-400 ${className}`}>
       {facts.map((fact, index) => (
+        // The separator trails its fact so a wrapped line never opens with a stray dot.
         <li key={fact} className="flex items-center gap-3">
-          {index > 0 && <span aria-hidden className="h-1 w-1 rounded-full bg-brand-500/70" />}
           {fact}
+          {index < facts.length - 1 && (
+            <span aria-hidden className="h-1 w-1 rounded-full bg-brand-500/70" />
+          )}
         </li>
       ))}
     </ul>
@@ -79,9 +82,11 @@ export default function SdrPlacementPage() {
         <SiteHeader
           action={
             <>
-              <Link href="/hiring" className={`${btnSecondary} ${btnSizeSm} hidden sm:inline-flex`}>
-                All roles
-              </Link>
+              <span className="hidden sm:contents">
+                <Link href="/hiring" className={`${btnSecondary} ${btnSizeSm}`}>
+                  All roles
+                </Link>
+              </span>
               <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className={`${btnPrimary} ${btnSizeSm}`}>
                 Apply now
               </a>
@@ -114,7 +119,7 @@ export default function SdrPlacementPage() {
           </div>
 
           {/* Video */}
-          <div className="animate-rise delay-3 relative mx-auto mt-10 max-w-3xl sm:mt-12">
+          <div className="animate-rise delay-3 relative mx-auto mt-10 max-w-4xl sm:mt-12">
             <div
               aria-hidden
               className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
@@ -128,7 +133,7 @@ export default function SdrPlacementPage() {
           </div>
 
           {/* Apply CTA + facts */}
-          <div className="animate-rise delay-4 mx-auto mt-10 flex max-w-3xl flex-col items-center">
+          <div className="animate-rise delay-4 mx-auto mt-10 flex max-w-4xl flex-col items-center">
             <a
               href={APPLY_URL}
               target="_blank"
@@ -144,7 +149,7 @@ export default function SdrPlacementPage() {
 
         {/* How placement works */}
         <section className="px-5 py-14 sm:px-6 sm:py-16">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-4xl">
             <div className="max-w-2xl">
               <p className={sectionLabel}>How placement works</p>
               <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
@@ -168,7 +173,7 @@ export default function SdrPlacementPage() {
 
         {/* Compensation */}
         <section className="px-5 py-14 sm:px-6 sm:py-16">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-4xl">
             <div className="max-w-2xl">
               <p className={sectionLabel}>What you earn</p>
               <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">A base you can count on, plus upside you control.</h2>
@@ -187,7 +192,7 @@ export default function SdrPlacementPage() {
 
         {/* Closing CTA */}
         <section className="px-5 pb-20 pt-6 sm:px-6">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-4xl">
             <div className="panel relative overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16">
               <div
                 aria-hidden

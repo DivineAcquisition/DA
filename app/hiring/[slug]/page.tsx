@@ -248,13 +248,29 @@ function ApplyPanel({ detail, title }: { detail: RoleDetail; title: string }) {
         </div>
 
         {detail.apply.kind === 'airtable' ? (
-          <iframe
-            title={`Application form for ${title}`}
-            className="w-full border-0 bg-transparent"
-            src={detail.apply.src}
-            height="5000"
-            style={{ minHeight: '5000px' }}
-          />
+          <div>
+            {/* Airtable renders its form on a white page, so it is framed as a
+                deliberate light sheet rather than fighting the dark surface. */}
+            <div className="bg-white/[0.04] p-3 sm:p-4">
+              <iframe
+                title={`Application form for ${title}`}
+                className="h-[720px] w-full rounded-2xl border-0 bg-white sm:h-[860px]"
+                src={detail.apply.src}
+              />
+            </div>
+            <p className="border-t border-white/[0.06] px-5 py-4 text-center text-xs text-neutral-500 sm:px-7">
+              Form not loading?{' '}
+              <a
+                href={detail.apply.src.replace('/embed/', '/')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-brand-300 underline decoration-brand-500/40 underline-offset-2 hover:text-brand-200"
+              >
+                Open it in a new tab
+              </a>
+              .
+            </p>
+          </div>
         ) : detail.apply.kind === 'external' ? (
           <div className="px-6 py-12 text-center">
             <a href={detail.apply.href} target="_blank" rel="noopener noreferrer" className={`${btnPrimary} ${btnSizeMd}`}>
