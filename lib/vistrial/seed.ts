@@ -528,9 +528,13 @@ function buildBookings(): Booking[] {
   const random = rng(90210);
   let counter = 0;
 
+  /** Days in `month` the placement was actually running, capped at today. */
   const monthWindow = (item: Placement, month: string) => {
     const start = month === monthKey(item.startDate) ? item.startDate : `${month}-01`;
-    const cap = Date.parse(TODAY) < Date.parse(`${month}-28`) ? TODAY : `${month}-28`;
+    const monthCap = Date.parse(TODAY) < Date.parse(`${month}-28`) ? TODAY : `${month}-28`;
+    const placementEnd = item.closedOn ?? item.endDate;
+    const cap = Date.parse(placementEnd) < Date.parse(monthCap) ? placementEnd : monthCap;
+    if (Date.parse(cap) < Date.parse(start)) return [];
     return eachDay(start, cap);
   };
 
@@ -658,9 +662,10 @@ function buildBookings(): Booking[] {
     }
   }
 
-  emit(placements.find((item) => item.id === 'pl-nadia-solace')!, '2026-06', {
-    matched: 0,
-    systemOnly: 0,
+  // The term Amara renewed out of, so her history has bookings behind it too.
+  emit(placements.find((item) => item.id === 'pl-amara-lumen-1')!, '2026-06', {
+    matched: 9,
+    systemOnly: 3,
     claims: 0,
   });
 
