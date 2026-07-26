@@ -15,10 +15,10 @@ export default function SiteHeader({ action }: SiteHeaderProps) {
           aria-label="DivineAcquisition careers home"
           className="shrink-0 transition-opacity hover:opacity-80"
         >
-          <Logo className="h-[26px] w-auto sm:h-[30px]" />
+          <Logo className="h-[22px] w-auto sm:h-[28px]" />
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">{action}</div>
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">{action}</div>
       </div>
     </header>
   );
