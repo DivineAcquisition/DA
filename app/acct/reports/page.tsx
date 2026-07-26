@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, EmptyState, PageHeader, Panel, SectionHeader } from '@/app/vistrial/components/ui';
-import { getMyAccount, getPublishedReports } from '@/lib/acct/queries';
+import { DOCUMENT_TYPE_LABEL, formatDate, formatPeriod } from '@/lib/documents/format';
+import { getMyAccount, getPublishedDocuments } from '@/lib/acct/queries';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,14 +10,14 @@ export default async function ClientReports() {
   const account = await getMyAccount();
   if (!account) return <EmptyState title="No engagement attached to this account" />;
 
-  const reports = await getPublishedReports(account.case_file_id);
+  const documents = await getPublishedDocuments(account.case_file_id);
 
   return (
     <div className="space-y-8">
       <PageHeader
         eyebrow="Reports"
-        title="What DA has shared with you"
-        description="Growth reports published to your account, each one a fixed record of the numbers as they stood on the day it was produced."
+        title="What DA has sent you"
+        description="Each of these is a fixed record of the numbers as they stood on the day it was produced, not a live view. Your current figures are always on the overview."
         actions={
           <Link href="/acct" className={`${btnSecondary} ${btnSizeSm}`}>
             Back to overview
@@ -24,40 +25,47 @@ export default async function ClientReports() {
         }
       />
 
-      {reports.length === 0 ? (
+      {documents.length === 0 ? (
         <EmptyState
-          title="No reports published yet"
-          detail="Your Divine Acquisition contact publishes these ahead of a review. Your live numbers are always on the overview."
+          title="Nothing published yet"
+          detail="Reports arrive here ahead of a review, and you will be notified when one does. Your live numbers are on the overview in the meantime."
         />
       ) : (
         <section>
-          <SectionHeader title="Published" hint={`${reports.length} reports.`} />
+          <SectionHeader title="Published" hint={`${documents.length} document(s).`} />
           <ul className="space-y-2.5">
-            {reports.map((report) => {
-              const payload = report.payload as { metrics?: { improved: boolean | null }[] } | null;
-              const metrics = payload?.metrics ?? [];
-              const improved = metrics.filter((metric) => metric.improved === true).length;
-              const comparable = metrics.filter((metric) => metric.improved !== null).length;
-
-              return (
-                <li key={report.id}>
-                  <Panel className="px-5 py-4">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
+            {documents.map((document) => (
+              <li key={document.id}>
+                <Link href={`/acct/reports/${document.id}`}>
+                  <Panel className="panel-hover px-5 py-4">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div className="min-w-0">
                         <p className="text-sm font-semibold text-white">
-                          {report.period_start} to {report.period_end}
+                          {document.title}
+                          {document.version > 1 && (
+                            <span className="ml-2 text-xs font-normal text-brand-300">
+                              version {document.version}
+                            </span>
+                          )}
                         </p>
                         <p className="mt-1 text-xs text-neutral-500">
-                          Published {report.published_to_client_at?.slice(0, 10)}
-                          {comparable > 0 && ` · ${improved} of ${comparable} measures improved`}
+                          {formatPeriod(document.period_start, document.period_end) ??
+                            DOCUMENT_TYPE_LABEL[document.type] ??
+                            document.type}
+                          {document.published_at && ` · sent ${formatDate(document.published_at)}`}
                         </p>
+                        {document.correction_note && (
+                          <p className="mt-1.5 text-xs leading-relaxed text-brand-300">
+                            Correction: {document.correction_note}
+                          </p>
+                        )}
                       </div>
-                      <Badge tone="brand">Growth report</Badge>
+                      <Badge tone="brand">{DOCUMENT_TYPE_LABEL[document.type] ?? document.type}</Badge>
                     </div>
                   </Panel>
-                </li>
-              );
-            })}
+                </Link>
+              </li>
+            ))}
           </ul>
         </section>
       )}

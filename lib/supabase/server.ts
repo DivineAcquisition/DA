@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 import type { Database } from './database.types';
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
@@ -69,3 +70,16 @@ export async function getSessionContext(): Promise<SessionContext | null> {
     isAdmin: profile?.role === 'admin',
   };
 }
+
+/**
+ * Whether this request belongs to an admin, resolved once per request.
+ *
+ * A layout that refuses a surface does not stop Next rendering the page beneath
+ * it, so without this the admin read helpers fire on every unauthenticated visit
+ * and Postgres correctly refuses them. RLS is still the boundary; this only keeps
+ * a refusal from surfacing as a server error on a page nobody is going to see.
+ */
+export const isAdminSession = cache(async (): Promise<boolean> => {
+  const session = await getSessionContext();
+  return session?.isAdmin ?? false;
+});

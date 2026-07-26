@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, isAdminSession } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
 
 /**
@@ -22,6 +22,7 @@ export type GrowthRow = Database['public']['Functions']['growth_for_case_file'][
 export type SeriesPoint = Database['public']['Functions']['growth_series']['Returns'][number];
 
 export async function listCaseFiles() {
+  if (!(await isAdminSession())) return [];
   const supabase = await createClient();
   const { data, error } = await supabase.from('v_case_file_health').select('*').order('name');
   if (error) throw error;
@@ -29,6 +30,9 @@ export async function listCaseFiles() {
 }
 
 export async function getCaseFileBySlug(slug: string) {
+  // Every case file page starts here and calls notFound() on a null, so guarding
+  // this one entry point keeps the whole subtree from querying.
+  if (!(await isAdminSession())) return null;
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('client_case_file')

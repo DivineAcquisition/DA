@@ -1,7 +1,3 @@
-// Generated from the Supabase schema. Do not edit by hand.
-// Regenerate with the Supabase MCP generate_typescript_types tool or
-// `supabase gen types typescript --project-id onobzewvjsicwxbsdlzw`.
-
 export type Json =
   | string
   | number
@@ -18,6 +14,64 @@ export type Database = {
   }
   public: {
     Tables: {
+      anonymisation_flag: {
+        Row: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          document_id: string
+          id: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          document_id: string
+          id?: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          document_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key?: string
+          snippet?: string
+          suggestion?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anonymisation_flag_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymisation_flag_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymisation_flag_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       booking: {
         Row: {
           case_file_id: string
@@ -87,6 +141,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "booking_case_file_id_fkey"
@@ -176,6 +237,13 @@ export type Database = {
             foreignKeyName: "case_file_drive_folder_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "case_file_drive_folder_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -243,6 +311,13 @@ export type Database = {
             foreignKeyName: "client_account_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_account_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -274,6 +349,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -294,6 +370,7 @@ export type Database = {
           engagement_start?: string | null
           id?: string
           install_started_at?: string | null
+          logo_url?: string | null
           name: string
           notes?: string | null
           retainer_amount?: number | null
@@ -314,6 +391,7 @@ export type Database = {
           engagement_start?: string | null
           id?: string
           install_started_at?: string | null
+          logo_url?: string | null
           name?: string
           notes?: string | null
           retainer_amount?: number | null
@@ -387,6 +465,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_dashboard_link_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "client_dashboard_link_case_file_id_fkey"
@@ -495,6 +580,13 @@ export type Database = {
             foreignKeyName: "client_invite_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_invite_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -578,6 +670,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_message_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "client_message_case_file_id_fkey"
@@ -730,6 +829,13 @@ export type Database = {
             foreignKeyName: "decision_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "decision_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -752,6 +858,433 @@ export type Database = {
             columns: ["supersedes_id"]
             isOneToOne: false
             referencedRelation: "decision"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document: {
+        Row: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          anonymisation_confirmed_at?: string | null
+          anonymisation_confirmed_by?: string | null
+          anonymised_descriptor?: string | null
+          archived_at?: string | null
+          case_file_id: string
+          correction_note?: string | null
+          created_at?: string
+          drive_file_id?: string | null
+          drive_url?: string | null
+          frozen_payload?: Json | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          include_effort?: boolean
+          is_case_study?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          share_link_id?: string | null
+          state?: Database["public"]["Enums"]["document_state"]
+          superseded_by_id?: string | null
+          supersedes_id?: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          anonymisation_confirmed_at?: string | null
+          anonymisation_confirmed_by?: string | null
+          anonymised_descriptor?: string | null
+          archived_at?: string | null
+          case_file_id?: string
+          correction_note?: string | null
+          created_at?: string
+          drive_file_id?: string | null
+          drive_url?: string | null
+          frozen_payload?: Json | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          include_effort?: boolean
+          is_case_study?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          share_link_id?: string | null
+          state?: Database["public"]["Enums"]["document_state"]
+          superseded_by_id?: string | null
+          supersedes_id?: string | null
+          template_id?: string
+          template_version?: number
+          title?: string
+          type?: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_anonymisation_confirmed_by_fkey"
+            columns: ["anonymisation_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_share_link_id_fkey"
+            columns: ["share_link_id"]
+            isOneToOne: false
+            referencedRelation: "client_dashboard_link"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_template"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_delivery: {
+        Row: {
+          channel: string
+          delivered_at: string
+          detail: string | null
+          document_id: string
+          id: string
+          status: string
+        }
+        Insert: {
+          channel: string
+          delivered_at?: string
+          detail?: string | null
+          document_id: string
+          id?: string
+          status: string
+        }
+        Update: {
+          channel?: string
+          delivered_at?: string
+          detail?: string | null
+          document_id?: string
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_delivery_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_delivery_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_open: {
+        Row: {
+          document_id: string
+          id: string
+          opened_at: string
+          opened_by: string | null
+          user_agent: string | null
+          via: string
+        }
+        Insert: {
+          document_id: string
+          id?: string
+          opened_at?: string
+          opened_by?: string | null
+          user_agent?: string | null
+          via?: string
+        }
+        Update: {
+          document_id?: string
+          id?: string
+          opened_at?: string
+          opened_by?: string | null
+          user_agent?: string | null
+          via?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_open_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_open_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_open_opened_by_fkey"
+            columns: ["opened_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_section: {
+        Row: {
+          body: string | null
+          bound_data: Json | null
+          created_at: string
+          document_id: string
+          has_gap: boolean
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          bound_data?: Json | null
+          created_at?: string
+          document_id: string
+          has_gap?: boolean
+          id?: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          bound_data?: Json | null
+          created_at?: string
+          document_id?: string
+          has_gap?: boolean
+          id?: string
+          key?: string
+          kind?: Database["public"]["Enums"]["section_kind"]
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_section_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_section_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_template: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_current: boolean
+          name: string
+          producer_line: string
+          type: Database["public"]["Enums"]["document_type"]
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          name: string
+          producer_line?: string
+          type: Database["public"]["Enums"]["document_type"]
+          version: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          name?: string
+          producer_line?: string
+          type?: Database["public"]["Enums"]["document_type"]
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_template_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_template_section: {
+        Row: {
+          body: string | null
+          bound_source: string | null
+          created_at: string
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          required: boolean
+          sort_order: number
+          template_id: string
+          title: string
+          vertical: string | null
+        }
+        Insert: {
+          body?: string | null
+          bound_source?: string | null
+          created_at?: string
+          id?: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          required?: boolean
+          sort_order: number
+          template_id: string
+          title: string
+          vertical?: string | null
+        }
+        Update: {
+          body?: string | null
+          bound_source?: string | null
+          created_at?: string
+          id?: string
+          key?: string
+          kind?: Database["public"]["Enums"]["section_kind"]
+          required?: boolean
+          sort_order?: number
+          template_id?: string
+          title?: string
+          vertical?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_template_section_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_template"
             referencedColumns: ["id"]
           },
         ]
@@ -795,6 +1328,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drive_sync_run_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "drive_sync_run_case_file_id_fkey"
@@ -900,6 +1440,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "effort_entry_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "effort_entry_case_file_id_fkey"
@@ -1153,6 +1700,13 @@ export type Database = {
             foreignKeyName: "escalation_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "escalation_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1257,6 +1811,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_item_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "evidence_item_case_file_id_fkey"
@@ -1449,6 +2010,13 @@ export type Database = {
             foreignKeyName: "growth_report_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "growth_report_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1549,6 +2117,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "invoice_case_file_id_fkey"
@@ -1698,6 +2273,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "milestone_case_file_id_fkey"
@@ -2037,6 +2619,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pass_through_cost_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "pass_through_cost_case_file_id_fkey"
@@ -2583,6 +3172,13 @@ export type Database = {
             foreignKeyName: "placement_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "placement_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2715,6 +3311,13 @@ export type Database = {
             foreignKeyName: "revenue_record_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "revenue_record_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2840,6 +3443,13 @@ export type Database = {
             foreignKeyName: "scope_request_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "scope_request_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2909,6 +3519,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "snapshot_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "snapshot_case_file_id_fkey"
@@ -3104,6 +3721,13 @@ export type Database = {
             foreignKeyName: "subscription_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "subscription_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -3177,6 +3801,13 @@ export type Database = {
             foreignKeyName: "tracking_funnel_daily_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_funnel_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -3226,6 +3857,13 @@ export type Database = {
             foreignKeyName: "tracking_metric_daily_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_metric_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -3267,6 +3905,141 @@ export type Database = {
           vertical: string | null
         }
         Relationships: []
+      }
+      v_document_attention: {
+        Row: {
+          awaiting_review: number | null
+          case_file_id: string | null
+          client_name: string | null
+          client_slug: string | null
+          has_baseline: boolean | null
+          last_monthly_at: string | null
+          monthly_overdue: boolean | null
+          open_drafts: number | null
+          status: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies: number | null
+          unopened_published: number | null
+        }
+        Insert: {
+          awaiting_review?: never
+          case_file_id?: string | null
+          client_name?: string | null
+          client_slug?: string | null
+          has_baseline?: never
+          last_monthly_at?: never
+          monthly_overdue?: never
+          open_drafts?: never
+          status?: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies?: never
+          unopened_published?: never
+        }
+        Update: {
+          awaiting_review?: never
+          case_file_id?: string | null
+          client_name?: string | null
+          client_slug?: string | null
+          has_baseline?: never
+          last_monthly_at?: never
+          monthly_overdue?: never
+          open_drafts?: never
+          status?: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies?: never
+          unopened_published?: never
+        }
+        Relationships: []
+      }
+      v_document_index: {
+        Row: {
+          anonymisation_confirmed_at: string | null
+          case_file_id: string | null
+          channels: string | null
+          client_name: string | null
+          client_slug: string | null
+          correction_note: string | null
+          drive_url: string | null
+          generated_at: string | null
+          id: string | null
+          is_case_study: boolean | null
+          last_opened_at: string | null
+          open_count: number | null
+          open_flags: number | null
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          sections_with_gaps: number | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"] | null
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          title: string | null
+          type: Database["public"]["Enums"]["document_type"] | null
+          version: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_share_link_id_fkey"
+            columns: ["share_link_id"]
+            isOneToOne: false
+            referencedRelation: "client_dashboard_link"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       v_margin_by_client: {
         Row: {
@@ -3392,6 +4165,90 @@ export type Database = {
         Args: { p_case_file_id: string; p_window_days?: number }
         Returns: number
       }
+      archive_document: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      attach_document_to_drive: {
+        Args: {
+          p_document_id: string
+          p_drive_file_id: string
+          p_drive_url: string
+        }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       attach_report_to_drive: {
         Args: {
           p_drive_file_id: string
@@ -3413,6 +4270,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -3576,6 +4434,46 @@ export type Database = {
         }
         Returns: string
       }
+      correct_document: {
+        Args: { p_correction_note: string; p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       correct_effort: {
         Args: {
           p_description: string
@@ -3608,6 +4506,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -3620,6 +4519,46 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "client_case_file"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_case_study_draft: {
+        Args: { p_descriptor: string; p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -3772,6 +4711,53 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "payout"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      generate_document: {
+        Args: {
+          p_case_file_id: string
+          p_include_effort?: boolean
+          p_period_end?: string
+          p_period_start?: string
+          p_title?: string
+          p_type: Database["public"]["Enums"]["document_type"]
+        }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -3971,7 +4957,87 @@ export type Database = {
           revenue: number
         }[]
       }
+      mark_case_study_ready: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mark_overdue_invoices: { Args: never; Returns: number }
+      publish_document: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       publish_report: {
         Args: { p_report_id: string }
         Returns: {
@@ -4007,6 +5073,10 @@ export type Database = {
       }
       recalculate_invoice: {
         Args: { p_invoice_id: string }
+        Returns: undefined
+      }
+      record_document_open: {
+        Args: { p_document_id: string; p_user_agent?: string; p_via?: string }
         Returns: undefined
       }
       record_drive_sync: {
@@ -4066,6 +5136,46 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      refresh_document_bindings: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       register_drive_folders: {
         Args: {
           p_case_file_id: string
@@ -4074,6 +5184,26 @@ export type Database = {
           p_subfolders: Json
         }
         Returns: undefined
+      }
+      resolve_anonymisation_flag: {
+        Args: { p_flag_id: string; p_replacement?: string }
+        Returns: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          document_id: string
+          id: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "anonymisation_flag"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       revoke_dashboard_link: { Args: { p_link_id: string }; Returns: undefined }
       revoke_share_link: { Args: { p_link_id: string }; Returns: undefined }
@@ -4112,6 +5242,28 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      set_document_narrative: {
+        Args: { p_body: string; p_document_id: string; p_section_key: string }
+        Returns: {
+          body: string | null
+          bound_data: Json | null
+          created_at: string
+          document_id: string
+          has_gap: boolean
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document_section"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       shared_dashboard: {
         Args: {
           p_passphrase?: string
@@ -4129,6 +5281,46 @@ export type Database = {
           last_period_end: string
           name: string
         }[]
+      }
+      submit_document_for_review: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       suspend_for_billing: {
         Args: { p_threshold_days?: number }
@@ -4179,6 +5371,12 @@ export type Database = {
       }
     }
     Enums: {
+      anonymisation_kind:
+        | "client_name"
+        | "person"
+        | "location"
+        | "brand"
+        | "other"
       booking_source: "ghl" | "manual"
       booking_state: "confirmed" | "pending_review" | "system_only" | "rejected"
       charge_type:
@@ -4195,6 +5393,14 @@ export type Database = {
         | "closed"
       client_message_status: "open" | "answered" | "closed"
       delivery_status: "delivered" | "failed" | "skipped"
+      document_state: "draft" | "in_review" | "published" | "archived"
+      document_type:
+        | "audit_findings"
+        | "install_completion"
+        | "monthly_performance"
+        | "quarterly_review"
+        | "proposal_scope"
+        | "case_study"
       engagement_status: "audit" | "installing" | "active" | "paused" | "ended"
       escalation_category:
         | "clinical"
@@ -4256,6 +5462,15 @@ export type Database = {
       quote_status: "draft" | "sent" | "accepted" | "declined"
       report_mode: "client_facing" | "internal" | "case_study_draft"
       scope_verdict: "in_scope" | "out_of_scope"
+      section_kind:
+        | "fixed"
+        | "narrative"
+        | "bound_metrics"
+        | "bound_table"
+        | "milestones"
+        | "evidence"
+        | "effort"
+        | "scope"
       snapshot_kind: "baseline" | "progress"
       snapshot_trigger: "automatic" | "manual"
       subscription_status: "active" | "past_due" | "paused" | "cancelled"
@@ -4388,6 +5603,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      anonymisation_kind: [
+        "client_name",
+        "person",
+        "location",
+        "brand",
+        "other",
+      ],
       booking_source: ["ghl", "manual"],
       booking_state: ["confirmed", "pending_review", "system_only", "rejected"],
       charge_type: [
@@ -4406,6 +5628,15 @@ export const Constants = {
       ],
       client_message_status: ["open", "answered", "closed"],
       delivery_status: ["delivered", "failed", "skipped"],
+      document_state: ["draft", "in_review", "published", "archived"],
+      document_type: [
+        "audit_findings",
+        "install_completion",
+        "monthly_performance",
+        "quarterly_review",
+        "proposal_scope",
+        "case_study",
+      ],
       engagement_status: ["audit", "installing", "active", "paused", "ended"],
       escalation_category: [
         "clinical",
@@ -4474,6 +5705,16 @@ export const Constants = {
       quote_status: ["draft", "sent", "accepted", "declined"],
       report_mode: ["client_facing", "internal", "case_study_draft"],
       scope_verdict: ["in_scope", "out_of_scope"],
+      section_kind: [
+        "fixed",
+        "narrative",
+        "bound_metrics",
+        "bound_table",
+        "milestones",
+        "evidence",
+        "effort",
+        "scope",
+      ],
       snapshot_kind: ["baseline", "progress"],
       snapshot_trigger: ["automatic", "manual"],
       subscription_status: ["active", "past_due", "paused", "cancelled"],

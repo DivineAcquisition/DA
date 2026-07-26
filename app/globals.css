@@ -262,6 +262,169 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
+/* ---------- Document house style ----------
+
+   A client-facing document is a printed artefact, so everything under `.doc`
+   switches to paper: light ground, dark ink, a fixed A4 measure. The app around
+   it stays dark. These are the existing DA document conventions rather than a new
+   visual language: uppercase section headers over a purple rule, callouts with a
+   purple left bar, deep purple table headers with alternating row fills.        */
+
+.doc {
+  --doc-purple: #6650d8;
+  --doc-purple-soft: #f4f1ff;
+  --doc-purple-line: #ddd5fb;
+  --doc-deep: #241d49;
+  --doc-ink: #17161f;
+  --doc-muted: #5d5a6b;
+  --doc-faint: #918da2;
+  --doc-rule: #e6e3ef;
+
+  width: 210mm;
+  max-width: 100%;
+  background: #fff;
+  color: var(--doc-ink);
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.6;
+  font-feature-settings: normal;
+}
+
+.doc h1,
+.doc h2,
+.doc h3,
+.doc h4 {
+  font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, sans-serif;
+  color: var(--doc-deep);
+  letter-spacing: -0.018em;
+}
+
+.doc p {
+  margin: 0 0 0.7em;
+}
+
+.doc p:last-child {
+  margin-bottom: 0;
+}
+
+/* Section headers: uppercase, tracked out, over a purple rule. */
+.doc-section-title {
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid var(--doc-purple);
+  font-size: 8.5pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--doc-purple);
+}
+
+.doc-callout {
+  border-left: 4px solid var(--doc-purple);
+  background: var(--doc-purple-soft);
+  padding: 0.85rem 1.1rem;
+}
+
+.doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.5pt;
+}
+
+.doc-table th {
+  background: var(--doc-deep);
+  color: #fff;
+  font-family: var(--font-jakarta), var(--font-inter), sans-serif;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0.5rem 0.7rem;
+}
+
+.doc-table td {
+  border-bottom: 1px solid var(--doc-rule);
+  padding: 0.48rem 0.7rem;
+  vertical-align: top;
+}
+
+.doc-table tbody tr:nth-child(even) {
+  background: #faf9fe;
+}
+
+.doc-table .doc-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Rule 2 made visible. A missing number reads as missing, never as a zero. */
+.doc-gap {
+  color: var(--doc-faint);
+  font-style: italic;
+  font-variant-numeric: normal;
+}
+
+.doc-running {
+  border-color: var(--doc-rule);
+  color: var(--doc-muted);
+  font-size: 7.5pt;
+  letter-spacing: 0.04em;
+}
+
+/* In print the running header and footer come from the `@page` margin boxes the
+   renderer emits, since those are the only place Chrome resolves a real page
+   number. Everything that belongs to the application rather than the document goes
+   away. */
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    overflow: visible !important;
+  }
+
+  .doc-hide-in-print {
+    display: none !important;
+  }
+
+  .doc {
+    width: auto;
+    font-size: 10pt;
+  }
+
+  .doc-sheet {
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .doc-cover {
+    break-after: page;
+    min-height: 0;
+  }
+
+  .doc-section {
+    break-inside: avoid;
+  }
+
+  .doc-section-title {
+    break-after: avoid;
+  }
+
+  .doc-table {
+    break-inside: auto;
+  }
+
+  .doc-table thead {
+    display: table-header-group;
+  }
+
+  .doc-table tr {
+    break-inside: avoid;
+  }
+}
+
 /* ---------- Wistia ---------- */
 
 wistia-player[media-id='lrplfrikyd']:not(:defined) {
