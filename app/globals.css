@@ -23,6 +23,12 @@
   --color-ink-800: #16151f;
   --color-ink-700: #1e1d29;
 
+  /* Status only. Brand purple stays the action colour; these carry meaning that
+     a single hue cannot express, like an overdue escalation versus a healthy one. */
+  --color-flag-critical: #f87171;
+  --color-flag-warning: #f0b45c;
+  --color-flag-good: #52d6a4;
+
   --radius-4xl: 1.75rem;
 }
 

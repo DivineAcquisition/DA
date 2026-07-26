@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
+import { createContext, useContext, useMemo, useReducer } from 'react';
 import { addDays, toDay } from './dates';
 import { createGateway, type Gateway } from './gateway';
 import { reconcilePlacement } from './rules/bookings';
@@ -16,6 +16,7 @@ import type {
   EscalationCategory,
   NotificationSeverity,
   OpsData,
+  Placement,
 } from './types';
 
 /**
@@ -31,6 +32,7 @@ const ADMIN: Actor = { role: 'admin', id: 'admin-da', name: 'DA Admin' };
 
 type Action =
   | { type: 'set-actor'; actor: Actor }
+  | { type: 'set-active-placement'; placementId: string }
   | { type: 'submit-eod'; draft: EodDraft }
   | { type: 'correct-eod'; reportId: string; draft: EodDraft; reason: string }
   | { type: 'comment-eod'; reportId: string; body: string }
@@ -146,7 +148,12 @@ function reducer(state: State, action: Action): State {
 
   switch (action.type) {
     case 'set-actor':
-      return { ...state, actor: action.actor };
+      return { ...state, actor: action.actor, activePlacementId: null };
+
+    // Which placement the operator is working in. Everything they log attaches
+    // to this one.
+    case 'set-active-placement':
+      return { ...state, activePlacementId: action.placementId };
 
     case 'submit-eod': {
       const placement = data.placements.find((item) => item.id === action.draft.placementId);
@@ -496,20 +503,24 @@ function reducer(state: State, action: Action): State {
       };
 
     case 'reset':
-      return { actor: state.actor, data: createSeedData() };
+      return { actor: state.actor, activePlacementId: state.activePlacementId, data: createSeedData() };
 
     default:
       return state;
   }
 }
 
-type State = { actor: Actor; data: OpsData };
+type State = { actor: Actor; activePlacementId: string | null; data: OpsData };
 
 type StoreValue = {
   gateway: Gateway;
   actor: Actor;
   data: OpsData;
   admin: Actor;
+  /** The placement an operator is currently working in. Null for the admin. */
+  activePlacement: Placement | null;
+  myLivePlacements: Placement[];
+  setActivePlacement: (placementId: string) => void;
   setActor: (actor: Actor) => void;
   submitEod: (draft: EodDraft) => void;
   correctEod: (reportId: string, draft: EodDraft, reason: string) => void;
@@ -534,10 +545,21 @@ const StoreContext = createContext<StoreValue | null>(null);
 export function OpsProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, undefined, () => ({
     actor: ADMIN,
+    activePlacementId: null,
     data: createSeedData(),
   }));
 
   const gateway = useMemo(() => createGateway(state.data, state.actor), [state.data, state.actor]);
+
+  const myLivePlacements = useMemo(
+    () => (state.actor.role === 'operator' ? gateway.myPlacements() : []),
+    [gateway, state.actor.role],
+  );
+
+  const activePlacement =
+    myLivePlacements.find((placement) => placement.id === state.activePlacementId) ??
+    myLivePlacements[0] ??
+    null;
 
   const value = useMemo<StoreValue>(
     () => ({
@@ -545,6 +567,9 @@ export function OpsProvider({ children }: { children: React.ReactNode }) {
       actor: state.actor,
       data: state.data,
       admin: ADMIN,
+      activePlacement,
+      myLivePlacements,
+      setActivePlacement: (placementId) => dispatch({ type: 'set-active-placement', placementId }),
       setActor: (actor) => dispatch({ type: 'set-actor', actor }),
       submitEod: (draft) => dispatch({ type: 'submit-eod', draft }),
       correctEod: (reportId, draft, reason) => dispatch({ type: 'correct-eod', reportId, draft, reason }),
@@ -567,7 +592,7 @@ export function OpsProvider({ children }: { children: React.ReactNode }) {
       updateConfig: (clientId, config) => dispatch({ type: 'update-config', clientId, config }),
       reset: () => dispatch({ type: 'reset' }),
     }),
-    [gateway, state.actor, state.data],
+    [gateway, state.actor, state.data, activePlacement, myLivePlacements],
   );
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
