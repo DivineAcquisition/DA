@@ -4,18 +4,24 @@
   "description": "Join Divine Acquisition and help build Acquisition, Retention & AI Growth Infrastructure for service-based businesses.",
   "start_url": "/hiring",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#6200FF",
+  "background_color": "#07070b",
+  "theme_color": "#9a88fc",
   "icons": [
     {
-      "src": "/6 (0-00-00-00)_1.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/6 (0-00-00-00)_1.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }
