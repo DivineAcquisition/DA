@@ -5,8 +5,11 @@ import { controlRpc } from '@/lib/ad/rpc';
 import type { AccountState, ImpersonationContext, UserRole } from '@/lib/ad/types';
 import type { Database } from './database.types';
 
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
-export const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
+export const SUPABASE_URL =
+  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://onobzewvjsicwxbsdlzw.supabase.co';
+export const SUPABASE_PUBLISHABLE_KEY =
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+  'sb_publishable_D0zVxSKE4J38HvaFJtWGqw_HmDl0AF5';
 
 export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 

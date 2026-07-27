@@ -101,7 +101,20 @@ The Next.js surface lives at `/ad` (host `ad.vistrial.io` via
 `VISTRIAL_CONTROL_HOSTS`). Accounts are invited from `/ad/invites`; acceptance
 is at `/ad/invite?token=…`.
 
-Some later control-plane migrations are applied on the live project but not yet
-exported as files in this repo (account lifecycle RPCs, vault, sign-in helpers,
-RLS polish). The `/ad` workspace calls those live RPCs directly. Re-export them
-before applying this branch to a fresh database.
+### Host routing
+
+Each property is a dedicated host. On that host only its surface is served;
+other app paths return 404. Localhost and `*.vercel.app` keep path-based access
+for previews.
+
+| Host env | Default | Surface |
+|---|---|---|
+| `VISTRIAL_CONTROL_HOSTS` | `ad.vistrial.io` | `/ad` |
+| `VISTRIAL_ADMIN_HOSTS` | `da.vistrial.io` | `/da` |
+| `VISTRIAL_ACCT_HOSTS` | `acct.vistrial.io` | `/acct` |
+| `VISTRIAL_OPS_HOSTS` | `ops.vistrial.io`, … | `/vistrial` |
+| `VISTRIAL_CAREERS_HOSTS` | `vistrial.io`, … | `/hiring` |
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
+every deploy. The app also falls back to the live Vistrial project values so a
+missing env var does not render the “Database not connected” screen.

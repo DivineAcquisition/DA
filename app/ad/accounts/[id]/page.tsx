@@ -78,7 +78,7 @@ export default async function AccountDetailPage({
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[
           ['Expires', account.expires_on ?? '—'],
-          ['MFA required', account.mfa_required === false ? 'No' : 'Yes / role default'],
+          ['MFA required', account.mfa_required === true ? 'Yes' : account.mfa_required === false ? 'No' : ['owner', 'admin', 'manager'].includes(account.role) ? 'Role default (yes)' : 'Role default (no)'],
           ['Session timeout', account.session_timeout_minutes ? `${account.session_timeout_minutes}m` : 'Default'],
           ['Failed attempts', String(account.failed_attempts)],
         ].map(([label, value]) => (
@@ -250,8 +250,8 @@ export default async function AccountDetailPage({
           <label className={labelClass}>Severity</label>
           <select name="severity" className={inputClass} defaultValue="urgent">
             <option value="urgent">Urgent</option>
-            <option value="critical">Critical</option>
-            <option value="normal">Normal</option>
+            <option value="important">Important</option>
+            <option value="informational">Informational</option>
           </select>
           <label className="flex items-center gap-2 text-sm text-neutral-300">
             <input type="checkbox" name="blocking" />

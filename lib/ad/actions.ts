@@ -471,6 +471,7 @@ export async function storeCredentialAction(formData: FormData): Promise<ActionR
     p_label: String(formData.get('label') ?? ''),
     p_username: String(formData.get('username') ?? '') || null,
     p_secret: String(formData.get('secret') ?? ''),
+    p_url: String(formData.get('url') ?? '') || null,
     p_notes: String(formData.get('notes') ?? '') || null,
     p_rotation_interval_days: formData.get('rotation_interval_days')
       ? Number(formData.get('rotation_interval_days'))
@@ -519,18 +520,13 @@ export async function revealCredentialAction(
 
 export async function engageLockdownAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
-  // Signature recovery is incomplete for engage_lockdown; try the documented body.
-  const body = String(formData.get('body') ?? formData.get('reason') ?? '');
-  let error = (await controlRpc(supabase, 'engage_lockdown', { p_body: body })).error;
-  if (error?.message?.includes('Could not find the function')) {
-    error = (await controlRpc(supabase, 'engage_lockdown', { p_reason: body })).error;
-  }
-  if (error?.message?.includes('Could not find the function')) {
-    error = (await controlRpc(supabase, 'engage_lockdown', { p_message: body })).error;
-  }
+  const { error } = await controlRpc(supabase, 'engage_lockdown', {
+    p_reason: String(formData.get('reason') ?? ''),
+    p_typed_confirmation: String(formData.get('typed_confirmation') ?? ''),
+  });
   if (error) return { ok: false, error: readable(error) };
   revalidateAd('/ad/lockdown');
-  return { ok: true, message: 'Lockdown engaged.' };
+  return { ok: true, message: 'Lockdown engaged. Every other session was ended.' };
 }
 
 export async function releaseLockdownAction(_formData?: FormData): Promise<ActionResult> {
