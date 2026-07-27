@@ -24,7 +24,7 @@ export default async function AlertsPage() {
               <p className="mt-1 text-xs text-neutral-500">{new Date(alert.at).toLocaleString()}</p>
             </div>
             <ActionForm
-              action={async () => acknowledgeOwnerAlertAction(alert.id)}
+              action={acknowledgeOwnerAlertAction.bind(null, alert.id)}
               submitLabel="Acknowledge"
               variant="secondary"
             />

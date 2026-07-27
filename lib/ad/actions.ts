@@ -98,7 +98,7 @@ export async function inviteAccountAction(formData: FormData): Promise<ActionRes
   };
 }
 
-export async function resendInviteAction(inviteId: string): Promise<ActionResult> {
+export async function resendInviteAction(inviteId: string, _formData?: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'resend_invite', { p_invite_id: inviteId });
   if (error) return { ok: false, error: readable(error) };
@@ -106,7 +106,7 @@ export async function resendInviteAction(inviteId: string): Promise<ActionResult
   return { ok: true, message: 'Invite resent.' };
 }
 
-export async function cancelInviteAction(inviteId: string): Promise<ActionResult> {
+export async function cancelInviteAction(inviteId: string, _formData?: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'cancel_invite', { p_invite_id: inviteId });
   if (error) return { ok: false, error: readable(error) };
@@ -184,7 +184,10 @@ export async function suspendAccountAction(
   return { ok: true, message: 'Account suspended. Sessions revoked.' };
 }
 
-export async function reactivateAccountAction(profileId: string): Promise<ActionResult> {
+export async function reactivateAccountAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'reactivate_account', {
     p_profile_id: profileId,
@@ -206,7 +209,10 @@ export async function setExpiryAction(profileId: string, formData: FormData): Pr
   return { ok: true, message: raw ? `Expiry set to ${raw}.` : 'Expiry cleared.' };
 }
 
-export async function archiveAccountAction(profileId: string): Promise<ActionResult> {
+export async function archiveAccountAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'archive_account', { p_profile_id: profileId });
   if (error) return { ok: false, error: readable(error) };
@@ -214,7 +220,10 @@ export async function archiveAccountAction(profileId: string): Promise<ActionRes
   return { ok: true, message: 'Account archived.' };
 }
 
-export async function softDeleteAccountAction(profileId: string): Promise<ActionResult> {
+export async function softDeleteAccountAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'soft_delete_account', { p_profile_id: profileId });
   if (error) return { ok: false, error: readable(error) };
@@ -222,7 +231,10 @@ export async function softDeleteAccountAction(profileId: string): Promise<Action
   return { ok: true, message: 'Account soft-deleted into the recovery window.' };
 }
 
-export async function restoreAccountAction(profileId: string): Promise<ActionResult> {
+export async function restoreAccountAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'restore_account', { p_profile_id: profileId });
   if (error) return { ok: false, error: readable(error) };
@@ -295,7 +307,10 @@ export async function setPermissionOverrideAction(
   return { ok: true, message: 'Permission override saved.' };
 }
 
-export async function requirePasswordResetAction(profileId: string): Promise<ActionResult> {
+export async function requirePasswordResetAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'require_password_reset', {
     p_profile_id: profileId,
@@ -305,7 +320,10 @@ export async function requirePasswordResetAction(profileId: string): Promise<Act
   return { ok: true, message: 'Password reset required on next sign-in.' };
 }
 
-export async function resetSecondFactorAction(profileId: string): Promise<ActionResult> {
+export async function resetSecondFactorAction(
+  profileId: string,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'reset_second_factor', {
     p_profile_id: profileId,
@@ -515,7 +533,7 @@ export async function engageLockdownAction(formData: FormData): Promise<ActionRe
   return { ok: true, message: 'Lockdown engaged.' };
 }
 
-export async function releaseLockdownAction(): Promise<ActionResult> {
+export async function releaseLockdownAction(_formData?: FormData): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'release_lockdown', {});
   if (error) return { ok: false, error: readable(error) };
@@ -523,7 +541,10 @@ export async function releaseLockdownAction(): Promise<ActionResult> {
   return { ok: true, message: 'Lockdown released.' };
 }
 
-export async function acknowledgeOwnerAlertAction(alertId: number): Promise<ActionResult> {
+export async function acknowledgeOwnerAlertAction(
+  alertId: number,
+  _formData?: FormData,
+): Promise<ActionResult> {
   const supabase = await createClient();
   let result = await controlRpc(supabase, 'acknowledge_owner_alert', { p_alert_id: alertId });
   if (result.error?.message?.includes('Could not find the function')) {

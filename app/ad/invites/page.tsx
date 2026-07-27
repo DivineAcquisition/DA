@@ -81,12 +81,12 @@ export default async function InvitesPage() {
                 <div className="flex gap-2">
                   <Badge tone="warning">Open</Badge>
                   <ActionForm
-                    action={async () => resendInviteAction(invite.id)}
+                    action={resendInviteAction.bind(null, invite.id)}
                     submitLabel="Resend"
                     variant="secondary"
                   />
                   <ActionForm
-                    action={async () => cancelInviteAction(invite.id)}
+                    action={cancelInviteAction.bind(null, invite.id)}
                     submitLabel="Cancel"
                     variant="danger"
                   />

@@ -118,7 +118,7 @@ export default async function AccountDetailPage({
             </Disclosure>
           )}
           {account.state === 'suspended' && (
-            <ActionForm action={async () => reactivateAccountAction(id)} submitLabel="Reactivate" />
+            <ActionForm action={reactivateAccountAction.bind(null, id)} submitLabel="Reactivate" />
           )}
           <Disclosure label="Set expiry">
             <ActionForm action={setExpiryAction.bind(null, id)} submitLabel="Save expiry">
@@ -126,14 +126,14 @@ export default async function AccountDetailPage({
               <input name="expires_on" type="date" className={inputClass} defaultValue={account.expires_on ?? ''} />
             </ActionForm>
           </Disclosure>
-          <ActionForm action={async () => archiveAccountAction(id)} submitLabel="Archive" variant="secondary" />
+          <ActionForm action={archiveAccountAction.bind(null, id)} submitLabel="Archive" variant="secondary" />
           <ActionForm
-            action={async () => softDeleteAccountAction(id)}
+            action={softDeleteAccountAction.bind(null, id)}
             submitLabel="Soft delete"
             variant="danger"
           />
           {account.soft_deleted_at && (
-            <ActionForm action={async () => restoreAccountAction(id)} submitLabel="Restore" />
+            <ActionForm action={restoreAccountAction.bind(null, id)} submitLabel="Restore" />
           )}
         </div>
       </section>
@@ -205,12 +205,12 @@ export default async function AccountDetailPage({
         <h2 className="text-lg font-semibold">Credentials &amp; sessions</h2>
         <div className="flex flex-wrap gap-3">
           <ActionForm
-            action={async () => requirePasswordResetAction(id)}
+            action={requirePasswordResetAction.bind(null, id)}
             submitLabel="Force password reset"
             variant="secondary"
           />
           <ActionForm
-            action={async () => resetSecondFactorAction(id)}
+            action={resetSecondFactorAction.bind(null, id)}
             submitLabel="Reset MFA"
             variant="secondary"
           />

@@ -47,7 +47,7 @@ export default async function LockdownPage() {
             {live.body ?? live.reason ?? live.message ?? 'No message recorded.'}
           </p>
           <div className="mt-4">
-            <ActionForm action={async () => releaseLockdownAction()} submitLabel="Release lockdown" />
+            <ActionForm action={releaseLockdownAction} submitLabel="Release lockdown" />
           </div>
         </section>
       ) : (
