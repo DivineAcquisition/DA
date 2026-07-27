@@ -1,7 +1,3 @@
-// Generated from the Supabase schema. Do not edit by hand.
-// Regenerate with the Supabase MCP generate_typescript_types tool or
-// `supabase gen types typescript --project-id onobzewvjsicwxbsdlzw`.
-
 export type Json =
   | string
   | number
@@ -18,6 +14,641 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_invite: {
+        Row: {
+          accepted_at: string | null
+          accepted_profile_id: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          expires_on: string | null
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          last_sent_at: string
+          resent_count: number
+          role: Database["public"]["Enums"]["user_role"]
+          scope_case_file_ids: string[]
+          scope_kind: Database["public"]["Enums"]["scope_kind"]
+          time_zone: string | null
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_profile_id?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          created_at?: string
+          email: string
+          expires_at: string
+          expires_on?: string | null
+          full_name?: string | null
+          id?: string
+          invited_by?: string | null
+          last_sent_at?: string
+          resent_count?: number
+          role: Database["public"]["Enums"]["user_role"]
+          scope_case_file_ids?: string[]
+          scope_kind?: Database["public"]["Enums"]["scope_kind"]
+          time_zone?: string | null
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_profile_id?: string | null
+          cancelled_at?: string | null
+          cancelled_by?: string | null
+          created_at?: string
+          email?: string
+          expires_at?: string
+          expires_on?: string | null
+          full_name?: string | null
+          id?: string
+          invited_by?: string | null
+          last_sent_at?: string
+          resent_count?: number
+          role?: Database["public"]["Enums"]["user_role"]
+          scope_case_file_ids?: string[]
+          scope_kind?: Database["public"]["Enums"]["scope_kind"]
+          time_zone?: string | null
+          token_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_invite_accepted_profile_id_fkey"
+            columns: ["accepted_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_invite_accepted_profile_id_fkey"
+            columns: ["accepted_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_invite_cancelled_by_fkey"
+            columns: ["cancelled_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_invite_cancelled_by_fkey"
+            columns: ["cancelled_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_invite_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_invite_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      account_notice: {
+        Row: {
+          acknowledged_at: string | null
+          blocking: boolean
+          body: string
+          cleared_at: string | null
+          cleared_by: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          profile_id: string
+          severity: Database["public"]["Enums"]["notification_severity"]
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          blocking?: boolean
+          body: string
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          profile_id: string
+          severity?: Database["public"]["Enums"]["notification_severity"]
+        }
+        Update: {
+          acknowledged_at?: string | null
+          blocking?: boolean
+          body?: string
+          cleared_at?: string | null
+          cleared_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          profile_id?: string
+          severity?: Database["public"]["Enums"]["notification_severity"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_notice_cleared_by_fkey"
+            columns: ["cleared_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_notice_cleared_by_fkey"
+            columns: ["cleared_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_notice_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_notice_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_notice_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_notice_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      account_permission: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          effect: Database["public"]["Enums"]["permission_effect"]
+          expires_at: string | null
+          permission_key: string
+          profile_id: string
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          effect: Database["public"]["Enums"]["permission_effect"]
+          expires_at?: string | null
+          permission_key: string
+          profile_id: string
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          effect?: Database["public"]["Enums"]["permission_effect"]
+          expires_at?: string | null
+          permission_key?: string
+          profile_id?: string
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_permission_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_permission_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_permission_permission_key_fkey"
+            columns: ["permission_key"]
+            isOneToOne: false
+            referencedRelation: "permission"
+            referencedColumns: ["key"]
+          },
+          {
+            foreignKeyName: "account_permission_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_permission_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      account_scope: {
+        Row: {
+          kind: Database["public"]["Enums"]["scope_kind"]
+          profile_id: string
+          set_by: string | null
+          updated_at: string
+        }
+        Insert: {
+          kind?: Database["public"]["Enums"]["scope_kind"]
+          profile_id: string
+          set_by?: string | null
+          updated_at?: string
+        }
+        Update: {
+          kind?: Database["public"]["Enums"]["scope_kind"]
+          profile_id?: string
+          set_by?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_scope_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_scope_set_by_fkey"
+            columns: ["set_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_set_by_fkey"
+            columns: ["set_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      account_scope_client: {
+        Row: {
+          added_at: string
+          added_by: string | null
+          case_file_id: string
+          profile_id: string
+        }
+        Insert: {
+          added_at?: string
+          added_by?: string | null
+          case_file_id: string
+          profile_id: string
+        }
+        Update: {
+          added_at?: string
+          added_by?: string | null
+          case_file_id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_scope_client_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_client_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      account_scope_placement: {
+        Row: {
+          added_at: string
+          added_by: string | null
+          placement_id: string
+          profile_id: string
+        }
+        Insert: {
+          added_at?: string
+          added_by?: string | null
+          placement_id: string
+          profile_id: string
+        }
+        Update: {
+          added_at?: string
+          added_by?: string | null
+          placement_id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "account_scope_placement_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_placement_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "account_scope_placement_placement_id_fkey"
+            columns: ["placement_id"]
+            isOneToOne: false
+            referencedRelation: "placement"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_placement_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "account_scope_placement_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      anonymisation_flag: {
+        Row: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          document_id: string
+          id: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion: string | null
+        }
+        Insert: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          document_id: string
+          id?: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion?: string | null
+        }
+        Update: {
+          confirmed_at?: string | null
+          confirmed_by?: string | null
+          created_at?: string
+          document_id?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key?: string
+          snippet?: string
+          suggestion?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anonymisation_flag_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymisation_flag_confirmed_by_fkey"
+            columns: ["confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "anonymisation_flag_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "anonymisation_flag_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_event: {
+        Row: {
+          acting_as_profile_id: string | null
+          action: string
+          actor_email: string | null
+          actor_profile_id: string | null
+          actor_role: Database["public"]["Enums"]["user_role"] | null
+          after_value: Json | null
+          at: string
+          before_value: Json | null
+          case_file_id: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: number
+          impersonation_id: string | null
+          ip: unknown
+          summary: string | null
+          surface: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          acting_as_profile_id?: string | null
+          action: string
+          actor_email?: string | null
+          actor_profile_id?: string | null
+          actor_role?: Database["public"]["Enums"]["user_role"] | null
+          after_value?: Json | null
+          at?: string
+          before_value?: Json | null
+          case_file_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: never
+          impersonation_id?: string | null
+          ip?: unknown
+          summary?: string | null
+          surface?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          acting_as_profile_id?: string | null
+          action?: string
+          actor_email?: string | null
+          actor_profile_id?: string | null
+          actor_role?: Database["public"]["Enums"]["user_role"] | null
+          after_value?: Json | null
+          at?: string
+          before_value?: Json | null
+          case_file_id?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: never
+          impersonation_id?: string | null
+          ip?: unknown
+          summary?: string | null
+          surface?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_event_acting_as_profile_id_fkey"
+            columns: ["acting_as_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_event_acting_as_profile_id_fkey"
+            columns: ["acting_as_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "audit_event_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_event_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "audit_event_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_event_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "audit_event_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "audit_event_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "audit_event_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+        ]
+      }
       booking: {
         Row: {
           case_file_id: string
@@ -92,6 +723,20 @@ export type Database = {
             foreignKeyName: "booking_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "booking_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "booking_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -129,6 +774,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "booking_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -171,6 +823,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_file_drive_folder_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "case_file_drive_folder_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "case_file_drive_folder_case_file_id_fkey"
@@ -243,6 +909,20 @@ export type Database = {
             foreignKeyName: "client_account_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_account_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_account_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -254,11 +934,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "client_account_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "client_account_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: true
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_account_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -274,6 +968,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -294,6 +989,7 @@ export type Database = {
           engagement_start?: string | null
           id?: string
           install_started_at?: string | null
+          logo_url?: string | null
           name: string
           notes?: string | null
           retainer_amount?: number | null
@@ -314,6 +1010,7 @@ export type Database = {
           engagement_start?: string | null
           id?: string
           install_started_at?: string | null
+          logo_url?: string | null
           name?: string
           notes?: string | null
           retainer_amount?: number | null
@@ -330,6 +1027,131 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_case_file_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      client_credential: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          case_file_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: string
+          label: string
+          last_rotated_at: string
+          notes: string | null
+          rotation_interval_days: number
+          secret_id: string
+          updated_at: string
+          url: string | null
+          username: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
+          case_file_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind: string
+          label: string
+          last_rotated_at?: string
+          notes?: string | null
+          rotation_interval_days?: number
+          secret_id: string
+          updated_at?: string
+          url?: string | null
+          username?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          archived_by?: string | null
+          case_file_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          last_rotated_at?: string
+          notes?: string | null
+          rotation_interval_days?: number
+          secret_id?: string
+          updated_at?: string
+          url?: string | null
+          username?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_credential_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_credential_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -392,6 +1214,20 @@ export type Database = {
             foreignKeyName: "client_dashboard_link_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_dashboard_link_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_dashboard_link_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -401,6 +1237,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_dashboard_link_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -495,6 +1338,20 @@ export type Database = {
             foreignKeyName: "client_invite_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_invite_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_invite_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -504,6 +1361,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_invite_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -559,11 +1423,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "client_message_answered_by_fkey"
+            columns: ["answered_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "client_message_author_profile_id_fkey"
             columns: ["author_profile_id"]
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_message_author_profile_id_fkey"
+            columns: ["author_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "client_message_case_file_id_fkey"
@@ -578,6 +1456,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_message_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_message_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "client_message_case_file_id_fkey"
@@ -618,6 +1510,282 @@ export type Database = {
             referencedRelation: "profile"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "client_notification_pref_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      contractor_task: {
+        Row: {
+          case_file_id: string
+          completed_at: string | null
+          created_at: string
+          created_by: string | null
+          due_on: string | null
+          id: string
+          profile_id: string
+          spec: string | null
+          title: string
+        }
+        Insert: {
+          case_file_id: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_on?: string | null
+          id?: string
+          profile_id: string
+          spec?: string | null
+          title: string
+        }
+        Update: {
+          case_file_id?: string
+          completed_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          due_on?: string | null
+          id?: string
+          profile_id?: string
+          spec?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contractor_task_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_task_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_task_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "contractor_task_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "contractor_task_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "contractor_task_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_task_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "contractor_task_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contractor_task_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      credential_grant: {
+        Row: {
+          credential_id: string
+          expires_at: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          profile_id: string
+          reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+        }
+        Insert: {
+          credential_id: string
+          expires_at: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          profile_id: string
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+        }
+        Update: {
+          credential_id?: string
+          expires_at?: string
+          granted_at?: string
+          granted_by?: string | null
+          id?: string
+          profile_id?: string
+          reason?: string | null
+          revoked_at?: string | null
+          revoked_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credential_grant_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "client_credential"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_grant_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "v_credential"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_grant_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_grant_granted_by_fkey"
+            columns: ["granted_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "credential_grant_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_grant_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "credential_grant_revoked_by_fkey"
+            columns: ["revoked_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_grant_revoked_by_fkey"
+            columns: ["revoked_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      credential_view: {
+        Row: {
+          audit_event_id: number | null
+          credential_id: string
+          id: number
+          impersonation_id: string | null
+          via_grant_id: string | null
+          viewed_at: string
+          viewed_by: string | null
+          viewed_by_email: string | null
+        }
+        Insert: {
+          audit_event_id?: number | null
+          credential_id: string
+          id?: never
+          impersonation_id?: string | null
+          via_grant_id?: string | null
+          viewed_at?: string
+          viewed_by?: string | null
+          viewed_by_email?: string | null
+        }
+        Update: {
+          audit_event_id?: number | null
+          credential_id?: string
+          id?: never
+          impersonation_id?: string | null
+          via_grant_id?: string | null
+          viewed_at?: string
+          viewed_by?: string | null
+          viewed_by_email?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credential_view_audit_event_id_fkey"
+            columns: ["audit_event_id"]
+            isOneToOne: false
+            referencedRelation: "audit_event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_view_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "client_credential"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_view_credential_id_fkey"
+            columns: ["credential_id"]
+            isOneToOne: false
+            referencedRelation: "v_credential"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_view_via_grant_id_fkey"
+            columns: ["via_grant_id"]
+            isOneToOne: false
+            referencedRelation: "credential_grant"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_view_viewed_by_fkey"
+            columns: ["viewed_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credential_view_viewed_by_fkey"
+            columns: ["viewed_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
         ]
       }
       credit_note: {
@@ -655,6 +1823,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "credit_note_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "credit_note_invoice_id_fkey"
@@ -730,6 +1905,20 @@ export type Database = {
             foreignKeyName: "decision_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "decision_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "decision_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -739,6 +1928,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "decision_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "decision_superseded_by_id_fkey"
@@ -752,6 +1948,475 @@ export type Database = {
             columns: ["supersedes_id"]
             isOneToOne: false
             referencedRelation: "decision"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document: {
+        Row: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          anonymisation_confirmed_at?: string | null
+          anonymisation_confirmed_by?: string | null
+          anonymised_descriptor?: string | null
+          archived_at?: string | null
+          case_file_id: string
+          correction_note?: string | null
+          created_at?: string
+          drive_file_id?: string | null
+          drive_url?: string | null
+          frozen_payload?: Json | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          include_effort?: boolean
+          is_case_study?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          share_link_id?: string | null
+          state?: Database["public"]["Enums"]["document_state"]
+          superseded_by_id?: string | null
+          supersedes_id?: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          anonymisation_confirmed_at?: string | null
+          anonymisation_confirmed_by?: string | null
+          anonymised_descriptor?: string | null
+          archived_at?: string | null
+          case_file_id?: string
+          correction_note?: string | null
+          created_at?: string
+          drive_file_id?: string | null
+          drive_url?: string | null
+          frozen_payload?: Json | null
+          generated_at?: string
+          generated_by?: string | null
+          id?: string
+          include_effort?: boolean
+          is_case_study?: boolean
+          period_end?: string | null
+          period_start?: string | null
+          published_at?: string | null
+          published_by?: string | null
+          share_link_id?: string | null
+          state?: Database["public"]["Enums"]["document_state"]
+          superseded_by_id?: string | null
+          supersedes_id?: string | null
+          template_id?: string
+          template_version?: number
+          title?: string
+          type?: Database["public"]["Enums"]["document_type"]
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_anonymisation_confirmed_by_fkey"
+            columns: ["anonymisation_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_anonymisation_confirmed_by_fkey"
+            columns: ["anonymisation_confirmed_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "document_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "document_share_link_id_fkey"
+            columns: ["share_link_id"]
+            isOneToOne: false
+            referencedRelation: "client_dashboard_link"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_template"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_delivery: {
+        Row: {
+          channel: string
+          delivered_at: string
+          detail: string | null
+          document_id: string
+          id: string
+          status: string
+        }
+        Insert: {
+          channel: string
+          delivered_at?: string
+          detail?: string | null
+          document_id: string
+          id?: string
+          status: string
+        }
+        Update: {
+          channel?: string
+          delivered_at?: string
+          detail?: string | null
+          document_id?: string
+          id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_delivery_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_delivery_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_open: {
+        Row: {
+          document_id: string
+          id: string
+          opened_at: string
+          opened_by: string | null
+          user_agent: string | null
+          via: string
+        }
+        Insert: {
+          document_id: string
+          id?: string
+          opened_at?: string
+          opened_by?: string | null
+          user_agent?: string | null
+          via?: string
+        }
+        Update: {
+          document_id?: string
+          id?: string
+          opened_at?: string
+          opened_by?: string | null
+          user_agent?: string | null
+          via?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_open_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_open_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_open_opened_by_fkey"
+            columns: ["opened_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_open_opened_by_fkey"
+            columns: ["opened_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      document_section: {
+        Row: {
+          body: string | null
+          bound_data: Json | null
+          created_at: string
+          document_id: string
+          has_gap: boolean
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          bound_data?: Json | null
+          created_at?: string
+          document_id: string
+          has_gap?: boolean
+          id?: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          bound_data?: Json | null
+          created_at?: string
+          document_id?: string
+          has_gap?: boolean
+          id?: string
+          key?: string
+          kind?: Database["public"]["Enums"]["section_kind"]
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_section_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_section_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      document_template: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_current: boolean
+          name: string
+          producer_line: string
+          type: Database["public"]["Enums"]["document_type"]
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          name: string
+          producer_line?: string
+          type: Database["public"]["Enums"]["document_type"]
+          version: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_current?: boolean
+          name?: string
+          producer_line?: string
+          type?: Database["public"]["Enums"]["document_type"]
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_template_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_template_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      document_template_section: {
+        Row: {
+          body: string | null
+          bound_source: string | null
+          created_at: string
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          required: boolean
+          sort_order: number
+          template_id: string
+          title: string
+          vertical: string | null
+        }
+        Insert: {
+          body?: string | null
+          bound_source?: string | null
+          created_at?: string
+          id?: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          required?: boolean
+          sort_order: number
+          template_id: string
+          title: string
+          vertical?: string | null
+        }
+        Update: {
+          body?: string | null
+          bound_source?: string | null
+          created_at?: string
+          id?: string
+          key?: string
+          kind?: Database["public"]["Enums"]["section_kind"]
+          required?: boolean
+          sort_order?: number
+          template_id?: string
+          title?: string
+          vertical?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_template_section_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "document_template"
             referencedColumns: ["id"]
           },
         ]
@@ -795,6 +2460,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drive_sync_run_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "drive_sync_run_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "drive_sync_run_case_file_id_fkey"
@@ -905,6 +2584,20 @@ export type Database = {
             foreignKeyName: "effort_entry_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "effort_entry_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "effort_entry_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -914,6 +2607,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "effort_entry_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "effort_entry_superseded_by_id_fkey"
@@ -963,6 +2663,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eod_comment_author_profile_id_fkey"
+            columns: ["author_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "eod_comment_eod_report_id_fkey"
@@ -1136,6 +2843,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "escalation_answered_by_fkey"
+            columns: ["answered_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "escalation_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
@@ -1148,6 +2862,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "escalation_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "escalation_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "escalation_case_file_id_fkey"
@@ -1262,6 +2990,20 @@ export type Database = {
             foreignKeyName: "evidence_item_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "evidence_item_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "evidence_item_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1271,6 +3013,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evidence_item_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1376,6 +3125,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "evidence_share_link_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "evidence_share_link_evidence_id_fkey"
             columns: ["evidence_id"]
             isOneToOne: false
@@ -1449,6 +3205,20 @@ export type Database = {
             foreignKeyName: "growth_report_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "growth_report_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "growth_report_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1460,11 +3230,100 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "growth_report_generated_by_fkey"
+            columns: ["generated_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "growth_report_published_by_fkey"
             columns: ["published_by"]
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "growth_report_published_by_fkey"
+            columns: ["published_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      impersonation: {
+        Row: {
+          actor_profile_id: string
+          ended_at: string | null
+          ended_reason: string | null
+          expires_at: string
+          id: string
+          notified_target_at: string | null
+          reason: string | null
+          started_at: string
+          step_up_id: string | null
+          target_profile_id: string
+        }
+        Insert: {
+          actor_profile_id: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          expires_at: string
+          id?: string
+          notified_target_at?: string | null
+          reason?: string | null
+          started_at?: string
+          step_up_id?: string | null
+          target_profile_id: string
+        }
+        Update: {
+          actor_profile_id?: string
+          ended_at?: string | null
+          ended_reason?: string | null
+          expires_at?: string
+          id?: string
+          notified_target_at?: string | null
+          reason?: string | null
+          started_at?: string
+          step_up_id?: string | null
+          target_profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impersonation_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impersonation_actor_profile_id_fkey"
+            columns: ["actor_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "impersonation_step_up_id_fkey"
+            columns: ["step_up_id"]
+            isOneToOne: false
+            referencedRelation: "step_up_verification"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impersonation_target_profile_id_fkey"
+            columns: ["target_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impersonation_target_profile_id_fkey"
+            columns: ["target_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1554,6 +3413,20 @@ export type Database = {
             foreignKeyName: "invoice_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "invoice_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "invoice_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1563,6 +3436,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1614,6 +3494,161 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "invoice"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      known_device: {
+        Row: {
+          fingerprint: string
+          first_seen_at: string
+          label: string | null
+          last_seen_at: string
+          profile_id: string
+        }
+        Insert: {
+          fingerprint: string
+          first_seen_at?: string
+          label?: string | null
+          last_seen_at?: string
+          profile_id: string
+        }
+        Update: {
+          fingerprint?: string
+          first_seen_at?: string
+          label?: string | null
+          last_seen_at?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "known_device_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "known_device_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      lockdown: {
+        Row: {
+          engaged_at: string
+          engaged_by: string
+          id: string
+          reason: string
+          released_at: string | null
+          released_by: string | null
+        }
+        Insert: {
+          engaged_at?: string
+          engaged_by: string
+          id?: string
+          reason: string
+          released_at?: string | null
+          released_by?: string | null
+        }
+        Update: {
+          engaged_at?: string
+          engaged_by?: string
+          id?: string
+          reason?: string
+          released_at?: string | null
+          released_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lockdown_engaged_by_fkey"
+            columns: ["engaged_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lockdown_engaged_by_fkey"
+            columns: ["engaged_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "lockdown_released_by_fkey"
+            columns: ["released_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lockdown_released_by_fkey"
+            columns: ["released_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
+      login_event: {
+        Row: {
+          at: string
+          city: string | null
+          country: string | null
+          detail: string | null
+          email: string
+          id: number
+          ip: unknown
+          outcome: string
+          profile_id: string | null
+          session_id: string | null
+          surface: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          at?: string
+          city?: string | null
+          country?: string | null
+          detail?: string | null
+          email: string
+          id?: never
+          ip?: unknown
+          outcome: string
+          profile_id?: string | null
+          session_id?: string | null
+          surface?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          at?: string
+          city?: string | null
+          country?: string | null
+          detail?: string | null
+          email?: string
+          id?: never
+          ip?: unknown
+          outcome?: string
+          profile_id?: string | null
+          session_id?: string | null
+          surface?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "login_event_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "login_event_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1703,6 +3738,20 @@ export type Database = {
             foreignKeyName: "milestone_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "milestone_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "milestone_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -1712,6 +3761,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestone_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1747,6 +3803,80 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "operator_notification"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      offboarding: {
+        Row: {
+          archived_at: string | null
+          completed_at: string | null
+          credentials_listed_at: string | null
+          credentials_to_rotate: number | null
+          notes: string | null
+          pay_period_closed_at: string | null
+          profile_id: string
+          sessions_revoked_at: string | null
+          started_at: string
+          started_by: string | null
+          suspended_at: string | null
+          work_reassigned_at: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          completed_at?: string | null
+          credentials_listed_at?: string | null
+          credentials_to_rotate?: number | null
+          notes?: string | null
+          pay_period_closed_at?: string | null
+          profile_id: string
+          sessions_revoked_at?: string | null
+          started_at?: string
+          started_by?: string | null
+          suspended_at?: string | null
+          work_reassigned_at?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          completed_at?: string | null
+          credentials_listed_at?: string | null
+          credentials_to_rotate?: number | null
+          notes?: string | null
+          pay_period_closed_at?: string | null
+          profile_id?: string
+          sessions_revoked_at?: string | null
+          started_at?: string
+          started_by?: string | null
+          suspended_at?: string | null
+          work_reassigned_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offboarding_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offboarding_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "offboarding_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offboarding_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1827,6 +3957,13 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operator_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -1931,6 +4068,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "operator_task_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "operator_task_operator_id_fkey"
             columns: ["operator_id"]
             isOneToOne: false
@@ -1995,6 +4139,78 @@ export type Database = {
           },
         ]
       }
+      owner_alert: {
+        Row: {
+          acknowledged_at: string | null
+          acknowledged_by: string | null
+          at: string
+          audit_event_id: number | null
+          id: number
+          kind: string
+          severity: Database["public"]["Enums"]["notification_severity"]
+          subject_profile_id: string | null
+          summary: string
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          at?: string
+          audit_event_id?: number | null
+          id?: never
+          kind: string
+          severity?: Database["public"]["Enums"]["notification_severity"]
+          subject_profile_id?: string | null
+          summary: string
+        }
+        Update: {
+          acknowledged_at?: string | null
+          acknowledged_by?: string | null
+          at?: string
+          audit_event_id?: number | null
+          id?: never
+          kind?: string
+          severity?: Database["public"]["Enums"]["notification_severity"]
+          subject_profile_id?: string | null
+          summary?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "owner_alert_acknowledged_by_fkey"
+            columns: ["acknowledged_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "owner_alert_acknowledged_by_fkey"
+            columns: ["acknowledged_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "owner_alert_audit_event_id_fkey"
+            columns: ["audit_event_id"]
+            isOneToOne: false
+            referencedRelation: "audit_event"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "owner_alert_subject_profile_id_fkey"
+            columns: ["subject_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "owner_alert_subject_profile_id_fkey"
+            columns: ["subject_profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       pass_through_cost: {
         Row: {
           amount: number
@@ -2042,6 +4258,20 @@ export type Database = {
             foreignKeyName: "pass_through_cost_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "pass_through_cost_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "pass_through_cost_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2051,6 +4281,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pass_through_cost_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -2089,6 +4326,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pay_adjustment_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "pay_adjustment_statement_id_fkey"
@@ -2428,6 +4672,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "payout_adjustment_added_by_fkey"
+            columns: ["added_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "payout_adjustment_payout_id_fkey"
             columns: ["payout_id"]
             isOneToOne: false
@@ -2488,11 +4739,25 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "payout_batch_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
             foreignKeyName: "payout_batch_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payout_batch_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "payout_batch_period_id_fkey"
@@ -2502,6 +4767,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      permission: {
+        Row: {
+          blocked_during_impersonation: boolean
+          category: string
+          description: string
+          is_destructive: boolean
+          key: string
+          label: string
+          requires_step_up: boolean
+          sort_order: number
+        }
+        Insert: {
+          blocked_during_impersonation?: boolean
+          category: string
+          description: string
+          is_destructive?: boolean
+          key: string
+          label: string
+          requires_step_up?: boolean
+          sort_order?: number
+        }
+        Update: {
+          blocked_during_impersonation?: boolean
+          category?: string
+          description?: string
+          is_destructive?: boolean
+          key?: string
+          label?: string
+          requires_step_up?: boolean
+          sort_order?: number
+        }
+        Relationships: []
       }
       placement: {
         Row: {
@@ -2583,6 +4881,20 @@ export type Database = {
             foreignKeyName: "placement_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "placement_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "placement_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2611,30 +4923,142 @@ export type Database = {
       }
       profile: {
         Row: {
+          accepted_at: string | null
+          archived_at: string | null
           created_at: string
           email: string
+          expires_on: string | null
+          failed_attempts: number
           full_name: string | null
           id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
           role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
           updated_at: string
         }
         Insert: {
+          accepted_at?: string | null
+          archived_at?: string | null
           created_at?: string
           email: string
+          expires_on?: string | null
+          failed_attempts?: number
           full_name?: string | null
           id: string
+          invited_by?: string | null
+          ip_allowlist?: unknown[] | null
+          last_sign_in_at?: string | null
+          locked_reason?: string | null
+          locked_until?: string | null
+          mfa_required?: boolean | null
+          must_change_password?: boolean
+          notes?: string | null
+          purge_after?: string | null
+          restrict_to_shift?: boolean
           role?: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes?: number | null
+          shift_override?: boolean
+          soft_deleted_at?: string | null
+          soft_deleted_by?: string | null
+          state?: Database["public"]["Enums"]["account_state"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspended_reason?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
         Update: {
+          accepted_at?: string | null
+          archived_at?: string | null
           created_at?: string
           email?: string
+          expires_on?: string | null
+          failed_attempts?: number
           full_name?: string | null
           id?: string
+          invited_by?: string | null
+          ip_allowlist?: unknown[] | null
+          last_sign_in_at?: string | null
+          locked_reason?: string | null
+          locked_until?: string | null
+          mfa_required?: boolean | null
+          must_change_password?: boolean
+          notes?: string | null
+          purge_after?: string | null
+          restrict_to_shift?: boolean
           role?: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes?: number | null
+          shift_override?: boolean
+          soft_deleted_at?: string | null
+          soft_deleted_by?: string | null
+          state?: Database["public"]["Enums"]["account_state"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspended_reason?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profile_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "profile_soft_deleted_by_fkey"
+            columns: ["soft_deleted_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_soft_deleted_by_fkey"
+            columns: ["soft_deleted_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+          {
+            foreignKeyName: "profile_suspended_by_fkey"
+            columns: ["suspended_by"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profile_suspended_by_fkey"
+            columns: ["suspended_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
       }
       response_day: {
         Row: {
@@ -2715,6 +5139,20 @@ export type Database = {
             foreignKeyName: "revenue_record_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "revenue_record_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "revenue_record_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2724,6 +5162,29 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "invoice"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permission: {
+        Row: {
+          permission_key: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          permission_key: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          permission_key?: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permission_permission_key_fkey"
+            columns: ["permission_key"]
+            isOneToOne: false
+            referencedRelation: "permission"
+            referencedColumns: ["key"]
           },
         ]
       }
@@ -2774,6 +5235,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scope_quote_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "scope_quote_scope_request_id_fkey"
@@ -2840,6 +5308,20 @@ export type Database = {
             foreignKeyName: "scope_request_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "scope_request_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "scope_request_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2849,6 +5331,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scope_request_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -2914,6 +5403,20 @@ export type Database = {
             foreignKeyName: "snapshot_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "snapshot_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "snapshot_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -2923,6 +5426,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "snapshot_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
         ]
       }
@@ -2955,6 +5465,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profile"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "snapshot_annotation_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
           },
           {
             foreignKeyName: "snapshot_annotation_snapshot_id_fkey"
@@ -3039,6 +5556,51 @@ export type Database = {
           },
         ]
       }
+      step_up_verification: {
+        Row: {
+          consumed_at: string | null
+          expires_at: string
+          id: string
+          ip: unknown
+          profile_id: string
+          purpose: string
+          verified_at: string
+        }
+        Insert: {
+          consumed_at?: string | null
+          expires_at: string
+          id?: string
+          ip?: unknown
+          profile_id: string
+          purpose: string
+          verified_at?: string
+        }
+        Update: {
+          consumed_at?: string | null
+          expires_at?: string
+          id?: string
+          ip?: unknown
+          profile_id?: string
+          purpose?: string
+          verified_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "step_up_verification_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profile"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "step_up_verification_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "v_account_onboarding"
+            referencedColumns: ["profile_id"]
+          },
+        ]
+      }
       subscription: {
         Row: {
           amount: number
@@ -3099,6 +5661,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_case_file_health"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscription_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "subscription_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
           },
           {
             foreignKeyName: "subscription_case_file_id_fkey"
@@ -3177,6 +5753,20 @@ export type Database = {
             foreignKeyName: "tracking_funnel_daily_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_funnel_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_funnel_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -3226,6 +5816,20 @@ export type Database = {
             foreignKeyName: "tracking_metric_daily_case_file_id_fkey"
             columns: ["case_file_id"]
             isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_metric_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "tracking_metric_daily_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
             referencedRelation: "v_margin_by_client"
             referencedColumns: ["case_file_id"]
           },
@@ -3240,6 +5844,63 @@ export type Database = {
       }
     }
     Views: {
+      v_account_onboarding: {
+        Row: {
+          accepted: boolean | null
+          certification_required: boolean | null
+          certified: boolean | null
+          created_at: string | null
+          email: string | null
+          first_assignment_made: boolean | null
+          invited: boolean | null
+          name: string | null
+          profile_id: string | null
+          role: Database["public"]["Enums"]["user_role"] | null
+          scope_populated: boolean | null
+          scope_set: boolean | null
+          second_factor_enabled: boolean | null
+          second_factor_required: boolean | null
+          state: Database["public"]["Enums"]["account_state"] | null
+          training_assigned: boolean | null
+        }
+        Insert: {
+          accepted?: never
+          certification_required?: never
+          certified?: never
+          created_at?: string | null
+          email?: string | null
+          first_assignment_made?: never
+          invited?: never
+          name?: never
+          profile_id?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          scope_populated?: never
+          scope_set?: never
+          second_factor_enabled?: never
+          second_factor_required?: never
+          state?: never
+          training_assigned?: never
+        }
+        Update: {
+          accepted?: never
+          certification_required?: never
+          certified?: never
+          created_at?: string | null
+          email?: string | null
+          first_assignment_made?: never
+          invited?: never
+          name?: never
+          profile_id?: string | null
+          role?: Database["public"]["Enums"]["user_role"] | null
+          scope_populated?: never
+          scope_set?: never
+          second_factor_enabled?: never
+          second_factor_required?: never
+          state?: never
+          training_assigned?: never
+        }
+        Relationships: []
+      }
       v_case_file_health: {
         Row: {
           baseline_locked: boolean | null
@@ -3267,6 +5928,218 @@ export type Database = {
           vertical: string | null
         }
         Relationships: []
+      }
+      v_contractor_brief: {
+        Row: {
+          case_file_id: string | null
+          client_name: string | null
+          completed_at: string | null
+          due_on: string | null
+          spec: string | null
+          task_id: string | null
+          title: string | null
+          vertical: string | null
+        }
+        Relationships: []
+      }
+      v_credential: {
+        Row: {
+          archived_at: string | null
+          case_file_id: string | null
+          client_name: string | null
+          client_slug: string | null
+          id: string | null
+          is_stale: boolean | null
+          kind: string | null
+          label: string | null
+          last_rotated_at: string | null
+          last_viewed_at: string | null
+          live_grants: number | null
+          notes: string | null
+          rotation_interval_days: number | null
+          url: string | null
+          username: string | null
+          view_count: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "client_credential_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+        ]
+      }
+      v_document_attention: {
+        Row: {
+          awaiting_review: number | null
+          case_file_id: string | null
+          client_name: string | null
+          client_slug: string | null
+          has_baseline: boolean | null
+          last_monthly_at: string | null
+          monthly_overdue: boolean | null
+          open_drafts: number | null
+          status: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies: number | null
+          unopened_published: number | null
+        }
+        Insert: {
+          awaiting_review?: never
+          case_file_id?: string | null
+          client_name?: string | null
+          client_slug?: string | null
+          has_baseline?: never
+          last_monthly_at?: never
+          monthly_overdue?: never
+          open_drafts?: never
+          status?: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies?: never
+          unopened_published?: never
+        }
+        Update: {
+          awaiting_review?: never
+          case_file_id?: string | null
+          client_name?: string | null
+          client_slug?: string | null
+          has_baseline?: never
+          last_monthly_at?: never
+          monthly_overdue?: never
+          open_drafts?: never
+          status?: Database["public"]["Enums"]["engagement_status"] | null
+          unconfirmed_case_studies?: never
+          unopened_published?: never
+        }
+        Relationships: []
+      }
+      v_document_index: {
+        Row: {
+          anonymisation_confirmed_at: string | null
+          case_file_id: string | null
+          channels: string | null
+          client_name: string | null
+          client_slug: string | null
+          correction_note: string | null
+          drive_url: string | null
+          generated_at: string | null
+          id: string | null
+          is_case_study: boolean | null
+          last_opened_at: string | null
+          open_count: number | null
+          open_flags: number | null
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          sections_with_gaps: number | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"] | null
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          title: string | null
+          type: Database["public"]["Enums"]["document_type"] | null
+          version: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "client_case_file"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_case_file_health"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_contractor_brief"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_attention"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_case_file_id_fkey"
+            columns: ["case_file_id"]
+            isOneToOne: false
+            referencedRelation: "v_margin_by_client"
+            referencedColumns: ["case_file_id"]
+          },
+          {
+            foreignKeyName: "document_share_link_id_fkey"
+            columns: ["share_link_id"]
+            isOneToOne: false
+            referencedRelation: "client_dashboard_link"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_superseded_by_id_fkey"
+            columns: ["superseded_by_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "document"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "document_supersedes_id_fkey"
+            columns: ["supersedes_id"]
+            isOneToOne: false
+            referencedRelation: "v_document_index"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       v_margin_by_client: {
         Row: {
@@ -3306,6 +6179,46 @@ export type Database = {
       }
     }
     Functions: {
+      accept_account_invite: {
+        Args: { p_full_name?: string; p_time_zone?: string; p_token: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       accept_client_invite: {
         Args: { p_token: string }
         Returns: {
@@ -3329,6 +6242,41 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      account_sessions: {
+        Args: { p_profile_id: string }
+        Returns: {
+          aal: string
+          city: string
+          country: string
+          ip: unknown
+          is_current: boolean
+          last_activity: string
+          session_id: string
+          started_at: string
+          user_agent: string
+        }[]
+      }
+      acknowledge_notice: {
+        Args: { p_notice_id: string }
+        Returns: {
+          acknowledged_at: string | null
+          blocking: boolean
+          body: string
+          cleared_at: string | null
+          cleared_by: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          profile_id: string
+          severity: Database["public"]["Enums"]["notification_severity"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_notice"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       add_invoice_line: {
         Args: {
           p_description: string
@@ -3337,6 +6285,10 @@ export type Database = {
           p_unit_amount: number
         }
         Returns: string
+      }
+      advance_offboarding: {
+        Args: { p_profile_id: string; p_step: string }
+        Returns: Record<string, unknown>[]
       }
       annotate_snapshot: {
         Args: { p_body: string; p_snapshot_id: string }
@@ -3388,9 +6340,159 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      archive_account: {
+        Args: { p_profile_id: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       archive_client_accounts: {
         Args: { p_case_file_id: string; p_window_days?: number }
         Returns: number
+      }
+      archive_credential: {
+        Args: { p_credential_id: string }
+        Returns: {
+          archived_at: string | null
+          archived_by: string | null
+          case_file_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: string
+          label: string
+          last_rotated_at: string
+          notes: string | null
+          rotation_interval_days: number
+          secret_id: string
+          updated_at: string
+          url: string | null
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "client_credential"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      archive_document: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      attach_document_to_drive: {
+        Args: {
+          p_document_id: string
+          p_drive_file_id: string
+          p_drive_url: string
+        }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       attach_report_to_drive: {
         Args: {
@@ -3399,6 +6501,22 @@ export type Database = {
           p_report_id: string
         }
         Returns: undefined
+      }
+      attempt_sign_in: {
+        Args: {
+          p_city?: string
+          p_country?: string
+          p_email: string
+          p_ip?: unknown
+          p_password: string
+          p_surface?: string
+          p_user_agent?: string
+        }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
       }
       begin_install: {
         Args: { p_case_file_id: string }
@@ -3413,6 +6531,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -3497,6 +6616,35 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      cancel_invite: {
+        Args: { p_invite_id: string }
+        Returns: {
+          accepted_at: string | null
+          accepted_profile_id: string | null
+          cancelled_at: string | null
+          cancelled_by: string | null
+          created_at: string
+          email: string
+          expires_at: string
+          expires_on: string | null
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          last_sent_at: string
+          resent_count: number
+          role: Database["public"]["Enums"]["user_role"]
+          scope_case_file_ids: string[]
+          scope_kind: Database["public"]["Enums"]["scope_kind"]
+          time_zone: string | null
+          token_hash: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_invite"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       capture_baseline: {
         Args: {
           p_case_file_id: string
@@ -3506,6 +6654,57 @@ export type Database = {
           p_tooling?: string[]
         }
         Returns: string
+      }
+      change_account_role: {
+        Args: {
+          p_new_role: Database["public"]["Enums"]["user_role"]
+          p_profile_id: string
+        }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      clear_account_notice: {
+        Args: { p_notice_id: string }
+        Returns: undefined
+      }
+      clear_permission_override: {
+        Args: { p_permission_key: string; p_profile_id: string }
+        Returns: undefined
       }
       client_funnel: {
         Args: {
@@ -3525,6 +6724,7 @@ export type Database = {
           state: Database["public"]["Enums"]["booking_state"]
         }[]
       }
+      complete_password_reset: { Args: never; Returns: undefined }
       confirm_payout: {
         Args: {
           p_method?: Database["public"]["Enums"]["payout_method"]
@@ -3576,6 +6776,46 @@ export type Database = {
         }
         Returns: string
       }
+      correct_document: {
+        Args: { p_correction_note: string; p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       correct_effort: {
         Args: {
           p_description: string
@@ -3608,6 +6848,7 @@ export type Database = {
           engagement_start: string | null
           id: string
           install_started_at: string | null
+          logo_url: string | null
           name: string
           notes: string | null
           retainer_amount: number | null
@@ -3620,6 +6861,46 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "client_case_file"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      create_case_study_draft: {
+        Args: { p_descriptor: string; p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -3714,6 +6995,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      credentials_reachable_by: {
+        Args: { p_profile_id: string }
+        Returns: {
+          client_name: string
+          credential_id: string
+          ever_viewed: boolean
+          kind: string
+          label: string
+          last_rotated_at: string
+          reached_via: string
+        }[]
+      }
       decide_quote: {
         Args: {
           p_decided_on?: string
@@ -3742,6 +7035,32 @@ export type Database = {
         }
       }
       detect_milestones: { Args: { p_case_file_id: string }; Returns: number }
+      end_impersonation: { Args: never; Returns: undefined }
+      engage_lockdown: {
+        Args: { p_reason: string; p_typed_confirmation: string }
+        Returns: {
+          engaged_at: string
+          engaged_by: string
+          id: string
+          reason: string
+          released_at: string | null
+          released_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lockdown"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      explain_permission: {
+        Args: { p_permission: string; p_profile_id?: string }
+        Returns: {
+          allowed: boolean
+          layer: string
+          reason: string
+        }[]
+      }
       fail_payout: {
         Args: { p_payout_id: string; p_reason: string; p_returned?: boolean }
         Returns: {
@@ -3776,6 +7095,53 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      generate_document: {
+        Args: {
+          p_case_file_id: string
+          p_include_effort?: boolean
+          p_period_end?: string
+          p_period_start?: string
+          p_title?: string
+          p_type: Database["public"]["Enums"]["document_type"]
+        }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       generate_growth_report: {
         Args: {
           p_case_file_id: string
@@ -3802,6 +7168,31 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "growth_report"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      grant_credential_access: {
+        Args: {
+          p_credential_id: string
+          p_expires_at: string
+          p_profile_id: string
+          p_reason?: string
+        }
+        Returns: {
+          credential_id: string
+          expires_at: string
+          granted_at: string
+          granted_by: string | null
+          id: string
+          profile_id: string
+          reason: string | null
+          revoked_at: string | null
+          revoked_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "credential_grant"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -3838,6 +7229,36 @@ export type Database = {
           value: number
         }[]
       }
+      impersonation_context: {
+        Args: never
+        Returns: {
+          actor_name: string
+          actor_profile_id: string
+          expires_at: string
+          impersonation_id: string
+          reason: string
+          started_at: string
+          target_name: string
+          target_profile_id: string
+          target_role: Database["public"]["Enums"]["user_role"]
+        }[]
+      }
+      invite_account: {
+        Args: {
+          p_email: string
+          p_expires_on?: string
+          p_full_name?: string
+          p_role: Database["public"]["Enums"]["user_role"]
+          p_scope_case_file_ids?: string[]
+          p_scope_kind?: Database["public"]["Enums"]["scope_kind"]
+          p_time_zone?: string
+          p_valid_days?: number
+        }
+        Returns: {
+          invite_id: string
+          token: string
+        }[]
+      }
       invite_client: {
         Args: {
           p_case_file_id: string
@@ -3865,6 +7286,17 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      invite_preview: {
+        Args: { p_token: string }
+        Returns: {
+          email: string
+          expires_at: string
+          full_name: string
+          reason: string
+          role: Database["public"]["Enums"]["user_role"]
+          valid: boolean
+        }[]
       }
       issue_credit_note: {
         Args: { p_amount: number; p_invoice_id: string; p_reason: string }
@@ -3924,6 +7356,16 @@ export type Database = {
         }
         Returns: string
       }
+      lockdown_status: {
+        Args: never
+        Returns: {
+          engaged_at: string
+          engaged_by_email: string
+          id: string
+          is_mine: boolean
+          reason: string
+        }[]
+      }
       log_decision: {
         Args: {
           p_against_recommendation?: boolean
@@ -3971,7 +7413,111 @@ export type Database = {
           revenue: number
         }[]
       }
+      mark_case_study_ready: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       mark_overdue_invoices: { Args: never; Returns: number }
+      offboarding_state: {
+        Args: { p_profile_id: string }
+        Returns: {
+          blocked: boolean
+          blocker: string
+          detail: string
+          done: boolean
+          key: string
+          label: string
+          step: number
+        }[]
+      }
+      open_work_for: {
+        Args: { p_profile_id: string }
+        Returns: {
+          count: number
+          kind: string
+          label: string
+        }[]
+      }
+      permanently_delete_account: {
+        Args: { p_profile_id: string; p_typed_email: string }
+        Returns: undefined
+      }
+      publish_document: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       publish_report: {
         Args: { p_report_id: string }
         Returns: {
@@ -4005,8 +7551,52 @@ export type Database = {
         }
         Returns: string
       }
+      reactivate_account: {
+        Args: { p_profile_id: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       recalculate_invoice: {
         Args: { p_invoice_id: string }
+        Returns: undefined
+      }
+      record_document_open: {
+        Args: { p_document_id: string; p_user_agent?: string; p_via?: string }
         Returns: undefined
       }
       record_drive_sync: {
@@ -4066,6 +7656,46 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      refresh_document_bindings: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       register_drive_folders: {
         Args: {
           p_case_file_id: string
@@ -4075,8 +7705,169 @@ export type Database = {
         }
         Returns: undefined
       }
+      release_lockdown: {
+        Args: never
+        Returns: {
+          engaged_at: string
+          engaged_by: string
+          id: string
+          reason: string
+          released_at: string | null
+          released_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "lockdown"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      require_password_reset: {
+        Args: { p_profile_id: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      resend_invite: {
+        Args: { p_invite_id: string }
+        Returns: {
+          invite_id: string
+          token: string
+        }[]
+      }
+      reset_second_factor: {
+        Args: { p_profile_id: string }
+        Returns: undefined
+      }
+      resolve_anonymisation_flag: {
+        Args: { p_flag_id: string; p_replacement?: string }
+        Returns: {
+          confirmed_at: string | null
+          confirmed_by: string | null
+          created_at: string
+          document_id: string
+          id: string
+          kind: Database["public"]["Enums"]["anonymisation_kind"]
+          section_key: string
+          snippet: string
+          suggestion: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "anonymisation_flag"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      restore_account: {
+        Args: { p_profile_id: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reveal_credential: {
+        Args: { p_credential_id: string }
+        Returns: {
+          label: string
+          secret: string
+          url: string
+          username: string
+        }[]
+      }
+      revoke_account_sessions: {
+        Args: { p_profile_id: string }
+        Returns: number
+      }
+      revoke_credential_access: {
+        Args: { p_grant_id: string }
+        Returns: undefined
+      }
       revoke_dashboard_link: { Args: { p_link_id: string }; Returns: undefined }
+      revoke_one_session: {
+        Args: { p_profile_id: string; p_session_id: string }
+        Returns: undefined
+      }
       revoke_share_link: { Args: { p_link_id: string }; Returns: undefined }
+      role_change_preview: {
+        Args: {
+          p_new_role: Database["public"]["Enums"]["user_role"]
+          p_profile_id: string
+        }
+        Returns: {
+          category: string
+          change: string
+          label: string
+          permission_key: string
+        }[]
+      }
       rollup_tracking: {
         Args: {
           p_case_file_id: string
@@ -4085,6 +7876,33 @@ export type Database = {
         }
         Returns: Json
       }
+      rotate_credential: {
+        Args: { p_credential_id: string; p_new_secret: string }
+        Returns: {
+          archived_at: string | null
+          archived_by: string | null
+          case_file_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: string
+          label: string
+          last_rotated_at: string
+          notes: string | null
+          rotation_interval_days: number
+          secret_id: string
+          updated_at: string
+          url: string | null
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "client_credential"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      scoped_case_files: { Args: { p_profile_id?: string }; Returns: string[] }
       send_client_message: {
         Args: {
           p_body: string
@@ -4112,6 +7930,224 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      set_account_expiry: {
+        Args: { p_expires_on: string; p_profile_id: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_account_notice: {
+        Args: {
+          p_blocking?: boolean
+          p_body: string
+          p_profile_id: string
+          p_severity?: Database["public"]["Enums"]["notification_severity"]
+        }
+        Returns: {
+          acknowledged_at: string | null
+          blocking: boolean
+          body: string
+          cleared_at: string | null
+          cleared_by: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          profile_id: string
+          severity: Database["public"]["Enums"]["notification_severity"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_notice"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_account_scope: {
+        Args: {
+          p_case_file_ids?: string[]
+          p_kind: Database["public"]["Enums"]["scope_kind"]
+          p_placement_ids?: string[]
+          p_profile_id: string
+        }
+        Returns: {
+          kind: Database["public"]["Enums"]["scope_kind"]
+          profile_id: string
+          set_by: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_scope"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_document_narrative: {
+        Args: { p_body: string; p_document_id: string; p_section_key: string }
+        Returns: {
+          body: string | null
+          bound_data: Json | null
+          created_at: string
+          document_id: string
+          has_gap: boolean
+          id: string
+          key: string
+          kind: Database["public"]["Enums"]["section_kind"]
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document_section"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_mfa_requirement: {
+        Args: { p_profile_id: string; p_required: boolean }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_permission_override: {
+        Args: {
+          p_effect: Database["public"]["Enums"]["permission_effect"]
+          p_expires_at?: string
+          p_permission_key: string
+          p_profile_id: string
+          p_reason?: string
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          effect: Database["public"]["Enums"]["permission_effect"]
+          expires_at: string | null
+          permission_key: string
+          profile_id: string
+          reason: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "account_permission"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      set_sign_in_restrictions: {
+        Args: {
+          p_ip_allowlist?: unknown[]
+          p_profile_id: string
+          p_restrict_to_shift?: boolean
+          p_session_timeout_minutes?: number
+          p_shift_override?: boolean
+        }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       shared_dashboard: {
         Args: {
           p_passphrase?: string
@@ -4130,6 +8166,187 @@ export type Database = {
           name: string
         }[]
       }
+      soft_delete_account: {
+        Args: { p_profile_id: string; p_recovery_days?: number }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      start_impersonation: {
+        Args: {
+          p_minutes?: number
+          p_reason: string
+          p_target_profile_id: string
+        }
+        Returns: {
+          actor_profile_id: string
+          ended_at: string | null
+          ended_reason: string | null
+          expires_at: string
+          id: string
+          notified_target_at: string | null
+          reason: string | null
+          started_at: string
+          step_up_id: string | null
+          target_profile_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "impersonation"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      step_up_needed: { Args: { p_purpose: string }; Returns: boolean }
+      store_credential: {
+        Args: {
+          p_case_file_id: string
+          p_kind: string
+          p_label: string
+          p_notes?: string
+          p_rotation_interval_days?: number
+          p_secret: string
+          p_url?: string
+          p_username?: string
+        }
+        Returns: {
+          archived_at: string | null
+          archived_by: string | null
+          case_file_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          kind: string
+          label: string
+          last_rotated_at: string
+          notes: string | null
+          rotation_interval_days: number
+          secret_id: string
+          updated_at: string
+          url: string | null
+          username: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "client_credential"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      submit_document_for_review: {
+        Args: { p_document_id: string }
+        Returns: {
+          anonymisation_confirmed_at: string | null
+          anonymisation_confirmed_by: string | null
+          anonymised_descriptor: string | null
+          archived_at: string | null
+          case_file_id: string
+          correction_note: string | null
+          created_at: string
+          drive_file_id: string | null
+          drive_url: string | null
+          frozen_payload: Json | null
+          generated_at: string
+          generated_by: string | null
+          id: string
+          include_effort: boolean
+          is_case_study: boolean
+          period_end: string | null
+          period_start: string | null
+          published_at: string | null
+          published_by: string | null
+          share_link_id: string | null
+          state: Database["public"]["Enums"]["document_state"]
+          superseded_by_id: string | null
+          supersedes_id: string | null
+          template_id: string
+          template_version: number
+          title: string
+          type: Database["public"]["Enums"]["document_type"]
+          updated_at: string
+          version: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "document"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      suspend_account: {
+        Args: { p_profile_id: string; p_reason: string }
+        Returns: {
+          accepted_at: string | null
+          archived_at: string | null
+          created_at: string
+          email: string
+          expires_on: string | null
+          failed_attempts: number
+          full_name: string | null
+          id: string
+          invited_by: string | null
+          ip_allowlist: unknown[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
+          role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profile"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       suspend_for_billing: {
         Args: { p_threshold_days?: number }
         Returns: number
@@ -4145,6 +8362,13 @@ export type Database = {
           p_trigger?: Database["public"]["Enums"]["snapshot_trigger"]
         }
         Returns: string
+      }
+      verify_step_up: {
+        Args: { p_password: string; p_purpose: string }
+        Returns: {
+          message: string
+          ok: boolean
+        }[]
       }
       write_off_invoice: {
         Args: { p_invoice_id: string; p_reason: string }
@@ -4179,6 +8403,19 @@ export type Database = {
       }
     }
     Enums: {
+      account_state:
+        | "pending"
+        | "active"
+        | "suspended"
+        | "expired"
+        | "locked"
+        | "archived"
+      anonymisation_kind:
+        | "client_name"
+        | "person"
+        | "location"
+        | "brand"
+        | "other"
       booking_source: "ghl" | "manual"
       booking_state: "confirmed" | "pending_review" | "system_only" | "rejected"
       charge_type:
@@ -4195,6 +8432,14 @@ export type Database = {
         | "closed"
       client_message_status: "open" | "answered" | "closed"
       delivery_status: "delivered" | "failed" | "skipped"
+      document_state: "draft" | "in_review" | "published" | "archived"
+      document_type:
+        | "audit_findings"
+        | "install_completion"
+        | "monthly_performance"
+        | "quarterly_review"
+        | "proposal_scope"
+        | "case_study"
       engagement_status: "audit" | "installing" | "active" | "paused" | "ended"
       escalation_category:
         | "clinical"
@@ -4252,15 +8497,32 @@ export type Database = {
         | "paypal"
         | "crypto_usdc"
       payout_status: "pending" | "sent" | "confirmed" | "failed" | "returned"
+      permission_effect: "grant" | "deny"
       placement_status: "draft" | "active" | "ended" | "renewed"
       quote_status: "draft" | "sent" | "accepted" | "declined"
       report_mode: "client_facing" | "internal" | "case_study_draft"
+      scope_kind: "all_clients" | "clients" | "placements"
       scope_verdict: "in_scope" | "out_of_scope"
+      section_kind:
+        | "fixed"
+        | "narrative"
+        | "bound_metrics"
+        | "bound_table"
+        | "milestones"
+        | "evidence"
+        | "effort"
+        | "scope"
       snapshot_kind: "baseline" | "progress"
       snapshot_trigger: "automatic" | "manual"
       subscription_status: "active" | "past_due" | "paused" | "cancelled"
       tax_doc_status: "missing" | "requested" | "on_file" | "expired"
-      user_role: "admin" | "operator" | "client"
+      user_role:
+        | "owner"
+        | "admin"
+        | "manager"
+        | "operator"
+        | "contractor"
+        | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4388,6 +8650,21 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      account_state: [
+        "pending",
+        "active",
+        "suspended",
+        "expired",
+        "locked",
+        "archived",
+      ],
+      anonymisation_kind: [
+        "client_name",
+        "person",
+        "location",
+        "brand",
+        "other",
+      ],
       booking_source: ["ghl", "manual"],
       booking_state: ["confirmed", "pending_review", "system_only", "rejected"],
       charge_type: [
@@ -4406,6 +8683,15 @@ export const Constants = {
       ],
       client_message_status: ["open", "answered", "closed"],
       delivery_status: ["delivered", "failed", "skipped"],
+      document_state: ["draft", "in_review", "published", "archived"],
+      document_type: [
+        "audit_findings",
+        "install_completion",
+        "monthly_performance",
+        "quarterly_review",
+        "proposal_scope",
+        "case_study",
+      ],
       engagement_status: ["audit", "installing", "active", "paused", "ended"],
       escalation_category: [
         "clinical",
@@ -4470,15 +8756,34 @@ export const Constants = {
         "crypto_usdc",
       ],
       payout_status: ["pending", "sent", "confirmed", "failed", "returned"],
+      permission_effect: ["grant", "deny"],
       placement_status: ["draft", "active", "ended", "renewed"],
       quote_status: ["draft", "sent", "accepted", "declined"],
       report_mode: ["client_facing", "internal", "case_study_draft"],
+      scope_kind: ["all_clients", "clients", "placements"],
       scope_verdict: ["in_scope", "out_of_scope"],
+      section_kind: [
+        "fixed",
+        "narrative",
+        "bound_metrics",
+        "bound_table",
+        "milestones",
+        "evidence",
+        "effort",
+        "scope",
+      ],
       snapshot_kind: ["baseline", "progress"],
       snapshot_trigger: ["automatic", "manual"],
       subscription_status: ["active", "past_due", "paused", "cancelled"],
       tax_doc_status: ["missing", "requested", "on_file", "expired"],
-      user_role: ["admin", "operator", "client"],
+      user_role: [
+        "owner",
+        "admin",
+        "manager",
+        "operator",
+        "contractor",
+        "client",
+      ],
     },
   },
 } as const

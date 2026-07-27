@@ -81,3 +81,40 @@ update auth.users
        phone_change_token = coalesce(phone_change_token, ''),
        reauthentication_token = coalesce(reauthentication_token, '');
 ```
+
+## Roles, auth and the admin workspace (`ad.vistrial.io`)
+
+The control-plane migrations (`20260726221034` onward) add Owner / Admin /
+Manager / Operator / Contractor roles, account state, the permission catalogue,
+scope, overrides, invite-only signup, impersonation, the credential vault, and
+an append-only audit log.
+
+Permission checks run in Postgres through `app.decide()` / `app.require()`.
+Explicit deny beats every grant. Refusals name the layer (account state,
+lockdown, blocking notice, impersonation, override, role default).
+
+`app.is_admin()` is true for Owner and Admin when the effective state is active,
+and it evaluates the acting profile during impersonation so the rest of the
+surfaces keep working.
+
+The Next.js surface lives at `/ad` (host `ad.vistrial.io` via
+`VISTRIAL_CONTROL_HOSTS`). Accounts are invited from `/ad/invites`; acceptance
+is at `/ad/invite?token=…`.
+
+### Host routing
+
+Each property is a dedicated host. On that host only its surface is served;
+other app paths return 404. Localhost and `*.vercel.app` keep path-based access
+for previews.
+
+| Host env | Default | Surface |
+|---|---|---|
+| `VISTRIAL_CONTROL_HOSTS` | `ad.vistrial.io` | `/ad` |
+| `VISTRIAL_ADMIN_HOSTS` | `da.vistrial.io` | `/da` |
+| `VISTRIAL_ACCT_HOSTS` | `acct.vistrial.io` | `/acct` |
+| `VISTRIAL_OPS_HOSTS` | `ops.vistrial.io`, … | `/vistrial` |
+| `VISTRIAL_CAREERS_HOSTS` | `vistrial.io`, … | `/hiring` |
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
+every deploy. The app also falls back to the live Vistrial project values so a
+missing env var does not render the “Database not connected” screen.
