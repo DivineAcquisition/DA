@@ -2611,27 +2611,96 @@ export type Database = {
       }
       profile: {
         Row: {
+          accepted_at: string | null
+          archived_at: string | null
           created_at: string
           email: string
+          expires_on: string | null
+          failed_attempts: number
           full_name: string | null
           id: string
+          invited_by: string | null
+          ip_allowlist: string[] | null
+          last_sign_in_at: string | null
+          locked_reason: string | null
+          locked_until: string | null
+          mfa_required: boolean | null
+          must_change_password: boolean
+          notes: string | null
+          purge_after: string | null
+          restrict_to_shift: boolean
           role: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes: number | null
+          shift_override: boolean
+          soft_deleted_at: string | null
+          soft_deleted_by: string | null
+          state: Database["public"]["Enums"]["account_state"]
+          suspended_at: string | null
+          suspended_by: string | null
+          suspended_reason: string | null
+          time_zone: string | null
           updated_at: string
         }
         Insert: {
+          accepted_at?: string | null
+          archived_at?: string | null
           created_at?: string
           email: string
+          expires_on?: string | null
+          failed_attempts?: number
           full_name?: string | null
           id: string
+          invited_by?: string | null
+          ip_allowlist?: string[] | null
+          last_sign_in_at?: string | null
+          locked_reason?: string | null
+          locked_until?: string | null
+          mfa_required?: boolean | null
+          must_change_password?: boolean
+          notes?: string | null
+          purge_after?: string | null
+          restrict_to_shift?: boolean
           role?: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes?: number | null
+          shift_override?: boolean
+          soft_deleted_at?: string | null
+          soft_deleted_by?: string | null
+          state?: Database["public"]["Enums"]["account_state"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspended_reason?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
         Update: {
+          accepted_at?: string | null
+          archived_at?: string | null
           created_at?: string
           email?: string
+          expires_on?: string | null
+          failed_attempts?: number
           full_name?: string | null
           id?: string
+          invited_by?: string | null
+          ip_allowlist?: string[] | null
+          last_sign_in_at?: string | null
+          locked_reason?: string | null
+          locked_until?: string | null
+          mfa_required?: boolean | null
+          must_change_password?: boolean
+          notes?: string | null
+          purge_after?: string | null
+          restrict_to_shift?: boolean
           role?: Database["public"]["Enums"]["user_role"]
+          session_timeout_minutes?: number | null
+          shift_override?: boolean
+          soft_deleted_at?: string | null
+          soft_deleted_by?: string | null
+          state?: Database["public"]["Enums"]["account_state"]
+          suspended_at?: string | null
+          suspended_by?: string | null
+          suspended_reason?: string | null
+          time_zone?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -4260,7 +4329,16 @@ export type Database = {
       snapshot_trigger: "automatic" | "manual"
       subscription_status: "active" | "past_due" | "paused" | "cancelled"
       tax_doc_status: "missing" | "requested" | "on_file" | "expired"
-      user_role: "admin" | "operator" | "client"
+      account_state:
+        | "pending"
+        | "active"
+        | "suspended"
+        | "locked"
+        | "expired"
+        | "archived"
+      scope_kind: "all_clients" | "clients" | "placements"
+      permission_effect: "grant" | "deny"
+      user_role: "owner" | "admin" | "manager" | "operator" | "contractor" | "client"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4478,7 +4556,10 @@ export const Constants = {
       snapshot_trigger: ["automatic", "manual"],
       subscription_status: ["active", "past_due", "paused", "cancelled"],
       tax_doc_status: ["missing", "requested", "on_file", "expired"],
-      user_role: ["admin", "operator", "client"],
+      account_state: ["pending", "active", "suspended", "locked", "expired", "archived"],
+      scope_kind: ["all_clients", "clients", "placements"],
+      permission_effect: ["grant", "deny"],
+      user_role: ["owner", "admin", "manager", "operator", "contractor", "client"],
     },
   },
 } as const
