@@ -1,0 +1,4 @@
+comment = 'local stand-in for pg_cron (records schedules, runs nothing)'
+default_version = '1.6'
+relocatable = false
+schema = 'extensions'

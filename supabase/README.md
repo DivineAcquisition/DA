@@ -5,7 +5,10 @@ surfaces; this directory holds the schema for the client documentation and growt
 tracking surface served at `da.vistrial.io`.
 
 The migrations in `migrations/` are exported from the applied migration history,
-so the files and the live database match.
+so the files and the live database match. `verify/` replays that chain into a
+throwaway local Postgres and asserts the rules against it — see
+[verify/README.md](verify/README.md), which also documents the one subsystem that
+is live on the project but was never exported.
 
 ## Why the schema looks like this
 
@@ -43,15 +46,69 @@ security-definer helpers in it cannot be called by a client.
 
 ## Automation
 
-`pg_cron` runs `app.take_automatic_snapshots()` every Monday at 06:00 UTC, which
-delegates to `public.take_due_snapshots()` — the same function the admin button
-calls, so a manual run and the scheduled run cannot drift.
+| Job | Schedule | What it does |
+|---|---|---|
+| `vistrial-weekly-snapshots` | Mondays 06:00 UTC | `app.take_automatic_snapshots()`, which delegates to `public.take_due_snapshots()` — the same function the admin button calls, so a manual run and the scheduled run cannot drift. |
+| `vistrial-ingest-backlog` | every minute | `app.drain_ingest_backlog()`. The backstop that makes an early acknowledgement safe: anything logged but not yet interpreted is picked up here. |
+| `vistrial-cross-client-rollup` | every ten minutes | `app.refresh_rollup('cross_client')`. Between runs the value is served with its age, so a late refresh shows as stale rather than as wrong. |
 
 ## Ingestion
 
-`tracking_metric_daily` is the landing zone for the GoHighLevel ingestion: one
-row per case file, per day, per metric. `rollup_tracking()` aggregates it for a
-period and is what lets a snapshot be taken with no human present.
+Two machine doors: GoHighLevel and the payment processor. Both go through
+`ingest_receive()` and `ingest_process()`, which are the only way a machine
+delivery enters the database. Both are granted to `anon`, as `attempt_sign_in()`
+already is, because a webhook arrives with no session — the door's own secret is
+what authorises it, and both functions check it themselves.
+
+`ingest_endpoint` is a door. It holds the public key that names it and either a
+digest of a shared secret or a Vault reference to a signing key, so the secret to
+check against can be found before the body is parsed. `ingest_source` maps a
+sending account to exactly one client, which is what makes attribution a lookup
+rather than a judgement. `ingest_event_type` lists the types that have handlers.
+
+`ingest_event` is the log. Immutable in its payload and undeletable; only the
+outcome of processing may be written. It stores the body as text as well as
+`jsonb`, so a payload that could not be parsed is still on record and can be
+replayed once something understands it.
+
+### The rules, and where each one lives
+
+| Rule | Enforcement |
+|---|---|
+| 1. Authenticate before parsing | `ingest_receive()` resolves the door and checks the digest or recomputes the HMAC before it attempts `p_body::jsonb`. A refusal *returns* rather than raising, because raising would roll back the `ingest_auth_failure` row that records it. |
+| 2. Log the raw payload before processing it | `ingest_receive()` writes the row and stops. Interpretation happens in a separate call, so no handler can lose a payload by failing to understand it. |
+| 3. Duplicate deliveries produce one record | `unique (provider, dedupe_key)`, where the key is the provider's own event id or a digest of the body. `booking.external_ref` is unique per client for the same reason one layer down: a create and an update describing one appointment must not become two commissions. |
+| 4. First-touch timestamps stamp once | `app.stamp_once()` on `lead`, which retains the earlier value rather than raising — a redelivered event is routine and must not fail. `lead.response_minutes` is a generated column over the two stamps, so response time cannot be entered by hand from anywhere. |
+| 5. Unattributable events are stored and raised | `app.ingest_resolve_case_file()` is lookup-only and returns null when nothing matches. `app.ingest_dispatch()` then writes `unattributed` and raises an owner alert. `map_ingest_account()` clears the backlog by dispatching everything queued against that account. |
+| 6. Unknown types are stored and raised | A type absent from `ingest_event_type` lands as `unknown_type` with an alert. Adding a workflow in GoHighLevel without a handler is visible instead of silent. |
+| 7. Acknowledge quickly, then process | Receiving and dispatching are separate calls so the route can return 202 first. `app.drain_ingest_backlog()` runs every minute, so acknowledging early can delay processing but cannot lose it. |
+| 8. Money moves only on confirmed bookings | `booking_is_creditable()`, unchanged. `app.reconcile_booking_claims()` is now the only matcher: the GoHighLevel handler runs it when an appointment arrives, and `claim_booking()` runs it when an operator logs one, so the two cannot disagree about who gets paid. |
+| 9. Nothing is inferred from silence or from an amount | A payment resolves to the invoice it names, or it is stored unattributed. There is no branch that matches a payment on its amount. |
+
+### The three computation layers
+
+Live derived figures are recomputed per read. Frozen artifacts — baselines,
+snapshots, statements, issued invoices, published reports — are computed once and
+never recomputed. Between them, `rollup_cache` holds the cross-client rollups.
+
+`rollup()` returns an envelope rather than a payload: `computed_at`, an age, and a
+`stale` flag come back with every figure, and there is deliberately no accessor
+that returns the numbers alone. A rollup that has never run reads as stale rather
+than as a set of zeros, and a refresh that fails keeps the previous payload and
+records why. `v_ingest_health` is left live and uncached, because a stale answer to
+whether data is still arriving is the wrong kind of wrong.
+
+### Landing tables
+
+`tracking_metric_daily` is the landing zone for metric ingestion: one row per case
+file, per day, per metric. `rollup_tracking()` aggregates it for a period and is
+what lets a snapshot be taken with no human present.
+
+`tracking_funnel_daily` and `response_day` are no longer written directly. They
+are caches over `lead`, recomputed for a whole day by
+`app.refresh_lead_rollups()` rather than incremented, so replaying an event cannot
+inflate them. The upsert names only the lead-derived columns, because ad spend and
+revenue on those same rows are owned by admin entry.
 
 ## Creating the first admin
 
