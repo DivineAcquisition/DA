@@ -287,6 +287,7 @@ export function makeOpsData(): OpsData {
 
   return {
     now: NOW,
+    staffNames: ['Malik Sannie'],
     operators: [
       {
         id: 'op-amara',

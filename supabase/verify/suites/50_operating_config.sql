@@ -170,6 +170,31 @@ begin
   assert (select routed_to from public.escalation where id = v_id) = array['Named Person'];
 end $$;
 
+\echo '== an operator can be told who staff are, by name and nothing else =='
+set role authenticated;
+do $$ begin perform set_config('request.jwt.claim.sub', 'bbbbbbbb-0000-0000-0000-000000000002', false); end $$;
+
+do $$
+begin
+  -- The hub printed 'DA Admin' for whoever assigned a task or adjusted a pay
+  -- statement, because an operator may only read their own profile row. An
+  -- operator disputing a deduction has to be able to find out who made it.
+  assert (select count(*) from public.v_staff_name) >= 1,
+    'the staff directory is readable';
+  assert (select display_name from public.v_staff_name limit 1) is not null;
+
+  begin
+    perform count(*) from public.profile where role = 'admin';
+    -- Readable rows are still limited to their own by RLS, so this returns zero
+    -- rather than raising.
+    assert (select count(*) from public.profile where role = 'admin') = 0,
+      'the roster itself stays closed';
+  exception when sqlstate '42501' then null;
+  end;
+end $$;
+
+reset role;
+
 \echo '== the dictionary is readable by an operator, the overrides are not writable =='
 set role authenticated;
 do $$ begin perform set_config('request.jwt.claim.sub', 'bbbbbbbb-0000-0000-0000-000000000002', false); end $$;

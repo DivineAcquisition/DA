@@ -98,6 +98,46 @@ than as a set of zeros, and a refresh that fails keeps the previous payload and
 records why. `v_ingest_health` is left live and uncached, because a stale answer to
 whether data is still arriving is the wrong kind of wrong.
 
+## Configuration is data, not code
+
+Three things used to be decided in the application and are now rows, because each
+had an owner and none of them was a compile-time contract.
+
+**The industry template.** `industry_template` and `industry_template_field` hold
+what an operator is asked at the end of a shift; `case_file_eod_field` overrides it
+per client. Which template a client got was previously inferred with
+`row.notes?.includes('med spa')` — the free-text notes column, string-matched — so
+an admin tidying a note could silently change the shape of every EOD report, and a
+sixth industry needed a deploy. `client_case_file.industry_key` owns it now, and
+the migration backfills it by running that heuristic exactly once.
+`eod_fields_for_case_file()` resolves template against override in one place.
+
+**The definition of a qualified booking.** A string literal, identical for every
+client. It is the sentence an operator is measured against and a disputed booking is
+settled with, so it is `client_case_file.qualified_booking_definition`, seeded from
+the template and editable per client.
+
+**Who an escalation goes to.** The hub wrote `routed_to: ['DA Admin']`. Nobody is
+called that. `app.escalation_recipients()` resolves the real roster — owners, admins
+and any manager in scope — and a trigger applies it when the caller leaves the
+column empty. `v_staff_name` exposes staff names, and nothing else about them, so an
+operator disputing a pay adjustment can find out who made it.
+
+What stayed in the application is the locked EOD core, in
+`lib/vistrial/eodCore.ts`: eight fixed fields that are the `EodCore` type.
+`app.eod_core_keys()` mirrors them so the database can refuse a configured field
+that would shadow one, and the comment on each says to change them together.
+
+## The public door
+
+`role_application` and `submit_role_application()` are the careers form's
+destination. Three of the six roles used an in-page form that logged what a
+candidate typed to the browser console, discarded it, and told them it had been
+received. The function is granted to `anon` — an applicant has no session — so it is
+the most exposed in the schema: it caps every field, requires a reachable address,
+refuses a sixth application from one address in an hour, and returns nothing it was
+not given.
+
 ### Landing tables
 
 `tracking_metric_daily` is the landing zone for metric ingestion: one row per case

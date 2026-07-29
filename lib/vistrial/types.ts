@@ -332,7 +332,8 @@ export type OperatorTask = {
   detail: string;
   dueOn: string | null;
   completedOn: string | null;
-  assignedBy: string;
+  /** Null when the record names nobody, which reads better than inventing one. */
+  assignedBy: string | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -358,7 +359,8 @@ export type PayAdjustment = {
   reason: string;
   /** Positive or negative, in whole dollars. */
   amount: number;
-  addedBy: string;
+  /** Null when the record names nobody. */
+  addedBy: string | null;
   addedAt: string;
 };
 
@@ -447,6 +449,8 @@ export type ResponseDay = {
 };
 
 export type OpsData = {
+  /** Active staff by name, for "who assigned this" and "who is this with". */
+  staffNames: string[];
   operators: Operator[];
   clients: Client[];
   placements: Placement[];

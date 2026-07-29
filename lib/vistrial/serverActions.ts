@@ -135,7 +135,7 @@ export async function commentOnEodAction(reportId: string, body: string): Promis
   const { error } = await supabase.from('eod_comment').insert({
     eod_report_id: reportId,
     author_profile_id: user?.id ?? null,
-    author_name: profile?.full_name ?? profile?.email ?? 'DA Admin',
+    author_name: profile?.full_name ?? profile?.email ?? 'Divine Acquisition',
     body,
   });
 

@@ -53,6 +53,8 @@ type StoreValue = {
   /** The placement an operator is currently working in. Null for the admin. */
   activePlacement: Placement | null;
   myLivePlacements: Placement[];
+  /** Active staff by name, so a surface never has to invent who it is with. */
+  staffNames: string[];
   setActivePlacement: (placementId: string) => void;
   /** The most recent action outcome, so surfaces can report what happened. */
   lastResult: HubResult | null;
@@ -118,6 +120,7 @@ export function OpsProvider({
       data,
       activePlacement,
       myLivePlacements,
+      staffNames: data.staffNames,
       lastResult,
       setActivePlacement: setActivePlacementId,
 

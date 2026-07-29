@@ -51,7 +51,7 @@ export default function OperatorEscalationsPage() {
 }
 
 function Escalations() {
-  const { gateway, activePlacement, raiseEscalation } = useOps();
+  const { gateway, activePlacement, raiseEscalation, staffNames } = useOps();
   const placement = activePlacement!;
   const client = gateway.client(placement.clientId)!;
 
@@ -66,6 +66,12 @@ function Escalations() {
 
   const selected = CATEGORIES.find((option) => option.id === category)!;
   const contact = client.config.escalationContact;
+
+  // Who it actually goes to. The database resolves this from the roster when the
+  // escalation is written, so after raising one the answer is on the record rather
+  // than being a name the interface made up.
+  const routedTo = mine[0]?.routedTo ?? [];
+  const recipients = (routedTo.length > 0 ? routedTo : staffNames).join(', ');
 
   const submit = () => {
     if (!customerContext.trim() || !needed.trim()) return;
@@ -95,9 +101,12 @@ function Escalations() {
           <Panel className="border-brand-500/25 bg-brand-500/[0.07] p-5">
             <Badge tone="brand">Raised</Badge>
             <p className="mt-2 text-sm leading-relaxed text-white">
-              It is with DA Admin{contact ? ` and ${contact.name}` : ''} now, due back within{' '}
-              {client.config.escalationResponseHours} hours. If it goes past that window it moves to the top of
-              the admin&apos;s queue automatically.
+              It is with {recipients || 'the Divine Acquisition team'}
+              {contact ? ` and ${contact.name}` : ''} now
+              {client.config.escalationResponseHours
+                ? `, due back within ${client.config.escalationResponseHours} hours`
+                : ''}
+              . If it goes past that window it moves to the top of the admin&apos;s queue automatically.
             </p>
           </Panel>
         )}
@@ -159,8 +168,11 @@ function Escalations() {
 
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-neutral-500">
-                Routes to DA Admin
-                {contact ? ` and ${contact.name} (${contact.role}) via ${contact.channel}` : ' only'}.
+                Routes to {recipients || 'the Divine Acquisition team'}
+                {contact
+                  ? ` and ${[contact.name, contact.role && `(${contact.role})`, contact.channel && `via ${contact.channel}`].filter(Boolean).join(' ')}`
+                  : ' only'}
+                .
               </p>
               <button
                 type="button"

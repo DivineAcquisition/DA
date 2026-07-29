@@ -215,7 +215,9 @@ export function statementLines(statement: PayStatement): { label: string; detail
     { label: 'Speed bonus', detail: statement.speedBonusDetail, amount: statement.speedBonusAmount },
     ...statement.adjustments.map((adjustment) => ({
       label: adjustment.label,
-      detail: `${adjustment.reason} — added by ${adjustment.addedBy}`,
+      detail: adjustment.addedBy
+        ? `${adjustment.reason} — added by ${adjustment.addedBy}`
+        : adjustment.reason,
       amount: adjustment.amount,
     })),
   ];

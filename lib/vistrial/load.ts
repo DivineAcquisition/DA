@@ -63,6 +63,7 @@ export async function loadOpsData(): Promise<OpsData> {
     { data: templates },
     { data: templateFields },
     { data: clientFields },
+    { data: staff },
   ] = await Promise.all([
     supabase.from('operator').select('*, operator_training(id, title, detail, completed_on)').order('name'),
     supabase.from('client_case_file').select('*').order('name'),
@@ -91,9 +92,15 @@ export async function loadOpsData(): Promise<OpsData> {
       .from('case_file_eod_field')
       .select('case_file_id, key, label, field_type, options, required, help, sort_order')
       .order('sort_order'),
+    // Names only. The hub used to print 'DA Admin' for whoever assigned a task or
+    // adjusted a statement, because an operator cannot read the profile table.
+    untyped(supabase).from('v_staff_name').select('profile_id, display_name').order('display_name'),
   ]);
 
   const now = new Date().toISOString();
+
+  const staffRows = (staff ?? []) as { profile_id: string; display_name: string }[];
+  const staffNames = new Map(staffRows.map((row) => [row.profile_id, row.display_name]));
 
   const industryNames = new Map<string, string>(
     ((templates ?? []) as { key: string; name: string }[]).map((row) => [row.key, row.name]),
@@ -124,6 +131,7 @@ export async function loadOpsData(): Promise<OpsData> {
 
   return {
     now,
+    staffNames: staffRows.map((row) => row.display_name),
     operators: (operators ?? []).map(
       (row): Operator => ({
         id: row.id,
@@ -379,7 +387,7 @@ export async function loadOpsData(): Promise<OpsData> {
         detail: row.detail,
         dueOn: row.due_on,
         completedOn: row.completed_on,
-        assignedBy: 'DA Admin',
+        assignedBy: row.assigned_by ? staffNames.get(row.assigned_by) ?? null : null,
       }),
     ),
 
@@ -422,7 +430,7 @@ export async function loadOpsData(): Promise<OpsData> {
           label: adjustment.label,
           reason: adjustment.reason,
           amount: Number(adjustment.amount),
-          addedBy: 'DA Admin',
+          addedBy: adjustment.added_by ? staffNames.get(adjustment.added_by) ?? null : null,
           addedAt: adjustment.added_at,
         })),
         total: Number(row.total),
