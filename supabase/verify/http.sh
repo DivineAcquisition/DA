@@ -44,6 +44,27 @@ if [[ "$(Q 'select count(*) from ingest_event')" != "0" ]]; then
   exit 1
 fi
 
+# PostgREST caches the schema and reconnects its pool after the database is
+# rebuilt, so wait for it to catch up. Without this the first few checks come back
+# as 503s, which looks like a regression and is not.
+#
+# The probe knocks with an unknown key rather than a wrong secret: the refusal it
+# records is 'unknown_endpoint', which is not a reason any check below counts, and
+# ingest_auth_failure is append only so it could not be tidied up afterwards.
+for _ in $(seq 30); do
+  probe=$(curl -s -o /dev/null -w '%{http_code}' -X POST \
+    "$BASE/api/webhooks/ghl/0000000000000000000000000000000000000000" \
+    -H 'Content-Type: application/json' -H 'x-vistrial-secret: readiness-probe' -d '{}')
+  [[ "$probe" == "401" ]] && break
+  sleep 1
+done
+
+if [[ "${probe:-}" != "401" ]]; then
+  echo "The stack never became ready (last response: ${probe:-none})." >&2
+  echo "Check PostgREST on 3002, the shim on 3001, and the app on 3000." >&2
+  exit 1
+fi
+
 fails=0
 check() {
   if [[ "$2" == "$3" ]]; then

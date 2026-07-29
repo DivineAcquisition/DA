@@ -87,6 +87,7 @@ postgrest supabase/verify/local/postgrest.conf &
 node supabase/verify/local/supabase-shim.mjs &
 
 # PostgREST caches the schema at startup, so tell it to look again after a rebuild.
+# http.sh then waits for the stack to be ready before it asserts anything.
 sudo -u postgres psql -p 5433 -d vistrial_verify -c "notify pgrst, 'reload schema'"
 
 # 3. The app, pointed at the shim.

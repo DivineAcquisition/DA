@@ -74,6 +74,37 @@ exception
 end;
 $$;
 
+-- The client address arrives as whatever sat at the front of x-forwarded-for,
+-- which is attacker-controlled text. Casting it directly would abort the whole
+-- delivery over a malformed header, so a bad address is simply not recorded.
+create or replace function app.ingest_inet(p_value text)
+returns inet
+language plpgsql
+immutable
+set search_path = ''
+as $$
+begin
+  return nullif(btrim(coalesce(p_value, '')), '')::inet;
+exception
+  when others then return null;
+end;
+$$;
+
+-- Digest comparison, so the time it takes cannot walk the expected value byte by
+-- byte. Postgres has no timing-safe compare, and comparing hashes of both sides
+-- means a difference in timing says something about the hashes rather than about
+-- the signature.
+create or replace function app.secret_matches(p_presented text, p_expected text)
+returns boolean
+language sql
+immutable
+set search_path = ''
+as $$
+  select p_presented is not null
+     and p_expected is not null
+     and app.hash_token(p_presented) = app.hash_token(p_expected);
+$$;
+
 create or replace function app.ingest_event_type(p_provider public.ingest_provider, p_payload jsonb)
 returns text
 language sql
@@ -289,7 +320,7 @@ begin
   elsif not v_endpoint.active then
     v_refusal := 'endpoint_inactive';
   elsif v_endpoint.auth_mode = 'shared_secret' then
-    if p_secret is null or app.hash_token(p_secret) <> v_endpoint.secret_hash then
+    if not app.secret_matches(app.hash_token(coalesce(p_secret, '')), v_endpoint.secret_hash) then
       v_refusal := 'bad_secret';
     end if;
   else
@@ -309,7 +340,7 @@ begin
         'hex'
       );
 
-      if p_signature is null or lower(p_signature) <> v_expected then
+      if not app.secret_matches(lower(p_signature), v_expected) then
         v_refusal := 'bad_signature';
       end if;
     end if;
@@ -320,7 +351,8 @@ begin
   -- something an admin has to be able to see. The caller turns this into a 401.
   if v_refusal is not null then
     insert into public.ingest_auth_failure (provider, endpoint_key, reason, body_bytes, ip, user_agent)
-    values (v_endpoint.provider, p_endpoint_key, v_refusal, length(coalesce(p_body, '')), p_ip::inet, p_user_agent);
+    values (v_endpoint.provider, p_endpoint_key, v_refusal, length(coalesce(p_body, '')),
+            app.ingest_inet(p_ip), p_user_agent);
 
     -- One wrong secret is a misconfigured workflow. Ten in ten minutes is either
     -- a rotation nobody finished or someone trying keys.
@@ -572,8 +604,7 @@ begin
 
   if v_event.id is null
      or v_event.process_token_hash is null
-     or p_process_token is null
-     or v_event.process_token_hash <> app.hash_token(p_process_token)
+     or not app.secret_matches(app.hash_token(coalesce(p_process_token, '')), v_event.process_token_hash)
      or v_event.process_token_expires_at < now()
   then
     raise exception 'ingest_unauthorised' using errcode = '42501';

@@ -77,6 +77,31 @@ begin
   assert exists (select 1 from public.ingest_auth_failure where reason = 'unknown_endpoint');
 end $$;
 
+\echo '== a malformed client address does not cost the delivery =='
+do $$
+declare
+  d record;
+  v jsonb;
+begin
+  select * into d from door;
+
+  -- x-forwarded-for is attacker-controlled text. Casting it straight to inet would
+  -- abort the whole call and lose a delivery that was otherwise authentic.
+  v := public.ingest_receive(d.key,
+    json_build_object('type','ContactCreate','webhookId','wh-bad-ip','locationId','loc-northside',
+      'contact', json_build_object('id','contact-bad-ip','dateAdded','2026-06-03T09:00:00Z'))::text,
+    d.secret, null, null, '{}'::jsonb, 'not-an-ip-address', 'GHL/1.0');
+
+  assert (v ->> 'ok')::boolean = true, 'a bad address must not refuse an authentic delivery';
+  perform public.ingest_process((v ->> 'event_id')::uuid, v ->> 'process_token');
+  assert (select status from public.ingest_event where external_event_id = 'wh-bad-ip') = 'processed';
+
+  -- And it still refuses when it should, recording no address rather than failing.
+  perform public.ingest_receive(d.key, '{}', 'wrong-secret', null, null, '{}'::jsonb, 'garbage', null);
+  assert (select ip from public.ingest_auth_failure order by at desc limit 1) is null,
+    'an address that could not be read is simply not recorded';
+end $$;
+
 \echo '== rules 2 and 3: a lead arrives, is logged, and is deduplicated =='
 do $$
 declare
@@ -116,7 +141,8 @@ begin
     'rule 4: duplicate events produce one record';
 
   -- Nothing has been interpreted yet.
-  assert (select count(*) from public.lead) = 0, 'receive must not interpret';
+  assert (select count(*) from public.lead where external_id = 'contact-1') = 0,
+    'receive must not interpret';
 
   perform public.ingest_process((v ->> 'event_id')::uuid, v ->> 'process_token');
 
