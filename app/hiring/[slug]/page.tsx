@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import Backdrop from '../../components/Backdrop';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import { aboutContent, getRole, type RoleDetail } from '../../data/roles';
+import type { ActionResult } from '@/lib/ad/rpc';
+import { submitApplicationAction } from '@/lib/careers/actions';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, sectionLabel } from '../../components/ui';
 
 function SectionHeading({ label }: { label: string }) {
@@ -38,31 +40,17 @@ function CrossBullet() {
   );
 }
 
-function ApplicationForm({ jobTitle }: { jobTitle: string }) {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    linkedin: '',
-    portfolio: '',
-    loomVideo: '',
-    experience: '',
-    whyYou: '',
-    availability: '',
-  });
-  const [submitted, setSubmitted] = useState(false);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-  };
+function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: string; jobTitle: string }) {
+  const [result, setResult] = useState<ActionResult | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const field =
     'w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-neutral-600 transition-colors focus:border-brand-500/60 focus:bg-white/[0.05] focus:outline-none';
   const label = 'mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500';
 
-  if (submitted) {
+  // Only shown once the application is actually on record. It used to be shown
+  // after logging the form to the browser console and throwing it away.
+  if (result?.ok) {
     return (
       <div className="px-6 py-16 text-center">
         <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500/15 text-brand-300 ring-1 ring-brand-500/30">
@@ -80,35 +68,27 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 p-5 sm:p-7">
+    <form
+      className="space-y-5 p-5 sm:p-7"
+      action={(formData) => {
+        setResult(null);
+        startTransition(async () => {
+          setResult(await submitApplicationAction(roleSlug, jobTitle, formData));
+        });
+      }}
+    >
       <div className="grid gap-5 md:grid-cols-2">
         <div>
           <label className={label} htmlFor="fullName">
             Full name *
           </label>
-          <input
-            id="fullName"
-            type="text"
-            required
-            value={formData.fullName}
-            onChange={(event) => setFormData({ ...formData, fullName: event.target.value })}
-            className={field}
-            placeholder="Jordan Rivera"
-          />
+          <input id="fullName" name="fullName" type="text" required className={field} placeholder="Jordan Rivera" />
         </div>
         <div>
           <label className={label} htmlFor="email">
             Email address *
           </label>
-          <input
-            id="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={(event) => setFormData({ ...formData, email: event.target.value })}
-            className={field}
-            placeholder="you@example.com"
-          />
+          <input id="email" name="email" type="email" required className={field} placeholder="you@example.com" />
         </div>
       </div>
 
@@ -117,14 +97,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           <label className={label} htmlFor="phone">
             Phone number
           </label>
-          <input
-            id="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
-            className={field}
-            placeholder="+1 (555) 000-0000"
-          />
+          <input id="phone" name="phone" type="tel" className={field} placeholder="+1 (555) 000-0000" />
         </div>
         <div>
           <label className={label} htmlFor="linkedin">
@@ -132,9 +105,8 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
           </label>
           <input
             id="linkedin"
+            name="linkedin"
             type="url"
-            value={formData.linkedin}
-            onChange={(event) => setFormData({ ...formData, linkedin: event.target.value })}
             className={field}
             placeholder="https://linkedin.com/in/username"
           />
@@ -145,25 +117,17 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         <label className={label} htmlFor="portfolio">
           Portfolio / website
         </label>
-        <input
-          id="portfolio"
-          type="url"
-          value={formData.portfolio}
-          onChange={(event) => setFormData({ ...formData, portfolio: event.target.value })}
-          className={field}
-          placeholder="https://yourportfolio.com"
-        />
+        <input id="portfolio" name="portfolio" type="url" className={field} placeholder="https://yourportfolio.com" />
       </div>
 
       <div>
-        <label className={label} htmlFor="loom">
+        <label className={label} htmlFor="loomVideo">
           Loom video introduction
         </label>
         <input
-          id="loom"
+          id="loomVideo"
+          name="loomVideo"
           type="url"
-          value={formData.loomVideo}
-          onChange={(event) => setFormData({ ...formData, loomVideo: event.target.value })}
           className={field}
           placeholder="https://www.loom.com/share/your-video-id"
         />
@@ -178,10 +142,9 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         </label>
         <textarea
           id="experience"
+          name="experience"
           required
           rows={4}
-          value={formData.experience}
-          onChange={(event) => setFormData({ ...formData, experience: event.target.value })}
           className={`${field} resize-none`}
           placeholder="Tell us about your relevant experience and accomplishments…"
         />
@@ -193,10 +156,9 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         </label>
         <textarea
           id="whyYou"
+          name="whyYou"
           required
           rows={4}
-          value={formData.whyYou}
-          onChange={(event) => setFormData({ ...formData, whyYou: event.target.value })}
           className={`${field} resize-none`}
           placeholder="What makes you uniquely qualified for this role?"
         />
@@ -208,9 +170,9 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         </label>
         <select
           id="availability"
+          name="availability"
           required
-          value={formData.availability}
-          onChange={(event) => setFormData({ ...formData, availability: event.target.value })}
+          defaultValue=""
           className={`${field} cursor-pointer appearance-none`}
         >
           <option value="">Select availability</option>
@@ -221,8 +183,14 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
         </select>
       </div>
 
-      <button type="submit" className={`${btnPrimary} ${btnSizeMd} w-full`}>
-        Submit application
+      {result && !result.ok && (
+        <p className="rounded-xl border border-flag-critical/25 bg-flag-critical/[0.08] px-4 py-3 text-sm leading-relaxed text-flag-critical">
+          {result.error}
+        </p>
+      )}
+
+      <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd} w-full`}>
+        {pending ? 'Submitting…' : 'Submit application'}
       </button>
 
       <p className="text-center text-xs text-neutral-600">
@@ -233,7 +201,7 @@ function ApplicationForm({ jobTitle }: { jobTitle: string }) {
   );
 }
 
-function ApplyPanel({ detail, title }: { detail: RoleDetail; title: string }) {
+function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string; slug: string }) {
   return (
     <section id="apply" className="scroll-mt-24">
       <div className="panel overflow-hidden rounded-3xl">
@@ -278,7 +246,7 @@ function ApplyPanel({ detail, title }: { detail: RoleDetail; title: string }) {
             </a>
           </div>
         ) : (
-          <ApplicationForm jobTitle={title} />
+          <ApplicationForm roleSlug={slug} jobTitle={title} />
         )}
       </div>
     </section>
@@ -443,7 +411,7 @@ export default function RolePage() {
               </div>
             </section>
 
-            <ApplyPanel detail={detail} title={role.title} />
+            <ApplyPanel detail={detail} title={role.title} slug={role.slug} />
           </div>
         </main>
 
