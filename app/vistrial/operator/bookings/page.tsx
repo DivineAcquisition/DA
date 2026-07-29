@@ -54,6 +54,7 @@ function Bookings() {
 
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
   const [scheduledFor, setScheduledFor] = useState('');
   const [operatorNote, setOperatorNote] = useState('');
   const [feedback, setFeedback] = useState<string | null>(null);
@@ -64,12 +65,14 @@ function Bookings() {
       placementId: placement.id,
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
+      customerEmail: customerEmail.trim(),
       scheduledFor: new Date(scheduledFor).toISOString(),
       operatorNote: operatorNote.trim(),
     });
     setFeedback(customerName.trim());
     setCustomerName('');
     setCustomerPhone('');
+    setCustomerEmail('');
     setScheduledFor('');
     setOperatorNote('');
   };
@@ -149,6 +152,22 @@ function Bookings() {
                 />
                 <p className="mt-1 text-xs text-neutral-600">
                   The strongest match signal. Include it whenever you have it.
+                </p>
+              </div>
+              <div>
+                <label className={labelClass} htmlFor="customerEmail">
+                  Email
+                </label>
+                <input
+                  id="customerEmail"
+                  type="email"
+                  value={customerEmail}
+                  onChange={(event) => setCustomerEmail(event.target.value)}
+                  className={inputClass}
+                  placeholder="ruth@example.com"
+                />
+                <p className="mt-1 text-xs text-neutral-600">
+                  Just as strong, and the one the client&apos;s system sends most often.
                 </p>
               </div>
               <div>

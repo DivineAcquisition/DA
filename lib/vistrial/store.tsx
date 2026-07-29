@@ -34,6 +34,7 @@ export type LogBookingInput = {
   placementId: string;
   customerName: string;
   customerPhone: string;
+  customerEmail: string;
   scheduledFor: string;
   operatorNote: string;
 };

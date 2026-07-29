@@ -29,6 +29,7 @@ export default function AdminShell({
               { href: '/da/billing', label: 'Billing' },
               { href: '/da/payouts', label: 'Payouts' },
               { href: '/da/margin', label: 'Margin' },
+              { href: '/da/ingestion', label: 'Ingestion' },
               { href: '/da/messages', label: 'Requests' },
             ].map((item) => (
               <Link
@@ -64,6 +65,7 @@ export default function AdminShell({
           { href: '/da/billing', label: 'Billing' },
           { href: '/da/payouts', label: 'Payouts' },
           { href: '/da/margin', label: 'Margin' },
+          { href: '/da/ingestion', label: 'Ingestion' },
           { href: '/da/messages', label: 'Requests' },
         ].map((item) => (
           <Link

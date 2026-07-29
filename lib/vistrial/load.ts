@@ -192,7 +192,10 @@ export async function loadOpsData(): Promise<OpsData> {
         state: hyphen(row.state) as Booking['state'],
         customerName: row.customer_name,
         customerPhone: row.customer_phone,
-        customerEmail: null,
+        // Now that booking carries an email, isSameAppointment() can use it. It
+        // is the identifier GoHighLevel sends most reliably, so this was the arm
+        // of the match that was unreachable while the column did not exist.
+        customerEmail: (row as { customer_email?: string | null }).customer_email ?? null,
         matchedBookingId: row.matched_booking_id,
         operatorNote: row.operator_note,
         reviewedBy: row.reviewed_by,

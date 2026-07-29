@@ -76,9 +76,22 @@ function isForeignSurfacePath(pathname: string, ownPrefix: string): boolean {
   );
 }
 
+const MACHINE_DOOR_PREFIX = '/api/webhooks/';
+
 export async function proxy(request: NextRequest) {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
   const { pathname } = request.nextUrl;
+
+  // A machine door is not a surface. A provider is configured with one URL and
+  // authenticates with that door's own secret, so it must not be rewritten into a
+  // surface prefix and must not depend on which host DNS happens to point at. It
+  // also carries no session, so there is nothing here to refresh.
+  if (pathname.startsWith(MACHINE_DOOR_PREFIX)) {
+    const response = NextResponse.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    return response;
+  }
+
   const surface = surfaceForHost(host);
   const local = isLocalHost(host);
 

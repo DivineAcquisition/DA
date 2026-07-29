@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
 import { deliver } from './rules/notifications';
@@ -149,72 +150,46 @@ export async function commentOnEodAction(reportId: string, body: string): Promis
 // ---------------------------------------------------------------------------
 
 /**
- * Logs a manual booking, then reconciles it. Reconciliation decides the state:
- * a match with an ingested event confirms it, no match leaves it pending, and a
- * pending claim never reaches commission or an invoice.
+ * Claims a manual booking.
+ *
+ * One call, because claim_booking() owns the whole rule: it refuses a placement
+ * that is not the caller's, forces source and state rather than accepting them,
+ * runs the same matcher the GoHighLevel handler runs, and audits the result. The
+ * hub does not get its own opinion about whether an operator is owed for this
+ * booking, and the state that comes back is the one the matcher decided.
  */
 export async function logBookingAction(input: {
   placementId: string;
   customerName: string;
   customerPhone: string;
+  customerEmail: string;
   scheduledFor: string;
   operatorNote: string;
 }): Promise<HubResult> {
   const supabase = await createClient();
 
-  const { data: placement, error: placementError } = await supabase
-    .from('placement')
-    .select('id, operator_id, case_file_id')
-    .eq('id', input.placementId)
-    .maybeSingle();
-
-  if (placementError) return { ok: false, error: readable(placementError) };
-  if (!placement) return { ok: false, error: 'That placement no longer exists.' };
-
-  const scheduled = new Date(input.scheduledFor);
-  const windowStart = new Date(scheduled.getTime() - 120 * 60000).toISOString();
-  const windowEnd = new Date(scheduled.getTime() + 120 * 60000).toISOString();
-
-  // Look for an ingested event describing the same appointment: same placement,
-  // inside two hours, and matching on the last ten digits of the phone number.
-  const { data: candidates } = await supabase
-    .from('booking')
-    .select('id, customer_phone, customer_name')
-    .eq('placement_id', input.placementId)
-    .eq('source', 'ghl')
-    .gte('scheduled_for', windowStart)
-    .lte('scheduled_for', windowEnd);
-
-  const digits = (value: string | null) => (value ? value.replace(/\D/g, '').slice(-10) : '');
-  const mine = digits(input.customerPhone);
-
-  const match = (candidates ?? []).find((candidate) =>
-    mine && digits(candidate.customer_phone)
-      ? digits(candidate.customer_phone) === mine
-      : candidate.customer_name.trim().toLowerCase() === input.customerName.trim().toLowerCase(),
+  const { data, error } = await controlRpc<Database['public']['Tables']['booking']['Row']>(
+    supabase,
+    'claim_booking',
+    {
+      p_placement_id: input.placementId,
+      p_customer_name: input.customerName,
+      p_scheduled_for: input.scheduledFor,
+      p_customer_phone: input.customerPhone || null,
+      p_customer_email: input.customerEmail || null,
+      p_operator_note: input.operatorNote || null,
+    },
   );
-
-  const { error } = await supabase.from('booking').insert({
-    placement_id: placement.id,
-    case_file_id: placement.case_file_id,
-    operator_id: placement.operator_id,
-    scheduled_for: input.scheduledFor,
-    source: 'manual',
-    state: match ? 'confirmed' : 'pending_review',
-    customer_name: input.customerName,
-    customer_phone: input.customerPhone || null,
-    matched_booking_id: match?.id ?? null,
-    operator_note: input.operatorNote || null,
-  });
 
   if (error) return { ok: false, error: readable(error) };
 
   refresh();
   return {
     ok: true,
-    message: match
-      ? 'Logged and confirmed: it matched a booking the client system already recorded.'
-      : 'Logged as pending. It counts in your view but reaches commission only once approved.',
+    message:
+      data?.state === 'confirmed'
+        ? 'Logged and confirmed: it matched a booking the client system already recorded.'
+        : 'Logged as pending. It counts in your view but reaches commission only once approved.',
   };
 }
 
