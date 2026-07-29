@@ -91,7 +91,11 @@ function FeaturedRoleCard({ role }: { role: Role }) {
           <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{role.summary}</p>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-400">
-            <span className="font-semibold text-brand-300">$400–$600/mo base + commission</span>
+            {role.detail?.compensationHeadline && (
+              <span className="font-semibold text-brand-300">
+                {role.detail.compensationHeadline}/mo base + commission
+              </span>
+            )}
             {role.tags.map((tag) => (
               <span key={tag} className="flex items-center gap-1.5">
                 <span className="h-1 w-1 rounded-full bg-neutral-700" />
@@ -185,10 +189,17 @@ export default function HiringPage() {
   const featured = filteredRoles.find((role) => role.featured);
   const standard = filteredRoles.filter((role) => !role.featured);
 
+  // Counted rather than typed in, so a role or a department added below cannot
+  // leave the strip claiming a number that was true last quarter.
   const stats = [
     { value: String(roles.length), label: 'Open roles' },
-    { value: '100%', label: 'Remote-first' },
-    { value: '4', label: 'Departments' },
+    {
+      value: `${Math.round(
+        (roles.filter((role) => role.locations.includes('remote')).length / roles.length) * 100,
+      )}%`,
+      label: 'Remote-first',
+    },
+    { value: String(new Set(roles.map((role) => role.department)).size), label: 'Departments' },
     { value: 'EST', label: 'Core time zone' },
   ];
 

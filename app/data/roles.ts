@@ -14,7 +14,14 @@ export type ApplyMethod =
 export type RoleDetail = {
   mission: string;
   type: string;
+  /** The shape of the deal, e.g. "Base + Commission". */
   compensation: string;
+  /**
+   * The headline figure, where there is one. It appears on the board card, in the
+   * role page's offer strip and in the SEO description, so it is stated once here
+   * rather than three times in three files that can drift apart.
+   */
+  compensationHeadline?: string;
   techStack?: string[];
   sections: RoleSection[];
   apply: ApplyMethod;
@@ -39,6 +46,9 @@ export type Role = {
   featured?: boolean;
   detail?: RoleDetail;
 };
+
+/** Referenced from the board card, the role page and the SEO description. */
+export const SDR_MONTHLY_BASE = '$400–$600';
 
 export const departments: { id: DepartmentId | 'all'; name: string }[] = [
   { id: 'all', name: 'View all' },
@@ -77,7 +87,7 @@ export const roles: Role[] = [
     level: 1,
     featured: true,
     seoDescription:
-      "We're hiring operators, not virtual assistants. Get trained, certified, and placed inside a real business as a Sales Development Representative. $400 to $600 a month base, plus commission on every appointment you book. Remote, full-time, paid twice a month.",
+      `We're hiring operators, not virtual assistants. Get trained, certified, and placed inside a real business as a Sales Development Representative. ${SDR_MONTHLY_BASE.replace('–', ' to ')} a month base, plus commission on every appointment you book. Remote, full-time, paid twice a month.`,
   },
   {
     slug: 'system-integrator',
@@ -306,6 +316,7 @@ export const roles: Role[] = [
         'Close deals that are right for both parties. Sales is solving problems, not pushing products. Done well, clients renew, refer, and compound.',
       type: 'Full-time',
       compensation: 'Base + Commission',
+      compensationHeadline: SDR_MONTHLY_BASE,
       apply: { kind: 'form' },
       sections: [
         {

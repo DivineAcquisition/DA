@@ -6,6 +6,7 @@ import Script from 'next/script';
 import Backdrop from '../../components/Backdrop';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
+import { SDR_MONTHLY_BASE } from '../../data/roles';
 import { btnPrimary, btnSecondary, btnSizeLg, btnSizeMd, btnSizeSm, eyebrow, sectionLabel } from '../../components/ui';
 
 const APPLY_URL = 'https://airtable.com/appI4kbEVdi5THUbs/pagQySxRueaPdgW4n/form';
@@ -29,7 +30,7 @@ const steps = [
 ];
 
 const offer = [
-  { value: '$400–$600', label: 'Monthly base' },
+  { value: SDR_MONTHLY_BASE, label: 'Monthly base' },
   { value: 'Commission', label: 'On every appointment you book' },
   { value: '2× / month', label: 'Payout schedule' },
 ];
