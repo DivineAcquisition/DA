@@ -67,7 +67,12 @@ export type TrainingAssignment = {
 // Client and case file configuration
 // ---------------------------------------------------------------------------
 
-export type IndustryId = 'med-spa' | 'cleaning' | 'coaching' | 'home-services' | 'generic';
+/**
+ * An `industry_template` key. Not a union: the templates are rows an admin can
+ * add, so pinning the set here would put the list back in the application and
+ * make a sixth industry a deploy.
+ */
+export type IndustryId = string;
 
 export type EodFieldType = 'number' | 'text' | 'select' | 'boolean';
 
@@ -80,20 +85,30 @@ export type EodConfiguredField = {
   help?: string;
 };
 
+/**
+ * A client's operating configuration, all of it read from the database.
+ *
+ * The nulls are deliberate. Everything from `shiftStart` down is owned by the
+ * live placement, so a client without one genuinely has no shift and no quota —
+ * and saying so is different from reporting 09:00 and a quota of zero, which is
+ * what a default would have claimed.
+ */
 export type CaseFileConfig = {
+  /** An `industry_template` key. */
   industry: IndustryId;
+  industryName: string;
   /** Appended below the locked core block on every EOD for this client. */
   configuredFields: EodConfiguredField[];
-  shiftStart: string;
-  shiftEnd: string;
-  timeZone: string;
-  monthlyBookingQuota: number;
-  commissionPerBooking: number;
+  shiftStart: string | null;
+  shiftEnd: string | null;
+  timeZone: string | null;
+  monthlyBookingQuota: number | null;
+  commissionPerBooking: number | null;
   /** Minutes an inbound conversation may wait before it breaks the standard. */
-  responseStandardMinutes: number;
-  escalationResponseHours: number;
-  escalationContact: { name: string; role: string; channel: string } | null;
-  qualifiedBookingDefinition: string;
+  responseStandardMinutes: number | null;
+  escalationResponseHours: number | null;
+  escalationContact: { name: string; role: string | null; channel: string | null } | null;
+  qualifiedBookingDefinition: string | null;
 };
 
 export type Client = {
@@ -268,7 +283,8 @@ export type Evidence = {
   placementId: string;
   label: string;
   kind: 'screenshot' | 'recording' | 'transcript' | 'document';
-  uploadedBy: string;
+  /** All the record carries: whether the client put it there, or DA did. */
+  uploadedBy: 'client' | 'da';
   uploadedAt: string;
   sizeLabel: string;
 };

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createCaseFileFolders, driveConfigured } from '@/lib/drive/client';
+import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
 
@@ -32,21 +33,30 @@ const path = (slug: string) => `/da/${slug}`;
 export async function createCaseFileAction(formData: FormData): Promise<ActionResult> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase.rpc('create_case_file', {
-    p_name: String(formData.get('name') ?? ''),
-    p_vertical: (formData.get('vertical') as string) || undefined,
-    p_contact_name: (formData.get('contact_name') as string) || undefined,
-    p_contact_email: (formData.get('contact_email') as string) || undefined,
-    p_engagement_start: (formData.get('engagement_start') as string) || undefined,
-    p_retainer_amount: formData.get('retainer_amount') ? Number(formData.get('retainer_amount')) : undefined,
-    p_revenue_goal_monthly: formData.get('revenue_goal_monthly')
-      ? Number(formData.get('revenue_goal_monthly'))
-      : undefined,
-  });
+  // p_industry_key decides the EOD shape for every operator on this client. It
+  // used to be inferred by string-matching the notes column, so it is asked for.
+  const { data, error } = await controlRpc<Database['public']['Tables']['client_case_file']['Row']>(
+    supabase,
+    'create_case_file',
+    {
+      p_name: String(formData.get('name') ?? ''),
+      p_vertical: (formData.get('vertical') as string) || undefined,
+      p_contact_name: (formData.get('contact_name') as string) || undefined,
+      p_contact_email: (formData.get('contact_email') as string) || undefined,
+      p_engagement_start: (formData.get('engagement_start') as string) || undefined,
+      p_retainer_amount: formData.get('retainer_amount') ? Number(formData.get('retainer_amount')) : undefined,
+      p_revenue_goal_monthly: formData.get('revenue_goal_monthly')
+        ? Number(formData.get('revenue_goal_monthly'))
+        : undefined,
+      p_industry_key: (formData.get('industry_key') as string) || 'generic',
+      p_contact_role: (formData.get('contact_role') as string) || undefined,
+      p_contact_channel: (formData.get('contact_channel') as string) || undefined,
+    },
+  );
 
-  if (error) return { ok: false, error: readable(error) };
+  if (error || !data) return { ok: false, error: readable(error) };
 
-  const caseFile = data as unknown as Database['public']['Tables']['client_case_file']['Row'];
+  const caseFile = data;
 
   // The Drive folder set is created up front so evidence has somewhere to land.
   // Without credentials the case file still works; the vault records metadata
@@ -455,4 +465,35 @@ export async function signOutAction(): Promise<void> {
   await supabase.auth.signOut();
   revalidatePath('/da', 'layout');
   redirect('/da');
+}
+
+// ---------------------------------------------------------------------------
+// Operating configuration
+// ---------------------------------------------------------------------------
+
+/**
+ * The industry template and the qualified-booking definition. Both used to be
+ * decided in code — the template by string-matching the notes column, the
+ * definition by a string literal shared across every client — so both are now
+ * set here, by the admin who owns them.
+ */
+export async function setOperatingConfigAction(
+  caseFileId: string,
+  slug: string,
+  formData: FormData,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+
+  const { error } = await controlRpc(supabase, 'set_case_file_operating_config', {
+    p_case_file_id: caseFileId,
+    p_industry_key: (formData.get('industry_key') as string) || null,
+    p_qualified_booking_definition: (formData.get('qualified_booking_definition') as string) || null,
+    p_contact_role: (formData.get('contact_role') as string) || null,
+    p_contact_channel: (formData.get('contact_channel') as string) || null,
+  });
+
+  if (error) return { ok: false, error: readable(error) };
+
+  revalidatePath(path(slug));
+  return { ok: true, message: 'Operating configuration saved. The change is in the audit log.' };
 }

@@ -59,6 +59,14 @@ export function formatRelative(value: string, now: string): string {
   return days > 0 ? `${days}d ago` : `in ${-days}d`;
 }
 
+/**
+ * A figure that was never measured, or configuration a client does not have, is
+ * an em dash rather than a zero. The two say different things and only one of
+ * them is safe to read as a number.
+ */
+export const orGap = <T,>(value: T | null | undefined, render: (value: T) => string) =>
+  value === null || value === undefined ? '\u2014' : render(value);
+
 export const titleCase = (value: string) =>
   value
     .split('-')

@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { formatDateTime, formatDay, formatMoney } from '@/lib/vistrial/format';
-import { EOD_CORE_FIELDS, industryName } from '@/lib/vistrial/industries';
+import { formatDateTime, formatDay, formatMoney, orGap } from '@/lib/vistrial/format';
+import { EOD_CORE_FIELDS } from '@/lib/vistrial/eodCore';
 import { PLACEMENT_STATUS_LABELS } from '@/lib/vistrial/rules/lifecycle';
 import { useOps } from '@/lib/vistrial/store';
 import type { EodReport } from '@/lib/vistrial/types';
@@ -142,7 +142,7 @@ function CaseFile() {
         kind: 'evidence',
         label: `Evidence · ${item.kind}`,
         title: item.label,
-        body: `Uploaded by ${item.uploadedBy} · ${item.sizeLabel}`,
+        body: `Uploaded by ${item.uploadedBy === 'client' ? 'the client' : 'Divine Acquisition'} · ${item.sizeLabel}`,
       });
     }
 
@@ -158,7 +158,7 @@ function CaseFile() {
       <PageHeader
         eyebrow="Case file"
         title={client.name}
-        description={`${client.vertical} · ${industryName(config.industry)} template · onboarded ${formatDay(client.onboardedOn)}`}
+        description={`${client.vertical} · ${config.industryName} template · onboarded ${formatDay(client.onboardedOn)}`}
         actions={
           live && (
             <button
@@ -183,30 +183,45 @@ function CaseFile() {
       <section>
         <SectionHeader
           title="Configuration"
-          hint="Set at onboarding from an industry template. The EOD core is fixed regardless."
+          hint="The template and the qualified-booking definition are the client's own. The operating window and the commercial terms belong to the live placement, so a client without one shows a gap rather than a default."
         />
         <Panel className="px-5 py-2">
           <DefinitionList>
-            <KeyValue label="Industry template">{industryName(config.industry)}</KeyValue>
+            <KeyValue label="Industry template">{config.industryName}</KeyValue>
             <KeyValue label="Shift window">
-              {config.shiftStart} – {config.shiftEnd} {config.timeZone}
+              {config.shiftStart && config.shiftEnd
+                ? `${config.shiftStart} – ${config.shiftEnd}${config.timeZone ? ` ${config.timeZone}` : ''}`
+                : 'No live placement'}
             </KeyValue>
             <KeyValue label="Monthly booking quota">
-              {config.monthlyBookingQuota} confirmed bookings
+              {orGap(config.monthlyBookingQuota, (quota) => `${quota} confirmed bookings`)}
             </KeyValue>
             <KeyValue label="Commission rate">
-              {formatMoney(config.commissionPerBooking)} per confirmed booking above quota
+              {orGap(
+                config.commissionPerBooking,
+                (rate) => `${formatMoney(rate)} per confirmed booking above quota`,
+              )}
             </KeyValue>
             <KeyValue label="Response standard">
-              Inside {config.responseStandardMinutes} minutes
+              {orGap(config.responseStandardMinutes, (minutes) => `Inside ${minutes} minutes`)}
             </KeyValue>
             <KeyValue label="Escalation window">
-              {config.escalationResponseHours} hours
-              {config.escalationContact
-                ? ` · routed to DA Admin and ${config.escalationContact.name} (${config.escalationContact.role}) via ${config.escalationContact.channel}`
-                : ' · routed to DA Admin only'}
+              {orGap(config.escalationResponseHours, (hours) => `${hours} hours`)}
             </KeyValue>
-            <KeyValue label="Qualified booking">{config.qualifiedBookingDefinition}</KeyValue>
+            <KeyValue label="Client escalation contact">
+              {config.escalationContact
+                ? [
+                    config.escalationContact.name,
+                    config.escalationContact.role && `(${config.escalationContact.role})`,
+                    config.escalationContact.channel && `via ${config.escalationContact.channel}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')
+                : 'None recorded'}
+            </KeyValue>
+            <KeyValue label="Qualified booking">
+              {config.qualifiedBookingDefinition ?? 'Not defined for this client yet'}
+            </KeyValue>
           </DefinitionList>
         </Panel>
       </section>

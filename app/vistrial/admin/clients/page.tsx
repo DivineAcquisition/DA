@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { formatDay, formatMoney } from '@/lib/vistrial/format';
-import { industryName } from '@/lib/vistrial/industries';
 import { PLACEMENT_STATUS_LABELS } from '@/lib/vistrial/rules/lifecycle';
 import { useOps } from '@/lib/vistrial/store';
 import { AdminOnly } from '../../components/AppShell';
@@ -46,7 +45,7 @@ function CaseFileList() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2.5">
                       <h2 className="text-[15px] font-semibold text-white">{client.name}</h2>
-                      <Badge tone="brand">{industryName(client.config.industry)}</Badge>
+                      <Badge tone="brand">{client.config.industryName}</Badge>
                       <Badge tone={status === 'active' ? 'good' : status === 'expiring' ? 'warning' : 'neutral'}>
                         {live ? PLACEMENT_STATUS_LABELS[status] : 'No live placement'}
                       </Badge>

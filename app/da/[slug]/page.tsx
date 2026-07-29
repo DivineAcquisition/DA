@@ -17,10 +17,12 @@ import {
   listEffort,
   listEvidence,
   listMilestones,
+  listIndustryTemplates,
   listReports,
   listSnapshots,
 } from '@/lib/da/queries';
 import BeginInstallButton from '../components/BeginInstallButton';
+import OperatingConfigForm from '../components/OperatingConfigForm';
 import { GrowthTable, HeadlineDelta } from '../components/growth';
 
 export const dynamic = 'force-dynamic';
@@ -30,7 +32,8 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
-  const [health, baseline, growth, snapshots, milestones, evidence, effort, reports] = await Promise.all([
+  const [health, baseline, growth, snapshots, milestones, evidence, effort, reports, templates] =
+    await Promise.all([
     getHealth(caseFile.id),
     getBaseline(caseFile.id),
     getGrowth(caseFile.id),
@@ -39,7 +42,16 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
     listEvidence(caseFile.id),
     listEffort(caseFile.id),
     listReports(caseFile.id),
+    listIndustryTemplates(),
   ]);
+
+  // The operating configuration columns are ahead of the checked-in types.
+  const config = caseFile as typeof caseFile & {
+    industry_key: string;
+    qualified_booking_definition: string | null;
+    contact_role: string | null;
+    contact_channel: string | null;
+  };
 
   const hasBaseline = Boolean(baseline);
   const baselineLocked = Boolean(baseline?.snapshot.locked_at);
@@ -145,6 +157,48 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
           </Link>
         </Panel>
       )}
+
+      <section>
+        <SectionHeader
+          title="Operating configuration"
+          hint="What every operator on this client is asked at the end of a shift, and what counts as a booking worth paying for. Both were decided in code until now."
+          actions={
+            <OperatingConfigForm
+              caseFileId={caseFile.id}
+              slug={slug}
+              templates={templates}
+              currentIndustryKey={config.industry_key}
+              currentDefinition={config.qualified_booking_definition}
+              currentContactRole={config.contact_role}
+              currentContactChannel={config.contact_channel}
+            />
+          }
+        />
+        <Panel className="px-5 py-2">
+          <DefinitionList>
+            <KeyValue label="Industry template">
+              {templates.find((template) => template.key === config.industry_key)?.name ??
+                config.industry_key}
+            </KeyValue>
+            <KeyValue label="Qualified booking">
+              {config.qualified_booking_definition ?? (
+                <span className="text-neutral-500">Not defined for this client yet</span>
+              )}
+            </KeyValue>
+            <KeyValue label="Escalation contact">
+              {caseFile.contact_name
+                ? [
+                    caseFile.contact_name,
+                    config.contact_role && `(${config.contact_role})`,
+                    config.contact_channel && `via ${config.contact_channel}`,
+                  ]
+                    .filter(Boolean)
+                    .join(' ')
+                : <span className="text-neutral-500">None recorded</span>}
+            </KeyValue>
+          </DefinitionList>
+        </Panel>
+      </section>
 
       <section>
         <SectionHeader title="Engagement" />

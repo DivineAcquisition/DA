@@ -5,11 +5,18 @@ import { controlRpc } from '@/lib/ad/rpc';
 import type { AccountState, ImpersonationContext, UserRole } from '@/lib/ad/types';
 import type { Database } from './database.types';
 
-export const SUPABASE_URL =
-  process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://onobzewvjsicwxbsdlzw.supabase.co';
-export const SUPABASE_PUBLISHABLE_KEY =
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-  'sb_publishable_D0zVxSKE4J38HvaFJtWGqw_HmDl0AF5';
+/**
+ * Which project this deploy talks to comes from the environment and nowhere else.
+ *
+ * These used to fall back to the live project's URL and publishable key, so a
+ * deploy that forgot its environment variables silently talked to production
+ * instead of showing the "not connected" screen. That is the opposite of degrading
+ * visibly: a preview or a misconfigured environment reads and writes real client
+ * data while looking like it is working. Every surface already checks
+ * `supabaseConfigured` and renders NotConfigured, so the absence is now visible.
+ */
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+export const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
 
 export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 

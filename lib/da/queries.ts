@@ -205,3 +205,36 @@ export async function getDriveFolders(caseFileId: string) {
   if (error) throw error;
   return data ?? [];
 }
+
+export type IndustryTemplate = {
+  key: string;
+  name: string;
+  description: string;
+  suggested_qualified_booking: string;
+};
+
+/**
+ * The industry templates. Rows rather than a list in the application, so adding a
+ * sixth industry is an insert and not a deploy.
+ */
+export async function listIndustryTemplates(): Promise<IndustryTemplate[]> {
+  const supabase = await createClient();
+  const { data, error } = await (
+    supabase as unknown as {
+      from: (table: string) => {
+        select: (columns: string) => {
+          order: (column: string) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+        };
+      };
+    }
+  )
+    .from('industry_template')
+    .select('key, name, description, suggested_qualified_booking')
+    .order('sort_order');
+
+  if (error) {
+    console.error('listIndustryTemplates', error.message);
+    return [];
+  }
+  return (data ?? []) as IndustryTemplate[];
+}

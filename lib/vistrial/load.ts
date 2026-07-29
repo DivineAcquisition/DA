@@ -1,8 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
-import { getIndustryTemplate } from './industries';
 import type {
   Booking,
   Client,
+  EodConfiguredField,
   EodReport,
   Escalation,
   Notification,
@@ -24,6 +24,24 @@ import type {
 
 const hyphen = (value: string) => value.replace(/_/g, '-');
 
+/** The configuration tables are ahead of the checked-in Database types. */
+type UntypedQuery = PromiseLike<{ data: unknown; error: { message: string } | null }> & {
+  select: (columns: string) => UntypedQuery;
+  order: (column: string) => UntypedQuery;
+};
+
+const untyped = (client: unknown) =>
+  client as unknown as { from: (table: string) => UntypedQuery };
+
+type FieldRow = {
+  key: string;
+  label: string;
+  field_type: EodConfiguredField['type'];
+  options: string[] | null;
+  required: boolean;
+  help: string | null;
+};
+
 export async function loadOpsData(): Promise<OpsData> {
   const supabase = await createClient();
 
@@ -42,6 +60,9 @@ export async function loadOpsData(): Promise<OpsData> {
     { data: payPeriods },
     { data: statements },
     { data: responseDays },
+    { data: templates },
+    { data: templateFields },
+    { data: clientFields },
   ] = await Promise.all([
     supabase.from('operator').select('*, operator_training(id, title, detail, completed_on)').order('name'),
     supabase.from('client_case_file').select('*').order('name'),
@@ -59,9 +80,47 @@ export async function loadOpsData(): Promise<OpsData> {
     supabase.from('pay_period').select('*').order('start_date'),
     supabase.from('pay_statement').select('*, pay_adjustment(id, label, reason, amount, added_by, added_at)'),
     supabase.from('response_day').select('*'),
+    // The industry templates and any per-client overrides. Configuration, so it
+    // is read rather than compiled in: adding an industry is a row.
+    untyped(supabase).from('industry_template').select('key, name').order('sort_order'),
+    untyped(supabase)
+      .from('industry_template_field')
+      .select('template_key, key, label, field_type, options, required, help, sort_order')
+      .order('sort_order'),
+    untyped(supabase)
+      .from('case_file_eod_field')
+      .select('case_file_id, key, label, field_type, options, required, help, sort_order')
+      .order('sort_order'),
   ]);
 
   const now = new Date().toISOString();
+
+  const industryNames = new Map<string, string>(
+    ((templates ?? []) as { key: string; name: string }[]).map((row) => [row.key, row.name]),
+  );
+
+  const toField = (row: FieldRow): EodConfiguredField => ({
+    key: row.key,
+    label: row.label,
+    type: row.field_type,
+    options: row.options ?? undefined,
+    required: row.required,
+    help: row.help ?? undefined,
+  });
+
+  const fieldsByTemplate = new Map<string, EodConfiguredField[]>();
+  for (const row of (templateFields ?? []) as (FieldRow & { template_key: string })[]) {
+    const list = fieldsByTemplate.get(row.template_key) ?? [];
+    list.push(toField(row));
+    fieldsByTemplate.set(row.template_key, list);
+  }
+
+  const fieldsByCaseFile = new Map<string, EodConfiguredField[]>();
+  for (const row of (clientFields ?? []) as (FieldRow & { case_file_id: string })[]) {
+    const list = fieldsByCaseFile.get(row.case_file_id) ?? [];
+    list.push(toField(row));
+    fieldsByCaseFile.set(row.case_file_id, list);
+  }
 
   return {
     now,
@@ -98,7 +157,17 @@ export async function loadOpsData(): Promise<OpsData> {
 
     clients: (clients ?? []).map((row): Client => {
       const placement = (placements ?? []).find((item) => item.case_file_id === row.id);
-      const industry = (row.notes?.includes('med spa') ? 'med-spa' : 'generic') as Client['config']['industry'];
+      const config = row as typeof row & {
+        industry_key: string;
+        qualified_booking_definition: string | null;
+        contact_role: string | null;
+        contact_channel: string | null;
+      };
+
+      // An override replaces the template rather than adding to it, which is the
+      // same resolution eod_fields_for_case_file() performs in the database.
+      const configuredFields =
+        fieldsByCaseFile.get(row.id) ?? fieldsByTemplate.get(config.industry_key) ?? [];
 
       return {
         id: row.id,
@@ -106,20 +175,30 @@ export async function loadOpsData(): Promise<OpsData> {
         vertical: row.vertical ?? '',
         onboardedOn: row.engagement_start ?? row.created_at.slice(0, 10),
         config: {
-          industry,
-          configuredFields: getIndustryTemplate(industry).configuredFields,
-          shiftStart: placement?.shift_start ?? '09:00',
-          shiftEnd: placement?.shift_end ?? '18:00',
-          timeZone: placement?.time_zone ?? 'America/New_York',
-          monthlyBookingQuota: placement?.monthly_booking_quota ?? 0,
-          commissionPerBooking: Number(placement?.commission_per_booking ?? 0),
-          responseStandardMinutes: placement?.response_standard_minutes ?? 5,
-          escalationResponseHours: placement?.escalation_response_hours ?? 4,
+          industry: config.industry_key,
+          industryName: industryNames.get(config.industry_key) ?? config.industry_key,
+          configuredFields,
+          // The placement owns the operating window and the commercial terms.
+          // Nothing is invented here when it has none: a client with no live
+          // placement has no shift, and saying so beats showing 09:00.
+          shiftStart: placement?.shift_start ?? null,
+          shiftEnd: placement?.shift_end ?? null,
+          timeZone: placement?.time_zone ?? null,
+          monthlyBookingQuota: placement?.monthly_booking_quota ?? null,
+          commissionPerBooking:
+            placement?.commission_per_booking === undefined
+              ? null
+              : Number(placement.commission_per_booking),
+          responseStandardMinutes: placement?.response_standard_minutes ?? null,
+          escalationResponseHours: placement?.escalation_response_hours ?? null,
           escalationContact: row.contact_name
-            ? { name: row.contact_name, role: 'Client contact', channel: 'Email' }
+            ? {
+                name: row.contact_name,
+                role: config.contact_role,
+                channel: config.contact_channel,
+              }
             : null,
-          qualifiedBookingDefinition:
-            'An appointment with a confirmed time and a reachable contact method.',
+          qualifiedBookingDefinition: config.qualified_booking_definition,
         },
       };
     }),
@@ -259,7 +338,7 @@ export async function loadOpsData(): Promise<OpsData> {
         : row.mime_type?.startsWith('video')
           ? 'recording'
           : 'document') as 'screenshot' | 'recording' | 'transcript' | 'document',
-      uploadedBy: row.uploaded_by_client ? 'Client' : 'DA Admin',
+      uploadedBy: row.uploaded_by_client ? 'client' : 'da',
       uploadedAt: row.uploaded_at,
       sizeLabel: row.byte_size ? `${Math.round(Number(row.byte_size) / 1024)} KB` : '—',
     })),

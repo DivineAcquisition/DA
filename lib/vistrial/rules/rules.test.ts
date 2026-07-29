@@ -5,7 +5,7 @@ import {
   scopeByPlacement,
   visiblePlacements,
 } from '../access';
-import { CORE_FIELD_KEYS, getIndustryTemplate } from '../industries';
+import { CORE_FIELD_KEYS } from '../eodCore';
 import { createGateway } from '../gateway';
 import { makeOpsData, NOW } from './testData';
 import type { Actor, Booking, CaseFileConfig, Operator, PayPeriod, Placement } from '../types';
@@ -398,7 +398,20 @@ describe('pay computation', () => {
 describe('EOD', () => {
   const config: CaseFileConfig = {
     industry: 'med-spa',
-    configuredFields: getIndustryTemplate('med-spa').configuredFields,
+    industryName: 'Med spa / aesthetics',
+    // Inline rather than read from a template: the templates are rows in the
+    // database now, and a fixture that reached for them would be asserting against
+    // whatever an admin last configured.
+    configuredFields: [
+      { key: 'consultsBooked', label: 'Consults booked', type: 'number', required: true },
+      {
+        key: 'treatmentInterest',
+        label: 'Primary treatment interest',
+        type: 'select',
+        options: ['Injectables', 'Laser', 'Mixed'],
+        required: true,
+      },
+    ],
     shiftStart: '09:00',
     shiftEnd: '18:00',
     timeZone: 'America/New_York',
@@ -463,12 +476,18 @@ describe('EOD', () => {
     expect(() => assertConfiguredFieldsDoNotShadowCore(config)).not.toThrow();
   });
 
-  it('keeps the core out of every industry template', () => {
-    for (const industry of ['med-spa', 'cleaning', 'coaching', 'home-services', 'generic'] as const) {
-      for (const field of getIndustryTemplate(industry).configuredFields) {
-        expect(CORE_FIELD_KEYS).not.toContain(field.key);
-      }
-    }
+  it('refuses a configured field that would shadow a locked core key', () => {
+    // A client-specific `appointmentsBooked` would silently break every
+    // cross-operator comparison, so it is rejected rather than merged.
+    const shadowing: CaseFileConfig = {
+      ...config,
+      configuredFields: [
+        { key: 'appointmentsBooked', label: 'Appointments booked (theirs)', type: 'number', required: true },
+      ],
+    };
+
+    expect(() => assertConfiguredFieldsDoNotShadowCore(shadowing)).toThrow(/appointmentsBooked/);
+    expect(CORE_FIELD_KEYS).toContain('appointmentsBooked');
   });
 });
 

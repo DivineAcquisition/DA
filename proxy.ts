@@ -149,11 +149,10 @@ export async function proxy(request: NextRequest) {
     response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
   }
 
-  const supabaseUrl =
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://onobzewvjsicwxbsdlzw.supabase.co';
-  const supabaseKey =
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
-    'sb_publishable_D0zVxSKE4J38HvaFJtWGqw_HmDl0AF5';
+  // From the environment only. A fallback here would have an unconfigured deploy
+  // refreshing sessions against the live project without anybody noticing.
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   const touchesAuth =
     prefix === ADMIN_PREFIX ||

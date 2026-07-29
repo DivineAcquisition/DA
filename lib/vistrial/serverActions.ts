@@ -260,7 +260,8 @@ export async function raiseEscalationAction(input: {
     response_due_at: new Date(
       Date.now() + placement.escalation_response_hours * 3600000,
     ).toISOString(),
-    routed_to: ['DA Admin'],
+    // routed_to is left empty on purpose. A trigger fills it from the actual
+    // roster of people who can answer it, which the hub cannot read from here.
   });
 
   if (error) return { ok: false, error: readable(error) };
@@ -332,6 +333,16 @@ export async function sendNotificationAction(input: {
 
   if (!operator) return { ok: false, error: 'That operator no longer exists.' };
 
+  const {
+    data: { user: sender },
+  } = await supabase.auth.getUser();
+
+  const { data: senderProfile } = await supabase
+    .from('profile')
+    .select('full_name, email')
+    .eq('id', sender?.id ?? '')
+    .maybeSingle();
+
   const { data: notification, error } = await supabase
     .from('operator_notification')
     .insert({
@@ -339,7 +350,9 @@ export async function sendNotificationAction(input: {
       severity: input.severity,
       title: input.title,
       body: input.body,
-      sent_by: 'DA Admin',
+      // Whoever actually sent it. "Was I told, and by whom" is the question this
+      // record exists to answer, so a placeholder name defeats the point.
+      sent_by: senderProfile?.full_name || senderProfile?.email || 'Divine Acquisition',
     })
     .select('id')
     .single();

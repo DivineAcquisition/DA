@@ -1,4 +1,3 @@
-import { getIndustryTemplate } from '../industries';
 import { reconcilePlacement } from './bookings';
 import type { Booking, Client, EodReport, Escalation, OpsData, Placement, ResponseDay } from '../types';
 
@@ -22,7 +21,20 @@ const client = (id: string, name: string, quota: number, rate: number): Client =
   onboardedOn: '2026-03-01',
   config: {
     industry: 'med-spa',
-    configuredFields: getIndustryTemplate('med-spa').configuredFields,
+    industryName: 'Med spa / aesthetics',
+    // Inline rather than read from a template: the templates are rows in the
+    // database now, and a fixture that reached for them would be asserting against
+    // whatever an admin last configured.
+    configuredFields: [
+      { key: 'consultsBooked', label: 'Consults booked', type: 'number', required: true },
+      {
+        key: 'treatmentInterest',
+        label: 'Primary treatment interest',
+        type: 'select',
+        options: ['Injectables', 'Laser', 'Mixed'],
+        required: true,
+      },
+    ],
     shiftStart: '09:00',
     shiftEnd: '18:00',
     timeZone: 'America/New_York',
@@ -252,7 +264,7 @@ export function makeOpsData(): OpsData {
       answer: null,
       answeredBy: null,
       closedAt: null,
-      routedTo: ['DA Admin'],
+      routedTo: ['Malik Sannie'],
     },
     {
       id: 'esc-answered',
@@ -269,7 +281,7 @@ export function makeOpsData(): OpsData {
       answer: 'Correct call. Book it and flag it for clinical screening at intake.',
       answeredBy: 'admin',
       closedAt: null,
-      routedTo: ['DA Admin'],
+      routedTo: ['Malik Sannie'],
     },
   ];
 

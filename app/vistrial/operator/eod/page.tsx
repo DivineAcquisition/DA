@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
 import { addDays, eachDay } from '@/lib/vistrial/dates';
 import { formatDateTime, formatDay } from '@/lib/vistrial/format';
-import { EOD_CORE_FIELDS } from '@/lib/vistrial/industries';
+import { EOD_CORE_FIELDS } from '@/lib/vistrial/eodCore';
 import { emptyCore, validateEod, type EodDraft } from '@/lib/vistrial/rules/eod';
 import { useOps } from '@/lib/vistrial/store';
 import type { EodConfiguredField, EodCore } from '@/lib/vistrial/types';

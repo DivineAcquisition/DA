@@ -115,8 +115,20 @@ export default function OperatorHome() {
 
           <p className="mt-4 border-t border-white/[0.06] pt-3.5 text-[13px] leading-relaxed text-neutral-400">
             <span className="font-medium text-white">Your one job:</span> nobody who reaches out ever gets
-            ignored. A qualified booking here means{' '}
-            <span className="text-neutral-300">{client.config.qualifiedBookingDefinition.toLowerCase()}</span>
+            ignored.{' '}
+            {client.config.qualifiedBookingDefinition ? (
+              <>
+                A qualified booking here means{' '}
+                <span className="text-neutral-300">
+                  {client.config.qualifiedBookingDefinition.toLowerCase()}
+                </span>
+              </>
+            ) : (
+              <span className="text-neutral-300">
+                Nobody has written down what counts as a qualified booking for this client yet — ask before
+                the first one is disputed.
+              </span>
+            )}
           </p>
         </Panel>
 

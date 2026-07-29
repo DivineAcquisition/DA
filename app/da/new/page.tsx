@@ -1,12 +1,16 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { PageHeader, Panel, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { PageHeader, Panel, inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
 import { createCaseFileAction } from '@/lib/da/actions';
+import { listIndustryTemplates } from '@/lib/da/queries';
 import { driveConfigured } from '@/lib/drive/client';
 import { ActionForm } from '../components/ActionForm';
 
-export default function NewCaseFilePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function NewCaseFilePage() {
   const drive = driveConfigured();
+  const templates = await listIndustryTemplates();
 
   return (
     <div className="mx-auto max-w-2xl space-y-7">
@@ -37,6 +41,23 @@ export default function NewCaseFilePage() {
             <input id="vertical" name="vertical" className={inputClass} placeholder="Med spa, three locations" />
           </div>
 
+          <div>
+            <label className={labelClass} htmlFor="industry_key">
+              Industry template *
+            </label>
+            <select id="industry_key" name="industry_key" defaultValue="generic" className={selectClass}>
+              {templates.map((template) => (
+                <option key={template.key} value={template.key}>
+                  {template.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">
+              This decides what every operator on this client is asked at the end of every shift, and it seeds
+              the definition of a qualified booking. Both can be changed on the case file afterwards.
+            </p>
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className={labelClass} htmlFor="contact_name">
@@ -49,6 +70,18 @@ export default function NewCaseFilePage() {
                 Contact email
               </label>
               <input id="contact_email" name="contact_email" type="email" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="contact_role">
+                Their role
+              </label>
+              <input id="contact_role" name="contact_role" className={inputClass} placeholder="Clinical director" />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="contact_channel">
+                How to reach them
+              </label>
+              <input id="contact_channel" name="contact_channel" className={inputClass} placeholder="WhatsApp" />
             </div>
           </div>
 

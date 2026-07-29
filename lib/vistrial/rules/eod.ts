@@ -1,4 +1,4 @@
-import { CORE_FIELD_KEYS } from '../industries';
+import { CORE_FIELD_KEYS } from '../eodCore';
 import type { CaseFileConfig, EodCore, EodReport } from '../types';
 
 /**
@@ -16,8 +16,11 @@ export type EodDraft = {
 };
 
 export const emptyCore = (config: CaseFileConfig): EodCore => ({
-  shiftStartActual: config.shiftStart,
-  shiftEndActual: config.shiftEnd,
+  // Prefilled from the scheduled window as a convenience. A client with no live
+  // placement has no window, so the operator types the times rather than being
+  // handed a shift nobody scheduled.
+  shiftStartActual: config.shiftStart ?? '',
+  shiftEndActual: config.shiftEnd ?? '',
   conversationsHandled: 0,
   appointmentsBooked: 0,
   followUpsCompleted: 0,
