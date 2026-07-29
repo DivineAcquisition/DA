@@ -188,6 +188,23 @@ begin
     'but both touches are on record underneath the stamp';
 end $$;
 
+\echo '== response time cannot be entered, only computed =='
+do $$
+begin
+  begin
+    update public.lead set response_minutes = 1 where external_id = 'contact-1';
+    raise exception 'response_minutes should not be writable';
+  exception when sqlstate '428C9' then null;
+  end;
+
+  -- app.stamp_once() returns a record it rebuilds from jsonb, so this checks the
+  -- generated column is still recomputed from the stamps afterwards rather than
+  -- being carried through the trigger as a value.
+  update public.lead set stage = 'Contacted' where external_id = 'contact-1';
+  assert (select response_minutes from public.lead where external_id = 'contact-1') = 4.50,
+    'an unrelated update must leave the computed figure agreeing with the stamps';
+end $$;
+
 \echo '== the rollups are recomputed, not incremented =='
 do $$
 declare
