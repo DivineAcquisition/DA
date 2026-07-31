@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { RESEND_FROM, RESEND_REPLY_TO } from './config';
+import { RESEND_CC, RESEND_FROM, RESEND_REPLY_TO } from './config';
 
 function escapeHtml(value: string): string {
   return value
@@ -137,9 +137,12 @@ export async function sendAssessmentInviteEmail(input: {
   const resend = new Resend(apiKey);
   const content = buildAssessmentInviteEmail(input);
 
+  const cc = RESEND_CC.filter((email) => email.toLowerCase() !== input.to.toLowerCase());
+
   const { data, error } = await resend.emails.send({
     from: RESEND_FROM,
     to: [input.to],
+    ...(cc.length > 0 ? { cc } : {}),
     subject: content.subject,
     html: content.html,
     text: content.text,

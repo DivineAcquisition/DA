@@ -11,6 +11,14 @@ export const RESEND_FROM =
 
 export const RESEND_REPLY_TO = process.env.RESEND_REPLY_TO ?? undefined;
 
+/** Always CC'd on assessment invite emails. Comma-separated override via env. */
+export const RESEND_CC = (
+  process.env.RESEND_CC ?? 'malik@divineacquisition.io'
+)
+  .split(',')
+  .map((email) => email.trim())
+  .filter(Boolean);
+
 export const GHL_PIT_TOKEN = process.env.GHL_PIT_TOKEN ?? '';
 export const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID ?? '';
 
