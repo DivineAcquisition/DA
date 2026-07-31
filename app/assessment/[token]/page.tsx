@@ -81,8 +81,6 @@ export default async function AssessmentBookingPage({
           </div>
         </div>
       </section>
-
-      <SiteFooter />
     </Shell>
   );
 }
@@ -98,6 +96,11 @@ function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         {children}
+        <footer className="border-t border-white/[0.06] px-5 py-8 sm:px-6">
+          <p className="mx-auto max-w-6xl text-xs text-neutral-600">
+            DivineAcquisition™ · Personal assessment link · Expires in 24 hours
+          </p>
+        </footer>
       </div>
     </div>
   );

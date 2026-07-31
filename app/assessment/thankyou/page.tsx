@@ -51,7 +51,11 @@ export default async function AssessmentThankYouPage({
           </div>
         </section>
 
-        <SiteFooter />
+        <footer className="border-t border-white/[0.06] px-5 py-8 sm:px-6">
+          <p className="mx-auto max-w-6xl text-center text-xs text-neutral-600">
+            DivineAcquisition™ · Assessment confirmed
+          </p>
+        </footer>
       </div>
     </div>
   );
