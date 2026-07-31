@@ -8,11 +8,13 @@ import { NextResponse, type NextRequest } from 'next/server';
  * reachable — every other app path returns 404. Previews and localhost keep
  * path-based access so development still works without DNS.
  *
- *   ad.vistrial.io   -> /ad
- *   da.vistrial.io   -> /da
- *   acct.vistrial.io -> /acct
- *   ops.vistrial.io  -> /vistrial
- *   careers / other  -> /hiring (and /)
+ *   ad.vistrial.io                  -> /ad
+ *   da.vistrial.io                  -> /da
+ *   acct.vistrial.io                -> /acct
+ *   ops.vistrial.io                 -> /vistrial
+ *   talent.divineacquisition.io     -> /assessment
+ *   admin.divineacquisition.io      -> /admin
+ *   careers / other                 -> /hiring (and /)
  */
 
 const hosts = (value: string | undefined, fallback: string) =>
@@ -32,14 +34,29 @@ const CAREERS_HOSTS = hosts(
   process.env.VISTRIAL_CAREERS_HOSTS,
   'vistrial.io,www.vistrial.io,divineacquisition.io,www.divineacquisition.io',
 );
+const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
+const ASSESSMENT_ADMIN_HOSTS = hosts(
+  process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS,
+  'admin.divineacquisition.io',
+);
 
 const CONTROL_PREFIX = '/ad';
 const ADMIN_PREFIX = '/da';
 const ACCT_PREFIX = '/acct';
 const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
+const ASSESSMENT_PREFIX = '/assessment';
+const ASSESSMENT_ADMIN_PREFIX = '/admin';
 
-const SURFACE_PREFIXES = [CONTROL_PREFIX, ADMIN_PREFIX, ACCT_PREFIX, OPS_PREFIX, HIRING_PREFIX];
+const SURFACE_PREFIXES = [
+  CONTROL_PREFIX,
+  ADMIN_PREFIX,
+  ACCT_PREFIX,
+  OPS_PREFIX,
+  HIRING_PREFIX,
+  ASSESSMENT_PREFIX,
+  ASSESSMENT_ADMIN_PREFIX,
+];
 
 type Surface = {
   hosts: string[];
@@ -58,6 +75,8 @@ const SURFACES: Surface[] = [
     prefix: HIRING_PREFIX,
     allow: (pathname) => pathname === '/' || pathname.startsWith('/hiring'),
   },
+  { hosts: TALENT_HOSTS, prefix: ASSESSMENT_PREFIX },
+  { hosts: ASSESSMENT_ADMIN_HOSTS, prefix: ASSESSMENT_ADMIN_PREFIX },
 ];
 
 const isLocalHost = (host: string) =>
@@ -124,7 +143,7 @@ export async function proxy(request: NextRequest) {
 
   const isInternal =
     prefix !== null ||
-    [CONTROL_PREFIX, ADMIN_PREFIX, ACCT_PREFIX, OPS_PREFIX].some((candidate) =>
+    [CONTROL_PREFIX, ADMIN_PREFIX, ACCT_PREFIX, OPS_PREFIX, ASSESSMENT_ADMIN_PREFIX].some((candidate) =>
       pathname.startsWith(candidate),
     );
 
@@ -158,10 +177,12 @@ export async function proxy(request: NextRequest) {
     prefix === ADMIN_PREFIX ||
     prefix === CONTROL_PREFIX ||
     prefix === ACCT_PREFIX ||
+    prefix === ASSESSMENT_ADMIN_PREFIX ||
     pathname.startsWith(ADMIN_PREFIX) ||
     pathname.startsWith(CONTROL_PREFIX) ||
     pathname.startsWith(ACCT_PREFIX) ||
-    pathname.startsWith(OPS_PREFIX);
+    pathname.startsWith(OPS_PREFIX) ||
+    pathname.startsWith(ASSESSMENT_ADMIN_PREFIX);
 
   if (touchesAuth && supabaseUrl && supabaseKey) {
     const supabase = createServerClient(supabaseUrl, supabaseKey, {

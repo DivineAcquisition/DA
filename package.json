@@ -18,7 +18,8 @@
     "@supabase/supabase-js": "^2.110.8",
     "next": "16.1.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "resend": "^6.18.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
