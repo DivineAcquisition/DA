@@ -13,7 +13,9 @@ export default function NotConfigured() {
           This surface reads from Supabase. Set the two environment variables below and redeploy.
         </p>
         <pre className="mt-5 overflow-x-auto rounded-xl border border-white/[0.07] bg-black/40 px-4 py-3.5 text-xs leading-relaxed text-neutral-300">
-          NEXT_PUBLIC_SUPABASE_URL{'\n'}NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+          NEXT_PUBLIC_SUPABASE_URL{'\n'}
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY{'\n'}
+          {'  '}(or NEXT_PUBLIC_SUPABASE_ANON_KEY)
         </pre>
         <p className="mt-4 text-xs leading-relaxed text-neutral-500">
           Both are in the Supabase dashboard under Project Settings, API keys. Use the publishable key,

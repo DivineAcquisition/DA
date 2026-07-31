@@ -14,9 +14,24 @@ import type { Database } from './database.types';
  * visibly: a preview or a misconfigured environment reads and writes real client
  * data while looking like it is working. Every surface already checks
  * `supabaseConfigured` and renders NotConfigured, so the absence is now visible.
+ *
+ * Accept the older `NEXT_PUBLIC_SUPABASE_ANON_KEY` name as well — most existing
+ * Vercel projects still have that from before the publishable-key rename.
  */
-export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
-export const SUPABASE_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
+function firstEnv(...names: string[]): string {
+  for (const name of names) {
+    const value = process.env[name]?.trim();
+    if (value) return value;
+  }
+  return '';
+}
+
+export const SUPABASE_URL = firstEnv('NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL');
+export const SUPABASE_PUBLISHABLE_KEY = firstEnv(
+  'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+  'SUPABASE_ANON_KEY',
+);
 
 export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 
