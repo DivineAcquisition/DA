@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { createClient } from '@/lib/supabase/server';
 import NotConfigured from '@/app/da/components/NotConfigured';
@@ -13,6 +14,12 @@ export const metadata: Metadata = {
 
 export default async function AcctLayout({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured) return <NotConfigured />;
+
+  const pathname = (await headers()).get('x-pathname') ?? '';
+  // Invite acceptance must render before a client_account exists.
+  if (pathname.startsWith('/acct/invite')) {
+    return <>{children}</>;
+  }
 
   const session = await getSessionContext();
   if (!session) return <ClientSignIn />;

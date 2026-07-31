@@ -3,6 +3,8 @@ import Logo from '@/app/components/Logo';
 import { eyebrow, sectionLabel } from '@/app/components/ui';
 import { validateAssessmentToken } from '@/lib/assessment/actions';
 import BookingCalendar from '../components/BookingCalendar';
+import { PersistAssessmentToken } from '../components/TokenBridge';
+import { thankYouUrl } from '@/lib/assessment/config';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,8 +78,9 @@ export default async function AssessmentBookingPage({
             <p className={sectionLabel}>Choose a time</p>
             <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick a slot that works</h2>
           </div>
+          <PersistAssessmentToken token={token} />
           <div className="animate-rise delay-3">
-            <BookingCalendar />
+            <BookingCalendar thankYouHref={thankYouUrl(token)} />
           </div>
         </div>
       </section>

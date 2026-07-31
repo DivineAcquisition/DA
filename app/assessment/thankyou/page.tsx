@@ -2,6 +2,7 @@ import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSizeMd, eyebrow } from '@/app/components/ui';
 import { markAssessmentUsed } from '@/lib/assessment/actions';
+import ThankYouMarker from '../components/ThankYouMarker';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,6 +19,7 @@ export default async function AssessmentThankYouPage({
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
       <Backdrop />
+      <ThankYouMarker tokenFromQuery={token} />
       <div className="relative z-10">
         <header className="border-b border-white/[0.06]">
           <div className="mx-auto flex h-16 max-w-6xl items-center px-5 sm:h-[72px] sm:px-6">

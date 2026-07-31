@@ -115,3 +115,43 @@ export async function acceptInviteAction(token: string): Promise<ActionResult> {
   revalidatePath('/acct', 'layout');
   return { ok: true, message: 'Your account is ready.' };
 }
+
+/**
+ * Creates (or signs into) the auth account, then binds it to the client invite
+ * via accept_client_invite(). This is the missing half of /acct/invite/[token].
+ */
+export async function activateClientInviteAction(formData: FormData): Promise<ActionResult> {
+  const supabase = await createClient();
+  const token = String(formData.get('token') ?? '').trim();
+  const email = String(formData.get('email') ?? '').trim();
+  const password = String(formData.get('password') ?? '');
+  const fullName = String(formData.get('full_name') ?? '').trim();
+
+  if (!token || !email || !password) {
+    return { ok: false, error: 'Token, email, and password are required.' };
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName || undefined } },
+    });
+
+    if (signUpError) {
+      // Already registered — try signing in with the same credentials.
+      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInError) return { ok: false, error: signInError.message };
+    }
+  }
+
+  const { error } = await supabase.rpc('accept_client_invite', { p_token: token });
+  if (error) return { ok: false, error: readable(error) };
+
+  revalidatePath('/acct', 'layout');
+  redirect('/acct');
+}
