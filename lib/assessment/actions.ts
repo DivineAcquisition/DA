@@ -11,8 +11,12 @@ import {
   getSessionContext,
   supabaseConfigured,
 } from '@/lib/supabase/server';
-import { bookingLinkForToken } from './config';
-import { sendAssessmentInviteEmail } from './email';
+import { calendarConfigured, createAssessmentCalendarEvent } from './calendar';
+import { bookingLinkForToken, RESEND_CC } from './config';
+import {
+  sendAssessmentBookingConfirmationEmail,
+  sendAssessmentInviteEmail,
+} from './email';
 import { upsertTalentContact } from './ghl';
 
 type CreatedInvite = {
@@ -35,6 +39,33 @@ export type AssessmentInviteRow = {
   used_at: string | null;
   revoked_at: string | null;
   last_sent_at: string;
+};
+
+export type AssessmentBookingRow = {
+  id: string;
+  email: string;
+  full_name: string;
+  company_name: string | null;
+  starts_at: string;
+  ends_at: string;
+  time_zone: string;
+  duration_minutes: number;
+  google_meet_url: string | null;
+  google_html_link: string | null;
+  reminder_sent_at: string | null;
+  cancelled_at: string | null;
+  created_at: string;
+};
+
+type CreatedBooking = {
+  id: string;
+  email: string;
+  full_name: string;
+  company_name: string | null;
+  starts_at: string;
+  ends_at: string;
+  time_zone: string;
+  duration_minutes: number;
 };
 
 export async function sendAssessmentInviteAction(formData: FormData): Promise<ActionResult> {
@@ -144,6 +175,202 @@ export async function listAssessmentInvites(): Promise<AssessmentInviteRow[]> {
 
   if (error || !data) return [];
   return Array.isArray(data) ? data : [];
+}
+
+export async function listAssessmentBookings(): Promise<AssessmentBookingRow[]> {
+  if (!supabaseConfigured) return [];
+  const session = await getSessionContext();
+  if (!session?.isAdmin) return [];
+
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<AssessmentBookingRow[]>(
+    supabase,
+    'list_assessment_bookings',
+    { p_limit: 40 },
+  );
+
+  if (error || !data) return [];
+  return Array.isArray(data) ? data : [];
+}
+
+/**
+ * Admin picks date/time → Google Calendar + Meet → confirmation email (+ CC).
+ * A separate cron sends the 30-minute reminder.
+ */
+export async function scheduleAssessmentBookingAction(formData: FormData): Promise<ActionResult> {
+  if (!supabaseConfigured) {
+    return { ok: false, error: 'Supabase is not configured on this deploy.' };
+  }
+
+  const session = await getSessionContext();
+  if (!session?.isAdmin) {
+    return { ok: false, error: 'Admin access required.' };
+  }
+
+  const fullName = String(formData.get('fullName') ?? '').trim();
+  const email = String(formData.get('email') ?? '').trim();
+  const companyName = String(formData.get('companyName') ?? '').trim() || null;
+  const note = String(formData.get('note') ?? '').trim() || null;
+  const timeZone = String(formData.get('timeZone') ?? 'America/New_York').trim() || 'America/New_York';
+  const durationMinutes = Number(formData.get('durationMinutes') ?? 30) || 30;
+  const localDateTime = String(formData.get('startsAtLocal') ?? '').trim();
+
+  if (!fullName || !email || !localDateTime) {
+    return { ok: false, error: 'Name, email, and date/time are required.' };
+  }
+
+  // datetime-local has no offset; interpret in the selected IANA zone.
+  const startsAtIso = localDateTimeToIso(localDateTime, timeZone);
+  if (!startsAtIso) {
+    return { ok: false, error: 'Could not parse that date/time.' };
+  }
+
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<CreatedBooking>(supabase, 'create_assessment_booking', {
+    p_email: email,
+    p_full_name: fullName,
+    p_starts_at: startsAtIso,
+    p_time_zone: timeZone,
+    p_duration_minutes: durationMinutes,
+    p_company_name: companyName,
+    p_note: note,
+  });
+
+  if (error || !data?.id) {
+    return { ok: false, error: readable(error) };
+  }
+
+  let meetUrl: string | null = null;
+  let calendarUrl: string | null = null;
+  let eventId: string | null = null;
+  let calendarWarning: string | null = null;
+
+  if (calendarConfigured()) {
+    try {
+      const attendees = [data.email, ...RESEND_CC, session.email].filter(Boolean);
+      const event = await createAssessmentCalendarEvent({
+        summary: data.company_name
+          ? `Assessment call — ${data.full_name} (${data.company_name})`
+          : `Assessment call — ${data.full_name}`,
+        description: [
+          'Divine Acquisition talent assessment call.',
+          data.company_name ? `Company: ${data.company_name}` : null,
+          note ? `Note: ${note}` : null,
+        ]
+          .filter(Boolean)
+          .join('\n'),
+        startsAt: data.starts_at,
+        endsAt: data.ends_at,
+        timeZone: data.time_zone,
+        attendeeEmails: attendees,
+      });
+      eventId = event.eventId;
+      meetUrl = event.meetUrl;
+      calendarUrl = event.htmlLink;
+    } catch (calendarError) {
+      calendarWarning =
+        calendarError instanceof Error
+          ? `Calendar/Meet failed: ${calendarError.message}`
+          : 'Calendar/Meet failed.';
+    }
+  } else {
+    calendarWarning =
+      'Google Calendar is not configured (set GOOGLE_CALENDAR_SUBJECT_EMAIL / service account).';
+  }
+
+  let confirmationId: string | null = null;
+  try {
+    const sent = await sendAssessmentBookingConfirmationEmail({
+      to: data.email,
+      fullName: data.full_name,
+      companyName: data.company_name,
+      startsAt: data.starts_at,
+      timeZone: data.time_zone,
+      durationMinutes: data.duration_minutes,
+      meetUrl,
+      calendarUrl,
+    });
+    confirmationId = sent.id;
+  } catch (sendError) {
+    return {
+      ok: false,
+      error:
+        sendError instanceof Error
+          ? `Booking saved but confirmation email failed: ${sendError.message}`
+          : 'Booking saved but confirmation email failed.',
+    };
+  }
+
+  await controlRpc(supabase, 'record_assessment_booking_calendar', {
+    p_booking_id: data.id,
+    p_google_event_id: eventId,
+    p_google_meet_url: meetUrl,
+    p_google_html_link: calendarUrl,
+    p_confirmation_email_id: confirmationId,
+  });
+
+  await upsertTalentContact({
+    email: data.email,
+    fullName: data.full_name,
+    companyName: data.company_name,
+    note,
+  });
+
+  revalidatePath('/admin');
+
+  const when = new Date(data.starts_at).toLocaleString('en-US', { timeZone: data.time_zone });
+  return {
+    ok: true,
+    message: [
+      `Booked ${data.full_name} for ${when}.`,
+      'Confirmation emailed (CC Malik).',
+      '30-minute reminder will send automatically.',
+      calendarWarning,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  };
+}
+
+/** Interpret `YYYY-MM-DDTHH:mm` as wall time in `timeZone`, return UTC ISO. */
+function localDateTimeToIso(localDateTime: string, timeZone: string): string | null {
+  const match = localDateTime.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+
+  // Start from the same clock face as UTC, then correct by the zone offset twice
+  // so DST boundaries land on the intended wall time.
+  let utc = Date.UTC(year, month - 1, day, hour, minute, 0);
+  for (let i = 0; i < 2; i += 1) {
+    const offset = zoneOffsetMinutes(new Date(utc), timeZone);
+    if (offset === null) return null;
+    utc = Date.UTC(year, month - 1, day, hour, minute, 0) - offset * 60_000;
+  }
+  return new Date(utc).toISOString();
+}
+
+function zoneOffsetMinutes(date: Date, timeZone: string): number | null {
+  try {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      timeZoneName: 'shortOffset',
+      hour: 'numeric',
+    }).formatToParts(date);
+    const tz = parts.find((part) => part.type === 'timeZoneName')?.value ?? 'GMT';
+    const match = tz.match(/GMT([+-])(\d{1,2})(?::?(\d{2}))?/);
+    if (!match) return tz === 'GMT' || tz === 'UTC' ? 0 : null;
+    const sign = match[1] === '-' ? -1 : 1;
+    const hours = Number(match[2]);
+    const mins = Number(match[3] ?? 0);
+    return sign * (hours * 60 + mins);
+  } catch {
+    return null;
+  }
 }
 
 export type ValidatedInvite = {
