@@ -9,6 +9,7 @@ import {
   type AssessmentInviteRow,
 } from '@/lib/assessment/actions';
 import { calendarConfigured } from '@/lib/assessment/calendar';
+import { GHL_PIT_TOKEN } from '@/lib/assessment/config';
 import { getSessionContext } from '@/lib/supabase/server';
 import ScheduleBookingForm from './components/ScheduleBookingForm';
 import SendInviteForm from './components/SendInviteForm';
@@ -70,7 +71,8 @@ export default async function AssessmentAdminPage() {
             Malik).
           </p>
           <p className="mt-2 text-xs text-neutral-600">
-            Google Calendar: {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_* / Drive SA + subject'}
+            GHL PIT: {ghlReady ? 'connected' : 'not configured — set GHL_PIT_TOKEN'} · Google Calendar:{' '}
+            {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_* / Drive SA + subject'}
           </p>
 
           <section className="mt-10">
