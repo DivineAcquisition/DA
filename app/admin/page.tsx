@@ -39,6 +39,7 @@ export default async function AssessmentAdminPage() {
   const session = await getSessionContext();
   const [invites, bookings] = await Promise.all([listAssessmentInvites(), listAssessmentBookings()]);
   const calendarReady = calendarConfigured();
+  const ghlReady = Boolean(GHL_PIT_TOKEN);
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
@@ -64,8 +65,9 @@ export default async function AssessmentAdminPage() {
             Book &amp; invite <span className="text-gradient">assessment calls</span>
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
-            Schedule a Google Meet call yourself, or send a 24-hour self-serve booking link. Confirmations
-            and 30-minute reminders go out over email (CC Malik).
+            Schedule a call yourself (creates the appointment in GHL via PIT + Google Meet), or send a
+            24-hour self-serve booking link. Confirmations and 30-minute reminders go out over email (CC
+            Malik).
           </p>
           <p className="mt-2 text-xs text-neutral-600">
             Google Calendar: {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_* / Drive SA + subject'}
@@ -74,9 +76,10 @@ export default async function AssessmentAdminPage() {
           <section className="mt-10">
             <div className="panel rounded-3xl p-5 sm:p-7">
               <p className={sectionLabel}>Schedule a call</p>
-              <h2 className="mt-2 text-xl font-semibold">Set date &amp; time (Google Meet)</h2>
+              <h2 className="mt-2 text-xl font-semibold">Set date &amp; time</h2>
               <p className="mt-2 text-sm text-neutral-500">
-                Creates a Calendar event with Meet, emails confirmation now, and auto-reminds 30 minutes before.
+                Creates the appointment in GHL through the talent PIT, adds Google Meet when configured,
+                emails confirmation now, and auto-reminds 30 minutes before.
               </p>
               <div className="mt-6">
                 <ScheduleBookingForm />

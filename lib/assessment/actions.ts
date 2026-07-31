@@ -17,7 +17,7 @@ import {
   sendAssessmentBookingConfirmationEmail,
   sendAssessmentInviteEmail,
 } from './email';
-import { upsertTalentContact } from './ghl';
+import { bookAssessmentInGhl, upsertTalentContact } from './ghl';
 
 type CreatedInvite = {
   id: string;
@@ -194,7 +194,7 @@ export async function listAssessmentBookings(): Promise<AssessmentBookingRow[]> 
 }
 
 /**
- * Admin picks date/time → Google Calendar + Meet → confirmation email (+ CC).
+ * Admin picks date/time → GHL appointment (PIT) → Google Meet → confirmation email (+ CC).
  * A separate cron sends the 30-minute reminder.
  */
 export async function scheduleAssessmentBookingAction(formData: FormData): Promise<ActionResult> {
@@ -240,6 +240,30 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
     return { ok: false, error: readable(error) };
   }
 
+  // GHL via PIT is required — fail the schedule if the appointment cannot be created.
+  let ghlContactId: string | null = null;
+  let ghlAppointmentId: string | null = null;
+  try {
+    const ghl = await bookAssessmentInGhl({
+      email: data.email,
+      fullName: data.full_name,
+      companyName: data.company_name,
+      note,
+      startsAt: data.starts_at,
+      endsAt: data.ends_at,
+    });
+    ghlContactId = ghl.contactId;
+    ghlAppointmentId = ghl.appointmentId;
+  } catch (ghlError) {
+    return {
+      ok: false,
+      error:
+        ghlError instanceof Error
+          ? `GHL booking failed (PIT): ${ghlError.message}`
+          : 'GHL booking failed via PIT.',
+    };
+  }
+
   let meetUrl: string | null = null;
   let calendarUrl: string | null = null;
   let eventId: string | null = null;
@@ -256,6 +280,7 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
           'Divine Acquisition talent assessment call.',
           data.company_name ? `Company: ${data.company_name}` : null,
           note ? `Note: ${note}` : null,
+          ghlAppointmentId ? `GHL appointment: ${ghlAppointmentId}` : null,
         ]
           .filter(Boolean)
           .join('\n'),
@@ -307,13 +332,8 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
     p_google_meet_url: meetUrl,
     p_google_html_link: calendarUrl,
     p_confirmation_email_id: confirmationId,
-  });
-
-  await upsertTalentContact({
-    email: data.email,
-    fullName: data.full_name,
-    companyName: data.company_name,
-    note,
+    p_ghl_contact_id: ghlContactId,
+    p_ghl_appointment_id: ghlAppointmentId,
   });
 
   revalidatePath('/admin');
@@ -323,6 +343,7 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
     ok: true,
     message: [
       `Booked ${data.full_name} for ${when}.`,
+      'Created in GHL Assessment Interview calendar via PIT.',
       'Confirmation emailed (CC Malik).',
       '30-minute reminder will send automatically.',
       calendarWarning,

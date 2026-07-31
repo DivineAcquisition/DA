@@ -20,7 +20,12 @@ export const RESEND_CC = (
   .filter(Boolean);
 
 export const GHL_PIT_TOKEN = process.env.GHL_PIT_TOKEN ?? '';
-export const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID ?? '';
+/** Talent acquisition subaccount location (Assessment Interview calendar). */
+export const GHL_LOCATION_ID =
+  process.env.GHL_LOCATION_ID?.trim() || 'pNbNaLXpftikGN2jOFKG';
+/** Assessment Interview calendar used by the talent booking widget. */
+export const GHL_CALENDAR_ID =
+  process.env.GHL_CALENDAR_ID?.trim() || '3rTT9rZW2jG4lhZBae3D';
 
 export const BOOKING_WIDGET_SRC =
   'https://link.msgsndr.divineacquisition.io/widget/booking/3rTT9rZW2jG4lhZBae3D';
