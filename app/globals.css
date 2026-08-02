@@ -271,6 +271,13 @@ wistia-player[media-id='lrplfrikyd']:not(:defined) {
   padding-top: 56.25%;
 }
 
+wistia-player[media-id='h8ncqjru31']:not(:defined) {
+  background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/h8ncqjru31/swatch');
+  display: block;
+  filter: blur(5px);
+  padding-top: 48.54%;
+}
+
 wistia-player {
   display: block;
   width: 100%;

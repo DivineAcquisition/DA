@@ -2,7 +2,7 @@
 
 import type { ComponentType, CSSProperties } from 'react';
 import Script from 'next/script';
-import { ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
+import { ACQ_WISTIA_ASPECT, ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
 
 // `wistia-player` is a custom element registered by Wistia's player script.
 const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
@@ -20,7 +20,7 @@ export default function PilotVideo() {
   const mediaId = ACQ_WISTIA_MEDIA_ID;
 
   return (
-    <div className="animate-rise delay-5 relative mx-auto mt-14 max-w-4xl sm:mt-16">
+    <div className="animate-rise delay-3 relative mx-auto max-w-4xl">
       {mediaId ? (
         <>
           <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
@@ -43,7 +43,7 @@ export default function PilotVideo() {
       <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
         <div className="overflow-hidden rounded-[1.25rem] bg-black">
           {mediaId ? (
-            <WistiaPlayer media-id={mediaId} aspect="1.7777777777777777" />
+            <WistiaPlayer media-id={mediaId} aspect={ACQ_WISTIA_ASPECT} />
           ) : (
             <div
               className="flex aspect-video w-full items-center justify-center bg-ink-900"

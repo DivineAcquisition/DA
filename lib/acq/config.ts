@@ -3,13 +3,17 @@
 export const ACQ_PUBLIC_ORIGIN =
   process.env.NEXT_PUBLIC_ACQ_HOST?.replace(/\/$/, '') ?? 'https://acq.divineacquisition.io';
 
-/** External booking calendar / widget the CTA opens. */
+/** Typeform the "BOOK A CALL" CTA opens. */
 export const ACQ_BOOKING_URL =
   process.env.NEXT_PUBLIC_ACQ_BOOKING_URL?.trim() ||
-  'https://link.msgsndr.divineacquisition.io/widget/booking/acq-pilot';
+  'https://form.typeform.com/to/lvtP8G4E?typeform-source=divineacquisition.io';
 
-/** Optional Wistia media id. When unset the video frame still renders empty. */
-export const ACQ_WISTIA_MEDIA_ID = process.env.NEXT_PUBLIC_ACQ_WISTIA_ID?.trim() || '';
+/** Hero Wistia media id. Override with NEXT_PUBLIC_ACQ_WISTIA_ID when needed. */
+export const ACQ_WISTIA_MEDIA_ID =
+  process.env.NEXT_PUBLIC_ACQ_WISTIA_ID?.trim() || 'h8ncqjru31';
+
+/** Native aspect ratio for the hero Wistia player (width / height). */
+export const ACQ_WISTIA_ASPECT = '2.060085836909871';
 
 /** Ad / click identifiers forwarded from the landing URL into the booking URL. */
 export const TRACKING_PARAM_KEYS = [

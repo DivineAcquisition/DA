@@ -11,11 +11,12 @@ describe('withTrackingParams', () => {
     });
 
     const result = withTrackingParams(
-      'https://link.msgsndr.divineacquisition.io/widget/booking/acq-pilot',
+      'https://form.typeform.com/to/lvtP8G4E?typeform-source=divineacquisition.io',
       params,
     );
     const url = new URL(result);
 
+    expect(url.searchParams.get('typeform-source')).toBe('divineacquisition.io');
     expect(url.searchParams.get('utm_source')).toBe('facebook');
     expect(url.searchParams.get('utm_campaign')).toBe('pilot');
     expect(url.searchParams.get('fbclid')).toBe('abc.123');
@@ -24,12 +25,12 @@ describe('withTrackingParams', () => {
 
   it('preserves existing booking query params', () => {
     const result = withTrackingParams(
-      'https://example.com/book?foo=1',
+      'https://form.typeform.com/to/lvtP8G4E?typeform-source=divineacquisition.io',
       { utm_medium: 'cpc' },
     );
     const url = new URL(result);
 
-    expect(url.searchParams.get('foo')).toBe('1');
+    expect(url.searchParams.get('typeform-source')).toBe('divineacquisition.io');
     expect(url.searchParams.get('utm_medium')).toBe('cpc');
   });
 });
