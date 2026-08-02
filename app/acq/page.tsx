@@ -47,9 +47,9 @@ export default async function AcqLandingPage({
           </p>
         </div>
 
-        {/* Header: logo only, not a link, no nav */}
+        {/* Header: logo only, centered, not a link, no nav */}
         <header className="px-5 pt-5 sm:px-6 sm:pt-6">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto flex max-w-5xl justify-center">
             <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
           </div>
         </header>
@@ -62,9 +62,8 @@ export default async function AcqLandingPage({
             </p>
 
             <h1 className="animate-rise delay-1 mx-auto mt-5 max-w-[860px] text-[1.9rem] font-semibold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-[2.65rem] md:text-[3.15rem] md:leading-[1.05]">
-              We help service businesses{' '}
-              <span className="text-gradient">2-3x their client intake without hiring</span> by
-              automating sales conversion and repetitive tasks.
+              We help service businesses <span className="text-gradient">2-3x</span> their client
+              intake without hiring by automating sales conversion and repetitive tasks.
             </h1>
 
             <p className="animate-rise delay-2 mx-auto mt-3 max-w-[560px] text-sm leading-relaxed text-neutral-400 sm:mt-3.5 sm:text-[15px]">
@@ -75,7 +74,7 @@ export default async function AcqLandingPage({
           </div>
         </section>
 
-        {/* Video, then sole CTA beneath it, then Facebook disclaimer */}
+        {/* Video, then sole CTA beneath it */}
         <section className="px-5 pb-10 sm:px-6 sm:pb-14">
           <PilotVideo />
 
@@ -85,10 +84,6 @@ export default async function AcqLandingPage({
               Limited availability. Performance only.
             </p>
           </div>
-
-          <p className="mx-auto mt-8 max-w-2xl text-center text-[10px] leading-relaxed text-neutral-600 sm:text-[11px]">
-            {FACEBOOK_DISCLAIMER}
-          </p>
         </section>
 
         <CaseStudies />
@@ -117,6 +112,9 @@ export default async function AcqLandingPage({
             ))}
           </nav>
           <p className="mt-4 text-xs text-neutral-600">© Divine Acquisition. All rights reserved.</p>
+          <p className="mx-auto mt-5 max-w-2xl text-[10px] leading-relaxed text-neutral-600 sm:text-[11px]">
+            {FACEBOOK_DISCLAIMER}
+          </p>
         </footer>
       </div>
     </div>
