@@ -1,6 +1,7 @@
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { eyebrow } from '@/app/components/ui';
+import { ACQ_BOOKING_URL, TRACKING_PARAM_KEYS, withTrackingParams } from '@/lib/acq/config';
 import BookCallButton from './components/BookCallButton';
 import PilotVideo from './components/PilotVideo';
 
@@ -13,7 +14,26 @@ const LEGAL_LINKS = [
   { label: 'Privacy Policy', href: '/acq/privacy' },
 ] as const;
 
-export default function AcqLandingPage() {
+type SearchParams = Record<string, string | string[] | undefined>;
+
+function trackingFromSearchParams(searchParams: SearchParams): URLSearchParams {
+  const params = new URLSearchParams();
+  for (const key of TRACKING_PARAM_KEYS) {
+    const value = searchParams[key];
+    const single = Array.isArray(value) ? value[0] : value;
+    if (single) params.set(key, single);
+  }
+  return params;
+}
+
+export default async function AcqLandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const query = await searchParams;
+  const bookingHref = withTrackingParams(ACQ_BOOKING_URL, trackingFromSearchParams(query));
+
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
       <Backdrop />
@@ -56,7 +76,7 @@ export default function AcqLandingPage() {
 
             {/* 2.6 Sole CTA */}
             <div className="animate-rise delay-3 mt-9 flex flex-col items-center">
-              <BookCallButton />
+              <BookCallButton href={bookingHref} />
               <p className="mt-3 text-xs text-neutral-500 sm:text-[13px]">
                 Limited availability. Performance only.
               </p>

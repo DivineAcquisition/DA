@@ -1,7 +1,3 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { ACQ_BOOKING_URL, withTrackingParams } from '@/lib/acq/config';
 import { btnPrimary, btnSizeLg } from '@/app/components/ui';
 
 function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
@@ -13,16 +9,10 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
 }
 
 /**
- * Sole CTA. Reads the current page query string so ad tracking params
- * (utm_*, fbclid, gclid, …) ride into the booking URL with the click.
+ * Sole CTA. `href` is built on the server from the request query string so
+ * ad tracking params (utm_*, fbclid, gclid, …) ride into the booking URL.
  */
-export default function BookCallButton() {
-  const [href, setHref] = useState(ACQ_BOOKING_URL);
-
-  useEffect(() => {
-    setHref(withTrackingParams(ACQ_BOOKING_URL, new URLSearchParams(window.location.search)));
-  }, []);
-
+export default function BookCallButton({ href }: { href: string }) {
   return (
     <a
       href={href}

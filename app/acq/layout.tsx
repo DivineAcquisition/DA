@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: {
+    absolute: 'Performance Pilot | Divine Acquisition',
     default: 'Performance Pilot | Divine Acquisition',
     template: '%s | Divine Acquisition',
   },

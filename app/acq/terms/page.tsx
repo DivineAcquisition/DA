@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import LegalShell from '../components/LegalShell';
 
 export const metadata: Metadata = {
-  title: 'Terms',
+  title: { absolute: 'Terms | Divine Acquisition' },
   description: 'Terms of use for Divine Acquisition.',
   alternates: {
     canonical: 'https://acq.divineacquisition.io/terms',
