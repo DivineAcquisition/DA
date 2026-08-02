@@ -1,0 +1,60 @@
+'use client';
+
+import type { ComponentType, CSSProperties } from 'react';
+import Script from 'next/script';
+import { ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
+
+// `wistia-player` is a custom element registered by Wistia's player script.
+const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
+  'media-id': string;
+  aspect?: string;
+  style?: CSSProperties;
+}>;
+
+/**
+ * Centered video frame using the same panel treatment as the hiring VSL.
+ * When no media id is configured (or the embed fails), the frame still
+ * occupies space so the page layout and disclaimer remain intact.
+ */
+export default function PilotVideo() {
+  const mediaId = ACQ_WISTIA_MEDIA_ID;
+
+  return (
+    <div className="animate-rise delay-5 relative mx-auto mt-14 max-w-4xl sm:mt-16">
+      {mediaId ? (
+        <>
+          <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
+          <Script
+            src={`https://fast.wistia.com/embed/${mediaId}.js`}
+            strategy="afterInteractive"
+            type="module"
+          />
+        </>
+      ) : null}
+
+      <div
+        aria-hidden
+        className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)',
+        }}
+      />
+
+      <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
+        <div className="overflow-hidden rounded-[1.25rem] bg-black">
+          {mediaId ? (
+            <WistiaPlayer media-id={mediaId} aspect="1.7777777777777777" />
+          ) : (
+            <div
+              className="flex aspect-video w-full items-center justify-center bg-ink-900"
+              role="img"
+              aria-label="Video placeholder"
+            >
+              <span className="text-xs text-neutral-600">Video unavailable</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

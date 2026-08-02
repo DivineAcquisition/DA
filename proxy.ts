@@ -14,6 +14,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   ops.vistrial.io                 -> /vistrial
  *   talent.divineacquisition.io     -> /assessment
  *   admin.divineacquisition.io      -> /admin
+ *   acq.divineacquisition.io        -> /acq
  *   careers / other                 -> /hiring (and /)
  */
 
@@ -39,6 +40,7 @@ const ASSESSMENT_ADMIN_HOSTS = hosts(
   process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS,
   'admin.divineacquisition.io',
 );
+const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
 
 const CONTROL_PREFIX = '/ad';
 const ADMIN_PREFIX = '/da';
@@ -47,6 +49,7 @@ const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
 const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
+const ACQ_PREFIX = '/acq';
 
 const SURFACE_PREFIXES = [
   CONTROL_PREFIX,
@@ -56,6 +59,7 @@ const SURFACE_PREFIXES = [
   HIRING_PREFIX,
   ASSESSMENT_PREFIX,
   ASSESSMENT_ADMIN_PREFIX,
+  ACQ_PREFIX,
 ];
 
 type Surface = {
@@ -77,6 +81,17 @@ const SURFACES: Surface[] = [
   },
   { hosts: TALENT_HOSTS, prefix: ASSESSMENT_PREFIX },
   { hosts: ASSESSMENT_ADMIN_HOSTS, prefix: ASSESSMENT_ADMIN_PREFIX },
+  {
+    hosts: ACQ_HOSTS,
+    prefix: ACQ_PREFIX,
+    // Bare legal paths rewrite into /acq/*; keep the surface locked otherwise.
+    allow: (pathname) =>
+      pathname === '/' ||
+      pathname === '/terms' ||
+      pathname === '/disclaimer' ||
+      pathname === '/privacy' ||
+      pathname.startsWith('/acq'),
+  },
 ];
 
 const isLocalHost = (host: string) =>
@@ -129,8 +144,8 @@ export async function proxy(request: NextRequest) {
     !pathname.startsWith(surface.prefix) &&
     pathname !== '/'
   ) {
-    // Careers host: everything that is not hiring is 404.
-    if (surface.prefix === HIRING_PREFIX) {
+    // Public marketing hosts: anything outside the surface is 404.
+    if (surface.prefix === HIRING_PREFIX || surface.prefix === ACQ_PREFIX) {
       return new NextResponse('Not found', {
         status: 404,
         headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
@@ -210,7 +225,8 @@ export async function proxy(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  if (isInternal) {
+  // Acquisition landing is a public ad destination and must remain indexable.
+  if (isInternal && prefix !== ACQ_PREFIX) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }
 

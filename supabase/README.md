@@ -211,6 +211,7 @@ for previews.
 | `VISTRIAL_ACCT_HOSTS` | `acct.vistrial.io` | `/acct` |
 | `VISTRIAL_OPS_HOSTS` | `ops.vistrial.io`, … | `/vistrial` |
 | `VISTRIAL_CAREERS_HOSTS` | `vistrial.io`, … | `/hiring` |
+| `VISTRIAL_ACQ_HOSTS` | `acq.divineacquisition.io` | `/acq` |
 
 Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
 every deploy. The app also falls back to the live Vistrial project values so a
