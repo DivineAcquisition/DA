@@ -61,12 +61,13 @@ export default async function AcqLandingPage({
               For service businesses at $30k+/month
             </p>
 
-            <h1 className="animate-rise delay-1 mx-auto mt-6 max-w-[900px] text-[1.85rem] font-bold leading-[1.12] text-white sm:text-4xl md:text-[2.75rem] md:leading-[1.08]">
-              We help service businesses 2-3x their client intake without hiring by automating sales
-              conversion and repetitive tasks.
+            <h1 className="animate-rise delay-1 mx-auto mt-5 max-w-[860px] text-[1.9rem] font-semibold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-[2.65rem] md:text-[3.15rem] md:leading-[1.05]">
+              We help service businesses{' '}
+              <span className="text-gradient">2-3x their client intake without hiring</span> by
+              automating sales conversion and repetitive tasks.
             </h1>
 
-            <p className="animate-rise delay-2 mx-auto mt-6 max-w-[640px] text-base leading-relaxed text-neutral-400 sm:text-[17px]">
+            <p className="animate-rise delay-2 mx-auto mt-3 max-w-[560px] text-sm leading-relaxed text-neutral-400 sm:mt-3.5 sm:text-[15px]">
               We install a sales operation that answers every lead in under 60 seconds, follows up
               until they book, and brings back the customers you already have. You pay nothing to
               build it and nothing to run it. You only pay for the appointments we book.
