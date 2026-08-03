@@ -61,9 +61,14 @@ export default async function AcqLandingPage({
               For service businesses at $30k+/month
             </p>
 
-            <h1 className="animate-rise delay-1 mx-auto mt-5 max-w-[860px] text-[1.9rem] font-semibold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-[2.65rem] md:text-[3.15rem] md:leading-[1.05]">
-              We help service businesses <span className="text-gradient">2-3x</span> their client
-              intake without hiring by automating sales conversion and repetitive tasks.
+            <h1 className="animate-rise delay-1 mx-auto mt-5 max-w-[720px] text-[1.55rem] font-semibold leading-[1.15] tracking-tight text-white sm:mt-6 sm:text-[2.05rem] sm:leading-[1.12] md:text-[2.35rem] md:leading-[1.1]">
+              <span className="block text-balance">
+                We help service businesses <span className="text-gradient">2-3x</span> their client
+                intake without hiring
+              </span>
+              <span className="mt-2.5 block text-[0.82em] font-medium leading-snug text-neutral-300 sm:mt-3">
+                by automating sales conversion and repetitive tasks.
+              </span>
             </h1>
 
             <p className="animate-rise delay-2 mx-auto mt-3 max-w-[560px] text-sm leading-relaxed text-neutral-400 sm:mt-3.5 sm:text-[15px]">
