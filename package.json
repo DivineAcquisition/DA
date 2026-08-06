@@ -16,6 +16,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
     "@supabase/supabase-js": "^2.110.8",
+    "marked": "^18.0.9",
     "next": "16.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -24,6 +25,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.6",
     "@tailwindcss/postcss": "^4.1.18",
+    "@types/marked": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

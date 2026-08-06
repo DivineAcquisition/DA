@@ -13,9 +13,12 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   acct.vistrial.io                -> /acct
  *   ops.vistrial.io                 -> /vistrial
  *   talent.divineacquisition.io     -> /assessment
- *   admin.divineacquisition.io      -> /admin
+ *   admin.divineacquisition.io      -> /workspace (agreements admin)
  *   acq.divineacquisition.io        -> /acq
  *   careers / other                 -> /hiring (and /)
+ *
+ * Assessment admin remains at /admin for path-based preview access.
+ * Set VISTRIAL_ASSESSMENT_ADMIN_HOSTS if it needs a dedicated host again.
  */
 
 const hosts = (value: string | undefined, fallback: string) =>
@@ -36,8 +39,9 @@ const CAREERS_HOSTS = hosts(
   'vistrial.io,www.vistrial.io,divineacquisition.io,www.divineacquisition.io',
 );
 const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
-const ASSESSMENT_ADMIN_HOSTS = hosts(
-  process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS,
+const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
+const WORKSPACE_HOSTS = hosts(
+  process.env.DA_WORKSPACE_HOSTS,
   'admin.divineacquisition.io',
 );
 const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
@@ -49,6 +53,7 @@ const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
 const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
+const WORKSPACE_PREFIX = '/workspace';
 const ACQ_PREFIX = '/acq';
 
 const SURFACE_PREFIXES = [
@@ -59,6 +64,7 @@ const SURFACE_PREFIXES = [
   HIRING_PREFIX,
   ASSESSMENT_PREFIX,
   ASSESSMENT_ADMIN_PREFIX,
+  WORKSPACE_PREFIX,
   ACQ_PREFIX,
 ];
 
@@ -68,6 +74,9 @@ type Surface = {
   /** Paths on this host that are allowed besides the surface prefix (e.g. invite). */
   allow?: (pathname: string) => boolean;
 };
+
+const isPublicTokenPath = (pathname: string) =>
+  pathname.startsWith('/p/') || pathname.startsWith('/c/');
 
 const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },
@@ -81,6 +90,21 @@ const SURFACES: Surface[] = [
   },
   { hosts: TALENT_HOSTS, prefix: ASSESSMENT_PREFIX },
   { hosts: ASSESSMENT_ADMIN_HOSTS, prefix: ASSESSMENT_ADMIN_PREFIX },
+  {
+    hosts: WORKSPACE_HOSTS,
+    prefix: WORKSPACE_PREFIX,
+    // Public token routes stay at /p and /c without the workspace prefix.
+    allow: (pathname) =>
+      pathname === '/' ||
+      pathname.startsWith('/workspace') ||
+      isPublicTokenPath(pathname) ||
+      pathname === '/login' ||
+      pathname.startsWith('/recipients') ||
+      pathname.startsWith('/agreements') ||
+      pathname.startsWith('/templates') ||
+      pathname.startsWith('/calendar-links') ||
+      pathname.startsWith('/settings'),
+  },
   {
     hosts: ACQ_HOSTS,
     prefix: ACQ_PREFIX,
@@ -145,7 +169,11 @@ export async function proxy(request: NextRequest) {
     pathname !== '/'
   ) {
     // Public marketing hosts: anything outside the surface is 404.
-    if (surface.prefix === HIRING_PREFIX || surface.prefix === ACQ_PREFIX) {
+    if (
+      surface.prefix === HIRING_PREFIX ||
+      surface.prefix === ACQ_PREFIX ||
+      surface.prefix === WORKSPACE_PREFIX
+    ) {
       return new NextResponse('Not found', {
         status: 404,
         headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
@@ -154,16 +182,23 @@ export async function proxy(request: NextRequest) {
   }
 
   const prefix = surface?.prefix ?? null;
+  const skipRewrite = Boolean(prefix && isPublicTokenPath(pathname));
 
   const isInternal =
     prefix !== null ||
-    [CONTROL_PREFIX, ADMIN_PREFIX, ACCT_PREFIX, OPS_PREFIX, ASSESSMENT_ADMIN_PREFIX].some((candidate) =>
-      pathname.startsWith(candidate),
-    );
+    [
+      CONTROL_PREFIX,
+      ADMIN_PREFIX,
+      ACCT_PREFIX,
+      OPS_PREFIX,
+      ASSESSMENT_ADMIN_PREFIX,
+      WORKSPACE_PREFIX,
+    ].some((candidate) => pathname.startsWith(candidate)) ||
+    isPublicTokenPath(pathname);
 
   const requestHeaders = new Headers(request.headers);
   let stampedPath = pathname;
-  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix)) {
+  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite) {
     stampedPath = `${prefix}${pathname === '/' ? '' : pathname}`;
   }
   requestHeaders.set('x-pathname', stampedPath);
@@ -176,7 +211,8 @@ export async function proxy(request: NextRequest) {
 
   // Dedicated hosts rewrite bare paths into their surface. Careers keeps `/`
   // as the board and `/hiring/*` as role pages — no rewrite needed for `/`.
-  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix)) {
+  // Public token routes (/p, /c) stay unprefixed on the workspace host.
+  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite) {
     const url = request.nextUrl.clone();
     url.pathname = stampedPath;
     response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
@@ -196,11 +232,13 @@ export async function proxy(request: NextRequest) {
     prefix === CONTROL_PREFIX ||
     prefix === ACCT_PREFIX ||
     prefix === ASSESSMENT_ADMIN_PREFIX ||
+    prefix === WORKSPACE_PREFIX ||
     pathname.startsWith(ADMIN_PREFIX) ||
     pathname.startsWith(CONTROL_PREFIX) ||
     pathname.startsWith(ACCT_PREFIX) ||
     pathname.startsWith(OPS_PREFIX) ||
-    pathname.startsWith(ASSESSMENT_ADMIN_PREFIX);
+    pathname.startsWith(ASSESSMENT_ADMIN_PREFIX) ||
+    pathname.startsWith(WORKSPACE_PREFIX);
 
   if (touchesAuth && supabaseUrl && supabaseKey) {
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -211,7 +249,7 @@ export async function proxy(request: NextRequest) {
         setAll(cookiesToSet) {
           for (const { name, value } of cookiesToSet) request.cookies.set(name, value);
           const refreshed =
-            prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix)
+            prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite
               ? response
               : NextResponse.next({ request });
           for (const { name, value, options } of cookiesToSet) {

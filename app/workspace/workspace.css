@@ -1,0 +1,54 @@
+.da-workspace {
+  --ws-accent: #937dff;
+  --ws-btn: #6a00ff;
+  --ws-panel: #241442;
+  --ws-page: #0b0b0f;
+  --ws-card: #1c1c26;
+  --ws-border: #2a2a3a;
+  --ws-body: #b0aec0;
+  --ws-dim: #6e6c80;
+  --ws-success: #7aff8a;
+  --ws-error: #ff6a6a;
+  --ws-pending: #ffd06a;
+  color: var(--ws-body);
+  background: var(--ws-page);
+  min-height: 100vh;
+}
+
+.da-workspace .prose-da {
+  color: var(--ws-body);
+  line-height: 1.7;
+}
+
+.da-workspace .prose-da h1,
+.da-workspace .prose-da h2,
+.da-workspace .prose-da h3 {
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  color: #fff;
+  margin: 1.25em 0 0.5em;
+  letter-spacing: -0.02em;
+}
+
+.da-workspace .prose-da p {
+  margin: 0.75em 0;
+}
+
+.da-workspace .prose-da a {
+  color: var(--ws-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.da-workspace .prose-da ul,
+.da-workspace .prose-da ol {
+  margin: 0.75em 0;
+  padding-left: 1.25rem;
+}
+
+.da-workspace .prose-da li {
+  margin: 0.35em 0;
+}
+
+.da-workspace .prose-da strong {
+  color: #fff;
+}
