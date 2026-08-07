@@ -4,7 +4,8 @@ import { AgreementActions, SendAgreementButton } from '../../components/Agreemen
 import { CreateCalendarLinkButton, CalendarLinkActions } from '../../components/CalendarForms';
 import { EditRecipientButton } from '../../components/RecipientForms';
 import { GeneratePageTokenButton, PageTokenActions } from '../../components/TokenControls';
-import { DataTable, EmptyState, PageHeader, StatusBadge, ws } from '../../components/ui';
+import { DataTable, EmptyState, PageHeader, StatusBadge } from '../../components/ui';
+import { ws } from '../../components/tokens';
 import { formatDate, formatDateTime, linkStatus, recipientTypeLabel } from '@/lib/workspace/format';
 import { publicCalendarUrl, publicPageUrl } from '@/lib/workspace/paths';
 import {

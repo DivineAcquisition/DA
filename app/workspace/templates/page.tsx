@@ -1,6 +1,7 @@
 import { AgreementTemplateDialog, PageTemplateDialog } from '../components/TemplateForms';
 import { GeneratePageTokenButton, PageTokenActions } from '../components/TokenControls';
-import { DataTable, EmptyState, PageHeader, StatusBadge, ws } from '../components/ui';
+import { DataTable, EmptyState, PageHeader, StatusBadge } from '../components/ui';
+import { ws } from '../components/tokens';
 import { formatDate, formatDateTime, linkStatus, recipientTypeLabel } from '@/lib/workspace/format';
 import { publicPageUrl } from '@/lib/workspace/paths';
 import {

@@ -1,6 +1,7 @@
 import { FieldMappingRow } from '../components/FieldMappingForm';
 import SyncDocuSealButton from '../components/SyncControls';
-import { Badge, DataTable, EmptyState, PageHeader, ws } from '../components/ui';
+import { Badge, DataTable, EmptyState, PageHeader } from '../components/ui';
+import { ws } from '../components/tokens';
 import { recipientTypeLabel } from '@/lib/workspace/format';
 import { getSettings, listTemplateFieldMappings } from '@/lib/workspace/queries';
 

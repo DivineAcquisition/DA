@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import SyncDocuSealButton from '../components/SyncControls';
-import { DataTable, EmptyState, PageHeader, StatusBadge, ws } from '../components/ui';
+import { DataTable, EmptyState, PageHeader, StatusBadge } from '../components/ui';
+import { ws } from '../components/tokens';
 import { formatDate, formatDateTime, recipientTypeLabel } from '@/lib/workspace/format';
 import {
   getLatestSyncRun,

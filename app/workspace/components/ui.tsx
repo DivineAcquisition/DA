@@ -1,19 +1,11 @@
 'use client';
 
 import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { ws } from './tokens';
 
 /** Workspace-scoped SaaS primitives — hiring-page visual language + brief brand tokens. */
 
-export const ws = {
-  page: 'bg-[var(--ws-page)] text-[var(--ws-body)]',
-  card:
-    'rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] shadow-[0_24px_60px_-40px_rgba(124,77,255,0.9)]',
-  panelHeader: 'bg-[var(--ws-panel)]',
-  input:
-    'w-full rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] px-3.5 py-2.5 text-sm text-white placeholder:text-[var(--ws-dim)] outline-none transition focus:border-[var(--ws-accent)] focus:ring-1 focus:ring-[var(--ws-accent)]',
-  label: 'mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-dim)]',
-  heading: 'font-[family-name:var(--font-plus-jakarta)] text-white',
-};
+export { ws };
 
 export function Button({
   variant = 'primary',

@@ -1,6 +1,7 @@
 import SettingsForm from '../components/SettingsForm';
 import SyncDocuSealButton from '../components/SyncControls';
-import { Badge, EmptyState, PageHeader, ws } from '../components/ui';
+import { Badge, EmptyState, PageHeader } from '../components/ui';
+import { ws } from '../components/tokens';
 import { formatDateTime } from '@/lib/workspace/format';
 import { getDocuSealConnection, getLatestSyncRun, getSettings } from '@/lib/workspace/queries';
 
