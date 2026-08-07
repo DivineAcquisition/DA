@@ -8,7 +8,16 @@ import {
   fetchSignedDocumentUrl,
 } from './docuseal';
 import { requireAdmin, workspaceClient } from './db';
+import {
+  buildProfile,
+  mapFields,
+  mappingSummary,
+  toDocuSealFields,
+  type MappedField,
+  type TemplateField,
+} from './field-mapping';
 import { publicCalendarUrl, publicPageUrl } from './paths';
+import { loadFieldOverrides, loadSubmittedValues, overridesFor, syncDocuSeal } from './sync';
 import {
   createToken,
   recipientVariableValues,
@@ -18,9 +27,11 @@ import type { ActionResult, DaSettings, RecipientStatus, RecipientType } from '.
 
 function revalidateWorkspace() {
   revalidatePath('/workspace');
+  revalidatePath('/workspace/overview');
   revalidatePath('/workspace/recipients');
   revalidatePath('/workspace/agreements');
   revalidatePath('/workspace/templates');
+  revalidatePath('/workspace/mapping');
   revalidatePath('/workspace/calendar-links');
   revalidatePath('/workspace/settings');
 }
@@ -37,7 +48,14 @@ async function loadSettings(): Promise<DaSettings | null> {
   const supabase = await workspaceClient();
   if (!supabase) return null;
   const { data } = await supabase.from('da_settings').select('*').eq('id', 1).maybeSingle();
-  return (data as DaSettings | null) ?? null;
+  if (!data) return null;
+  const row = data as Record<string, unknown>;
+  return {
+    ...(row as unknown as DaSettings),
+    auto_prefill: row.auto_prefill !== false,
+    prefill_readonly: row.prefill_readonly === true,
+    last_synced_at: (row.last_synced_at as string | null) ?? null,
+  };
 }
 
 export async function signInAction(formData: FormData): Promise<ActionResult> {
@@ -55,7 +73,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
     return { ok: false, error: 'Invalid email or password' };
   }
 
-  redirect('/workspace/recipients');
+  redirect('/workspace/overview');
 }
 
 export async function signOutAction() {
@@ -227,19 +245,20 @@ export async function upsertAgreementTemplateAction(formData: FormData): Promise
   return { ok: true, message: id ? 'Template updated.' : 'Template created.' };
 }
 
+/** Mints a tokenized page per attachment and returns field name → public URL. */
 async function createPageTokensForTemplate(input: {
   supabase: NonNullable<Awaited<ReturnType<typeof workspaceClient>>>;
   templateId: string;
   recipientId: string;
   agreementId: string;
   baseUrl: string;
-}): Promise<{ fields: { name: string; default_value: string; readonly: boolean }[]; error?: string }> {
+}): Promise<{ pageUrls: Record<string, string>; error?: string }> {
   const { data: recipient } = await input.supabase
     .from('da_recipient')
     .select('*')
     .eq('id', input.recipientId)
     .maybeSingle();
-  if (!recipient) return { fields: [], error: 'Recipient not found.' };
+  if (!recipient) return { pageUrls: {}, error: 'Recipient not found.' };
 
   const { data: attachments } = await input.supabase
     .from('da_agreement_template_page')
@@ -247,7 +266,7 @@ async function createPageTokensForTemplate(input: {
     .eq('agreement_template_id', input.templateId)
     .order('sort_order', { ascending: true });
 
-  const fields: { name: string; default_value: string; readonly: boolean }[] = [];
+  const pageUrls: Record<string, string> = {};
 
   for (const attachment of (attachments as any[] | null) ?? []) {
     const page = attachment.da_page_template;
@@ -261,15 +280,78 @@ async function createPageTokensForTemplate(input: {
       token,
       resolved_values: resolved,
     });
-    if (error) return { fields: [], error: error.message };
-    fields.push({
-      name: attachment.docuseal_field_name,
-      default_value: publicPageUrl(input.baseUrl, token),
-      readonly: true,
-    });
+    if (error) return { pageUrls: {}, error: error.message };
+    pageUrls[attachment.docuseal_field_name] = publicPageUrl(input.baseUrl, token);
   }
 
-  return { fields };
+  return { pageUrls };
+}
+
+function templateFieldCatalogue(template: { docuseal_fields?: unknown }): TemplateField[] {
+  const raw = template.docuseal_fields;
+  if (!Array.isArray(raw)) return [];
+  return raw
+    .map((field) => {
+      const record = (field ?? {}) as Record<string, unknown>;
+      return {
+        name: String(record.name ?? '').trim(),
+        type: record.type ? String(record.type) : 'text',
+        required: Boolean(record.required),
+      };
+    })
+    .filter((field) => field.name.length > 0);
+}
+
+/** Resolves every field on a template against what is already known. */
+async function resolveAgreementFields(input: {
+  supabase: NonNullable<Awaited<ReturnType<typeof workspaceClient>>>;
+  recipient: { id: string; full_name: string; email: string; phone: string | null; business_name: string | null };
+  template: { id: string; docuseal_fields?: unknown };
+  settings: DaSettings;
+  pageUrls?: Record<string, string>;
+}): Promise<MappedField[]> {
+  const submitted = await loadSubmittedValues(input.supabase, input.recipient.id);
+  const overrides = await loadFieldOverrides(input.supabase);
+
+  return mapFields(templateFieldCatalogue(input.template), {
+    profile: buildProfile({
+      recipient: input.recipient,
+      submitted,
+      bookingUrl: input.settings.default_booking_url,
+    }),
+    submitted,
+    pageUrls: input.pageUrls,
+    overrides: overridesFor(overrides, input.template.id),
+  });
+}
+
+/** Read-only preview of what a send would push, for the send dialog. */
+export async function previewAgreementFieldsAction(formData: FormData): Promise<ActionResult> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return { ok: false, error: 'Admin access required.' };
+
+  const recipientId = String(formData.get('recipient_id') ?? '');
+  const templateId = String(formData.get('template_id') ?? '');
+  if (!recipientId || !templateId) return { ok: false, error: 'Recipient and template are required.' };
+
+  const [{ data: recipient }, { data: template }, settings] = await Promise.all([
+    supabase.from('da_recipient').select('*').eq('id', recipientId).maybeSingle(),
+    supabase.from('da_agreement_template').select('*').eq('id', templateId).maybeSingle(),
+    loadSettings(),
+  ]);
+  if (!recipient || !template || !settings) {
+    return { ok: false, error: 'Recipient, template, or settings could not be loaded.' };
+  }
+
+  const fields = await resolveAgreementFields({ supabase, recipient, template, settings });
+  const summary = mappingSummary(fields);
+
+  return {
+    ok: true,
+    message: `${summary.filled} of ${summary.total} fields mapped.`,
+    data: { fields, summary },
+  };
 }
 
 export async function sendAgreementAction(formData: FormData): Promise<ActionResult> {
@@ -317,7 +399,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     return { ok: false, error: agreementError?.message ?? 'Failed to create agreement record.' };
   }
 
-  const { fields, error: tokenError } = await createPageTokensForTemplate({
+  const { pageUrls, error: tokenError } = await createPageTokensForTemplate({
     supabase,
     templateId,
     recipientId,
@@ -325,6 +407,12 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     baseUrl: settings.public_base_url,
   });
   if (tokenError) return { ok: false, error: tokenError };
+
+  const mapped = settings.auto_prefill
+    ? await resolveAgreementFields({ supabase, recipient, template, settings, pageUrls })
+    : mapFields([], { profile: {}, submitted: {}, pageUrls });
+  const fields = toDocuSealFields(mapped, { readonly: settings.prefill_readonly });
+  const summary = mappingSummary(mapped);
 
   const docuseal = await createDocuSealSubmission({
     settings,
@@ -345,7 +433,13 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     .from('da_agreement')
     .update({
       docuseal_submission_id: docuseal.submissionId,
+      docuseal_submitter_id: docuseal.submitterId || null,
+      docuseal_slug: docuseal.submitterSlug || null,
+      submitter_email: recipient.email,
       signing_url: docuseal.signingUrl,
+      prefilled_values: Object.fromEntries(fields.map((f) => [f.name, f.default_value])),
+      unmapped_fields: summary.unmapped,
+      synced_at: new Date().toISOString(),
     })
     .eq('id', agreement.id);
 
@@ -353,7 +447,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
   revalidatePath(`/workspace/recipients/${recipientId}`);
   return {
     ok: true,
-    message: 'Agreement sent.',
+    message: `Agreement sent with ${summary.filled} of ${summary.total} fields pre-filled.`,
     data: { agreementId: agreement.id, signingUrl: docuseal.signingUrl ?? '' },
   };
 }
@@ -608,6 +702,8 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
     ),
     default_booking_url: String(formData.get('default_booking_url') ?? '').trim(),
     public_base_url: String(formData.get('public_base_url') ?? '').trim().replace(/\/+$/, ''),
+    auto_prefill: formData.get('auto_prefill') === 'on',
+    prefill_readonly: formData.get('prefill_readonly') === 'on',
     updated_at: new Date().toISOString(),
   };
 
@@ -615,4 +711,77 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
   if (error) return { ok: false, error: error.message };
   revalidateWorkspace();
   return { ok: true, message: 'Settings saved.' };
+}
+
+/**
+ * Pulls every DocuSeal template, submission and submitted value into the
+ * workspace, then pre-fills the forms still awaiting a signature.
+ */
+export async function syncDocuSealAction(): Promise<ActionResult> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return { ok: false, error: 'Admin access required.' };
+
+  const settings = await loadSettings();
+  if (!settings) return { ok: false, error: 'Settings could not be loaded.' };
+
+  const result = await syncDocuSeal(supabase, settings);
+  if (!result.ok) return { ok: false, error: result.error };
+
+  revalidateWorkspace();
+  const { templates, submissions, recipientsCreated, valuesCaptured, prefilled } = result.counts;
+  return {
+    ok: true,
+    message:
+      `Pulled ${templates} template${templates === 1 ? '' : 's'} and ${submissions} agreement${submissions === 1 ? '' : 's'}. ` +
+      `${recipientsCreated} new recipient${recipientsCreated === 1 ? '' : 's'}, ${valuesCaptured} value${valuesCaptured === 1 ? '' : 's'} captured, ` +
+      `${prefilled} form${prefilled === 1 ? '' : 's'} pre-filled.`,
+    data: { ...result.counts },
+  };
+}
+
+export async function saveFieldMappingAction(formData: FormData): Promise<ActionResult> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return { ok: false, error: 'Admin access required.' };
+
+  const templateId = String(formData.get('agreement_template_id') ?? '').trim() || null;
+  const fieldName = String(formData.get('field_name') ?? '').trim();
+  const sourceKey = String(formData.get('source_key') ?? '').trim();
+  const literalValue = String(formData.get('literal_value') ?? '').trim() || null;
+
+  if (!fieldName) return { ok: false, error: 'Field name is required.' };
+  if (sourceKey === 'literal' && !literalValue) {
+    return { ok: false, error: 'A fixed value needs something to fill in.' };
+  }
+
+  const fieldKey = fieldName.toLowerCase();
+  let query = supabase.from('da_field_mapping').select('id').eq('field_key', fieldKey);
+  query = templateId
+    ? query.eq('agreement_template_id', templateId)
+    : query.is('agreement_template_id', null);
+  const { data: existing } = await query.maybeSingle();
+
+  // 'auto' clears the override and hands the field back to automatic mapping.
+  if (sourceKey === 'auto') {
+    if (existing) await supabase.from('da_field_mapping').delete().eq('id', existing.id);
+    revalidateWorkspace();
+    return { ok: true, message: 'Field returned to automatic mapping.' };
+  }
+
+  const payload = {
+    agreement_template_id: templateId,
+    field_name: fieldName,
+    source_key: sourceKey,
+    literal_value: sourceKey === 'literal' ? literalValue : null,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { error } = existing
+    ? await supabase.from('da_field_mapping').update(payload).eq('id', existing.id)
+    : await supabase.from('da_field_mapping').insert(payload);
+
+  if (error) return { ok: false, error: error.message };
+  revalidateWorkspace();
+  return { ok: true, message: 'Mapping saved.' };
 }

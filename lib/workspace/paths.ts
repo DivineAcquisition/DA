@@ -14,7 +14,7 @@ export function workspacePath(path: string): string {
     host === 'admin.divineacquisition.io' ||
     host.endsWith('.admin.divineacquisition.io');
   if (isWorkspaceHost) return normalised;
-  if (normalised === '/') return '/workspace/recipients';
+  if (normalised === '/') return '/workspace/overview';
   if (normalised.startsWith('/workspace')) return normalised;
   if (normalised.startsWith('/p/') || normalised.startsWith('/c/')) return normalised;
   return `/workspace${normalised}`;

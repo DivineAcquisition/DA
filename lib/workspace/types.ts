@@ -23,12 +23,25 @@ export type DaPageTemplate = {
   created_at: string;
 };
 
+export type DocuSealFieldDefinition = {
+  uuid?: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+};
+
 export type DaAgreementTemplate = {
   id: string;
   name: string;
   description: string;
   recipient_type: RecipientType;
   docuseal_template_id: string;
+  docuseal_slug: string | null;
+  docuseal_folder: string | null;
+  docuseal_fields: DocuSealFieldDefinition[];
+  docuseal_submitters: { name?: string; uuid?: string }[];
+  archived: boolean;
+  synced_at: string | null;
   created_at: string;
 };
 
@@ -40,19 +53,64 @@ export type DaAgreementTemplatePage = {
   sort_order: number;
 };
 
+export type AgreementSource = 'workspace' | 'docuseal';
+
 export type DaAgreement = {
   id: string;
   recipient_id: string;
   template_id: string;
   docuseal_submission_id: string | null;
+  docuseal_submitter_id: string | null;
+  docuseal_slug: string | null;
+  submitter_email: string | null;
   signing_url: string | null;
   status: AgreementStatus;
+  source: AgreementSource;
   sent_at: string;
   viewed_at: string | null;
   completed_at: string | null;
   signed_document_url: string | null;
+  audit_log_url: string | null;
+  prefilled_values: Record<string, string>;
+  submitted_values: Record<string, string>;
+  unmapped_fields: string[];
   superseded_by_id: string | null;
+  synced_at: string | null;
   created_at: string;
+};
+
+export type DaRecipientField = {
+  id: string;
+  recipient_id: string;
+  field_name: string;
+  field_key: string;
+  value: string;
+  source: 'docuseal' | 'manual';
+  agreement_id: string | null;
+  observed_at: string;
+};
+
+export type DaFieldMapping = {
+  id: string;
+  agreement_template_id: string | null;
+  field_name: string;
+  field_key: string;
+  source_key: string;
+  literal_value: string | null;
+  updated_at: string;
+  created_at: string;
+};
+
+export type DaSyncRun = {
+  id: string;
+  started_at: string;
+  finished_at: string | null;
+  templates_synced: number;
+  submissions_synced: number;
+  recipients_created: number;
+  values_captured: number;
+  ok: boolean;
+  error: string | null;
 };
 
 export type DaPageToken = {
@@ -91,6 +149,9 @@ export type DaSettings = {
   docuseal_webhook_secret: string;
   default_booking_url: string;
   public_base_url: string;
+  auto_prefill: boolean;
+  prefill_readonly: boolean;
+  last_synced_at: string | null;
   updated_at: string;
 };
 

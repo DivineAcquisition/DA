@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { controlRpc } from '@/lib/ad/rpc';
-import { mapDocuSealEventToStatus } from '@/lib/workspace/docuseal';
+import { mapDocuSealEventToStatus, normalizeValues } from '@/lib/workspace/docuseal';
 import { serviceClient } from '@/lib/workspace/db';
 
 export const dynamic = 'force-dynamic';
@@ -67,6 +67,16 @@ export async function POST(request: NextRequest) {
     p_signed_document_url: signedUrl,
     p_log_id: logId,
   });
+
+  // What the signer entered becomes the recipient's known profile, which is
+  // what the next agreement is auto-mapped from.
+  const values = normalizeValues(data.values ?? payload.values);
+  if (Object.keys(values).length > 0) {
+    await controlRpc(supabase, 'da_apply_agreement_values', {
+      p_submission_id: submissionId,
+      p_values: values,
+    });
+  }
 
   return NextResponse.json({ ok: true, logId });
 }

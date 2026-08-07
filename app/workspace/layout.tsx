@@ -63,7 +63,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     );
   }
 
-  if (isLogin) redirect('/workspace/recipients');
+  if (isLogin) redirect('/workspace/overview');
 
   return (
     <div className={`da-workspace ${plusJakarta.variable}`}>

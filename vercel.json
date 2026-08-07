@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/assessment-reminders",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/docuseal-sync",
+      "schedule": "0 * * * *"
     }
   ]
 }

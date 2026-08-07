@@ -6,7 +6,8 @@ import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAt
 
 export const ws = {
   page: 'bg-[var(--ws-page)] text-[var(--ws-body)]',
-  card: 'rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)]',
+  card:
+    'rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] shadow-[0_24px_60px_-40px_rgba(124,77,255,0.9)]',
   panelHeader: 'bg-[var(--ws-panel)]',
   input:
     'w-full rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] px-3.5 py-2.5 text-sm text-white placeholder:text-[var(--ws-dim)] outline-none transition focus:border-[var(--ws-accent)] focus:ring-1 focus:ring-[var(--ws-accent)]',
@@ -66,6 +67,33 @@ export function Field({
       <span className={ws.label}>{label}</span>
       {children}
       {hint && <span className="mt-1 block text-xs text-[var(--ws-dim)]">{hint}</span>}
+    </label>
+  );
+}
+
+export function Toggle({
+  name,
+  label,
+  hint,
+  defaultChecked,
+}: {
+  name: string;
+  label: string;
+  hint?: string;
+  defaultChecked?: boolean;
+}) {
+  return (
+    <label className="flex cursor-pointer items-start gap-3">
+      <input
+        type="checkbox"
+        name={name}
+        defaultChecked={defaultChecked}
+        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[var(--ws-btn)]"
+      />
+      <span>
+        <span className="block text-sm text-white">{label}</span>
+        {hint && <span className="mt-0.5 block text-xs text-[var(--ws-dim)]">{hint}</span>}
+      </span>
     </label>
   );
 }
