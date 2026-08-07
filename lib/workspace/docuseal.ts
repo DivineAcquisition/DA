@@ -315,22 +315,80 @@ export async function cancelDocuSealSubmission(
   return { ok: true };
 }
 
+export async function fetchSubmissionDocuments(
+  apiKey: string,
+  submissionId: string,
+): Promise<Array<{ name: string; url: string }>> {
+  if (!apiKey || !submissionId) return [];
+  const response = await docusealFetch(
+    `/submissions/${encodeURIComponent(submissionId)}/documents`,
+    apiKey,
+  );
+  if (!response.ok) return [];
+  const data = (await response.json()) as
+    | { documents?: Array<{ name?: string; url?: string }> }
+    | Array<{ name?: string; url?: string }>;
+  const docs = Array.isArray(data) ? data : data.documents ?? [];
+  return docs
+    .filter((doc): doc is { name?: string; url: string } => Boolean(doc.url))
+    .map((doc) => ({ name: doc.name?.trim() || 'Agreement', url: doc.url }));
+}
+
 export async function fetchSignedDocumentUrl(
   settings: DaSettings,
   submissionId: string,
 ): Promise<string | null> {
   const apiKey = docusealApiKey(settings);
-  if (!apiKey || !submissionId) return null;
+  const docs = await fetchSubmissionDocuments(apiKey, submissionId);
+  return docs[0]?.url ?? null;
+}
 
-  const response = await docusealFetch(
-    `/submissions/${encodeURIComponent(submissionId)}/documents`,
-    apiKey,
-  );
-  if (!response.ok) return null;
+/** Template PDF preview URLs (blank / schema documents). */
+export async function fetchTemplateDocuments(
+  apiKey: string,
+  templateId: string | number,
+): Promise<Array<{ name: string; url: string }>> {
+  if (!apiKey || !templateId) return [];
+  const result = await getDocuSealTemplate(apiKey, templateId);
+  if (!result.ok) return [];
+  const raw = (result.data as DocuSealTemplate & {
+    documents?: Array<{ name?: string; url?: string }>;
+  }).documents;
+  return (raw ?? [])
+    .filter((doc): doc is { name?: string; url: string } => Boolean(doc.url))
+    .map((doc) => ({ name: doc.name?.trim() || 'Agreement', url: doc.url }));
+}
 
-  const data = (await response.json()) as { documents?: Array<{ url?: string }> } | Array<{ url?: string }>;
-  const docs = Array.isArray(data) ? data : data.documents ?? [];
-  return docs.find((d) => d.url)?.url ?? null;
+/**
+ * Completes a submitter from the DA tokenized signing page: writes field
+ * values (including signature image data URLs) and marks the party complete.
+ */
+export async function completeDocuSealSubmitter(input: {
+  apiKey: string;
+  submitterId: string;
+  fields: DocuSealFieldInput[];
+}): Promise<{ ok: boolean; documents?: Array<{ name: string; url: string }>; error?: string }> {
+  if (!input.apiKey || !input.submitterId) {
+    return { ok: false, error: 'Missing DocuSeal credentials or submitter.' };
+  }
+
+  const response = await docusealFetch(`/submitters/${encodeURIComponent(input.submitterId)}`, input.apiKey, {
+    method: 'PUT',
+    body: JSON.stringify({
+      completed: true,
+      send_email: false,
+      fields: input.fields,
+    }),
+  });
+
+  if (!response.ok) return { ok: false, error: await failure(response, 'complete') };
+
+  const body = (await response.json()) as DocuSealSubmitter;
+  const documents = (body.documents ?? [])
+    .filter((doc): doc is { name?: string; url: string } => Boolean(doc.url))
+    .map((doc) => ({ name: doc.name?.trim() || 'Signed agreement', url: doc.url }));
+
+  return { ok: true, documents };
 }
 
 /** Map DocuSeal webhook event names onto local agreement statuses. */
