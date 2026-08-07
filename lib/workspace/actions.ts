@@ -16,6 +16,17 @@ import {
   type MappedField,
   type TemplateField,
 } from './field-mapping';
+import {
+  applyOperatorExactMappings,
+  buildOperatorCompanyValues,
+  buildOperatorSignerValues,
+  companyInfoFromSettings,
+  fieldNamesForRole,
+  filterKnownFields,
+  inferOperatorVariant,
+  OPERATOR_SIGNER_ROLE,
+  resolveCompanyRoleName,
+} from './operator-agreement';
 import { publicCalendarUrl, publicPageUrl } from './paths';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor, syncDocuSeal } from './sync';
 import {
@@ -44,18 +55,25 @@ function parseExpiry(value: string | null | undefined): string | null {
   return date.toISOString();
 }
 
-async function loadSettings(): Promise<DaSettings | null> {
-  const supabase = await workspaceClient();
-  if (!supabase) return null;
-  const { data } = await supabase.from('da_settings').select('*').eq('id', 1).maybeSingle();
-  if (!data) return null;
-  const row = data as Record<string, unknown>;
+function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings | null {
+  if (!row) return null;
   return {
     ...(row as unknown as DaSettings),
     auto_prefill: row.auto_prefill !== false,
     prefill_readonly: row.prefill_readonly === true,
+    company_name: String(row.company_name ?? ''),
+    company_rep: String(row.company_rep ?? ''),
+    company_email: String(row.company_email ?? ''),
+    company_title: String(row.company_title ?? ''),
     last_synced_at: (row.last_synced_at as string | null) ?? null,
   };
+}
+
+async function loadSettings(): Promise<DaSettings | null> {
+  const supabase = await workspaceClient();
+  if (!supabase) return null;
+  const { data } = await supabase.from('da_settings').select('*').eq('id', 1).maybeSingle();
+  return withSettingsDefaults(data as Record<string, unknown> | null);
 }
 
 export async function signInAction(formData: FormData): Promise<ActionResult> {
@@ -297,6 +315,7 @@ function templateFieldCatalogue(template: { docuseal_fields?: unknown }): Templa
         name: String(record.name ?? '').trim(),
         type: record.type ? String(record.type) : 'text',
         required: Boolean(record.required),
+        submitter_uuid: record.submitter_uuid ? String(record.submitter_uuid) : undefined,
       };
     })
     .filter((field) => field.name.length > 0);
@@ -305,24 +324,60 @@ function templateFieldCatalogue(template: { docuseal_fields?: unknown }): Templa
 /** Resolves every field on a template against what is already known. */
 async function resolveAgreementFields(input: {
   supabase: NonNullable<Awaited<ReturnType<typeof workspaceClient>>>;
-  recipient: { id: string; full_name: string; email: string; phone: string | null; business_name: string | null };
-  template: { id: string; docuseal_fields?: unknown };
+  recipient: {
+    id: string;
+    full_name: string;
+    email: string;
+    phone: string | null;
+    business_name: string | null;
+    recipient_type?: RecipientType;
+  };
+  template: {
+    id: string;
+    name?: string;
+    recipient_type?: RecipientType;
+    docuseal_fields?: unknown;
+    docuseal_submitters?: { name?: string; uuid?: string }[];
+  };
   settings: DaSettings;
   pageUrls?: Record<string, string>;
 }): Promise<MappedField[]> {
   const submitted = await loadSubmittedValues(input.supabase, input.recipient.id);
   const overrides = await loadFieldOverrides(input.supabase);
+  const company = companyInfoFromSettings(input.settings);
+  const catalogue = templateFieldCatalogue(input.template);
 
-  return mapFields(templateFieldCatalogue(input.template), {
+  let mapped = mapFields(catalogue, {
     profile: buildProfile({
       recipient: input.recipient,
       submitted,
       bookingUrl: input.settings.default_booking_url,
+      company,
     }),
     submitted,
     pageUrls: input.pageUrls,
     overrides: overridesFor(overrides, input.template.id),
   });
+
+  const isOperator =
+    input.template.recipient_type === 'operator' || input.recipient.recipient_type === 'operator';
+  if (!isOperator) return mapped;
+
+  const variant = inferOperatorVariant(input.template.name ?? '');
+  const exact = buildOperatorSignerValues(
+    {
+      fullName: input.recipient.full_name,
+      legalName: input.recipient.full_name,
+      email: input.recipient.email,
+      phone: input.recipient.phone,
+      address: submitted['Full Address'] || submitted['Address'] || null,
+    },
+    company,
+    variant,
+  );
+  const known = new Set(catalogue.map((field) => field.name));
+  mapped = applyOperatorExactMappings(mapped, filterKnownFields(exact, known));
+  return mapped;
 }
 
 /** Read-only preview of what a send would push, for the send dialog. */
@@ -414,14 +469,55 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
   const fields = toDocuSealFields(mapped, { readonly: settings.prefill_readonly });
   const summary = mappingSummary(mapped);
 
+  const isOperator = template.recipient_type === 'operator' || recipient.recipient_type === 'operator';
+  const company = companyInfoFromSettings(settings);
+  let companySubmitter:
+    | { role: string; email: string; name: string; fields: { name: string; default_value: string; readonly: boolean }[] }
+    | undefined;
+
+  if (isOperator) {
+    const variant = inferOperatorVariant(String(template.name ?? ''));
+    const submitters = Array.isArray(template.docuseal_submitters)
+      ? (template.docuseal_submitters as { name?: string; uuid?: string }[])
+      : [];
+    const catalogue = templateFieldCatalogue(template);
+    const companyRole = resolveCompanyRoleName(submitters);
+    const companyNames = fieldNamesForRole(
+      catalogue.map((field) => ({
+        ...field,
+        submitter_uuid: (field as TemplateField & { submitter_uuid?: string }).submitter_uuid,
+      })),
+      submitters,
+      companyRole,
+    );
+    const companyValues = filterKnownFields(
+      buildOperatorCompanyValues(company, variant),
+      companyNames.size > 0 ? companyNames : Object.keys(buildOperatorCompanyValues(company, variant)),
+    );
+    if (Object.keys(companyValues).length > 0) {
+      companySubmitter = {
+        role: companyRole,
+        email: company.email,
+        name: company.name,
+        fields: Object.entries(companyValues).map(([name, default_value]) => ({
+          name,
+          default_value,
+          readonly: true,
+        })),
+      };
+    }
+  }
+
   const docuseal = await createDocuSealSubmission({
     settings,
     templateId: template.docuseal_template_id,
     email: recipient.email,
     name: recipient.full_name,
     phone: recipient.phone,
+    role: isOperator ? OPERATOR_SIGNER_ROLE : undefined,
     fields,
     externalId: agreement.id,
+    companySubmitter,
   });
 
   if (docuseal.error || !docuseal.submissionId) {
@@ -704,6 +800,10 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
     public_base_url: String(formData.get('public_base_url') ?? '').trim().replace(/\/+$/, ''),
     auto_prefill: formData.get('auto_prefill') === 'on',
     prefill_readonly: formData.get('prefill_readonly') === 'on',
+    company_name: String(formData.get('company_name') ?? '').trim(),
+    company_rep: String(formData.get('company_rep') ?? '').trim(),
+    company_email: String(formData.get('company_email') ?? '').trim(),
+    company_title: String(formData.get('company_title') ?? '').trim(),
     updated_at: new Date().toISOString(),
   };
 

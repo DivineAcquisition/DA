@@ -21,6 +21,13 @@ import {
   type FieldOverride,
   type TemplateField,
 } from './field-mapping';
+import {
+  applyOperatorExactMappings,
+  buildOperatorSignerValues,
+  companyInfoFromSettings,
+  filterKnownFields,
+  inferOperatorVariant,
+} from './operator-agreement';
 import type { DaFieldMapping, DaSettings, RecipientType } from './types';
 
 /** Only the columns the pull reads; the tables carry more. */
@@ -422,15 +429,39 @@ export async function syncDocuSeal(
     if (!settings.auto_prefill || !awaitingSignature || submitter.id == null) continue;
 
     const submitted = await loadSubmittedValues(supabase, recipient.id);
-    const mapped = mapFields(templateFields(template), {
+    const company = companyInfoFromSettings(settings);
+    let mapped = mapFields(templateFields(template), {
       profile: buildProfile({
         recipient,
         submitted,
         bookingUrl: settings.default_booking_url,
+        company,
       }),
       submitted,
       overrides: overridesFor(overrides, template.id),
     });
+
+    if (template.recipient_type === 'operator') {
+      const variant = inferOperatorVariant(template.name ?? '');
+      const exact = buildOperatorSignerValues(
+        {
+          fullName: recipient.full_name,
+          legalName: recipient.full_name,
+          email: recipient.email,
+          phone: recipient.phone,
+          address: submitted['Full Address'] || submitted['Address'] || null,
+        },
+        company,
+        variant,
+      );
+      mapped = applyOperatorExactMappings(
+        mapped,
+        filterKnownFields(
+          exact,
+          templateFields(template).map((field) => field.name),
+        ),
+      );
+    }
 
     // Never overwrite something the signer has already typed on this form.
     const pending = mapped.filter((field) => !(values[field.name] ?? '').trim());

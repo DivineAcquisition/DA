@@ -18,6 +18,7 @@ export type ProfileKey =
   | 'full_name'
   | 'first_name'
   | 'last_name'
+  | 'legal_name'
   | 'email'
   | 'phone'
   | 'business_name'
@@ -29,7 +30,11 @@ export type ProfileKey =
   | 'country'
   | 'website'
   | 'date'
-  | 'booking_url';
+  | 'booking_url'
+  | 'company_name'
+  | 'company_rep'
+  | 'company_email'
+  | 'company_title';
 
 export type FieldOrigin = 'page' | 'override' | 'submitted' | 'profile' | 'none' | 'skipped';
 export type MatchConfidence = 'exact' | 'high' | 'medium' | 'none';
@@ -38,6 +43,7 @@ export type TemplateField = {
   name: string;
   type?: string;
   required?: boolean;
+  submitter_uuid?: string;
 };
 
 export type FieldOverride = {
@@ -91,7 +97,6 @@ export const PROFILE_FIELDS: ProfileDefinition[] = [
       'print name',
       'recipient name',
       'contact name',
-      'legal name',
       'operator name',
       'contractor name',
       'partner name',
@@ -110,6 +115,11 @@ export const PROFILE_FIELDS: ProfileDefinition[] = [
     key: 'last_name',
     label: 'Last name',
     aliases: ['last name', 'surname', 'family name', 'last'],
+  },
+  {
+    key: 'legal_name',
+    label: 'Legal name',
+    aliases: ['legal name', 'legal full name', 'contractor legal name'],
   },
   {
     key: 'email',
@@ -176,6 +186,7 @@ export const PROFILE_FIELDS: ProfileDefinition[] = [
       'street address',
       'mailing address',
       'business address',
+      'full address',
       'street',
       'address line 1',
       'address 1',
@@ -215,6 +226,37 @@ export const PROFILE_FIELDS: ProfileDefinition[] = [
     key: 'booking_url',
     label: 'Booking link',
     aliases: ['booking link', 'booking url', 'calendar link', 'scheduling link', 'call link'],
+  },
+  {
+    key: 'company_name',
+    label: 'Our company name',
+    aliases: [
+      'company full name',
+      'organization name company',
+      'countersign company',
+      'hiring company',
+    ],
+  },
+  {
+    key: 'company_rep',
+    label: 'Company representative',
+    aliases: [
+      'authorized rep',
+      'authorized representative',
+      'company representative',
+      'company rep',
+      'representative name',
+    ],
+  },
+  {
+    key: 'company_email',
+    label: 'Company email',
+    aliases: ['company email', 'organization email'],
+  },
+  {
+    key: 'company_title',
+    label: 'Company title',
+    aliases: ['company title', 'rep title', 'representative title'],
   },
 ];
 
@@ -329,6 +371,19 @@ export function todayLong(now: Date = new Date()): string {
   return now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
+/**
+ * DocuSeal NUMBER fields coerce formatted phones to 0. Digits-only keeps the
+ * real number (same fix as NovaraCleaningui's VA contractor map).
+ */
+export function formatPhoneForField(phone: string | null | undefined, type: string): string {
+  const raw = (phone ?? '').trim();
+  if (!raw) return '';
+  if ((type ?? '').toLowerCase() === 'number') {
+    return raw.replace(/\D/g, '');
+  }
+  return raw;
+}
+
 export function splitName(fullName: string): { first: string; last: string } {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return { first: '', last: '' };
@@ -349,6 +404,14 @@ export function buildProfile(input: {
   };
   submitted?: Record<string, string>;
   bookingUrl?: string | null;
+  /** Company countersign values used on VA / operator agreements. */
+  company?: {
+    name?: string | null;
+    rep?: string | null;
+    email?: string | null;
+    title?: string | null;
+  } | null;
+  extras?: Partial<Record<ProfileKey, string>>;
   now?: Date;
 }): Partial<Record<ProfileKey, string>> {
   const now = input.now ?? new Date();
@@ -363,11 +426,20 @@ export function buildProfile(input: {
   set('full_name', input.recipient.full_name);
   set('first_name', first);
   set('last_name', last);
+  set('legal_name', input.recipient.full_name);
   set('email', input.recipient.email);
   set('phone', input.recipient.phone);
   set('business_name', input.recipient.business_name);
   set('booking_url', input.bookingUrl);
   set('date', todayLong(now));
+  set('company_name', input.company?.name);
+  set('company_rep', input.company?.rep);
+  set('company_email', input.company?.email);
+  set('company_title', input.company?.title);
+
+  for (const [key, value] of Object.entries(input.extras ?? {}) as [ProfileKey, string][]) {
+    if (!profile[key]) set(key, value);
+  }
 
   for (const [label, value] of Object.entries(input.submitted ?? {})) {
     const match = matchProfileKey(label);
@@ -380,11 +452,12 @@ export function buildProfile(input: {
   return profile;
 }
 
-function formatForType(value: string, type: string): string {
+function formatForType(value: string, type: string, sourceKey: string | null): string {
   if (type === 'date') {
     const parsed = new Date(value);
     if (!Number.isNaN(parsed.getTime())) return parsed.toISOString().slice(0, 10);
   }
+  if (sourceKey === 'phone') return formatPhoneForField(value, type);
   return value;
 }
 
@@ -426,7 +499,7 @@ export function mapField(field: TemplateField, context: MappingContext): MappedF
         : (context.profile[override.sourceKey as ProfileKey] ?? '').trim();
     return {
       ...base,
-      value: value ? formatForType(value, type) : null,
+      value: value ? formatForType(value, type, override.sourceKey) : null,
       sourceKey: override.sourceKey,
       sourceLabel:
         override.sourceKey === 'literal' ? 'Fixed value' : `${profileLabel(override.sourceKey)} (override)`,
@@ -451,7 +524,7 @@ export function mapField(field: TemplateField, context: MappingContext): MappedF
     if (normalizeFieldName(label) === normalized && value.trim()) {
       return {
         ...base,
-        value: formatForType(value.trim(), type),
+        value: formatForType(value.trim(), type, matchProfileKey(label)?.key ?? null),
         sourceKey: `submitted:${label}`,
         sourceLabel: 'Previously submitted',
         origin: 'submitted',
@@ -465,7 +538,7 @@ export function mapField(field: TemplateField, context: MappingContext): MappedF
   if (match && profileValue) {
     return {
       ...base,
-      value: formatForType(profileValue, type),
+      value: formatForType(profileValue, type, match.key),
       sourceKey: match.key,
       sourceLabel: profileLabel(match.key),
       origin: 'profile',

@@ -180,8 +180,16 @@ export async function createDocuSealSubmission(input: {
   email: string;
   name: string;
   phone?: string | null;
+  role?: string;
   fields: DocuSealFieldInput[];
   externalId?: string;
+  /** Optional company countersigner for VA / operator agreements. */
+  companySubmitter?: {
+    role: string;
+    email: string;
+    name: string;
+    fields: DocuSealFieldInput[];
+  };
 }): Promise<{
   submissionId: string;
   submitterId: string;
@@ -200,18 +208,31 @@ export async function createDocuSealSubmission(input: {
     return { ...empty, error: 'DocuSeal template identifier must be numeric.' };
   }
 
+  const payloadSubmitters: Array<Record<string, unknown>> = [
+    {
+      email: input.email,
+      name: input.name,
+      phone: input.phone || undefined,
+      role: input.role || undefined,
+      external_id: input.externalId,
+      fields: input.fields,
+    },
+  ];
+
+  if (input.companySubmitter) {
+    payloadSubmitters.push({
+      role: input.companySubmitter.role,
+      email: input.companySubmitter.email,
+      name: input.companySubmitter.name,
+      send_email: false,
+      fields: input.companySubmitter.fields,
+    });
+  }
+
   const body = {
     template_id: templateId,
     send_email: true,
-    submitters: [
-      {
-        email: input.email,
-        name: input.name,
-        phone: input.phone || undefined,
-        external_id: input.externalId,
-        fields: input.fields,
-      },
-    ],
+    submitters: payloadSubmitters,
   };
 
   const response = await docusealFetch('/submissions', apiKey, {
@@ -229,8 +250,8 @@ export async function createDocuSealSubmission(input: {
 
   // POST /submissions answers with the created submitters; older shapes wrap
   // them in the submission object.
-  const submitters = Array.isArray(data) ? data : (data.submitters ?? []);
-  const submitter = submitters[0];
+  const createdSubmitters = Array.isArray(data) ? data : (data.submitters ?? []);
+  const submitter = createdSubmitters[0];
   const submissionId = Array.isArray(data)
     ? String(submitter?.submission_id ?? '')
     : String(data.id ?? submitter?.submission_id ?? '');

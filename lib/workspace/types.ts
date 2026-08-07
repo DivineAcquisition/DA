@@ -28,6 +28,7 @@ export type DocuSealFieldDefinition = {
   name: string;
   type?: string;
   required?: boolean;
+  submitter_uuid?: string;
 };
 
 export type DaAgreementTemplate = {
@@ -151,6 +152,11 @@ export type DaSettings = {
   public_base_url: string;
   auto_prefill: boolean;
   prefill_readonly: boolean;
+  /** Countersign identity for VA / operator agreements (Novara-style). */
+  company_name: string;
+  company_rep: string;
+  company_email: string;
+  company_title: string;
   last_synced_at: string | null;
   updated_at: string;
 };

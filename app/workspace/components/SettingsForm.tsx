@@ -57,6 +57,36 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
 
       <div className="space-y-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]">
+          Company countersign (VA / operator agreements)
+        </p>
+        <p className="text-sm text-[var(--ws-dim)]">
+          Prefills Authorized Rep / Company Signature fields the way Novara maps VA contractor docs.
+        </p>
+        <Field label="Company name">
+          <Input
+            name="company_name"
+            defaultValue={settings.company_name}
+            placeholder="Divine Acquisition"
+          />
+        </Field>
+        <Field label="Representative name">
+          <Input name="company_rep" defaultValue={settings.company_rep} placeholder="Malik Sannie" />
+        </Field>
+        <Field label="Representative email">
+          <Input
+            name="company_email"
+            type="email"
+            defaultValue={settings.company_email}
+            placeholder="malik@divineacquisition.io"
+          />
+        </Field>
+        <Field label="Title">
+          <Input name="company_title" defaultValue={settings.company_title} placeholder="Owner" />
+        </Field>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]">
           Automatic field mapping
         </p>
         <Toggle

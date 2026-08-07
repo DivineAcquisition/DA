@@ -6,6 +6,13 @@ import {
   mappingSummary,
   type MappedField,
 } from './field-mapping';
+import {
+  applyOperatorExactMappings,
+  buildOperatorSignerValues,
+  companyInfoFromSettings,
+  filterKnownFields,
+  inferOperatorVariant,
+} from './operator-agreement';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor } from './sync';
 import type {
   DaAgreement,
@@ -31,6 +38,10 @@ function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings |
     ...(row as DaSettings),
     auto_prefill: row.auto_prefill !== false,
     prefill_readonly: row.prefill_readonly === true,
+    company_name: String(row.company_name ?? ''),
+    company_rep: String(row.company_rep ?? ''),
+    company_email: String(row.company_email ?? ''),
+    company_title: String(row.company_title ?? ''),
     last_synced_at: (row.last_synced_at as string | null) ?? null,
   };
 }
@@ -282,13 +293,22 @@ export async function listTemplateFieldMappings(): Promise<TemplateFieldMapping[
       | (Pick<DaRecipient, 'id' | 'full_name' | 'email' | 'phone' | 'business_name' | 'recipient_type'>[])
       | null) ?? [];
 
+  const company = companyInfoFromSettings(settings ?? {});
   const out: TemplateFieldMapping[] = [];
   for (const template of templates) {
     const recipient = pool.find((r) => r.recipient_type === template.recipient_type) ?? pool[0] ?? null;
     const submitted = recipient ? await loadSubmittedValues(supabase, recipient.id) : {};
     const profile = recipient
-      ? buildProfile({ recipient, submitted, bookingUrl: settings?.default_booking_url })
-      : {};
+      ? buildProfile({
+          recipient,
+          submitted,
+          bookingUrl: settings?.default_booking_url,
+          company,
+        })
+      : buildProfile({
+          recipient: { full_name: '', email: '', phone: null, business_name: null },
+          company,
+        });
 
     const { data: pages } = await supabase
       .from('da_agreement_template_page')
@@ -299,12 +319,34 @@ export async function listTemplateFieldMappings(): Promise<TemplateFieldMapping[
       pageUrls[page.docuseal_field_name] = `${settings?.public_base_url ?? ''}/p/…`;
     }
 
-    const fields = mapFields(template.docuseal_fields, {
+    let fields = mapFields(template.docuseal_fields, {
       profile,
       submitted,
       pageUrls,
       overrides: overridesFor(overrides, template.id),
     });
+
+    if (template.recipient_type === 'operator' && recipient) {
+      const variant = inferOperatorVariant(template.name);
+      const exact = buildOperatorSignerValues(
+        {
+          fullName: recipient.full_name,
+          legalName: recipient.full_name,
+          email: recipient.email,
+          phone: recipient.phone,
+          address: submitted['Full Address'] || submitted['Address'] || null,
+        },
+        company,
+        variant,
+      );
+      fields = applyOperatorExactMappings(
+        fields,
+        filterKnownFields(
+          exact,
+          template.docuseal_fields.map((field) => field.name),
+        ),
+      );
+    }
 
     out.push({
       template,
