@@ -1,514 +1,213 @@
-import Link from "next/link";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { headers } from 'next/headers';
+import Backdrop from '@/app/components/Backdrop';
+import Logo from '@/app/components/Logo';
+import { btnSecondary, btnSizeSm, eyebrow, sectionLabel } from '@/app/components/ui';
 import {
-  createAdminClient,
-  createClient,
-} from "@/lib/supabase/server";
-import { getWorkspaceAccess } from "@/lib/workspace/access";
-import { StatusBanner } from "./status-banner";
+  assessmentSignOutAction,
+  listAssessmentBookings,
+  listAssessmentInvites,
+  type AssessmentBookingRow,
+  type AssessmentInviteRow,
+} from '@/lib/assessment/actions';
+import { calendarConfigured } from '@/lib/assessment/calendar';
+import { GHL_PIT_TOKEN } from '@/lib/assessment/config';
+import { getSessionContext } from '@/lib/supabase/server';
+import ScheduleBookingForm from './components/ScheduleBookingForm';
+import SendInviteForm from './components/SendInviteForm';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-function asArray<T>(value: T[] | null | undefined): T[] {
-  return Array.isArray(value) ? value : [];
+function inviteStatus(invite: AssessmentInviteRow): { label: string; tone: string } {
+  const now = Date.now();
+  if (invite.revoked_at) return { label: 'Revoked', tone: 'text-flag-critical' };
+  if (invite.used_at) return { label: 'Booked', tone: 'text-flag-good' };
+  if (new Date(invite.expires_at).getTime() <= now) {
+    return { label: 'Expired', tone: 'text-neutral-500' };
+  }
+  if (invite.opened_at) return { label: 'Opened', tone: 'text-brand-300' };
+  return { label: 'Sent', tone: 'text-neutral-300' };
 }
 
-export default async function AssessmentAdminPage({
-  searchParams,
+function bookingStatus(booking: AssessmentBookingRow): { label: string; tone: string } {
+  if (booking.cancelled_at) return { label: 'Cancelled', tone: 'text-flag-critical' };
+  if (new Date(booking.starts_at).getTime() <= Date.now()) {
+    return { label: 'Completed / past', tone: 'text-neutral-500' };
+  }
+  if (booking.reminder_sent_at) return { label: 'Reminder sent', tone: 'text-brand-300' };
+  return { label: 'Confirmed', tone: 'text-flag-good' };
+}
+
+function AssessmentBody({
+  ghlReady,
+  calendarReady,
+  bookings,
+  invites,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
+  ghlReady: boolean;
+  calendarReady: boolean;
+  bookings: AssessmentBookingRow[];
+  invites: AssessmentInviteRow[];
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  return (
+    <>
+      <p className={eyebrow}>Talent assessment</p>
+      <h1 className="mt-4 text-3xl font-semibold sm:text-4xl">
+        Book &amp; invite <span className="text-gradient">assessment calls</span>
+      </h1>
+      <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">
+        Schedule a call yourself (creates the appointment in GHL via PIT + Google Meet), or send a
+        24-hour self-serve booking link. Confirmations and 30-minute reminders go out over email (CC
+        Malik).
+      </p>
+      <p className="mt-2 text-xs text-neutral-600">
+        GHL PIT: {ghlReady ? 'connected' : 'not configured — set GHL_PIT_TOKEN'} · Google Calendar:{' '}
+        {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_* / Drive SA + subject'}
+      </p>
 
-  if (!user) {
-    redirect("/login?next=/admin");
+      <section className="mt-10">
+        <div className="panel rounded-3xl p-5 sm:p-7">
+          <p className={sectionLabel}>Schedule a call</p>
+          <h2 className="mt-2 text-xl font-semibold">Set date &amp; time</h2>
+          <p className="mt-2 text-sm text-neutral-500">
+            Creates the appointment in GHL through the talent PIT, adds Google Meet when configured,
+            emails confirmation now, and auto-reminds 30 minutes before.
+          </p>
+          <div className="mt-6">
+            <ScheduleBookingForm />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <div className="panel rounded-3xl p-5 sm:p-7">
+          <p className={sectionLabel}>Self-serve invite</p>
+          <h2 className="mt-2 text-xl font-semibold">Send a 24-hour booking link</h2>
+          <div className="mt-6">
+            <SendInviteForm />
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <p className={sectionLabel}>Scheduled calls</p>
+        <h2 className="mt-2 text-xl font-semibold">Upcoming &amp; recent</h2>
+        <div className="mt-5 space-y-2.5">
+          {bookings.length === 0 ? (
+            <div className="panel rounded-2xl px-5 py-10 text-center text-sm text-neutral-500">
+              No scheduled calls yet.
+            </div>
+          ) : (
+            bookings.map((booking) => {
+              const status = bookingStatus(booking);
+              return (
+                <article
+                  key={booking.id}
+                  className="panel flex flex-col gap-2 rounded-2xl px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{booking.full_name}</p>
+                    <p className="truncate text-xs text-neutral-500">
+                      {booking.email}
+                      {booking.company_name ? ` · ${booking.company_name}` : ''}
+                      {booking.google_meet_url ? ' · Meet ready' : ''}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-col items-start gap-1 text-xs sm:items-end">
+                    <span className={status.tone}>{status.label}</span>
+                    <span className="tabular-nums text-neutral-600">
+                      {new Date(booking.starts_at).toLocaleString('en-US', {
+                        timeZone: booking.time_zone,
+                      })}{' '}
+                      ({booking.duration_minutes}m)
+                    </span>
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <p className={sectionLabel}>Recent link invites</p>
+        <h2 className="mt-2 text-xl font-semibold">Last 40 sends</h2>
+
+        <div className="mt-5 space-y-2.5">
+          {invites.length === 0 ? (
+            <div className="panel rounded-2xl px-5 py-10 text-center text-sm text-neutral-500">
+              No invites yet.
+            </div>
+          ) : (
+            invites.map((invite) => {
+              const status = inviteStatus(invite);
+              return (
+                <article
+                  key={invite.id}
+                  className="panel flex flex-col gap-2 rounded-2xl px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-white">{invite.full_name}</p>
+                    <p className="truncate text-xs text-neutral-500">
+                      {invite.email}
+                      {invite.company_name ? ` · ${invite.company_name}` : ''}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-4 text-xs">
+                    <span className={status.tone}>{status.label}</span>
+                    <span className="tabular-nums text-neutral-600">
+                      exp {new Date(invite.expires_at).toLocaleString()}
+                    </span>
+                  </div>
+                </article>
+              );
+            })
+          )}
+        </div>
+      </section>
+    </>
+  );
+}
+
+export default async function AssessmentAdminPage() {
+  const session = await getSessionContext();
+  const headerStore = await headers();
+  const unified = headerStore.get('x-da-unified-admin') === '1';
+  const [invites, bookings] = await Promise.all([listAssessmentInvites(), listAssessmentBookings()]);
+  const calendarReady = calendarConfigured();
+  const ghlReady = Boolean(GHL_PIT_TOKEN);
+  const body = (
+    <AssessmentBody
+      ghlReady={ghlReady}
+      calendarReady={calendarReady}
+      bookings={bookings}
+      invites={invites}
+    />
+  );
+
+  if (unified) {
+    return <div className="text-white antialiased">{body}</div>;
   }
-
-  const access = await getWorkspaceAccess(user.id);
-  if (!access.isAdmin) {
-    redirect("/acct");
-  }
-
-  const admin = createAdminClient();
-  const params = await searchParams;
-  const status = typeof params.status === "string" ? params.status : null;
-  const message = typeof params.message === "string" ? params.message : null;
-  const hdrs = await headers();
-  const unified = hdrs.get("x-da-unified-admin") === "1";
-
-  const [
-    { data: invites },
-    { data: bookings },
-    { data: schedules },
-  ] = await Promise.all([
-    admin
-      .from("assessment_invites")
-      .select("id, email, full_name, token, status, created_at, expires_at")
-      .order("created_at", { ascending: false })
-      .limit(50),
-    admin
-      .from("assessment_bookings")
-      .select(
-        "id, invite_id, start_at, end_at, timezone, status, meeting_url, created_at"
-      )
-      .order("start_at", { ascending: true })
-      .limit(50),
-    admin
-      .from("assessment_schedules")
-      .select(
-        "id, weekday, start_time, end_time, timezone, slot_minutes, capacity, is_active"
-      )
-      .order("weekday", { ascending: true })
-      .order("start_time", { ascending: true }),
-  ]);
-
-  const inviteRows = asArray(invites);
-  const bookingRows = asArray(bookings);
-  const scheduleRows = asArray(schedules);
 
   return (
-    <div className={unified ? "space-y-8" : "min-h-screen bg-slate-50 text-slate-900"}>
-      {!unified ? (
-        <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-indigo-600">
-                Divine Acquisition
-              </p>
-              <h1 className="text-lg font-semibold">Talent Assessment Admin</h1>
-            </div>
-            <div className="flex items-center gap-3 text-sm">
-              <Link href="/hiring" className="text-slate-600 hover:text-slate-900">
-                Careers
-              </Link>
-              <Link href="/assessment" className="text-slate-600 hover:text-slate-900">
-                Assessment portal
-              </Link>
-              <form action="/auth/signout" method="post">
-                <button className="rounded-lg border border-slate-200 px-3 py-1.5 hover:bg-slate-50">
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+      <div className="relative z-10">
+        <header className="sticky top-0 z-50 border-b border-white/[0.06] bg-ink-950/70 backdrop-blur-xl">
+          <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5 sm:h-[72px] sm:px-6">
+            <Logo className="h-[22px] w-auto sm:h-[28px]" />
+            <div className="flex items-center gap-3">
+              <span className="hidden text-xs text-neutral-500 sm:inline">{session?.email}</span>
+              <form action={assessmentSignOutAction}>
+                <button type="submit" className={`${btnSecondary} ${btnSizeSm}`}>
                   Sign out
                 </button>
               </form>
             </div>
           </div>
         </header>
-      ) : null}
 
-      <main className={unified ? "space-y-8" : "mx-auto max-w-6xl space-y-8 px-4 py-8 sm:px-6"}>
-        {!unified ? (
-          <StatusBanner status={status} message={message} />
-        ) : status || message ? (
-          <StatusBanner status={status} message={message} />
-        ) : null}
-
-        {!unified ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold">Invite candidate</h2>
-            <p className="mt-1 text-sm text-slate-600">
-              Creates a secure assessment invite link and emails the candidate.
-            </p>
-            <form action="/api/admin/assessment/invites" method="post" className="mt-5 grid gap-4 sm:grid-cols-2">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Full name</span>
-                <input
-                  name="full_name"
-                  required
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-indigo-500 focus:ring-2"
-                  placeholder="Alex Candidate"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none ring-indigo-500 focus:ring-2"
-                  placeholder="alex@example.com"
-                />
-              </label>
-              <div className="sm:col-span-2">
-                <button className="rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500">
-                  Send invite
-                </button>
-              </div>
-            </form>
-          </section>
-        ) : (
-          <section className="panel p-6">
-            <h2 className="font-display text-lg font-semibold text-white">Invite candidate</h2>
-            <p className="mt-1 text-sm text-ink-300">
-              Creates a secure assessment invite link and emails the candidate.
-            </p>
-            <form action="/api/admin/assessment/invites" method="post" className="mt-5 grid gap-4 sm:grid-cols-2">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Full name</span>
-                <input
-                  name="full_name"
-                  required
-                  className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white outline-none ring-brand-400 focus:ring-2"
-                  placeholder="Alex Candidate"
-                />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white outline-none ring-brand-400 focus:ring-2"
-                  placeholder="alex@example.com"
-                />
-              </label>
-              <div className="sm:col-span-2">
-                <button className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-ink-950 hover:bg-brand-400">
-                  Send invite
-                </button>
-              </div>
-            </form>
-          </section>
-        )}
-
-        {!unified ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-base font-semibold">Availability schedule</h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Recurring weekly windows used for interview booking.
-                </p>
-              </div>
-            </div>
-
-            <form action="/api/admin/assessment/schedules" method="post" className="mt-5 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Weekday</span>
-                <select name="weekday" className="w-full rounded-xl border border-slate-200 px-3 py-2" defaultValue="1">
-                  <option value="0">Sunday</option>
-                  <option value="1">Monday</option>
-                  <option value="2">Tuesday</option>
-                  <option value="3">Wednesday</option>
-                  <option value="4">Thursday</option>
-                  <option value="5">Friday</option>
-                  <option value="6">Saturday</option>
-                </select>
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Start</span>
-                <input name="start_time" type="time" required defaultValue="09:00" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">End</span>
-                <input name="end_time" type="time" required defaultValue="17:00" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Timezone</span>
-                <input name="timezone" required defaultValue="America/New_York" className="w-full rounded-xl border border-slate-200 px-3 py-2" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Slot (min)</span>
-                <input name="slot_minutes" type="number" min={15} step={15} defaultValue={30} className="w-full rounded-xl border border-slate-200 px-3 py-2" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-slate-700">Capacity</span>
-                <input name="capacity" type="number" min={1} defaultValue={1} className="w-full rounded-xl border border-slate-200 px-3 py-2" />
-              </label>
-              <div className="sm:col-span-3 lg:col-span-6">
-                <button className="rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
-                  Add schedule
-                </button>
-              </div>
-            </form>
-
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="border-b border-slate-200 text-slate-500">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Day</th>
-                    <th className="py-2 pr-4 font-medium">Window</th>
-                    <th className="py-2 pr-4 font-medium">Timezone</th>
-                    <th className="py-2 pr-4 font-medium">Slot</th>
-                    <th className="py-2 pr-4 font-medium">Capacity</th>
-                    <th className="py-2 font-medium">Active</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scheduleRows.map((row) => (
-                    <tr key={row.id} className="border-b border-slate-100">
-                      <td className="py-2 pr-4">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][row.weekday]}</td>
-                      <td className="py-2 pr-4">{row.start_time.slice(0, 5)} – {row.end_time.slice(0, 5)}</td>
-                      <td className="py-2 pr-4">{row.timezone}</td>
-                      <td className="py-2 pr-4">{row.slot_minutes}m</td>
-                      <td className="py-2 pr-4">{row.capacity}</td>
-                      <td className="py-2">{row.is_active ? "Yes" : "No"}</td>
-                    </tr>
-                  ))}
-                  {scheduleRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-6 text-slate-500">
-                        No schedules yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ) : (
-          <section className="panel p-6">
-            <h2 className="font-display text-lg font-semibold text-white">Availability schedule</h2>
-            <p className="mt-1 text-sm text-ink-300">
-              Recurring weekly windows used for interview booking.
-            </p>
-            <form action="/api/admin/assessment/schedules" method="post" className="mt-5 grid gap-4 sm:grid-cols-3 lg:grid-cols-6">
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Weekday</span>
-                <select name="weekday" className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" defaultValue="1">
-                  <option value="0">Sunday</option>
-                  <option value="1">Monday</option>
-                  <option value="2">Tuesday</option>
-                  <option value="3">Wednesday</option>
-                  <option value="4">Thursday</option>
-                  <option value="5">Friday</option>
-                  <option value="6">Saturday</option>
-                </select>
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Start</span>
-                <input name="start_time" type="time" required defaultValue="09:00" className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">End</span>
-                <input name="end_time" type="time" required defaultValue="17:00" className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Timezone</span>
-                <input name="timezone" required defaultValue="America/New_York" className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Slot (min)</span>
-                <input name="slot_minutes" type="number" min={15} step={15} defaultValue={30} className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" />
-              </label>
-              <label className="block text-sm">
-                <span className="mb-1 block font-medium text-ink-200">Capacity</span>
-                <input name="capacity" type="number" min={1} defaultValue={1} className="w-full rounded-xl border border-white/10 bg-ink-900/80 px-3 py-2 text-white" />
-              </label>
-              <div className="sm:col-span-3 lg:col-span-6">
-                <button className="rounded-xl bg-brand-500 px-4 py-2.5 text-sm font-semibold text-ink-950 hover:bg-brand-400">
-                  Add schedule
-                </button>
-              </div>
-            </form>
-            <div className="mt-6 overflow-x-auto">
-              <table className="min-w-full text-left text-sm text-ink-200">
-                <thead className="border-b border-white/10 text-ink-400">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Day</th>
-                    <th className="py-2 pr-4 font-medium">Window</th>
-                    <th className="py-2 pr-4 font-medium">Timezone</th>
-                    <th className="py-2 pr-4 font-medium">Slot</th>
-                    <th className="py-2 pr-4 font-medium">Capacity</th>
-                    <th className="py-2 font-medium">Active</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {scheduleRows.map((row) => (
-                    <tr key={row.id} className="border-b border-white/5">
-                      <td className="py-2 pr-4">{["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][row.weekday]}</td>
-                      <td className="py-2 pr-4">{row.start_time.slice(0, 5)} – {row.end_time.slice(0, 5)}</td>
-                      <td className="py-2 pr-4">{row.timezone}</td>
-                      <td className="py-2 pr-4">{row.slot_minutes}m</td>
-                      <td className="py-2 pr-4">{row.capacity}</td>
-                      <td className="py-2">{row.is_active ? "Yes" : "No"}</td>
-                    </tr>
-                  ))}
-                  {scheduleRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-6 text-ink-400">
-                        No schedules yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-
-        {!unified ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold">Recent invites</h2>
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="border-b border-slate-200 text-slate-500">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Candidate</th>
-                    <th className="py-2 pr-4 font-medium">Status</th>
-                    <th className="py-2 pr-4 font-medium">Created</th>
-                    <th className="py-2 font-medium">Invite link</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inviteRows.map((invite) => (
-                    <tr key={invite.id} className="border-b border-slate-100">
-                      <td className="py-2 pr-4">
-                        <div className="font-medium">{invite.full_name}</div>
-                        <div className="text-slate-500">{invite.email}</div>
-                      </td>
-                      <td className="py-2 pr-4 capitalize">{invite.status}</td>
-                      <td className="py-2 pr-4">{new Date(invite.created_at).toLocaleString()}</td>
-                      <td className="py-2">
-                        <Link href={`/assessment/invite/${invite.token}`} className="text-indigo-600 hover:underline">
-                          Open
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                  {inviteRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-slate-500">
-                        No invites yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ) : (
-          <section className="panel p-6">
-            <h2 className="font-display text-lg font-semibold text-white">Recent invites</h2>
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-full text-left text-sm text-ink-200">
-                <thead className="border-b border-white/10 text-ink-400">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Candidate</th>
-                    <th className="py-2 pr-4 font-medium">Status</th>
-                    <th className="py-2 pr-4 font-medium">Created</th>
-                    <th className="py-2 font-medium">Invite link</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {inviteRows.map((invite) => (
-                    <tr key={invite.id} className="border-b border-white/5">
-                      <td className="py-2 pr-4">
-                        <div className="font-medium text-white">{invite.full_name}</div>
-                        <div className="text-ink-400">{invite.email}</div>
-                      </td>
-                      <td className="py-2 pr-4 capitalize">{invite.status}</td>
-                      <td className="py-2 pr-4">{new Date(invite.created_at).toLocaleString()}</td>
-                      <td className="py-2">
-                        <Link href={`/assessment/invite/${invite.token}`} className="text-brand-300 hover:underline">
-                          Open
-                        </Link>
-                      </td>
-                    </tr>
-                  ))}
-                  {inviteRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={4} className="py-6 text-ink-400">
-                        No invites yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-
-        {!unified ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold">Bookings</h2>
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="border-b border-slate-200 text-slate-500">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Start</th>
-                    <th className="py-2 pr-4 font-medium">End</th>
-                    <th className="py-2 pr-4 font-medium">Timezone</th>
-                    <th className="py-2 pr-4 font-medium">Status</th>
-                    <th className="py-2 font-medium">Meeting</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookingRows.map((booking) => (
-                    <tr key={booking.id} className="border-b border-slate-100">
-                      <td className="py-2 pr-4">{new Date(booking.start_at).toLocaleString()}</td>
-                      <td className="py-2 pr-4">{new Date(booking.end_at).toLocaleString()}</td>
-                      <td className="py-2 pr-4">{booking.timezone}</td>
-                      <td className="py-2 pr-4 capitalize">{booking.status}</td>
-                      <td className="py-2">
-                        {booking.meeting_url ? (
-                          <a href={booking.meeting_url} className="text-indigo-600 hover:underline" target="_blank" rel="noreferrer">
-                            Join
-                          </a>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {bookingRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-6 text-slate-500">
-                        No bookings yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        ) : (
-          <section className="panel p-6">
-            <h2 className="font-display text-lg font-semibold text-white">Bookings</h2>
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-full text-left text-sm text-ink-200">
-                <thead className="border-b border-white/10 text-ink-400">
-                  <tr>
-                    <th className="py-2 pr-4 font-medium">Start</th>
-                    <th className="py-2 pr-4 font-medium">End</th>
-                    <th className="py-2 pr-4 font-medium">Timezone</th>
-                    <th className="py-2 pr-4 font-medium">Status</th>
-                    <th className="py-2 font-medium">Meeting</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bookingRows.map((booking) => (
-                    <tr key={booking.id} className="border-b border-white/5">
-                      <td className="py-2 pr-4">{new Date(booking.start_at).toLocaleString()}</td>
-                      <td className="py-2 pr-4">{new Date(booking.end_at).toLocaleString()}</td>
-                      <td className="py-2 pr-4">{booking.timezone}</td>
-                      <td className="py-2 pr-4 capitalize">{booking.status}</td>
-                      <td className="py-2">
-                        {booking.meeting_url ? (
-                          <a href={booking.meeting_url} className="text-brand-300 hover:underline" target="_blank" rel="noreferrer">
-                            Join
-                          </a>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                  {bookingRows.length === 0 ? (
-                    <tr>
-                      <td colSpan={5} className="py-6 text-ink-400">
-                        No bookings yet.
-                      </td>
-                    </tr>
-                  ) : null}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
-      </main>
+        <main className="mx-auto max-w-5xl px-5 py-10 sm:px-6 sm:py-14">{body}</main>
+      </div>
     </div>
   );
 }
