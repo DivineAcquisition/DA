@@ -18,16 +18,16 @@ export function Button({
 }) {
   const variants = {
     primary:
-      'bg-[var(--ws-btn)] text-white shadow-[0_12px_34px_-14px_rgba(106,0,255,0.85)] hover:brightness-110',
+      'bg-brand-500 text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)] hover:bg-brand-400 hover:shadow-[0_16px_40px_-14px_rgba(154,136,252,1)] active:bg-brand-600 active:text-white',
     secondary:
-      'border border-[var(--ws-border)] bg-white/[0.03] text-white hover:border-[var(--ws-accent)]/50 hover:bg-white/[0.06]',
-    ghost: 'text-[var(--ws-body)] hover:text-white',
-    danger: 'border border-[var(--ws-error)]/40 bg-[var(--ws-error)]/10 text-[var(--ws-error)] hover:bg-[var(--ws-error)]/20',
+      'border border-white/[0.12] bg-white/[0.03] text-white hover:border-white/25 hover:bg-white/[0.07]',
+    ghost: 'text-neutral-300 hover:text-white',
+    danger: 'border border-flag-critical/40 bg-flag-critical/10 text-flag-critical hover:bg-flag-critical/20',
   };
-  const sizes = { sm: 'px-3.5 py-1.5 text-[13px]', md: 'px-5 py-2.5 text-sm' };
+  const sizes = { sm: 'px-4 py-2 text-[13px]', md: 'px-5 py-2.5 text-sm' };
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     />
   );
@@ -58,7 +58,7 @@ export function Field({
     <label className="block">
       <span className={ws.label}>{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-[var(--ws-dim)]">{hint}</span>}
+      {hint && <span className="mt-1 block text-xs text-neutral-500">{hint}</span>}
     </label>
   );
 }
@@ -80,7 +80,7 @@ export function Toggle({
         type="checkbox"
         name={name}
         defaultChecked={defaultChecked}
-        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[var(--ws-btn)]"
+        className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-brand-500"
       />
       <span>
         <span className="block text-sm text-white">{label}</span>
@@ -98,11 +98,11 @@ export function Badge({
   tone?: 'neutral' | 'accent' | 'success' | 'error' | 'pending';
 }) {
   const tones = {
-    neutral: 'border-[var(--ws-border)] bg-white/[0.04] text-[var(--ws-body)]',
-    accent: 'border-[var(--ws-accent)]/35 bg-[var(--ws-accent)]/12 text-[var(--ws-accent)]',
-    success: 'border-[var(--ws-success)]/35 bg-[var(--ws-success)]/12 text-[var(--ws-success)]',
-    error: 'border-[var(--ws-error)]/35 bg-[var(--ws-error)]/12 text-[var(--ws-error)]',
-    pending: 'border-[var(--ws-pending)]/35 bg-[var(--ws-pending)]/12 text-[var(--ws-pending)]',
+    neutral: 'border-white/10 bg-white/[0.04] text-neutral-300',
+    accent: 'border-brand-500/25 bg-brand-500/10 text-brand-300',
+    success: 'border-flag-good/35 bg-flag-good/12 text-flag-good',
+    error: 'border-flag-critical/35 bg-flag-critical/12 text-flag-critical',
+    pending: 'border-flag-warning/35 bg-flag-warning/12 text-flag-warning',
   };
   return (
     <span
@@ -127,7 +127,7 @@ export function PageHeader({
       <div>
         <h1 className={`${ws.heading} text-2xl font-semibold tracking-tight sm:text-[28px]`}>{title}</h1>
         {description && (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--ws-dim)]">{description}</p>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{description}</p>
         )}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -139,7 +139,7 @@ export function EmptyState({ title, description }: { title: string; description:
   return (
     <div className={`${ws.card} px-6 py-14 text-center`}>
       <p className={`${ws.heading} text-base font-semibold`}>{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-[var(--ws-dim)]">{description}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-400">{description}</p>
     </div>
   );
 }
@@ -187,7 +187,7 @@ export function Dialog({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-2 py-1 text-sm text-[var(--ws-dim)] hover:text-white"
+            className="rounded-full px-2 py-1 text-sm text-neutral-500 hover:text-white"
           >
             Close
           </button>
@@ -275,14 +275,14 @@ export function DataTable({
               {headers.map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]"
+                  className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300"
                 >
                   {h}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--ws-border)]">{children}</tbody>
+          <tbody className="divide-y divide-white/[0.06]">{children}</tbody>
         </table>
       </div>
     </div>

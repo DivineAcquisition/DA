@@ -67,7 +67,7 @@ export default async function RecipientsPage({
         </label>
         <button
           type="submit"
-          className="rounded-full bg-[var(--ws-btn)] px-5 py-2.5 text-sm font-semibold text-white"
+          className="rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)] hover:bg-brand-400"
         >
           Filter
         </button>

@@ -1,17 +1,10 @@
 import type { Metadata } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
-
-const plusJakarta = Plus_Jakarta_Sans({
-  subsets: ['latin'],
-  variable: '--font-plus-jakarta',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: {
@@ -26,12 +19,10 @@ export const dynamic = 'force-dynamic';
 
 function NotConfigured() {
   return (
-    <div className="da-workspace flex min-h-screen items-center justify-center px-5">
-      <div className="max-w-md rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-8 text-center">
-        <h1 className="font-[family-name:var(--font-plus-jakarta)] text-xl font-semibold text-white">
-          Supabase not configured
-        </h1>
-        <p className="mt-3 text-sm text-[var(--ws-dim)]">
+    <div className="da-workspace flex min-h-screen items-center justify-center bg-ink-950 px-5">
+      <div className="panel max-w-md rounded-2xl p-8 text-center">
+        <h1 className="text-xl font-semibold tracking-tight text-white">Supabase not configured</h1>
+        <p className="mt-3 text-sm text-neutral-400">
           Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY on this deploy.
         </p>
       </div>
@@ -46,7 +37,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!supabaseConfigured) {
     return (
-      <div className={`da-workspace ${plusJakarta.variable}`}>
+      <div className="da-workspace">
         <NotConfigured />
       </div>
     );
@@ -57,7 +48,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (!session?.isAdmin) {
     if (!isLogin) redirect('/workspace/login');
     return (
-      <div className={`da-workspace ${plusJakarta.variable}`}>
+      <div className="da-workspace">
         <LoginForm />
       </div>
     );
@@ -66,7 +57,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (isLogin) redirect('/workspace/overview');
 
   return (
-    <div className={`da-workspace ${plusJakarta.variable}`}>
+    <div className="da-workspace">
       <Shell email={session.email}>{children}</Shell>
     </div>
   );

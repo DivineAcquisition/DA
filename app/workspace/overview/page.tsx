@@ -17,7 +17,7 @@ export const dynamic = 'force-dynamic';
 function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
     <div className={`${ws.card} p-5`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-dim)]">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
         {label}
       </p>
       <p className={`${ws.heading} mt-2 text-3xl font-semibold tabular-nums`}>{value}</p>

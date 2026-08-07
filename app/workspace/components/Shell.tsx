@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/app/components/Logo';
+import Backdrop from '@/app/components/Backdrop';
 import { signOutAction } from '@/lib/workspace/actions';
 import { Button } from './ui';
 
@@ -84,15 +85,13 @@ function SidebarContent({
         className="flex items-center gap-2.5 px-5 py-6 transition-opacity hover:opacity-80"
       >
         <Logo className="h-[26px] w-auto" />
-        <span className="font-[family-name:var(--font-plus-jakarta)] text-sm font-semibold tracking-tight text-white">
-          Admin
-        </span>
+        <span className="text-sm font-semibold tracking-tight text-white">Admin</span>
       </Link>
 
       <nav className="flex-1 space-y-7 overflow-y-auto px-3 pb-6">
         {NAV.map((group) => (
           <div key={group.heading}>
-            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--ws-dim)]">
+            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
               {group.heading}
             </p>
             <ul className="space-y-1">
@@ -106,8 +105,8 @@ function SidebarContent({
                       aria-current={active ? 'page' : undefined}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                         active
-                          ? 'bg-[var(--ws-accent)]/15 text-[var(--ws-accent-strong)] ring-1 ring-inset ring-[var(--ws-accent)]/30'
-                          : 'text-[var(--ws-body)] hover:bg-white/[0.05] hover:text-white'
+                          ? 'bg-brand-500/[0.12] text-brand-100 ring-1 ring-inset ring-brand-500/25'
+                          : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
                       }`}
                     >
                       <NavIconGlyph icon={item.icon} />
@@ -121,8 +120,8 @@ function SidebarContent({
         ))}
       </nav>
 
-      <div className="border-t border-[var(--ws-border)] px-5 py-4">
-        <p className="truncate text-[13px] text-[var(--ws-body)]" title={email}>
+      <div className="border-t border-white/[0.06] px-5 py-4">
+        <p className="truncate text-[13px] text-neutral-400" title={email}>
           {email}
         </p>
         <form action={signOutAction} className="mt-3">
@@ -150,8 +149,10 @@ export default function Shell({
     'Admin';
 
   return (
-    <div className="relative flex min-h-screen">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-[var(--ws-border)] bg-[var(--ws-rail)]/85 backdrop-blur-xl lg:block">
+    <div className="relative flex min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/[0.06] bg-ink-900/60 backdrop-blur-xl lg:block">
         <SidebarContent pathname={pathname} email={email} />
       </aside>
 
@@ -160,10 +161,10 @@ export default function Shell({
           <button
             type="button"
             aria-label="Close menu"
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
             onClick={() => setDrawerOpen(false)}
           />
-          <div className="absolute inset-y-0 left-0 w-72 border-r border-[var(--ws-border)] bg-[var(--ws-rail)] shadow-2xl">
+          <div className="absolute inset-y-0 left-0 w-72 border-r border-white/[0.06] bg-ink-900 shadow-2xl">
             <SidebarContent
               pathname={pathname}
               email={email}
@@ -173,21 +174,19 @@ export default function Shell({
         </div>
       )}
 
-      <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--ws-border)] bg-[var(--ws-page)]/80 px-4 backdrop-blur-xl lg:hidden">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col lg:pl-64">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.06] bg-ink-950/70 px-4 backdrop-blur-xl lg:hidden">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open menu"
-            className="rounded-xl border border-[var(--ws-border)] p-2 text-[var(--ws-accent)]"
+            className="rounded-xl border border-white/10 p-2 text-brand-300"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round">
               <path d="M4 7h16M4 12h16M4 17h16" />
             </svg>
           </button>
-          <span className="font-[family-name:var(--font-plus-jakarta)] text-sm font-semibold text-white">
-            {currentLabel}
-          </span>
+          <span className="text-sm font-semibold text-white">{currentLabel}</span>
         </header>
 
         <main className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-10">{children}</main>

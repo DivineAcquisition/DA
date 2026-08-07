@@ -11,13 +11,13 @@ export default function LoginForm() {
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[var(--ws-page)] px-5 py-12">
+    <div className="relative flex min-h-screen items-center justify-center bg-ink-950 px-5 py-12 text-white antialiased">
       <Backdrop />
       <div className={`${ws.card} relative z-10 w-full max-w-md animate-rise p-7 sm:p-8`}>
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo className="h-8 w-auto" />
           <h1 className={`${ws.heading} mt-6 text-2xl font-semibold`}>Administrator sign in</h1>
-          <p className="mt-2 text-sm text-[var(--ws-dim)]">Divine Acquisition admin workspace</p>
+          <p className="mt-2 text-sm text-neutral-400">Divine Acquisition admin workspace</p>
         </div>
 
         <form
@@ -37,7 +37,7 @@ export default function LoginForm() {
             <Input name="password" type="password" autoComplete="current-password" required />
           </Field>
           {error && (
-            <p className="rounded-xl border border-[var(--ws-error)]/30 bg-[var(--ws-error)]/10 px-3 py-2 text-sm text-[var(--ws-error)]">
+            <p className="rounded-xl border border-flag-critical/30 bg-flag-critical/10 px-3 py-2 text-sm text-flag-critical">
               {error}
             </p>
           )}

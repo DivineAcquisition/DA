@@ -1,40 +1,38 @@
+/**
+ * Workspace tokens aligned with the hiring surface: ink-950 page, brand-500
+ * accent, white/opacity hairlines. Kept as CSS vars so existing `--ws-*`
+ * references across the admin keep working without a wholesale rewrite.
+ */
 .da-workspace {
-  /* Light purple sits inside deep purple: the page is the deepest violet, the
-     rail and cards step up out of it, and every accent is the light purple. */
-  --ws-accent: #b9a4ff;
-  --ws-accent-strong: #d7ccff;
-  --ws-btn: #7c4dff;
-  --ws-page: #0f0726;
-  --ws-rail: #180a3c;
-  --ws-card: #241356;
-  --ws-panel: #33197a;
-  --ws-border: #46298f;
-  --ws-body: #cfc3f2;
-  --ws-dim: #9b8bd0;
-  --ws-success: #7dffab;
-  --ws-error: #ff7d9c;
-  --ws-pending: #ffd06a;
-  color: var(--ws-body);
-  background:
-    radial-gradient(120% 90% at 85% -10%, rgba(185, 164, 255, 0.16) 0%, transparent 60%),
-    radial-gradient(90% 70% at 0% 0%, rgba(124, 77, 255, 0.18) 0%, transparent 55%),
-    var(--ws-page);
-  background-attachment: fixed;
+  --ws-accent: #9a88fc;
+  --ws-accent-strong: #c3b6fe;
+  --ws-btn: #9a88fc;
+  --ws-page: #07070b;
+  --ws-rail: #0b0a11;
+  --ws-card: #0b0a11;
+  --ws-panel: #100f18;
+  --ws-border: rgba(255, 255, 255, 0.07);
+  --ws-body: #a3a3a3;
+  --ws-dim: #737373;
+  --ws-success: #52d6a4;
+  --ws-error: #f87171;
+  --ws-pending: #f0b45c;
+  color: #fff;
+  background: var(--ws-page);
   min-height: 100vh;
 }
 
 .da-workspace .prose-da {
-  color: var(--ws-body);
+  color: #a3a3a3;
   line-height: 1.7;
 }
 
 .da-workspace .prose-da h1,
 .da-workspace .prose-da h2,
 .da-workspace .prose-da h3 {
-  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
   color: #fff;
   margin: 1.25em 0 0.5em;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.022em;
 }
 
 .da-workspace .prose-da p {
