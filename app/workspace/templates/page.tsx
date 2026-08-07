@@ -39,8 +39,8 @@ export default async function TemplatesPage() {
   return (
     <div className="animate-rise space-y-10">
       <PageHeader
-        title="Templates"
-        description="Agreement templates and the custom pages attached to them."
+        title="Pages & templates"
+        description="Agreement templates and the tokenized custom pages attached to them."
         actions={
           <>
             <PageTemplateDialog />
@@ -85,7 +85,7 @@ export default async function TemplatesPage() {
       </section>
 
       <section>
-        <h2 className={`${ws.heading} mb-3.5 text-lg font-semibold`}>Custom page templates</h2>
+        <h2 className={`${ws.heading} mb-3.5 text-lg font-semibold`}>Tokenized pages</h2>
         {pageTokenGroups.length === 0 ? (
           <EmptyState
             title="No page templates"

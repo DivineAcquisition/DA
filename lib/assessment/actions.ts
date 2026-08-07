@@ -134,6 +134,7 @@ export async function sendAssessmentInviteAction(formData: FormData): Promise<Ac
     p_ghl_contact_id: contactId,
   });
 
+  revalidatePath('/workspace/calendar-links');
   revalidatePath('/admin');
   return {
     ok: true,
@@ -150,15 +151,17 @@ export async function assessmentSignInAction(formData: FormData): Promise<Action
 
   if (error) return { ok: false, error: error.message };
 
+  revalidatePath('/workspace/calendar-links');
   revalidatePath('/admin', 'layout');
-  redirect('/admin');
+  redirect('/workspace/calendar-links');
 }
 
 export async function assessmentSignOutAction(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  revalidatePath('/workspace/calendar-links');
   revalidatePath('/admin', 'layout');
-  redirect('/admin');
+  redirect('/workspace/login');
 }
 
 export async function listAssessmentInvites(): Promise<AssessmentInviteRow[]> {
@@ -336,6 +339,7 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
     p_ghl_appointment_id: ghlAppointmentId,
   });
 
+  revalidatePath('/workspace/calendar-links');
   revalidatePath('/admin');
 
   const when = new Date(data.starts_at).toLocaleString('en-US', { timeZone: data.time_zone });
