@@ -64,6 +64,8 @@ export type DaAgreement = {
   docuseal_submitter_id: string | null;
   docuseal_slug: string | null;
   submitter_email: string | null;
+  access_token: string | null;
+  provider_signing_url: string | null;
   signing_url: string | null;
   status: AgreementStatus;
   source: AgreementSource;

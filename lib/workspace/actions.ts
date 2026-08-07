@@ -8,6 +8,7 @@ import {
   fetchSignedDocumentUrl,
 } from './docuseal';
 import { requireAdmin, workspaceClient } from './db';
+import { sendAgreementInviteEmail } from './email';
 import {
   buildProfile,
   mapFields,
@@ -27,7 +28,7 @@ import {
   OPERATOR_SIGNER_ROLE,
   resolveCompanyRoleName,
 } from './operator-agreement';
-import { publicCalendarUrl, publicPageUrl } from './paths';
+import { publicCalendarUrl, publicPageUrl, publicSigningUrl } from './paths';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor, syncDocuSeal } from './sync';
 import {
   createToken,
@@ -525,6 +526,10 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     return { ok: false, error: docuseal.error ?? 'DocuSeal submission failed.' };
   }
 
+  const accessToken = createToken(32);
+  const publicUrl = publicSigningUrl(settings.public_base_url, accessToken);
+  const providerUrl = docuseal.signingUrl;
+
   await supabase
     .from('da_agreement')
     .update({
@@ -532,19 +537,39 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
       docuseal_submitter_id: docuseal.submitterId || null,
       docuseal_slug: docuseal.submitterSlug || null,
       submitter_email: recipient.email,
-      signing_url: docuseal.signingUrl,
+      access_token: accessToken,
+      provider_signing_url: providerUrl,
+      signing_url: publicUrl,
       prefilled_values: Object.fromEntries(fields.map((f) => [f.name, f.default_value])),
       unmapped_fields: summary.unmapped,
       synced_at: new Date().toISOString(),
     })
     .eq('id', agreement.id);
 
+  try {
+    await sendAgreementInviteEmail({
+      to: recipient.email,
+      recipientName: recipient.full_name,
+      companyName: settings.company_name || 'Divine Acquisition',
+      templateName: String(template.name ?? 'Agreement'),
+      signingUrl: publicUrl,
+    });
+  } catch (sendError) {
+    return {
+      ok: false,
+      error:
+        sendError instanceof Error
+          ? `Agreement created but email failed: ${sendError.message}. Signing link: ${publicUrl}`
+          : `Agreement created but email failed. Signing link: ${publicUrl}`,
+    };
+  }
+
   revalidateWorkspace();
   revalidatePath(`/workspace/recipients/${recipientId}`);
   return {
     ok: true,
     message: `Agreement sent with ${summary.filled} of ${summary.total} fields pre-filled.`,
-    data: { agreementId: agreement.id, signingUrl: docuseal.signingUrl ?? '' },
+    data: { agreementId: agreement.id, signingUrl: publicUrl },
   };
 }
 

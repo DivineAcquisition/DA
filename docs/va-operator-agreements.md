@@ -13,6 +13,8 @@ revision does not have.
 | Exact field builders | `lib/workspace/operator-agreement.ts` |
 | Generic alias matching | `lib/workspace/field-mapping.ts` |
 | Send + company submitter | `lib/workspace/actions.ts` → `createDocuSealSubmission` |
+| Branded signing email | `lib/workspace/email.ts` (Resend, Divine Acquisition) |
+| Tokenized signing URL | `https://admin.divineacquisition.io/s/<token>` → DocuSeal |
 | Preview on Field mapping | `/workspace/mapping` |
 | Company identity | Settings → Company countersign |
 

@@ -229,9 +229,11 @@ export async function createDocuSealSubmission(input: {
     });
   }
 
+  // Emails are sent by Divine Acquisition (Resend) with admin.divineacquisition.io
+  // tokenized links — never DocuSeal's default branded mail.
   const body = {
     template_id: templateId,
-    send_email: true,
+    send_email: false,
     submitters: payloadSubmitters,
   };
 

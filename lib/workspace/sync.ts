@@ -28,6 +28,8 @@ import {
   filterKnownFields,
   inferOperatorVariant,
 } from './operator-agreement';
+import { publicSigningUrl } from './paths';
+import { createToken } from './tokens';
 import type { DaFieldMapping, DaSettings, RecipientType } from './types';
 
 /** Only the columns the pull reads; the tables carry more. */
@@ -48,7 +50,16 @@ type RecipientRow = {
   recipient_type: RecipientType;
 };
 
-type AgreementRow = { id: string; docuseal_submission_id: string | null };
+type AgreementRow = {
+  id: string;
+  docuseal_submission_id: string | null;
+  access_token?: string | null;
+};
+
+function knownAccessToken(row: AgreementRow | undefined): string | null {
+  const token = row?.access_token?.trim();
+  return token && token.length >= 32 ? token : null;
+}
 
 export type SyncCounts = {
   templates: number;
@@ -380,12 +391,22 @@ export async function syncDocuSeal(
       submission.combined_document_url ??
       null;
 
+    const providerUrl = submitterSigningUrl(submitter);
+    const existingAccessToken =
+      knownAccessToken(agreementBySubmission.get(submissionId)) ?? createToken(32);
+    const publicUrl =
+      settings?.public_base_url?.trim() && providerUrl
+        ? publicSigningUrl(settings.public_base_url, existingAccessToken)
+        : providerUrl;
+
     const payload = {
       docuseal_submission_id: submissionId,
       docuseal_submitter_id: submitter.id != null ? String(submitter.id) : null,
       docuseal_slug: submission.slug ?? null,
       submitter_email: email,
-      signing_url: submitterSigningUrl(submitter),
+      access_token: existingAccessToken,
+      provider_signing_url: providerUrl,
+      signing_url: publicUrl,
       status,
       viewed_at: submitter.opened_at ?? null,
       completed_at: submission.completed_at ?? submitter.completed_at ?? null,
