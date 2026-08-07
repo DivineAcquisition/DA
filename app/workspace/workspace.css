@@ -1,17 +1,25 @@
 .da-workspace {
-  --ws-accent: #937dff;
-  --ws-btn: #6a00ff;
-  --ws-panel: #241442;
-  --ws-page: #0b0b0f;
-  --ws-card: #1c1c26;
-  --ws-border: #2a2a3a;
-  --ws-body: #b0aec0;
-  --ws-dim: #6e6c80;
-  --ws-success: #7aff8a;
-  --ws-error: #ff6a6a;
+  /* Light purple sits inside deep purple: the page is the deepest violet, the
+     rail and cards step up out of it, and every accent is the light purple. */
+  --ws-accent: #b9a4ff;
+  --ws-accent-strong: #d7ccff;
+  --ws-btn: #7c4dff;
+  --ws-page: #0f0726;
+  --ws-rail: #17093a;
+  --ws-card: #1c0f45;
+  --ws-panel: #2a1663;
+  --ws-border: #3a2278;
+  --ws-body: #cfc3f2;
+  --ws-dim: #9b8bd0;
+  --ws-success: #7dffab;
+  --ws-error: #ff7d9c;
   --ws-pending: #ffd06a;
   color: var(--ws-body);
-  background: var(--ws-page);
+  background:
+    radial-gradient(120% 90% at 85% -10%, rgba(185, 164, 255, 0.16) 0%, transparent 60%),
+    radial-gradient(90% 70% at 0% 0%, rgba(124, 77, 255, 0.18) 0%, transparent 55%),
+    var(--ws-page);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
