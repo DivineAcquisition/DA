@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { createPortal } from 'react-dom';
 import { ws } from './tokens';
 
 /** Workspace-scoped SaaS primitives — hiring-page visual language + brief brand tokens. */
@@ -156,29 +157,47 @@ export function Dialog({
   children: ReactNode;
 }) {
   const titleId = useId();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
   }, [open, onClose]);
 
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:items-center">
+  if (!open || !mounted) return null;
+
+  // Portaled to body so no ancestor transform / stacking context can trap
+  // `fixed`. On large screens the overlay starts after the sidebar so the
+  // panel centers in the content area rather than the full viewport.
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center p-4 lg:pl-64"
+      role="presentation"
+    >
       <button
         type="button"
         aria-label="Close dialog"
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-fade lg:left-64"
         onClick={onClose}
       />
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className={`${ws.card} relative z-10 w-full max-w-lg animate-rise p-5 shadow-2xl sm:p-6`}
+        className={`${ws.card} relative z-10 max-h-[min(90vh,52rem)] w-full max-w-lg overflow-y-auto animate-rise p-5 shadow-2xl sm:p-6`}
       >
         <div className="mb-5 flex items-start justify-between gap-3">
           <h2 id={titleId} className={`${ws.heading} text-lg font-semibold`}>
@@ -194,7 +213,8 @@ export function Dialog({
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
