@@ -1,9 +1,17 @@
-# Vistrial database
+# DivineACQ database
 
-Postgres 17 on Supabase, project `onobzewvjsicwxbsdlzw`. Shared by all Divine
-Acquisition surfaces; this directory holds the schema for the client documentation
-and growth tracking surface served at `/da` (`da.divineacquisition.io`, also
-reachable from the unified admin portal at `admin.divineacquisition.io`).
+Postgres 17 on Supabase, project **DivineACQ** (`hfgattcqlzuyahqywuoq`).
+Shared by all Divine Acquisition surfaces; this directory holds the schema for
+the client documentation and growth tracking surface served at `/da`
+(`da.divineacquisition.io`, also reachable from the unified admin portal at
+`admin.divineacquisition.io`).
+
+| | |
+|---|---|
+| Project | DivineACQ |
+| Ref | `hfgattcqlzuyahqywuoq` |
+| URL | `https://hfgattcqlzuyahqywuoq.supabase.co` |
+| Region | `us-east-1` |
 
 The migrations in `migrations/` are exported from the applied migration history,
 so the files and the live database match. `verify/` replays that chain into a
