@@ -100,8 +100,8 @@ export default function ControlShell({
 
       <footer className="border-t border-white/[0.06] px-5 py-5 sm:px-6">
         <p className="mx-auto max-w-6xl text-xs text-neutral-600">
-          ad.vistrial.io — roles, auth and account oversight. Permissions are decided in Postgres;
-          every refusal names the layer that said no.
+          ad.divineacquisition.io — roles, auth and account oversight. Permissions are decided in
+          Postgres; every refusal names the layer that said no.
         </p>
       </footer>
     </div>

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import NotConfigured from '@/app/da/components/NotConfigured';
+import UnifiedAdminChrome, {
+  isUnifiedAdminRequest,
+} from '@/app/workspace/components/UnifiedAdminChrome';
 import { loadOpsData } from '@/lib/vistrial/load';
 import { OpsProvider } from '@/lib/vistrial/store';
 import type { Actor } from '@/lib/vistrial/types';
@@ -9,8 +12,8 @@ import HubSignIn from './components/HubSignIn';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Vistrial — VA Ops Hub',
-    template: '%s | Vistrial Ops',
+    default: 'Ops | Divine Acquisition',
+    template: '%s | Divine Acquisition Ops',
   },
   description: 'Internal operations hub for the operators Divine Acquisition trains and places.',
   robots: { index: false, follow: false, nocache: true },
@@ -42,10 +45,15 @@ export default async function VistrialLayout({ children }: { children: React.Rea
         : { role: 'operator', id: operator!.id, name: operator!.name };
 
   const data = await loadOpsData();
+  const unified = session.isAdmin && (await isUnifiedAdminRequest());
 
   return (
     <OpsProvider data={data} actor={actor}>
-      <AppShell>{children}</AppShell>
+      {unified ? (
+        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
+      ) : (
+        <AppShell>{children}</AppShell>
+      )}
     </OpsProvider>
   );
 }

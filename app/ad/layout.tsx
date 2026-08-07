@@ -1,14 +1,17 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import UnifiedAdminChrome, {
+  isUnifiedAdminRequest,
+} from '@/app/workspace/components/UnifiedAdminChrome';
 import ControlShell from './components/ControlShell';
 import NotConfigured from './components/NotConfigured';
 import SignIn from './components/SignIn';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Vistrial — Roles & Admin',
-    template: '%s | Vistrial Control',
+    default: 'Control | Divine Acquisition',
+    template: '%s | Divine Acquisition Control',
   },
   description: 'Account lifecycle, permissions, impersonation and audit for Divine Acquisition.',
   robots: { index: false, follow: false, nocache: true },
@@ -50,6 +53,11 @@ export default async function ControlLayout({ children }: { children: React.Reac
 
   if (!session.canAccessControlPlane) {
     return <SignIn refusedFor={session.email} />;
+  }
+
+  // Unified portal is admin-only; managers keep the dedicated control host chrome.
+  if (session.isAdmin && (await isUnifiedAdminRequest())) {
+    return <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>;
   }
 
   return <ControlShell session={session}>{children}</ControlShell>;

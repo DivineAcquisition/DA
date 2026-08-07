@@ -1,8 +1,9 @@
 # Vistrial database
 
-Postgres 17 on Supabase, project `onobzewvjsicwxbsdlzw`. Shared by all Vistrial
-surfaces; this directory holds the schema for the client documentation and growth
-tracking surface served at `da.vistrial.io`.
+Postgres 17 on Supabase, project `onobzewvjsicwxbsdlzw`. Shared by all Divine
+Acquisition surfaces; this directory holds the schema for the client documentation
+and growth tracking surface served at `/da` (`da.divineacquisition.io`, also
+reachable from the unified admin portal at `admin.divineacquisition.io`).
 
 The migrations in `migrations/` are exported from the applied migration history,
 so the files and the live database match. `verify/` replays that chain into a
@@ -179,7 +180,7 @@ update auth.users
        reauthentication_token = coalesce(reauthentication_token, '');
 ```
 
-## Roles, auth and the admin workspace (`ad.vistrial.io`)
+## Roles, auth and the admin workspace (`ad.divineacquisition.io`)
 
 The control-plane migrations (`20260726221034` onward) add Owner / Admin /
 Manager / Operator / Contractor roles, account state, the permission catalogue,
@@ -194,9 +195,10 @@ lockdown, blocking notice, impersonation, override, role default).
 and it evaluates the acting profile during impersonation so the rest of the
 surfaces keep working.
 
-The Next.js surface lives at `/ad` (host `ad.vistrial.io` via
-`VISTRIAL_CONTROL_HOSTS`). Accounts are invited from `/ad/invites`; acceptance
-is at `/ad/invite?token=…`.
+The Next.js surface lives at `/ad` (host `ad.divineacquisition.io` via
+`VISTRIAL_CONTROL_HOSTS`, also under the unified portal at
+`admin.divineacquisition.io`). Accounts are invited from `/ad/invites`;
+acceptance is at `/ad/invite?token=…`.
 
 ### Host routing
 
@@ -204,15 +206,21 @@ Each property is a dedicated host. On that host only its surface is served;
 other app paths return 404. Localhost and `*.vercel.app` keep path-based access
 for previews.
 
+`admin.divineacquisition.io` (`DA_WORKSPACE_HOSTS`) is the unified admin
+portal: agreements (`/workspace`), growth (`/da`), control (`/ad`), assessment
+admin (`/admin`), and ops (`/vistrial`) share one sidebar. Dedicated hosts below
+remain as cutover aliases while DNS moves off `*.vistrial.io`.
+
 | Host env | Default | Surface |
 |---|---|---|
-| `VISTRIAL_CONTROL_HOSTS` | `ad.vistrial.io` | `/ad` |
-| `VISTRIAL_ADMIN_HOSTS` | `da.vistrial.io` | `/da` |
-| `VISTRIAL_ACCT_HOSTS` | `acct.vistrial.io` | `/acct` |
-| `VISTRIAL_OPS_HOSTS` | `ops.vistrial.io`, … | `/vistrial` |
-| `VISTRIAL_CAREERS_HOSTS` | `vistrial.io`, … | `/hiring` |
+| `DA_WORKSPACE_HOSTS` | `admin.divineacquisition.io` | unified admin portal |
+| `VISTRIAL_CONTROL_HOSTS` | `ad.divineacquisition.io` | `/ad` |
+| `VISTRIAL_ADMIN_HOSTS` | `da.divineacquisition.io` | `/da` |
+| `VISTRIAL_ACCT_HOSTS` | `acct.divineacquisition.io` | `/acct` |
+| `VISTRIAL_OPS_HOSTS` | `ops.divineacquisition.io`, … | `/vistrial` |
+| `VISTRIAL_CAREERS_HOSTS` | `divineacquisition.io`, … | `/hiring` |
+| `VISTRIAL_TALENT_HOSTS` | `talent.divineacquisition.io` | `/assessment` |
 | `VISTRIAL_ACQ_HOSTS` | `acq.divineacquisition.io` | `/acq` |
 
 Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
-every deploy. The app also falls back to the live Vistrial project values so a
-missing env var does not render the “Database not connected” screen.
+every deploy.

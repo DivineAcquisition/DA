@@ -8,24 +8,65 @@ import Backdrop from '@/app/components/Backdrop';
 import { signOutAction } from '@/lib/workspace/actions';
 import { Button } from './ui';
 
-type NavItem = { href: string; label: string; icon: NavIcon };
-type NavIcon = 'grid' | 'people' | 'document' | 'stack' | 'link' | 'map' | 'gear';
+type NavItem = { href: string; label: string; icon: NavIcon; match?: string };
+type NavIcon =
+  | 'grid'
+  | 'people'
+  | 'document'
+  | 'stack'
+  | 'link'
+  | 'map'
+  | 'gear'
+  | 'growth'
+  | 'billing'
+  | 'control'
+  | 'audit'
+  | 'talent'
+  | 'ops'
+  | 'bookings';
 
 const NAV: { heading: string; items: NavItem[] }[] = [
   {
-    heading: 'Pipeline',
+    heading: 'Agreements',
     items: [
       { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
-    ],
-  },
-  {
-    heading: 'Documents',
-    items: [
       { href: '/workspace/templates', label: 'Templates', icon: 'stack' },
       { href: '/workspace/mapping', label: 'Field mapping', icon: 'map' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
+    ],
+  },
+  {
+    heading: 'Growth',
+    items: [
+      { href: '/da', label: 'Engagements', icon: 'growth', match: '/da' },
+      { href: '/da/billing', label: 'Billing', icon: 'billing' },
+      { href: '/da/payouts', label: 'Payouts', icon: 'billing' },
+      { href: '/da/margin', label: 'Margin', icon: 'growth' },
+      { href: '/da/ingestion', label: 'Ingestion', icon: 'stack' },
+      { href: '/da/messages', label: 'Requests', icon: 'document' },
+    ],
+  },
+  {
+    heading: 'Control',
+    items: [
+      { href: '/ad', label: 'Accounts', icon: 'control', match: '/ad' },
+      { href: '/ad/invites', label: 'Invites', icon: 'people' },
+      { href: '/ad/audit', label: 'Audit', icon: 'audit' },
+      { href: '/ad/credentials', label: 'Credentials', icon: 'gear' },
+      { href: '/ad/alerts', label: 'Alerts', icon: 'document' },
+      { href: '/ad/lockdown', label: 'Lockdown', icon: 'control' },
+    ],
+  },
+  {
+    heading: 'Talent & ops',
+    items: [
+      { href: '/admin', label: 'Assessments', icon: 'talent' },
+      { href: '/vistrial/admin', label: 'Ops hub', icon: 'ops' },
+      { href: '/vistrial/admin/bookings', label: 'Booking review', icon: 'bookings' },
+      { href: '/vistrial/admin/escalations', label: 'Escalations', icon: 'document' },
+      { href: '/vistrial/admin/payroll', label: 'Payroll', icon: 'billing' },
     ],
   },
   {
@@ -44,10 +85,17 @@ const ICON_PATHS: Record<NavIcon, string> = {
   map: 'M4 6h6M4 12h6M4 18h6M14 6h6M14 12h6M14 18h6M10 6l4 6M10 12l4-6M10 18l4-6',
   gear:
     'M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm8.4-2.1.1-1.4-.1-1.4 1.8-1.3-1.7-3-2.1.7a7.6 7.6 0 0 0-2.4-1.4L15.6 3H8.4l-.4 2.6a7.6 7.6 0 0 0-2.4 1.4l-2.1-.7-1.7 3 1.8 1.3-.1 1.4.1 1.4-1.8 1.3 1.7 3 2.1-.7c.7.6 1.5 1.1 2.4 1.4l.4 2.6h7.2l.4-2.6c.9-.3 1.7-.8 2.4-1.4l2.1.7 1.7-3-1.8-1.3Z',
+  growth: 'M4 18 10 12l4 4 6-8M14 8h6v6',
+  billing: 'M4 6h16v12H4V6Zm0 4h16M8 14h4',
+  control: 'M12 3 4 7v5c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-4Z',
+  audit: 'M8 4h8v16H8V4Zm3 4h2M9 12h6M9 16h6',
+  talent: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9a7 7 0 0 1 14 0',
+  ops: 'M4 8h16M4 12h16M4 16h10',
+  bookings: 'M7 3v3M17 3v3M4 8h16v12H4V8Zm4 5h3v3H8v-3Z',
 };
 
 function NavIconGlyph({ icon }: { icon: NavIcon }) {
-  const filled = icon === 'grid' || icon === 'people';
+  const filled = icon === 'grid' || icon === 'people' || icon === 'talent';
   return (
     <svg
       viewBox="0 0 24 24"
@@ -64,8 +112,19 @@ function NavIconGlyph({ icon }: { icon: NavIcon }) {
   );
 }
 
-function isActive(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
+function isActive(pathname: string, item: NavItem) {
+  const exact = pathname === item.href || pathname === `${item.href}/`;
+  if (item.match && item.href === item.match) return exact;
+  if (exact) return true;
+  if (!pathname.startsWith(`${item.href}/`)) return false;
+  // A child route owns the highlight — parents stay quiet.
+  const allHrefs = NAV.flatMap((group) => group.items.map((entry) => entry.href));
+  return !allHrefs.some(
+    (href) =>
+      href !== item.href &&
+      href.startsWith(`${item.href}/`) &&
+      (pathname === href || pathname.startsWith(`${href}/`)),
+  );
 }
 
 function SidebarContent({
@@ -88,7 +147,7 @@ function SidebarContent({
         <span className="text-sm font-semibold tracking-tight text-white">Admin</span>
       </Link>
 
-      <nav className="flex-1 space-y-7 overflow-y-auto px-3 pb-6">
+      <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
         {NAV.map((group) => (
           <div key={group.heading}>
             <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
@@ -96,7 +155,7 @@ function SidebarContent({
             </p>
             <ul className="space-y-1">
               {group.items.map((item) => {
-                const active = isActive(pathname, item.href);
+                const active = isActive(pathname, item);
                 return (
                   <li key={item.href}>
                     <Link
@@ -145,8 +204,7 @@ export default function Shell({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const currentLabel =
-    NAV.flatMap((group) => group.items).find((item) => isActive(pathname, item.href))?.label ??
-    'Admin';
+    NAV.flatMap((group) => group.items).find((item) => isActive(pathname, item))?.label ?? 'Admin';
 
   return (
     <div className="relative flex min-h-screen bg-ink-950 text-white antialiased">

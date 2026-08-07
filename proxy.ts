@@ -4,21 +4,23 @@ import { NextResponse, type NextRequest } from 'next/server';
 /**
  * Strict host-based routing plus Supabase session refresh.
  *
- * Each Vistrial property is a dedicated host. On that host only its surface is
- * reachable — every other app path returns 404. Previews and localhost keep
- * path-based access so development still works without DNS.
+ * Each Divine Acquisition property is a dedicated host. On that host only its
+ * surface is reachable — every other app path returns 404. Previews and
+ * localhost keep path-based access so development still works without DNS.
  *
- *   ad.vistrial.io                  -> /ad
- *   da.vistrial.io                  -> /da
- *   acct.vistrial.io                -> /acct
- *   ops.vistrial.io                 -> /vistrial
+ *   admin.divineacquisition.io      -> unified admin portal
+ *                                       /workspace (agreements)
+ *                                       /da (growth)
+ *                                       /ad (control)
+ *                                       /admin (assessment)
+ *                                       /vistrial (ops)
+ *   da.divineacquisition.io         -> /da   (legacy alias during cutover)
+ *   ad.divineacquisition.io         -> /ad
+ *   acct.divineacquisition.io       -> /acct
+ *   ops.divineacquisition.io        -> /vistrial
  *   talent.divineacquisition.io     -> /assessment
- *   admin.divineacquisition.io      -> /workspace (agreements admin)
  *   acq.divineacquisition.io        -> /acq
- *   careers / other                 -> /hiring (and /)
- *
- * Assessment admin remains at /admin for path-based preview access.
- * Set VISTRIAL_ASSESSMENT_ADMIN_HOSTS if it needs a dedicated host again.
+ *   careers / apex                  -> /hiring (and /)
  */
 
 const hosts = (value: string | undefined, fallback: string) =>
@@ -27,16 +29,16 @@ const hosts = (value: string | undefined, fallback: string) =>
     .map((host) => host.trim().toLowerCase())
     .filter(Boolean);
 
-const CONTROL_HOSTS = hosts(process.env.VISTRIAL_CONTROL_HOSTS, 'ad.vistrial.io');
-const ADMIN_HOSTS = hosts(process.env.VISTRIAL_ADMIN_HOSTS, 'da.vistrial.io');
-const ACCT_HOSTS = hosts(process.env.VISTRIAL_ACCT_HOSTS, 'acct.vistrial.io');
+const CONTROL_HOSTS = hosts(process.env.VISTRIAL_CONTROL_HOSTS, 'ad.divineacquisition.io');
+const ADMIN_HOSTS = hosts(process.env.VISTRIAL_ADMIN_HOSTS, 'da.divineacquisition.io');
+const ACCT_HOSTS = hosts(process.env.VISTRIAL_ACCT_HOSTS, 'acct.divineacquisition.io');
 const OPS_HOSTS = hosts(
   process.env.VISTRIAL_OPS_HOSTS,
-  'ops.vistrial.io,ops.divineacquisition.io,vistrial.divineacquisition.io',
+  'ops.divineacquisition.io,vistrial.divineacquisition.io',
 );
 const CAREERS_HOSTS = hosts(
   process.env.VISTRIAL_CAREERS_HOSTS,
-  'vistrial.io,www.vistrial.io,divineacquisition.io,www.divineacquisition.io',
+  'divineacquisition.io,www.divineacquisition.io',
 );
 const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
@@ -68,6 +70,20 @@ const SURFACE_PREFIXES = [
   ACQ_PREFIX,
 ];
 
+/** Surfaces co-hosted on admin.divineacquisition.io under one sidebar. */
+function isUnifiedAdminPath(pathname: string): boolean {
+  return (
+    pathname === CONTROL_PREFIX ||
+    pathname.startsWith(`${CONTROL_PREFIX}/`) ||
+    pathname === ADMIN_PREFIX ||
+    pathname.startsWith(`${ADMIN_PREFIX}/`) ||
+    pathname === ASSESSMENT_ADMIN_PREFIX ||
+    pathname.startsWith(`${ASSESSMENT_ADMIN_PREFIX}/`) ||
+    pathname === OPS_PREFIX ||
+    pathname.startsWith(`${OPS_PREFIX}/`)
+  );
+}
+
 type Surface = {
   hosts: string[];
   prefix: string;
@@ -93,15 +109,19 @@ const SURFACES: Surface[] = [
   {
     hosts: WORKSPACE_HOSTS,
     prefix: WORKSPACE_PREFIX,
+    // Unified admin portal: agreements plus the former Vistrial admin surfaces.
     // Public token routes stay at /p and /c without the workspace prefix.
     allow: (pathname) =>
       pathname === '/' ||
       pathname.startsWith('/workspace') ||
+      isUnifiedAdminPath(pathname) ||
       isPublicTokenPath(pathname) ||
       pathname === '/login' ||
+      pathname.startsWith('/overview') ||
       pathname.startsWith('/recipients') ||
       pathname.startsWith('/agreements') ||
       pathname.startsWith('/templates') ||
+      pathname.startsWith('/mapping') ||
       pathname.startsWith('/calendar-links') ||
       pathname.startsWith('/settings'),
   },
@@ -153,7 +173,13 @@ export async function proxy(request: NextRequest) {
   const local = isLocalHost(host);
 
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.
-  if (surface && !local && isForeignSurfacePath(pathname, surface.prefix)) {
+  // The workspace host is the exception — it is the unified admin portal.
+  if (
+    surface &&
+    !local &&
+    isForeignSurfacePath(pathname, surface.prefix) &&
+    !(surface.prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname))
+  ) {
     return new NextResponse('Not found', {
       status: 404,
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
@@ -182,7 +208,9 @@ export async function proxy(request: NextRequest) {
   }
 
   const prefix = surface?.prefix ?? null;
-  const skipRewrite = Boolean(prefix && isPublicTokenPath(pathname));
+  const skipRewrite =
+    Boolean(prefix && isPublicTokenPath(pathname)) ||
+    Boolean(prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname));
 
   const isInternal =
     prefix !== null ||
@@ -204,6 +232,9 @@ export async function proxy(request: NextRequest) {
   requestHeaders.set('x-pathname', stampedPath);
   requestHeaders.set('x-vistrial-host', host);
   if (prefix) requestHeaders.set('x-vistrial-surface', prefix);
+  if (prefix === WORKSPACE_PREFIX || (local && isUnifiedAdminPath(pathname))) {
+    requestHeaders.set('x-da-unified-admin', '1');
+  }
 
   let response = NextResponse.next({
     request: { headers: requestHeaders },
