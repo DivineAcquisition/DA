@@ -134,7 +134,7 @@ export default function ScheduleBookingForm() {
       )}
 
       <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd}`}>
-        {pending ? 'Scheduling…' : 'Create booking + send confirmation'}
+        {pending ? 'Scheduling…' : 'Create pending booking + notify'}
       </button>
     </form>
   );

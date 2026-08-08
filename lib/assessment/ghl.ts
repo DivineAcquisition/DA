@@ -77,7 +77,9 @@ export type CreatedGhlAppointment = {
 };
 
 /**
- * Creates a confirmed appointment on the Assessment Interview calendar via PIT.
+ * Creates an appointment on the Assessment Interview calendar via PIT.
+ * Internal (admin) bookings use status `new` (pending) so GHL email/SMS do not
+ * treat the slot as confirmed until deposit is received.
  * Uses ignoreFreeSlotValidation so admin-picked slots still book outside open hours.
  */
 export async function createTalentAppointment(input: {
@@ -87,6 +89,8 @@ export async function createTalentAppointment(input: {
   endsAt: string;
   meetUrl?: string | null;
   notes?: string | null;
+  /** GHL appointment status. Internal bookings default to `new` (pending). */
+  appointmentStatus?: 'new' | 'confirmed' | 'cancelled' | 'showed' | 'noshow' | 'invalid';
   toNotify?: boolean;
 }): Promise<CreatedGhlAppointment> {
   if (!GHL_PIT_TOKEN) {
@@ -103,9 +107,12 @@ export async function createTalentAppointment(input: {
     startTime: input.startsAt,
     endTime: input.endsAt,
     title: input.title,
-    appointmentStatus: 'confirmed',
+    // Pending until deposit — never mark internal bookings confirmed at create time.
+    appointmentStatus: input.appointmentStatus ?? 'new',
     ignoreDateRange: true,
     ignoreFreeSlotValidation: true,
+    // Resend owns the branded email; leave GHL built-in notify off unless callers opt in.
+    // Workflows that key off appointment status will see `new` (pending), not confirmed.
     toNotify: input.toNotify ?? false,
   };
 
@@ -195,11 +202,13 @@ export async function bookAssessmentInGhl(input: {
     meetUrl: input.meetUrl,
     notes: [
       'Booked from Divine Acquisition admin via PIT',
+      'Status: pending until deposit is received',
       input.note ? `Notes: ${input.note}` : null,
       input.meetUrl ? `Meet: ${input.meetUrl}` : null,
     ]
       .filter(Boolean)
       .join('\n'),
+    appointmentStatus: 'new',
     toNotify: false,
   });
 

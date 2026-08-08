@@ -197,7 +197,8 @@ export async function listAssessmentBookings(): Promise<AssessmentBookingRow[]> 
 }
 
 /**
- * Admin picks date/time → GHL appointment (PIT) → Google Meet → confirmation email (+ CC).
+ * Admin picks date/time → GHL appointment (PIT, pending) → Google Meet → pending email (+ CC).
+ * Internal bookings stay pending until deposit is received — never "confirmed".
  * A separate cron sends the 30-minute reminder.
  */
 export async function scheduleAssessmentBookingAction(formData: FormData): Promise<ActionResult> {
@@ -324,8 +325,8 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
       ok: false,
       error:
         sendError instanceof Error
-          ? `Booking saved but confirmation email failed: ${sendError.message}`
-          : 'Booking saved but confirmation email failed.',
+          ? `Booking saved but pending-booking email failed: ${sendError.message}`
+          : 'Booking saved but pending-booking email failed.',
     };
   }
 
@@ -346,9 +347,9 @@ export async function scheduleAssessmentBookingAction(formData: FormData): Promi
   return {
     ok: true,
     message: [
-      `Booked ${data.full_name} for ${when}.`,
-      'Created in GHL Assessment Interview calendar via PIT.',
-      'Confirmation emailed (CC Malik).',
+      `Held ${data.full_name} for ${when} (pending until deposit).`,
+      'Created in GHL Assessment Interview calendar via PIT as pending.',
+      'Pending booking emailed (CC Malik).',
       '30-minute reminder will send automatically.',
       calendarWarning,
     ]

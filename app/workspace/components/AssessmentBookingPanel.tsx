@@ -27,7 +27,7 @@ function bookingStatus(booking: AssessmentBookingRow): { label: string; tone: st
     return { label: 'Completed / past', tone: 'text-neutral-500' };
   }
   if (booking.reminder_sent_at) return { label: 'Reminder sent', tone: 'text-brand-300' };
-  return { label: 'Confirmed', tone: 'text-flag-good' };
+  return { label: 'Pending deposit', tone: 'text-brand-300' };
 }
 
 /**
@@ -51,7 +51,8 @@ export default async function AssessmentBookingPanel() {
         <h2 className="mt-2 text-xl font-semibold text-white">Talent assessment calls</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">
           Schedule a call yourself (GHL via PIT + Google Meet), or send a 24-hour self-serve booking
-          link. Confirmations and 30-minute reminders go out over email.
+          link. Internal holds stay pending until deposit is received; 30-minute reminders go out over
+          email.
         </p>
         <p className="mt-2 text-xs text-neutral-600">
           GHL PIT: {ghlReady ? 'connected' : 'not configured — set GHL_PIT_TOKEN'} · Google Calendar:{' '}
@@ -64,8 +65,8 @@ export default async function AssessmentBookingPanel() {
           <p className={sectionLabel}>Schedule a call</p>
           <h3 className="mt-2 text-lg font-semibold text-white">Set date &amp; time</h3>
           <p className="mt-2 text-sm text-neutral-500">
-            Creates the appointment in GHL through the talent PIT, adds Google Meet when configured,
-            emails confirmation now, and auto-reminds 30 minutes before.
+            Creates a pending appointment in GHL through the talent PIT, adds Google Meet when
+            configured, emails a pending-until-deposit notice now, and auto-reminds 30 minutes before.
           </p>
           <div className="mt-6">
             <ScheduleBookingForm />

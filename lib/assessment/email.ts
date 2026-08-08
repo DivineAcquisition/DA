@@ -187,7 +187,10 @@ function formatWhen(startsAt: string, timeZone: string): string {
   });
 }
 
-function buildScheduledCallEmail(input: {
+/**
+ * Internal bookings are held as pending until deposit is received — never "confirmed".
+ */
+export function buildScheduledCallEmail(input: {
   fullName: string;
   companyName?: string | null;
   startsAt: string;
@@ -207,13 +210,18 @@ function buildScheduledCallEmail(input: {
     input.kind === 'reminder'
       ? `Reminder: assessment call in 30 minutes — ${when}`
       : company
-        ? `Confirmed: assessment call with ${company} — ${when}`
-        : `Confirmed: your assessment call — ${when}`;
+        ? `Pending: assessment call with ${company} — ${when}`
+        : `Pending: your assessment call — ${when}`;
 
   const intro =
     input.kind === 'reminder'
       ? `This is a reminder that your ${input.durationMinutes}-minute assessment call starts in about 30 minutes.`
-      : `Your ${input.durationMinutes}-minute assessment call is confirmed.`;
+      : `Your ${input.durationMinutes}-minute assessment call is pending until your deposit is received. The hold is not confirmed until then.`;
+
+  const headline =
+    input.kind === 'reminder'
+      ? 'Your call starts in 30 minutes'
+      : 'Your booking is pending until deposit';
 
   const text = [
     `Hi ${firstName},`,
@@ -246,7 +254,7 @@ function buildScheduledCallEmail(input: {
         </td></tr>
         <tr><td style="padding-top:8px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
           <h1 style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;font-weight:700;color:#ffffff;">
-            ${input.kind === 'reminder' ? 'Your call starts in 30 minutes' : 'Your assessment call is confirmed'}
+            ${escapeHtml(headline)}
           </h1>
         </td></tr>
         <tr><td style="padding-top:12px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
