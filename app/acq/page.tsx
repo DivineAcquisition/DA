@@ -3,7 +3,6 @@ import Backdrop from '@/app/components/Backdrop';
 import { eyebrow } from '@/app/components/ui';
 import { ACQ_BOOKING_URL, TRACKING_PARAM_KEYS, withTrackingParams } from '@/lib/acq/config';
 import BookCallButton from './components/BookCallButton';
-import CaseStudies from './components/CaseStudies';
 import PilotVideo from './components/PilotVideo';
 
 const FACEBOOK_DISCLAIMER =
@@ -14,6 +13,12 @@ const LEGAL_LINKS = [
   { label: 'Disclaimer', href: '/acq/disclaimer' },
   { label: 'Privacy Policy', href: '/acq/privacy' },
 ] as const;
+
+const HEADLINE =
+  "Info Businesses Don't Lose Money On Ads. They Lose It Between The Call Booked And The Cash Collected. That Gap Is A Sales Operations Problem, And It's What I Build.";
+
+const SUPPORTING_LINE =
+  'We build & structure the boring parts between booked call & client completion.';
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -61,22 +66,18 @@ export default async function AcqLandingPage({
               For service businesses at $30k+/month
             </p>
 
-            <h1 className="animate-rise delay-1 mx-auto mt-5 max-w-[860px] text-[1.9rem] font-semibold leading-[1.08] tracking-tight text-white sm:mt-6 sm:text-[2.65rem] md:text-[3.15rem] md:leading-[1.05]">
-              We help service businesses{' '}
-              <span className="text-gradient">2-3x their client intake</span> without hiring by
-              automating sales conversion and repetitive tasks.
+            <h1 className="acq-headline animate-rise delay-1 mx-auto mt-5 max-w-[920px] text-[1.55rem] font-semibold leading-[1.12] tracking-tight text-white sm:mt-6 sm:text-[2.15rem] md:text-[2.55rem] md:leading-[1.1]">
+              {HEADLINE}
             </h1>
 
-            <p className="animate-rise delay-2 mx-auto mt-3 max-w-[560px] text-sm leading-relaxed text-neutral-400 sm:mt-3.5 sm:text-[15px]">
-              We install a sales operation that answers every lead in under 60 seconds, follows up
-              until they book, and brings back the customers you already have. You pay nothing to
-              build it and nothing to run it. You only pay for the appointments we book.
+            <p className="animate-rise delay-2 mx-auto mt-4 max-w-[560px] text-sm leading-relaxed text-neutral-400 sm:mt-5 sm:text-[15px]">
+              {SUPPORTING_LINE}
             </p>
           </div>
         </section>
 
         {/* Video, then sole CTA beneath it */}
-        <section className="px-5 pb-10 sm:px-6 sm:pb-14">
+        <section className="px-5 pb-16 sm:px-6 sm:pb-24">
           <PilotVideo />
 
           <div className="animate-rise delay-4 mx-auto mt-9 flex max-w-[900px] flex-col items-center">
@@ -86,8 +87,6 @@ export default async function AcqLandingPage({
             </p>
           </div>
         </section>
-
-        <CaseStudies />
 
         <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
           <nav

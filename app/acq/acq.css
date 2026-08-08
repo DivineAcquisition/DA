@@ -1,0 +1,11 @@
+/* Scoped to the acquisition landing surface. */
+.acq-surface {
+  font-family: var(--font-acq-inter-display), ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-feature-settings: 'cv11', 'ss03', 'cv02', 'ss01';
+}
+
+.acq-surface .acq-headline {
+  font-family: var(--font-acq-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'ss02';
+}

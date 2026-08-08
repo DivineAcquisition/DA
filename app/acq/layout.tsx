@@ -1,4 +1,19 @@
 import type { Metadata } from 'next';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import './acq.css';
+
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-acq-jakarta',
+  display: 'swap',
+});
+
+/** Inter with optical sizing — Display cut at headline/body sizes. */
+const interDisplay = Inter({
+  subsets: ['latin'],
+  variable: '--font-acq-inter-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: {
@@ -7,14 +22,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    'We help service businesses 2-3x their client intake without hiring by automating sales conversion and repetitive tasks. You pay nothing to build it and nothing to run it. You only pay for the appointments we book.',
+    'Info businesses don’t lose money on ads. They lose it between the call booked and the cash collected. We build and structure the boring parts between booked call and client completion.',
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
     title: 'Divine Acquisition Performance Pilot',
     description:
-      'Sales operations for service businesses at $30k+/month. You only pay for the appointments we book.',
+      'That gap between the call booked and the cash collected is a sales operations problem — and it’s what we build.',
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -30,7 +45,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Divine Acquisition Performance Pilot',
     description:
-      'Sales operations for service businesses at $30k+/month. You only pay for the appointments we book.',
+      'That gap between the call booked and the cash collected is a sales operations problem — and it’s what we build.',
   },
   robots: {
     index: true,
@@ -39,5 +54,9 @@ export const metadata: Metadata = {
 };
 
 export default function AcqLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <div className={`${plusJakarta.variable} ${interDisplay.variable} acq-surface`}>
+      {children}
+    </div>
+  );
 }
