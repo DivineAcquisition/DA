@@ -1,8 +1,8 @@
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { NEUTRAL_UNAVAILABLE_MESSAGE } from '@/lib/workspace/tokens';
-import { loadSigningPage } from '@/lib/workspace/signing';
-import SigningForm from './SigningForm';
+import { loadOnboardingPage } from '@/lib/workspace/onboarding';
+import OnboardingForm from './OnboardingForm';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,35 +18,35 @@ function Unavailable() {
   );
 }
 
-export default async function PublicSigningTokenRoute({
+export default async function PublicOnboardingTokenRoute({
   params,
 }: {
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  const page = await loadSigningPage(token);
+  const page = await loadOnboardingPage(token);
   if (!page) return <Unavailable />;
 
   return (
     <div className="da-workspace relative min-h-screen">
       <Backdrop />
       <div className="relative z-10 px-4 py-8 sm:px-6 sm:py-12">
-        <header className="mx-auto mb-8 flex max-w-6xl items-center justify-between gap-4">
+        <header className="mx-auto mb-8 flex max-w-3xl items-center justify-between gap-4">
           <Logo className="h-7 w-auto sm:h-8" />
           <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ws-dim)]">
-            Secure signing
+            Onboarding
           </span>
         </header>
-        <SigningForm
+        <OnboardingForm
           token={page.token}
-          templateName={page.templateName}
+          protocol={page.protocol}
           recipientName={page.recipientName}
-          fields={page.fields}
-          consents={page.consents}
-          documents={page.documents}
+          recipientEmail={page.recipientEmail}
+          recipientPhone={page.recipientPhone}
+          agreementSigned={page.agreementSigned}
+          agreementTemplateName={page.agreementTemplateName}
           completed={page.completed}
-          signedDocumentUrl={page.signedDocumentUrl}
-          onboardingUrl={page.onboardingUrl}
+          initialAnswers={page.answers}
         />
       </div>
     </div>

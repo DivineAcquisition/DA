@@ -15,6 +15,7 @@ type Props = {
   documents: Array<{ name: string; url: string }>;
   completed: boolean;
   signedDocumentUrl: string | null;
+  onboardingUrl: string | null;
 };
 
 const inputClass =
@@ -29,6 +30,7 @@ export default function SigningForm({
   documents,
   completed: initiallyCompleted,
   signedDocumentUrl: initialSignedUrl,
+  onboardingUrl,
 }: Props) {
   const [values, setValues] = useState<Record<string, string>>(() =>
     Object.fromEntries(fields.filter((f) => f.kind !== 'signature').map((f) => [f.name, f.value])),
@@ -91,15 +93,30 @@ export default function SigningForm({
         <p className="mt-2 text-sm text-[var(--ws-body)]">
           Thank you, {recipientName}. Your signed copy of {templateName} is ready.
         </p>
-        {signedUrl && (
-          <a
-            href={signedUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-6 inline-flex items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-2.5 text-sm font-semibold text-[var(--ws-page)]"
-          >
-            View signed PDF
-          </a>
+        <div className="mt-6 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+          {onboardingUrl && (
+            <a
+              href={onboardingUrl}
+              className="inline-flex items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-2.5 text-sm font-semibold text-[var(--ws-page)]"
+            >
+              Continue to onboarding
+            </a>
+          )}
+          {signedUrl && (
+            <a
+              href={signedUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center rounded-xl border border-[var(--ws-border)] px-6 py-2.5 text-sm font-semibold text-white"
+            >
+              View signed PDF
+            </a>
+          )}
+        </div>
+        {onboardingUrl && (
+          <p className="mt-4 text-xs text-[var(--ws-dim)]">
+            Next: VA Sales Operator onboarding (~5 minutes).
+          </p>
         )}
       </div>
     );

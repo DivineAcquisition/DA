@@ -92,7 +92,10 @@ type Surface = {
 };
 
 const isPublicTokenPath = (pathname: string) =>
-  pathname.startsWith('/p/') || pathname.startsWith('/c/') || pathname.startsWith('/s/');
+  pathname.startsWith('/p/') ||
+  pathname.startsWith('/c/') ||
+  pathname.startsWith('/s/') ||
+  pathname.startsWith('/o/');
 
 const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },

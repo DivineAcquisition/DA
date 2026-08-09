@@ -19,7 +19,8 @@ export function workspacePath(path: string): string {
   if (
     normalised.startsWith('/p/') ||
     normalised.startsWith('/c/') ||
-    normalised.startsWith('/s/')
+    normalised.startsWith('/s/') ||
+    normalised.startsWith('/o/')
   ) {
     return normalised;
   }
@@ -39,4 +40,9 @@ export function publicCalendarUrl(baseUrl: string, token: string): string {
 export function publicSigningUrl(baseUrl: string, token: string): string {
   const base = baseUrl.replace(/\/+$/, '');
   return `${base}/s/${token}`;
+}
+
+export function publicOnboardingUrl(baseUrl: string, token: string): string {
+  const base = baseUrl.replace(/\/+$/, '');
+  return `${base}/o/${token}`;
 }

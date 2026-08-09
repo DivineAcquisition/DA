@@ -33,6 +33,7 @@ export type SigningPagePayload = {
   submitterId: string | null;
   submissionId: string | null;
   docusealTemplateId: string | null;
+  onboardingUrl: string | null;
 };
 
 type LoadedBundle = {
@@ -46,6 +47,8 @@ type LoadedBundle = {
     signed_document_url: string | null;
     recipient_id: string;
     template_id: string;
+    onboarding_token?: string | null;
+    onboarding_url?: string | null;
   };
   recipient: {
     full_name: string;
@@ -215,6 +218,7 @@ export async function loadSigningPage(token: string): Promise<SigningPagePayload
     submitterId: agreement.docuseal_submitter_id,
     submissionId: agreement.docuseal_submission_id,
     docusealTemplateId: template.docuseal_template_id,
+    onboardingUrl: agreement.onboarding_url ?? null,
   };
 }
 

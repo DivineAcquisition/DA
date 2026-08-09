@@ -28,7 +28,13 @@ import {
   resolveCompanyRoleName,
   resolveOperatorSignerRoleName,
 } from './operator-agreement';
-import { publicCalendarUrl, publicPageUrl, publicSigningUrl } from './paths';
+import { onboardingProtocolForTemplate } from './onboarding-protocol';
+import {
+  publicCalendarUrl,
+  publicOnboardingUrl,
+  publicPageUrl,
+  publicSigningUrl,
+} from './paths';
 import { signingPublicBaseUrl } from './resolve-signing';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor, syncDocuSeal } from './sync';
 import {
@@ -534,6 +540,27 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
   const publicUrl = publicSigningUrl(publicBase, accessToken);
   const providerUrl = docuseal.signingUrl;
 
+  const protocolKey = onboardingProtocolForTemplate({
+    recipientType: recipient.recipient_type,
+    templateName: String(template.name ?? ''),
+  });
+  const onboardingToken = protocolKey ? createToken(32) : null;
+  const onboardingUrl =
+    protocolKey && onboardingToken ? publicOnboardingUrl(publicBase, onboardingToken) : null;
+
+  if (protocolKey && onboardingToken && onboardingUrl) {
+    const { error: onboardingError } = await supabase.from('da_onboarding_submission').insert({
+      protocol_key: protocolKey,
+      recipient_id: recipientId,
+      agreement_id: agreement.id,
+      access_token: onboardingToken,
+      status: 'pending',
+    });
+    if (onboardingError) {
+      return { ok: false, error: `Agreement created but onboarding failed: ${onboardingError.message}` };
+    }
+  }
+
   await supabase
     .from('da_agreement')
     .update({
@@ -544,6 +571,8 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
       access_token: accessToken,
       provider_signing_url: providerUrl,
       signing_url: publicUrl,
+      onboarding_token: onboardingToken,
+      onboarding_url: onboardingUrl,
       prefilled_values: Object.fromEntries(fields.map((f) => [f.name, f.default_value])),
       unmapped_fields: summary.unmapped,
       synced_at: new Date().toISOString(),
@@ -557,6 +586,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
       companyName: settings.company_name || 'Divine Acquisition',
       templateName: String(template.name ?? 'Agreement'),
       signingUrl: publicUrl,
+      onboardingUrl,
     });
   } catch (sendError) {
     return {

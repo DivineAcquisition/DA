@@ -30,10 +30,12 @@ export function buildAgreementInviteEmail(input: {
   companyName: string;
   templateName: string;
   signingUrl: string;
+  onboardingUrl?: string | null;
 }): { subject: string; html: string; text: string } {
   const greetingName = inviteGreetingName(input.recipientName);
   const company = input.companyName.trim() || 'Divine Acquisition';
   const docName = input.templateName.trim() || 'Agreement';
+  const onboardingUrl = (input.onboardingUrl ?? '').trim();
 
   const subject = `${company}: ${docName} ready for your signature`;
 
@@ -48,6 +50,14 @@ export function buildAgreementInviteEmail(input: {
     input.signingUrl,
     '',
     'You’ll review the document, confirm the required acknowledgements, and sign electronically.',
+    ...(onboardingUrl
+      ? [
+          '',
+          'After you sign, continue to the VA Sales Operator onboarding form (~5 minutes):',
+          onboardingUrl,
+        ]
+      : []),
+    '',
     'If you were not expecting this email, you can ignore it.',
     '',
     `— ${company}`,
@@ -122,13 +132,25 @@ export function buildAgreementInviteEmail(input: {
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-top:14px;padding-bottom:28px;padding-left:36px;padding-right:36px;">
+                  <td style="padding-top:14px;padding-bottom:${onboardingUrl ? '12' : '28'}px;padding-left:36px;padding-right:36px;">
                     <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.65;color:#6f6f7a;text-align:center;">
                       This link is unique to you. If the button doesn’t open, use:<br />
                       <a href="${escapeHtml(input.signingUrl)}" style="color:#c3b6fe;text-decoration:underline;word-break:break-all;">${escapeHtml(input.signingUrl)}</a>
                     </p>
                   </td>
                 </tr>
+                ${
+                  onboardingUrl
+                    ? `<tr>
+                  <td style="padding-top:8px;padding-bottom:28px;padding-left:36px;padding-right:36px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.65;color:#b3b3bc;text-align:center;">
+                      After you sign, continue to onboarding (~5 minutes).<br />
+                      <a href="${escapeHtml(onboardingUrl)}" style="color:#c3b6fe;text-decoration:underline;word-break:break-all;">${escapeHtml(onboardingUrl)}</a>
+                    </p>
+                  </td>
+                </tr>`
+                    : ''
+                }
               </table>
             </td>
           </tr>
@@ -155,6 +177,7 @@ export async function sendAgreementInviteEmail(input: {
   companyName: string;
   templateName: string;
   signingUrl: string;
+  onboardingUrl?: string | null;
 }): Promise<{ id: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
