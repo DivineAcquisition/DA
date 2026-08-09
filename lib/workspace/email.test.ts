@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildAgreementInviteEmail } from './email';
+import { agreementInviteCc, buildAgreementInviteEmail } from './email';
 
 describe('buildAgreementInviteEmail', () => {
   it('uses Divine Acquisition branding and the tokenized talent signing URL', () => {
@@ -31,5 +31,14 @@ describe('buildAgreementInviteEmail', () => {
     });
     expect(content.html).toContain('Hi A Sannie,');
     expect(content.text).toContain('Hi A Sannie,');
+  });
+});
+
+describe('agreementInviteCc', () => {
+  it('CCs Malik by default and skips when he is the recipient', () => {
+    expect(agreementInviteCc('locsin.matthew21@gmail.com')).toEqual([
+      'malik@divineacquisition.io',
+    ]);
+    expect(agreementInviteCc('malik@divineacquisition.io')).toEqual([]);
   });
 });

@@ -25,55 +25,23 @@ type NavIcon =
   | 'ops'
   | 'bookings';
 
+/**
+ * Agreements-focused admin nav. Growth / Control / Ops surfaces still exist
+ * at their routes, but stay out of the sidebar until those products are the
+ * daily admin workflow.
+ */
 const NAV: { heading: string; items: NavItem[] }[] = [
   {
-    heading: 'Agreements',
+    heading: 'Workspace',
     items: [
       { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
-      { href: '/workspace/templates', label: 'Pages', icon: 'stack' },
+      { href: '/workspace/templates', label: 'Pages & templates', icon: 'stack' },
       { href: '/workspace/mapping', label: 'Field mapping', icon: 'map' },
-      { href: '/workspace/calendar-links', label: 'Calendar', icon: 'link' },
+      { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
+      { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
-  },
-  {
-    heading: 'Growth',
-    items: [
-      { href: '/workspace/growth', label: 'Engagements', icon: 'growth', match: '/workspace/growth' },
-      { href: '/workspace/growth/billing', label: 'Billing', icon: 'billing' },
-      { href: '/workspace/growth/payouts', label: 'Payouts', icon: 'billing' },
-      { href: '/workspace/growth/margin', label: 'Margin', icon: 'growth' },
-      { href: '/workspace/growth/ingestion', label: 'Ingestion', icon: 'stack' },
-      { href: '/workspace/growth/messages', label: 'Requests', icon: 'document' },
-    ],
-  },
-  {
-    heading: 'Control',
-    items: [
-      { href: '/workspace/control', label: 'Accounts', icon: 'control', match: '/workspace/control' },
-      { href: '/workspace/control/invites', label: 'Invites', icon: 'people' },
-      { href: '/workspace/control/audit', label: 'Audit', icon: 'audit' },
-      { href: '/workspace/control/credentials', label: 'Credentials', icon: 'gear' },
-      { href: '/workspace/control/alerts', label: 'Alerts', icon: 'document' },
-      { href: '/workspace/control/lockdown', label: 'Lockdown', icon: 'control' },
-    ],
-  },
-  {
-    heading: 'Ops',
-    items: [
-      { href: '/workspace/ops', label: 'Ops hub', icon: 'ops', match: '/workspace/ops' },
-      { href: '/workspace/ops/clients', label: 'Case files', icon: 'people' },
-      { href: '/workspace/ops/operators', label: 'Operators', icon: 'talent' },
-      { href: '/workspace/ops/bookings', label: 'Booking review', icon: 'bookings' },
-      { href: '/workspace/ops/escalations', label: 'Escalations', icon: 'document' },
-      { href: '/workspace/ops/payroll', label: 'Payroll', icon: 'billing' },
-      { href: '/workspace/ops/notifications', label: 'Notifications', icon: 'document' },
-    ],
-  },
-  {
-    heading: 'Account',
-    items: [{ href: '/workspace/settings', label: 'Settings', icon: 'gear' }],
   },
 ];
 

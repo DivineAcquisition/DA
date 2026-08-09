@@ -8,6 +8,14 @@ export const WORKSPACE_RESEND_FROM =
 export const WORKSPACE_RESEND_REPLY_TO =
   process.env.RESEND_AGREEMENT_REPLY_TO ?? process.env.RESEND_REPLY_TO ?? undefined;
 
+/** Always CC ownership on agreement invites unless overridden. */
+export const WORKSPACE_AGREEMENT_CC = (
+  process.env.RESEND_AGREEMENT_CC ?? 'malik@divineacquisition.io'
+)
+  .split(',')
+  .map((value) => value.trim().toLowerCase())
+  .filter(Boolean);
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -171,6 +179,13 @@ export function buildAgreementInviteEmail(input: {
   return { subject, html, text };
 }
 
+export function agreementInviteCc(to: string, extra: string[] = []): string[] {
+  const recipients = new Set(
+    [to, ...extra].map((value) => value.trim().toLowerCase()).filter(Boolean),
+  );
+  return WORKSPACE_AGREEMENT_CC.filter((email) => !recipients.has(email));
+}
+
 export async function sendAgreementInviteEmail(input: {
   to: string;
   recipientName: string;
@@ -178,6 +193,7 @@ export async function sendAgreementInviteEmail(input: {
   templateName: string;
   signingUrl: string;
   onboardingUrl?: string | null;
+  cc?: string[];
 }): Promise<{ id: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -186,10 +202,12 @@ export async function sendAgreementInviteEmail(input: {
 
   const content = buildAgreementInviteEmail(input);
   const resend = new Resend(apiKey);
+  const cc = agreementInviteCc(input.to, input.cc);
 
   const { data, error } = await resend.emails.send({
     from: WORKSPACE_RESEND_FROM,
     to: [input.to],
+    ...(cc.length > 0 ? { cc } : {}),
     subject: content.subject,
     html: content.html,
     text: content.text,

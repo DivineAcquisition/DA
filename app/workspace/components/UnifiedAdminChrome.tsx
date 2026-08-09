@@ -10,7 +10,7 @@ export async function isUnifiedAdminRequest(): Promise<boolean> {
 
 /**
  * Shared chrome for every admin surface on admin.divineacquisition.io.
- * Keeps agreements, growth, control, assessment and ops under one sidebar.
+ * Sidebar is agreements-focused; other surfaces remain reachable by URL.
  */
 export default function UnifiedAdminChrome({
   email,
