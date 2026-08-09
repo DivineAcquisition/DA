@@ -37,8 +37,6 @@ const NAV: { heading: string; items: NavItem[] }[] = [
       { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
-      { href: '/workspace/templates', label: 'Pages & templates', icon: 'stack' },
-      { href: '/workspace/mapping', label: 'Field mapping', icon: 'map' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
       { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
