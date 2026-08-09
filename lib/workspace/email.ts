@@ -16,20 +16,29 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
+/** Prefer a real first name; fall back to full name / "there" for initials. */
+function inviteGreetingName(recipientName: string): string {
+  const trimmed = recipientName.trim();
+  if (!trimmed) return 'there';
+  const first = trimmed.split(/\s+/)[0] ?? '';
+  if (first.length >= 2) return first;
+  return trimmed;
+}
+
 export function buildAgreementInviteEmail(input: {
   recipientName: string;
   companyName: string;
   templateName: string;
   signingUrl: string;
 }): { subject: string; html: string; text: string } {
-  const firstName = input.recipientName.trim().split(/\s+/)[0] || 'there';
+  const greetingName = inviteGreetingName(input.recipientName);
   const company = input.companyName.trim() || 'Divine Acquisition';
   const docName = input.templateName.trim() || 'Agreement';
 
   const subject = `${company}: ${docName} ready for your signature`;
 
   const text = [
-    `Hi ${firstName},`,
+    `Hi ${greetingName},`,
     '',
     `${company} sent you an agreement to review and sign.`,
     '',
@@ -52,59 +61,53 @@ export function buildAgreementInviteEmail(input: {
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>${escapeHtml(subject)}</title>
 </head>
-<body style="margin:0;padding:0;background-color:#07070b;color:#ffffff;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#07070b;">
+<body style="margin:0;padding:0;background-color:#0a0a0c;color:#ffffff;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#0a0a0c;">
     <tr>
-      <td align="center" style="padding-top:32px;padding-bottom:40px;padding-left:16px;padding-right:16px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;">
+      <td align="center" style="padding-top:40px;padding-bottom:48px;padding-left:16px;padding-right:16px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:560px;">
           <tr>
-            <td style="padding-bottom:18px;text-align:center;">
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:#c3b6fe;">
+            <td style="padding-bottom:22px;text-align:center;">
+              <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:22px;line-height:1.2;font-weight:700;letter-spacing:0.02em;color:#ffffff;">
                 ${escapeHtml(company)}
               </p>
             </td>
           </tr>
           <tr>
-            <td style="background-color:#0b0a11;border:1px solid rgba(255,255,255,0.08);border-radius:20px;">
+            <td style="background-color:#121218;border:1px solid #26262f;border-radius:18px;">
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
-                  <td style="height:4px;background:linear-gradient(90deg,#9a88fc 0%,#6650d8 55%,rgba(154,136,252,0.15) 100%);border-radius:20px 20px 0 0;font-size:0;line-height:0;">&nbsp;</td>
-                </tr>
-                <tr>
-                  <td style="padding-top:32px;padding-bottom:8px;padding-left:32px;padding-right:32px;">
-                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#ae9dfd;">
-                      Agreement ready
+                  <td style="padding-top:36px;padding-bottom:4px;padding-left:36px;padding-right:36px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#9a88fc;">
+                      Signature requested
                     </p>
-                    <h1 style="margin:12px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:30px;line-height:1.2;font-weight:700;color:#ffffff;">
-                      Please review and sign
+                    <h1 style="margin:14px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:1.25;font-weight:700;color:#ffffff;">
+                      Your agreement is ready
                     </h1>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-top:16px;padding-bottom:8px;padding-left:32px;padding-right:32px;">
-                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a3a3a3;">
-                      Hi ${escapeHtml(firstName)},
+                  <td style="padding-top:18px;padding-bottom:4px;padding-left:36px;padding-right:36px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#b3b3bc;">
+                      Hi ${escapeHtml(greetingName)},
                     </p>
-                    <p style="margin-top:12px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a3a3a3;">
-                      <span style="color:#ffffff;">${escapeHtml(company)}</span> prepared
-                      <span style="color:#ffffff;">${escapeHtml(docName)}</span> for you.
-                      Open your secure page to review the terms and complete your signature.
+                    <p style="margin-top:12px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#b3b3bc;">
+                      Please review and sign
+                      <span style="color:#ffffff;">${escapeHtml(docName)}</span>
+                      from ${escapeHtml(company)}. Your link opens a private signing page on talent.divineacquisition.io.
                     </p>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-top:22px;padding-bottom:8px;padding-left:32px;padding-right:32px;">
-                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#100f18;border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+                  <td style="padding-top:26px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#0a0a0c;border:1px solid #2a2a35;border-radius:12px;">
                       <tr>
                         <td style="padding:18px 20px;">
-                          <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#737373;">
+                          <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#6f6f7a;">
                             Document
                           </p>
-                          <p style="margin:8px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1.4;font-weight:700;color:#ffffff;">
+                          <p style="margin:8px 0 0 0;font-family:Georgia,'Times New Roman',serif;font-size:17px;line-height:1.4;font-weight:700;color:#ffffff;">
                             ${escapeHtml(docName)}
-                          </p>
-                          <p style="margin:10px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1.5;color:#a3a3a3;">
-                            Personal link · Secure signing on talent.divineacquisition.io
                           </p>
                         </td>
                       </tr>
@@ -112,30 +115,17 @@ export function buildAgreementInviteEmail(input: {
                   </td>
                 </tr>
                 <tr>
-                  <td align="center" style="padding-top:28px;padding-bottom:10px;padding-left:32px;padding-right:32px;">
-                    <a href="${escapeHtml(input.signingUrl)}" style="display:inline-block;background-color:#9a88fc;color:#07070b;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;text-decoration:none;padding-top:15px;padding-bottom:15px;padding-left:34px;padding-right:34px;border-radius:999px;">
-                      Open signing page
+                  <td align="center" style="padding-top:30px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
+                    <a href="${escapeHtml(input.signingUrl)}" style="display:inline-block;background-color:#9a88fc;color:#0a0a0c;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;text-decoration:none;padding-top:14px;padding-bottom:14px;padding-left:32px;padding-right:32px;border-radius:10px;">
+                      Review &amp; sign
                     </a>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding-top:8px;padding-bottom:8px;padding-left:32px;padding-right:32px;">
-                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#737373;text-align:center;">
-                      Review → acknowledge → sign. Takes a few minutes.
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding-top:18px;padding-bottom:28px;padding-left:32px;padding-right:32px;">
-                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#525252;word-break:break-all;text-align:center;">
-                      ${escapeHtml(input.signingUrl)}
-                    </p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="padding-top:0;padding-bottom:28px;padding-left:32px;padding-right:32px;border-top:1px solid rgba(255,255,255,0.06);">
-                    <p style="margin-top:22px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#525252;">
-                      This link is unique to you. If you were not expecting this email, you can ignore it.
+                  <td style="padding-top:14px;padding-bottom:28px;padding-left:36px;padding-right:36px;">
+                    <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.65;color:#6f6f7a;text-align:center;">
+                      This link is unique to you. If the button doesn’t open, use:<br />
+                      <a href="${escapeHtml(input.signingUrl)}" style="color:#c3b6fe;text-decoration:underline;word-break:break-all;">${escapeHtml(input.signingUrl)}</a>
                     </p>
                   </td>
                 </tr>
@@ -143,9 +133,9 @@ export function buildAgreementInviteEmail(input: {
             </td>
           </tr>
           <tr>
-            <td style="padding-top:18px;text-align:center;">
-              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#525252;">
-                ${escapeHtml(company)} · Secure document delivery
+            <td style="padding-top:20px;text-align:center;">
+              <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#52525b;">
+                ${escapeHtml(company)} · If you weren’t expecting this, you can ignore it.
               </p>
             </td>
           </tr>
