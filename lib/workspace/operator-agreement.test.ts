@@ -3,9 +3,13 @@ import {
   applyOperatorExactMappings,
   buildOperatorCompanyValues,
   buildOperatorSignerValues,
+  buildSalesOperatorSignerValues,
   companyInfoFromSettings,
   filterKnownFields,
+  initialsFromName,
   inferOperatorVariant,
+  resolveCompanyRoleName,
+  resolveOperatorSignerRoleName,
 } from './operator-agreement';
 import type { MappedField } from './field-mapping';
 
@@ -81,6 +85,34 @@ describe('buildOperatorCompanyValues', () => {
     expect(buildOperatorCompanyValues(company, 'hourly')).toEqual({
       'Company Full Name': 'Divine Acquisition',
       'Company Signature': 'Malik Sannie',
+    });
+  });
+});
+
+describe('sales operator / role resolution', () => {
+  it('prefers Operator and Divine Acquisition roles when present', () => {
+    const submitters = [
+      { name: 'Operator', uuid: 'a' },
+      { name: 'Divine Acquisition', uuid: 'b' },
+    ];
+    expect(resolveOperatorSignerRoleName(submitters)).toBe('Operator');
+    expect(resolveCompanyRoleName(submitters)).toBe('Divine Acquisition');
+  });
+
+  it('builds Sales Operator signer values and initials', () => {
+    expect(initialsFromName('A Sannie')).toBe('AS');
+    expect(
+      buildSalesOperatorSignerValues({
+        fullName: 'A Sannie',
+        email: 'asannie74@gmail.com',
+        now: new Date('2026-08-09T12:00:00Z'),
+      }),
+    ).toEqual({
+      Operator: 'A Sannie',
+      Name: 'A Sannie',
+      'Effective Date': '2026-08-09',
+      Date: '2026-08-09',
+      'Operator initials': 'AS',
     });
   });
 });

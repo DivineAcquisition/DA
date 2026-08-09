@@ -25,8 +25,8 @@ import {
   fieldNamesForRole,
   filterKnownFields,
   inferOperatorVariant,
-  OPERATOR_SIGNER_ROLE,
   resolveCompanyRoleName,
+  resolveOperatorSignerRoleName,
 } from './operator-agreement';
 import { publicCalendarUrl, publicPageUrl, publicSigningUrl } from './paths';
 import { signingPublicBaseUrl } from './resolve-signing';
@@ -478,11 +478,13 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     | { role: string; email: string; name: string; fields: { name: string; default_value: string; readonly: boolean }[] }
     | undefined;
 
+  const submitters = Array.isArray(template.docuseal_submitters)
+    ? (template.docuseal_submitters as { name?: string; uuid?: string }[])
+    : [];
+  const signerRole = isOperator ? resolveOperatorSignerRoleName(submitters) : undefined;
+
   if (isOperator) {
     const variant = inferOperatorVariant(String(template.name ?? ''));
-    const submitters = Array.isArray(template.docuseal_submitters)
-      ? (template.docuseal_submitters as { name?: string; uuid?: string }[])
-      : [];
     const catalogue = templateFieldCatalogue(template);
     const companyRole = resolveCompanyRoleName(submitters);
     const companyNames = fieldNamesForRole(
@@ -517,7 +519,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     email: recipient.email,
     name: recipient.full_name,
     phone: recipient.phone,
-    role: isOperator ? OPERATOR_SIGNER_ROLE : undefined,
+    role: signerRole,
     fields,
     externalId: agreement.id,
     companySubmitter,

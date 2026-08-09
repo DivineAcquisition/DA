@@ -193,14 +193,61 @@ export function applyOperatorExactMappings(
 export const OPERATOR_SIGNER_ROLE = 'Contractor';
 export const OPERATOR_COMPANY_ROLE = 'Company';
 
-/** Prefer the Company role; fall back to common countersign role labels. */
+/** Prefer Operator (DA placement) then Contractor (VA / Novara). */
+export function resolveOperatorSignerRoleName(
+  submitters: Array<{ name?: string; uuid?: string }>,
+): string {
+  const names = submitters.map((submitter) => submitter.name ?? '').filter(Boolean);
+  const preferred = ['Operator', 'Contractor', 'Signer', 'Employee'];
+  for (const candidate of preferred) {
+    if (names.some((name) => name.toLowerCase() === candidate.toLowerCase())) return candidate;
+  }
+  return OPERATOR_SIGNER_ROLE;
+}
+
+/** Prefer the Company role; fall back to Divine Acquisition / common countersign labels. */
 export function resolveCompanyRoleName(
   submitters: Array<{ name?: string; uuid?: string }>,
 ): string {
   const names = submitters.map((submitter) => submitter.name ?? '').filter(Boolean);
-  const preferred = ['Company', 'Company Representative', 'Organization'];
+  const preferred = [
+    'Divine Acquisition',
+    'Company',
+    'Company Representative',
+    'Organization',
+  ];
   for (const candidate of preferred) {
     if (names.some((name) => name.toLowerCase() === candidate.toLowerCase())) return candidate;
   }
   return OPERATOR_COMPANY_ROLE;
+}
+
+/** Initials from a full name (e.g. "A Sannie" → "AS"). */
+export function initialsFromName(fullName: string): string {
+  return fullName
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('')
+    .slice(0, 4);
+}
+
+/**
+ * Exact signer values for the DA Sales Operator (Placement Role) template
+ * (roles: Operator + Divine Acquisition).
+ */
+export function buildSalesOperatorSignerValues(input: OperatorSignerInput): Record<string, string> {
+  const now = input.now ?? new Date();
+  const date = todayIso(now);
+  const name = input.fullName.trim();
+  const address = (input.address ?? '').trim();
+  return compact({
+    Operator: name,
+    Name: name,
+    Address: address || undefined,
+    'Effective Date': date,
+    Date: date,
+    'Operator initials': initialsFromName(name) || undefined,
+  });
 }

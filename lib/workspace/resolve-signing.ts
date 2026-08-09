@@ -1,5 +1,5 @@
 /**
- * Resolve a public /s/<token> to its DocuSeal destination.
+ * Public DivineACQ RPC helpers for tokenized signing pages.
  *
  * Signing links are minted against DivineACQ. During cutover the Vercel deploy
  * may still point NEXT_PUBLIC_SUPABASE_* at an older project, which makes the
@@ -27,31 +27,51 @@ function firstEnv(...names: string[]): string {
   return '';
 }
 
-async function rpcResolve(
-  baseUrl: string,
-  apiKey: string,
-  token: string,
-): Promise<ResolvedSigning | null> {
-  if (!baseUrl || !apiKey || token.trim().length < 32) return null;
-
-  try {
-    const response = await fetch(`${baseUrl.replace(/\/+$/, '')}/rest/v1/rpc/da_resolve_signing_token`, {
-      method: 'POST',
-      headers: {
-        apikey: apiKey,
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ p_token: token }),
-      cache: 'no-store',
-    });
-    if (!response.ok) return null;
-    const data = (await response.json()) as ResolvedSigning | null;
-    if (!data?.destination_url) return null;
-    return data;
-  } catch {
-    return null;
+function supabaseTargets(): Array<{ url: string; key: string }> {
+  const primaryUrl = firstEnv('NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL').replace(/\/+$/, '');
+  const primaryKey = firstEnv(
+    'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
+    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+    'SUPABASE_ANON_KEY',
+  );
+  const targets: Array<{ url: string; key: string }> = [];
+  if (primaryUrl && primaryKey) targets.push({ url: primaryUrl, key: primaryKey });
+  if (primaryUrl !== DIVINEACQ_URL) {
+    targets.push({ url: DIVINEACQ_URL, key: DIVINEACQ_ANON });
   }
+  return targets;
+}
+
+/**
+ * Call a security-definer public RPC, with DivineACQ cutover fallback.
+ * `accept` decides whether a 200 payload is usable (default: non-null).
+ */
+export async function publicDaRpc<T>(
+  fn: string,
+  args: Record<string, unknown>,
+  accept: (data: T) => boolean = (data) => data != null,
+): Promise<T | null> {
+  for (const target of supabaseTargets()) {
+    try {
+      const response = await fetch(`${target.url}/rest/v1/rpc/${fn}`, {
+        method: 'POST',
+        headers: {
+          apikey: target.key,
+          Authorization: `Bearer ${target.key}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(args),
+        cache: 'no-store',
+      });
+      if (!response.ok) continue;
+      const data = (await response.json()) as T | null;
+      if (data == null || !accept(data)) continue;
+      return data;
+    } catch {
+      // try next target
+    }
+  }
+  return null;
 }
 
 /** Public signing base used in emails and stored signing_url values. */
@@ -66,24 +86,7 @@ export function signingPublicBaseUrl(settingsBase?: string | null): string {
 export async function resolveSigningToken(token: string): Promise<ResolvedSigning | null> {
   const trimmed = token.trim();
   if (trimmed.length < 32) return null;
-
-  const primaryUrl = firstEnv('NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_URL');
-  const primaryKey = firstEnv(
-    'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY',
-    'NEXT_PUBLIC_SUPABASE_ANON_KEY',
-    'SUPABASE_ANON_KEY',
-  );
-
-  if (primaryUrl && primaryKey) {
-    const primary = await rpcResolve(primaryUrl, primaryKey, trimmed);
-    if (primary) return primary;
-  }
-
-  // Cutover fallback: agreements live on DivineACQ even if the deploy's
-  // NEXT_PUBLIC_SUPABASE_* still points elsewhere.
-  if (primaryUrl.replace(/\/+$/, '') !== DIVINEACQ_URL) {
-    return rpcResolve(DIVINEACQ_URL, DIVINEACQ_ANON, trimmed);
-  }
-
-  return null;
+  const data = await publicDaRpc<ResolvedSigning>('da_resolve_signing_token', { p_token: trimmed });
+  if (!data?.destination_url) return null;
+  return data;
 }
