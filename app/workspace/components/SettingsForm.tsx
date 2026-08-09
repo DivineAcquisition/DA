@@ -45,13 +45,13 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
       </Field>
       <Field
         label="Public base URL"
-        hint="Used to construct token links, e.g. https://admin.divineacquisition.io"
+        hint="Used for signing links in emails. Prefer talent.divineacquisition.io so recipients hit the talent host."
       >
         <Input
           name="public_base_url"
           type="url"
           defaultValue={settings.public_base_url}
-          placeholder="https://admin.divineacquisition.io"
+          placeholder="https://talent.divineacquisition.io"
         />
       </Field>
 

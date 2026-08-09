@@ -104,13 +104,22 @@ const SURFACES: Surface[] = [
     prefix: HIRING_PREFIX,
     allow: (pathname) => pathname === '/' || pathname.startsWith('/hiring'),
   },
-  { hosts: TALENT_HOSTS, prefix: ASSESSMENT_PREFIX },
+  {
+    hosts: TALENT_HOSTS,
+    prefix: ASSESSMENT_PREFIX,
+    // Assessment booking plus public agreement / page / calendar tokens.
+    allow: (pathname) =>
+      pathname === '/' ||
+      pathname.startsWith('/assessment') ||
+      pathname.startsWith('/thankyou') ||
+      isPublicTokenPath(pathname),
+  },
   { hosts: ASSESSMENT_ADMIN_HOSTS, prefix: ASSESSMENT_ADMIN_PREFIX },
   {
     hosts: WORKSPACE_HOSTS,
     prefix: WORKSPACE_PREFIX,
     // Unified admin portal: agreements plus the former Vistrial admin surfaces.
-    // Public token routes stay at /p and /c without the workspace prefix.
+    // Public token routes stay at /p, /c, /s without the workspace prefix.
     allow: (pathname) =>
       pathname === '/' ||
       pathname.startsWith('/workspace') ||

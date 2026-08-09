@@ -1,18 +1,10 @@
 import { redirect } from 'next/navigation';
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
-import { controlRpc } from '@/lib/ad/rpc';
-import { createClient, supabaseConfigured } from '@/lib/supabase/server';
 import { NEUTRAL_UNAVAILABLE_MESSAGE } from '@/lib/workspace/tokens';
+import { resolveSigningToken } from '@/lib/workspace/resolve-signing';
 
 export const dynamic = 'force-dynamic';
-
-type ResolvedSigning = {
-  destination_url: string;
-  recipient_name?: string;
-  template_name?: string;
-  status?: string;
-};
 
 function Unavailable() {
   return (
@@ -32,13 +24,7 @@ export default async function PublicSigningTokenRoute({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-
-  if (!supabaseConfigured) return <Unavailable />;
-
-  const supabase = await createClient();
-  const { data } = await controlRpc<ResolvedSigning>(supabase, 'da_resolve_signing_token', {
-    p_token: token,
-  });
+  const data = await resolveSigningToken(token);
 
   if (!data?.destination_url) return <Unavailable />;
 

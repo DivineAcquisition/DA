@@ -29,6 +29,7 @@ import {
   resolveCompanyRoleName,
 } from './operator-agreement';
 import { publicCalendarUrl, publicPageUrl, publicSigningUrl } from './paths';
+import { signingPublicBaseUrl } from './resolve-signing';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor, syncDocuSeal } from './sync';
 import {
   createToken,
@@ -421,7 +422,8 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
 
   const settings = await loadSettings();
   if (!settings) return { ok: false, error: 'Settings could not be loaded.' };
-  if (!settings.public_base_url.trim()) {
+  const publicBase = signingPublicBaseUrl(settings.public_base_url);
+  if (!publicBase) {
     return { ok: false, error: 'Set the public base URL in settings before sending agreements.' };
   }
 
@@ -460,7 +462,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     templateId,
     recipientId,
     agreementId: agreement.id,
-    baseUrl: settings.public_base_url,
+    baseUrl: publicBase,
   });
   if (tokenError) return { ok: false, error: tokenError };
 
@@ -527,7 +529,7 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
   }
 
   const accessToken = createToken(32);
-  const publicUrl = publicSigningUrl(settings.public_base_url, accessToken);
+  const publicUrl = publicSigningUrl(publicBase, accessToken);
   const providerUrl = docuseal.signingUrl;
 
   await supabase
