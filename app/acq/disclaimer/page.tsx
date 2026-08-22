@@ -17,9 +17,9 @@ export default function DisclaimerPage() {
         be published here.
       </p>
       <p>
-        Information on this site describes the structure of the performance pilot offer. Results
-        vary by business, market, and execution. Nothing on this site is a guarantee of revenue,
-        appointments, or outcomes.
+        Information on this site describes the founding-install offer. Results vary by business,
+        market, and execution. Nothing on this site is a guarantee of revenue, appointments, or
+        outcomes. The Will Coles figure is a single-client result and is not typical.
       </p>
       <p>
         This site is not a part of the Facebook website or Facebook Inc. Additionally, this site is

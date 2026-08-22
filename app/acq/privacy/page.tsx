@@ -17,9 +17,10 @@ export default function PrivacyPage() {
         be published here.
       </p>
       <p>
-        When you book a call, we collect the information you submit (such as name, email, phone,
-        and business details) so we can schedule and run the conversation. Ad tracking parameters
-        may be associated with your inquiry so we can attribute the campaign that produced it.
+        When you submit an application, we collect the information you provide (such as name, email,
+        phone, company, and qualification answers) so we can review fit and follow up. Ad tracking
+        parameters may be associated with your inquiry so we can attribute the campaign that
+        produced it.
       </p>
       <p>
         We do not sell your personal information. For privacy requests, contact your Divine
