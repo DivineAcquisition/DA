@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './acq.css';
+import { MetaPixel } from './components/MetaPixel';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -17,19 +18,19 @@ const interDisplay = Inter({
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Performance Pilot | Divine Acquisition',
-    default: 'Performance Pilot | Divine Acquisition',
+    absolute: 'Founding Install | Divine Acquisition',
+    default: 'Founding Install | Divine Acquisition',
     template: '%s | Divine Acquisition',
   },
   description:
-    'Info businesses don’t lose money on ads. They lose it between the call booked and the cash collected. We build and structure the boring parts between booked call and client completion.',
+    "We'll build and run your sales operation systems to turn the demand you are generating into booked calls, done for you in 14 days. Founding installs for coaching businesses.",
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
-    title: 'Divine Acquisition Performance Pilot',
+    title: 'Divine Acquisition — Founding Install',
     description:
-      'That gap between the call booked and the cash collected is a sales operations problem — and it’s what we build.',
+      'We build and run your sales operation systems to turn demand into booked calls. Done for you in 14 days.',
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Divine Acquisition Performance Pilot',
+    title: 'Divine Acquisition — Founding Install',
     description:
-      'That gap between the call booked and the cash collected is a sales operations problem — and it’s what we build.',
+      'We build and run your sales operation systems to turn demand into booked calls. Done for you in 14 days.',
   },
   robots: {
     index: true,
@@ -56,6 +57,7 @@ export const metadata: Metadata = {
 export default function AcqLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${plusJakarta.variable} ${interDisplay.variable} acq-surface`}>
+      <MetaPixel />
       {children}
     </div>
   );
