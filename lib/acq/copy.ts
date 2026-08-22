@@ -42,15 +42,6 @@ export const INCLUDED = [
 export const INCLUDED_FOOTNOTE =
   'Built in 14 days. You keep your CRM, your calendar, and your payment processor.';
 
-export const CASE_STUDY = {
-  name: 'Will Coles',
-  context: 'Will Coles runs a youth football coaching program.',
-  setup:
-    'We installed the same system. Same ads, same offer, same price. The only thing that changed was follow-up.',
-  resultLabel: 'added monthly recurring revenue',
-  resultValue: '$16,000',
-} as const;
-
 export const FOUNDING_OFFER = {
   eyebrow: 'Founding install',
   title: "We're taking a small number of founding spots at this rate.",
