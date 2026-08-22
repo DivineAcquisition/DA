@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ComponentType, type CSSProperties } from 'react';
 import Script from 'next/script';
-import { ACQ_WISTIA_ASPECT, ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
+import { ACQ_META_PIXEL_ID, ACQ_WISTIA_ASPECT, ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
 const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
@@ -28,8 +28,16 @@ export default function HeroVideo() {
   useEffect(() => {
     if (!mediaId) return;
 
+    let attempts = 0;
     const markPlay = () => {
-      if (tracked.current) return;
+      if (tracked.current || !ACQ_META_PIXEL_ID) return;
+      if (typeof window.fbq !== 'function') {
+        if (attempts < 8) {
+          attempts += 1;
+          window.setTimeout(markPlay, 250);
+        }
+        return;
+      }
       tracked.current = true;
       trackPixel('ViewContent', { content_name: 'Founding Install VSL', content_ids: [mediaId] });
     };
