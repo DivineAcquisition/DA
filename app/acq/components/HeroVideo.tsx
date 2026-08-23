@@ -14,9 +14,9 @@ declare global {
 const VSL_TITLE = 'Fix Sales Operations Bottlenecks With AI';
 
 /**
- * Official Wistia iframe embed. The previous <wistia-player> custom element
- * did not paint on the live acq host, so the VSL was missing. Iframe + a
- * reserved aspect box always occupies space and plays.
+ * Official Wistia iframe. The previous <wistia-player> custom element never
+ * defined on the live acq host, so the hero rendered as empty space.
+ * An iframe plus a reserved aspect box always occupies space and plays.
  */
 export default function HeroVideo() {
   const mediaId = ACQ_WISTIA_MEDIA_ID;
@@ -50,7 +50,7 @@ export default function HeroVideo() {
 
   if (!mediaId) {
     return (
-      <div className="mx-auto w-full max-w-[880px]">
+      <div className="mx-auto w-full max-w-[1040px]">
         <div className="flex aspect-video items-center justify-center rounded-2xl border border-white/10 bg-ink-900">
           <span className="text-xs text-neutral-600">Video unavailable</span>
         </div>
@@ -58,37 +58,57 @@ export default function HeroVideo() {
     );
   }
 
+  const embedSrc = `https://fast.wistia.net/embed/iframe/${mediaId}?seo=true&videoFoam=true&playerColor=9A88FC`;
+  const swatch = `https://fast.wistia.com/embed/medias/${mediaId}/swatch`;
+
   return (
-    <div className="animate-rise delay-3 mx-auto w-full max-w-[880px]">
+    <div className="mx-auto w-full max-w-[1040px]">
       <Script src="https://fast.wistia.com/assets/external/E-v1.js" strategy="afterInteractive" />
       <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.1] bg-ink-900 shadow-[0_28px_80px_-36px_rgba(0,0,0,0.85)]">
-        <div className="flex items-center gap-3 border-b border-white/[0.06] bg-ink-850 px-3.5 py-2.5">
-          <span className="flex gap-1.5" aria-hidden>
-            <span className="h-2 w-2 rounded-full bg-white/18" />
-            <span className="h-2 w-2 rounded-full bg-white/12" />
-            <span className="h-2 w-2 rounded-full bg-white/12" />
-          </span>
-          <span className="min-w-0 truncate text-[11px] font-medium text-neutral-500">
-            Divine Acquisition · Sales operations
-          </span>
-        </div>
-
+      <div className="relative">
         <div
-          className="relative w-full bg-black"
+          aria-hidden
+          className="pointer-events-none absolute -inset-6 rounded-[2rem] sm:-inset-10"
           style={{
-            aspectRatio: ACQ_WISTIA_ASPECT,
-            background: `center / cover no-repeat url('https://fast.wistia.com/embed/medias/${mediaId}/swatch')`,
+            background:
+              'radial-gradient(ellipse at 50% 40%, rgba(154,136,252,0.22) 0%, rgba(154,136,252,0.06) 42%, transparent 70%)',
+            filter: 'blur(28px)',
           }}
-        >
-          <iframe
-            src={`https://fast.wistia.net/embed/iframe/${mediaId}?seo=true&videoFoam=true&playerColor=9A88FC`}
-            title={VSL_TITLE}
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-            className="absolute inset-0 h-full w-full border-0"
-          />
+        />
+
+        <div className="relative overflow-hidden rounded-2xl border border-white/[0.1] bg-ink-900 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.9)]">
+          <div className="flex items-center gap-3 border-b border-white/[0.06] bg-ink-850 px-3.5 py-2.5">
+            <span className="flex gap-1.5" aria-hidden>
+              <span className="h-2 w-2 rounded-full bg-white/20" />
+              <span className="h-2 w-2 rounded-full bg-white/12" />
+              <span className="h-2 w-2 rounded-full bg-white/12" />
+            </span>
+            <span className="min-w-0 flex-1 truncate text-[11px] font-medium text-neutral-500">
+              Divine Acquisition · Sales operations
+            </span>
+            <span className="hidden items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-neutral-500 sm:inline-flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+              VSL
+            </span>
+          </div>
+
+          <div
+            className="relative w-full bg-black"
+            style={{
+              aspectRatio: ACQ_WISTIA_ASPECT,
+              background: `center / cover no-repeat url('${swatch}')`,
+            }}
+          >
+            <iframe
+              src={embedSrc}
+              title={VSL_TITLE}
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              name="wistia_embed"
+              className="wistia_embed absolute inset-0 h-full w-full border-0"
+            />
+          </div>
         </div>
       </div>
     </div>

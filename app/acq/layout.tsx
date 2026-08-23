@@ -57,6 +57,9 @@ export const metadata: Metadata = {
 export default function AcqLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`${plusJakarta.variable} ${interDisplay.variable} acq-surface`}>
+      <link rel="preconnect" href="https://fast.wistia.net" />
+      <link rel="preconnect" href="https://fast.wistia.com" />
+      <link rel="preconnect" href="https://embed-ssl.wistia.com" />
       <MetaPixel />
       {children}
     </div>

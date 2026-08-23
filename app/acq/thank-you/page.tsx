@@ -15,20 +15,20 @@ export default function AcqThankYouPage() {
       <AcqBackdrop />
 
       <div className="relative z-10">
-        <header className="border-b border-white/[0.06]">
+        <header className="border-b border-white/[0.06] bg-ink-950/75 backdrop-blur-xl">
           <div className="mx-auto flex h-14 max-w-6xl items-center px-5 sm:h-16 sm:px-6">
             <Logo className="h-[18px] w-auto sm:h-[20px]" title="Divine Acquisition" />
           </div>
         </header>
 
-        <section className="px-5 pb-20 pt-16 sm:px-6 sm:pt-24">
-          <div className="mx-auto max-w-lg rounded-2xl border border-white/[0.08] bg-ink-900/70 px-6 py-12 text-center sm:px-10">
+        <section className="px-5 pb-24 pt-20 sm:px-6 sm:pt-28">
+          <div className="mx-auto max-w-lg rounded-3xl border border-white/[0.07] bg-white/[0.02] px-6 py-14 text-center sm:px-10">
             <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full bg-brand-500/15 text-brand-300 ring-1 ring-brand-500/25">
               <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
               </svg>
             </div>
-            <p className="text-[12px] font-medium text-neutral-500">Application received</p>
+            <p className="text-[13px] font-medium text-neutral-500">Application received</p>
             <h1 className="acq-headline mt-3 text-[1.65rem] font-semibold leading-[1.15] sm:text-[2rem]">
               {THANK_YOU.title}
             </h1>

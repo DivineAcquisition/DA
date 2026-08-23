@@ -7,6 +7,7 @@ import {
   HEADLINE,
   INCLUDED,
   INCLUDED_FOOTNOTE,
+  QUALIFY_DIALOG,
   SUBHEADLINE,
 } from '@/lib/acq/copy';
 import AcqBackdrop from './components/AcqBackdrop';
@@ -24,7 +25,7 @@ function FeatureIcon({ index }: { index: number }) {
     'M5 7h10v10H5zM8 4h4',
   ];
   return (
-    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-brand-300">
+    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-brand-500/[0.08] text-brand-300">
       <svg className="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth={1.6} aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" d={paths[index] ?? paths[0]} />
       </svg>
@@ -46,54 +47,59 @@ export default async function AcqLandingPage({
         <AcqBackdrop />
 
         <div className="relative z-10">
-          <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-md">
+          <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/75 backdrop-blur-xl">
             <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:h-16 sm:px-6">
               <Logo className="h-[18px] w-auto sm:h-[20px]" title="Divine Acquisition" />
-              <QualifyButton size="sm" className="hidden w-auto sm:inline-flex" />
+              <QualifyButton size="sm" className="w-auto" />
             </div>
           </header>
 
-          <section className="px-5 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-16">
-            <div className="mx-auto max-w-[820px] text-center">
-              <p className="inline-flex items-center rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] font-medium text-neutral-300">
+          <section className="px-5 pb-8 pt-12 sm:px-6 sm:pb-10 sm:pt-20">
+            <div className="mx-auto max-w-[840px] text-center">
+              <p className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[12px] font-medium text-neutral-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-brand-400" aria-hidden />
                 Stellar Sales Operations
               </p>
 
-              <h1 className="acq-headline mx-auto mt-5 text-[1.55rem] font-semibold leading-[1.18] tracking-tight text-white sm:mt-6 sm:text-[2.25rem] md:text-[2.6rem] md:leading-[1.12]">
+              <h1 className="acq-headline mx-auto mt-6 text-[1.6rem] font-semibold leading-[1.16] tracking-tight text-white sm:mt-7 sm:text-[2.35rem] md:text-[2.75rem] md:leading-[1.1]">
                 {HEADLINE}
               </h1>
 
-              <p className="mx-auto mt-5 max-w-[36rem] text-[15px] leading-relaxed text-neutral-400 sm:text-base">
+              <p className="mx-auto mt-5 max-w-[34rem] text-[15px] leading-relaxed text-neutral-400 sm:mt-6 sm:text-base">
                 {SUBHEADLINE}
+              </p>
+
+              <p className="mx-auto mt-5 max-w-xl text-[13px] leading-relaxed text-neutral-500">
+                {INCLUDED_FOOTNOTE}
               </p>
             </div>
           </section>
 
-          <section className="px-5 pb-8 sm:px-6">
+          <section className="px-5 pb-6 sm:px-6">
             <HeroVideo />
-            <div className="mx-auto mt-8 flex max-w-[880px] flex-col items-center">
+            <div className="mx-auto mt-9 flex max-w-[1040px] flex-col items-center">
               <QualifyButton />
             </div>
           </section>
 
-          <section className="px-5 py-16 sm:px-6 sm:py-20">
+          <section className="px-5 py-20 sm:px-6 sm:py-28">
             <div className="mx-auto max-w-6xl">
               <div className="max-w-2xl">
-                <p className="text-[12px] font-medium text-neutral-500">What&apos;s included</p>
-                <h2 className="acq-headline mt-2 text-[1.75rem] font-semibold tracking-tight text-white sm:text-[2rem]">
+                <p className="text-[13px] font-medium text-neutral-500">Overview</p>
+                <h2 className="acq-headline mt-2 text-[1.85rem] font-semibold tracking-tight text-white sm:text-[2.25rem]">
                   Everything you need to turn demand into booked calls.
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-neutral-400">{INCLUDED_FOOTNOTE}</p>
+                <p className="mt-4 text-[15px] leading-relaxed text-neutral-400">{INCLUDED_FOOTNOTE}</p>
               </div>
 
-              <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <ul className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {INCLUDED.map((item, index) => (
                   <li
                     key={item.title}
-                    className="rounded-2xl border border-white/[0.08] bg-ink-900/70 p-5"
+                    className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 transition-colors hover:border-white/[0.12] hover:bg-white/[0.035]"
                   >
                     <FeatureIcon index={index} />
-                    <h3 className="mt-4 text-[15px] font-semibold text-white">{item.title}</h3>
+                    <h3 className="mt-5 text-[15px] font-semibold tracking-tight text-white">{item.title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-neutral-400">{item.body}</p>
                   </li>
                 ))}
@@ -102,32 +108,52 @@ export default async function AcqLandingPage({
           </section>
 
           <section className="px-5 py-8 sm:px-6 sm:py-12">
-            <div className="mx-auto max-w-2xl rounded-2xl border border-white/[0.08] bg-ink-900/70 p-6 sm:p-8">
-              <p className="text-[12px] font-medium text-brand-300">{FOUNDING_OFFER.eyebrow}</p>
-              <h2 className="acq-headline mt-2 text-[1.55rem] font-semibold tracking-tight text-white sm:text-[1.85rem]">
-                {FOUNDING_OFFER.title}
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-neutral-400 sm:text-[15px]">
-                {FOUNDING_OFFER.body}
-              </p>
-              <div className="mt-7">
-                <QualifyButton />
+            <div className="relative mx-auto max-w-xl">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -inset-8 rounded-[2rem] opacity-80"
+                style={{
+                  background:
+                    'radial-gradient(ellipse at 50% 0%, rgba(154,136,252,0.16) 0%, transparent 70%)',
+                }}
+              />
+              <div className="relative overflow-hidden rounded-3xl border border-brand-500/25 bg-ink-900/90 p-7 shadow-[0_24px_80px_-40px_rgba(154,136,252,0.45)] sm:p-9">
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="text-[13px] font-medium text-brand-300">{FOUNDING_OFFER.eyebrow}</p>
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-neutral-400">
+                    Limited spots
+                  </span>
+                </div>
+                <h2 className="acq-headline mt-3 text-[1.6rem] font-semibold tracking-tight text-white sm:text-[1.9rem]">
+                  {FOUNDING_OFFER.title}
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-neutral-400 sm:text-[15px]">
+                  {FOUNDING_OFFER.body}
+                </p>
+                <div className="mt-8">
+                  <QualifyButton />
+                </div>
+                <p className="mt-4 text-[12px] leading-relaxed text-neutral-500">{INCLUDED_FOOTNOTE}</p>
               </div>
             </div>
           </section>
 
-          <section className="px-5 py-16 sm:px-6 sm:py-20">
+          <section className="px-5 py-20 sm:px-6 sm:py-28">
             <div className="mx-auto max-w-3xl">
-              <p className="text-[12px] font-medium text-neutral-500">FAQ</p>
-              <h2 className="acq-headline mt-2 text-[1.75rem] font-semibold tracking-tight text-white sm:text-[2rem]">
-                Need more answers?
-              </h2>
+              <div className="sm:flex sm:items-end sm:justify-between sm:gap-8">
+                <div>
+                  <p className="text-[13px] font-medium text-neutral-500">FAQ</p>
+                  <h2 className="acq-headline mt-2 text-[1.85rem] font-semibold tracking-tight text-white sm:text-[2.25rem]">
+                    Straight answers before you apply.
+                  </h2>
+                </div>
+              </div>
 
-              <div className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-ink-900/70">
+              <div className="mt-10 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02]">
                 {FAQ.map((item, index) => (
                   <details
                     key={item.q}
-                    className={`group px-5 py-4 sm:px-6 ${index > 0 ? 'border-t border-white/[0.06]' : ''}`}
+                    className={`group px-5 py-5 sm:px-6 ${index > 0 ? 'border-t border-white/[0.06]' : ''}`}
                   >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-[15px] font-medium text-white marker:content-none [&::-webkit-details-marker]:hidden">
                       <span>{item.q}</span>
@@ -145,9 +171,18 @@ export default async function AcqLandingPage({
             </div>
           </section>
 
-          <section className="px-5 pb-20 pt-4 sm:px-6 sm:pb-24">
-            <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-              <QualifyButton />
+          <section className="px-5 pb-24 pt-4 sm:px-6 sm:pb-28">
+            <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.07] bg-white/[0.02] px-6 py-12 text-center sm:px-10">
+              <p className="text-[13px] font-medium text-neutral-500">{FOUNDING_OFFER.eyebrow}</p>
+              <h2 className="acq-headline mt-2 text-[1.65rem] font-semibold tracking-tight text-white sm:text-[1.9rem]">
+                {QUALIFY_DIALOG.title}
+              </h2>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-400">
+                {QUALIFY_DIALOG.description}
+              </p>
+              <div className="mt-8 flex justify-center">
+                <QualifyButton />
+              </div>
             </div>
           </section>
 

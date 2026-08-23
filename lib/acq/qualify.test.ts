@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { qualificationThankYouPath, trackingFromSearchParams, withTrackingParams } from './config';
+import {
+  ACQ_WISTIA_MEDIA_ID,
+  qualificationThankYouPath,
+  trackingFromSearchParams,
+  withTrackingParams,
+} from './config';
+import * as copy from './copy';
 import {
   followUpValueFromInput,
   ghlWebhookBody,
@@ -107,5 +113,15 @@ describe('withTrackingParams', () => {
     expect(url.searchParams.get('utm_source')).toBe('facebook');
     expect(url.searchParams.get('fbclid')).toBe('abc.123');
     expect(url.searchParams.has('junk')).toBe(false);
+  });
+});
+
+describe('founding landing media', () => {
+  it('keeps the Wistia VSL id that the hero iframe embeds', () => {
+    expect(ACQ_WISTIA_MEDIA_ID).toBe('h8ncqjru31');
+  });
+
+  it('does not export a case-study block', () => {
+    expect('CASE_STUDY' in copy).toBe(false);
   });
 });
