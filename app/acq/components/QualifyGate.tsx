@@ -11,7 +11,6 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { btnConvert, btnSizeLg, btnSizeSm } from '@/app/components/ui';
 import { submitQualification } from '@/lib/acq/actions';
 import { CTA_LABEL, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
@@ -41,26 +40,16 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
   );
 }
 
-export function QualifyButton({
-  className = '',
-  size = 'lg',
-}: {
-  className?: string;
-  size?: 'sm' | 'lg';
-}) {
+export function QualifyButton({ className = '' }: { className?: string }) {
   const ctx = useContext(QualifyContext);
   if (!ctx) {
     throw new Error('QualifyButton must be used inside QualifyProvider');
   }
 
   return (
-    <button
-      type="button"
-      onClick={ctx.open}
-      className={`${btnConvert} ${size === 'sm' ? `${btnSizeSm} w-auto` : `${btnSizeLg} w-full sm:w-auto`} ${className}`}
-    >
+    <button type="button" onClick={ctx.open} className={`acq-button ${className}`}>
       {CTA_LABEL}
-      <ArrowIcon className={size === 'sm' ? 'h-3.5 w-3.5' : 'h-4 w-4'} />
+      <ArrowIcon />
     </button>
   );
 }
@@ -255,11 +244,7 @@ function QualifyDialog({
           </p>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className={`${btnConvert} ${btnSizeLg} mt-1 w-full`}
-        >
+        <button type="submit" disabled={pending} className="acq-button acq-button-full mt-1">
           {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
         </button>
       </form>

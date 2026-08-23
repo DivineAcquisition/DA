@@ -1,37 +1,9 @@
 import Logo from '@/app/components/Logo';
+import Backdrop from '@/app/components/Backdrop';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
-import {
-  FACEBOOK_DISCLAIMER,
-  FAQ,
-  FOUNDING_OFFER,
-  HEADLINE,
-  INCLUDED,
-  INCLUDED_FOOTNOTE,
-  QUALIFY_DIALOG,
-  SUBHEADLINE,
-} from '@/lib/acq/copy';
-import AcqBackdrop from './components/AcqBackdrop';
+import { FACEBOOK_DISCLAIMER, HEADLINE, SUBHEADLINE } from '@/lib/acq/copy';
 import HeroVideo from './components/HeroVideo';
 import { QualifyButton, QualifyProvider } from './components/QualifyGate';
-
-function FeatureIcon({ index }: { index: number }) {
-  const paths = [
-    'M4 7h12M4 12h8M4 17h10',
-    'M5 12h10M12 5l7 7-7 7',
-    'M4 6h12v4H4zM4 14h7v4H4z',
-    'M12 4v8l4 2',
-    'M5 16l4-8 3 5 2-3 5 6',
-    'M4 16V8a2 2 0 0 1 2-2h8M16 8v8a2 2 0 0 1-2 2H6',
-    'M5 7h10v10H5zM8 4h4',
-  ];
-  return (
-    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-brand-500/[0.08] text-brand-300">
-      <svg className="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor" strokeWidth={1.6} aria-hidden>
-        <path strokeLinecap="round" strokeLinejoin="round" d={paths[index] ?? paths[0]} />
-      </svg>
-    </span>
-  );
-}
 
 export default async function AcqLandingPage({
   searchParams,
@@ -44,149 +16,36 @@ export default async function AcqLandingPage({
   return (
     <QualifyProvider tracking={tracking}>
       <div className="min-h-screen bg-ink-950 text-white antialiased">
-        <AcqBackdrop />
+        <Backdrop />
 
         <div className="relative z-10">
-          <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/75 backdrop-blur-xl">
-            <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:h-16 sm:px-6">
-              <Logo className="h-[18px] w-auto sm:h-[20px]" title="Divine Acquisition" />
-              <QualifyButton size="sm" className="w-auto" />
+          <header className="px-5 pt-6 sm:px-6 sm:pt-8">
+            <div className="mx-auto flex max-w-5xl justify-center">
+              <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
             </div>
           </header>
 
-          <section className="px-5 pb-8 pt-12 sm:px-6 sm:pb-10 sm:pt-20">
-            <div className="mx-auto max-w-[840px] text-center">
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[12px] font-medium text-neutral-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand-400" aria-hidden />
-                Stellar Sales Operations
-              </p>
-
-              <h1 className="acq-headline mx-auto mt-6 text-[1.6rem] font-semibold leading-[1.16] tracking-tight text-white sm:mt-7 sm:text-[2.35rem] md:text-[2.75rem] md:leading-[1.1]">
+          <section className="px-5 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-14 md:pt-16">
+            <div className="mx-auto max-w-[900px] text-center">
+              <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-semibold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">
                 {HEADLINE}
               </h1>
 
-              <p className="mx-auto mt-5 max-w-[34rem] text-[15px] leading-relaxed text-neutral-400 sm:mt-6 sm:text-base">
+              <p className="animate-rise delay-2 mx-auto mt-4 max-w-[34rem] text-sm leading-relaxed text-neutral-400 sm:mt-5 sm:text-[15px]">
                 {SUBHEADLINE}
-              </p>
-
-              <p className="mx-auto mt-5 max-w-xl text-[13px] leading-relaxed text-neutral-500">
-                {INCLUDED_FOOTNOTE}
               </p>
             </div>
           </section>
 
-          <section className="px-5 pb-6 sm:px-6">
+          <section className="px-5 pb-20 sm:px-6 sm:pb-24">
             <HeroVideo />
-            <div className="mx-auto mt-9 flex max-w-[1040px] flex-col items-center">
+
+            <div className="animate-rise delay-4 mx-auto mt-9 flex max-w-[900px] flex-col items-center">
               <QualifyButton />
             </div>
           </section>
 
-          <section className="px-5 py-20 sm:px-6 sm:py-28">
-            <div className="mx-auto max-w-6xl">
-              <div className="max-w-2xl">
-                <p className="text-[13px] font-medium text-neutral-500">Overview</p>
-                <h2 className="acq-headline mt-2 text-[1.85rem] font-semibold tracking-tight text-white sm:text-[2.25rem]">
-                  Everything you need to turn demand into booked calls.
-                </h2>
-                <p className="mt-4 text-[15px] leading-relaxed text-neutral-400">{INCLUDED_FOOTNOTE}</p>
-              </div>
-
-              <ul className="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {INCLUDED.map((item, index) => (
-                  <li
-                    key={item.title}
-                    className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 transition-colors hover:border-white/[0.12] hover:bg-white/[0.035]"
-                  >
-                    <FeatureIcon index={index} />
-                    <h3 className="mt-5 text-[15px] font-semibold tracking-tight text-white">{item.title}</h3>
-                    <p className="mt-2 text-sm leading-relaxed text-neutral-400">{item.body}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-
-          <section className="px-5 py-8 sm:px-6 sm:py-12">
-            <div className="relative mx-auto max-w-xl">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute -inset-8 rounded-[2rem] opacity-80"
-                style={{
-                  background:
-                    'radial-gradient(ellipse at 50% 0%, rgba(154,136,252,0.16) 0%, transparent 70%)',
-                }}
-              />
-              <div className="relative overflow-hidden rounded-3xl border border-brand-500/25 bg-ink-900/90 p-7 shadow-[0_24px_80px_-40px_rgba(154,136,252,0.45)] sm:p-9">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="text-[13px] font-medium text-brand-300">{FOUNDING_OFFER.eyebrow}</p>
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[10px] font-medium text-neutral-400">
-                    Limited spots
-                  </span>
-                </div>
-                <h2 className="acq-headline mt-3 text-[1.6rem] font-semibold tracking-tight text-white sm:text-[1.9rem]">
-                  {FOUNDING_OFFER.title}
-                </h2>
-                <p className="mt-3 text-sm leading-relaxed text-neutral-400 sm:text-[15px]">
-                  {FOUNDING_OFFER.body}
-                </p>
-                <div className="mt-8">
-                  <QualifyButton />
-                </div>
-                <p className="mt-4 text-[12px] leading-relaxed text-neutral-500">{INCLUDED_FOOTNOTE}</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="px-5 py-20 sm:px-6 sm:py-28">
-            <div className="mx-auto max-w-3xl">
-              <div className="sm:flex sm:items-end sm:justify-between sm:gap-8">
-                <div>
-                  <p className="text-[13px] font-medium text-neutral-500">FAQ</p>
-                  <h2 className="acq-headline mt-2 text-[1.85rem] font-semibold tracking-tight text-white sm:text-[2.25rem]">
-                    Straight answers before you apply.
-                  </h2>
-                </div>
-              </div>
-
-              <div className="mt-10 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02]">
-                {FAQ.map((item, index) => (
-                  <details
-                    key={item.q}
-                    className={`group px-5 py-5 sm:px-6 ${index > 0 ? 'border-t border-white/[0.06]' : ''}`}
-                  >
-                    <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-[15px] font-medium text-white marker:content-none [&::-webkit-details-marker]:hidden">
-                      <span>{item.q}</span>
-                      <span
-                        aria-hidden
-                        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-white/[0.08] text-neutral-500 transition group-open:rotate-45"
-                      >
-                        +
-                      </span>
-                    </summary>
-                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-neutral-400">{item.a}</p>
-                  </details>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="px-5 pb-24 pt-4 sm:px-6 sm:pb-28">
-            <div className="mx-auto max-w-xl rounded-3xl border border-white/[0.07] bg-white/[0.02] px-6 py-12 text-center sm:px-10">
-              <p className="text-[13px] font-medium text-neutral-500">{FOUNDING_OFFER.eyebrow}</p>
-              <h2 className="acq-headline mt-2 text-[1.65rem] font-semibold tracking-tight text-white sm:text-[1.9rem]">
-                {QUALIFY_DIALOG.title}
-              </h2>
-              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-400">
-                {QUALIFY_DIALOG.description}
-              </p>
-              <div className="mt-8 flex justify-center">
-                <QualifyButton />
-              </div>
-            </div>
-          </section>
-
-          <footer className="border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
+          <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
             <p className="text-xs text-neutral-600">© Divine Acquisition. All rights reserved.</p>
             <p className="mx-auto mt-5 max-w-2xl text-[10px] leading-relaxed text-neutral-600 sm:text-[11px]">
               {FACEBOOK_DISCLAIMER}

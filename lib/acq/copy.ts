@@ -48,33 +48,6 @@ export const FOUNDING_OFFER = {
   body: 'You get the full system, built in 14 days, at founding pricing in exchange for being a case study we can reference. Once these spots are filled, pricing goes to standard rate.',
 } as const;
 
-export const FAQ = [
-  {
-    q: 'I already have a setter. Why do I need this?',
-    a: 'A setter books. This system decides who is ready, runs two follow-up tracks, protects the call, and recovers no-shows. Your setter keeps working the conversations. The system stops the rest of the pipeline from leaking around them.',
-  },
-  {
-    q: 'I already have GHL and automations. Isn’t this the same thing?',
-    a: 'GHL is the CRM. Automations are the pipes. This is the operating system on top — readiness scoring, two tracks, touch tracking, call protection, dormant reactivation, and a monthly report. We build it in the GHL you already have. You keep the account.',
-  },
-  {
-    q: 'My list is burned. We’ve already followed up.',
-    a: 'A burned list usually means one generic sequence, sent too often. Dormant reactivation is a different track with different timing and a different ask. We do not re-blast the same messages. We reopen the people who went quiet for a reason.',
-  },
-  {
-    q: 'Do I have to switch my CRM, calendar, or payment processor?',
-    a: 'No. You keep your CRM, your calendar, and your payment processor. We install into what you already run.',
-  },
-  {
-    q: 'How fast will I see a result?',
-    a: 'The system is built and live in 14 days. Show-rate lift starts as soon as call protection and the two tracks are on. Reactivation depends on the size of the dormant list — that is usually where the first extra cash shows up.',
-  },
-  {
-    q: 'My leads are not that good. Will this still work?',
-    a: 'If a lead is not ready, they go to Track A. If they are, they go to Track B. The system does not treat every click like a buyer. It stops your follow-up from pretending they are.',
-  },
-] as const;
-
 export const THANK_YOU = {
   title: 'Thanks — reviewing your application now.',
   body: "You'll hear from me within a few hours with next steps.",

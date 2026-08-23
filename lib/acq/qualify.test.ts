@@ -117,11 +117,12 @@ describe('withTrackingParams', () => {
 });
 
 describe('founding landing media', () => {
-  it('keeps the Wistia VSL id that the hero iframe embeds', () => {
-    expect(ACQ_WISTIA_MEDIA_ID).toBe('h8ncqjru31');
+  it('embeds the issued Wistia VSL', () => {
+    expect(ACQ_WISTIA_MEDIA_ID).toBe('topebzrych');
   });
 
-  it('does not export a case-study block', () => {
+  it('does not export case-study or FAQ blocks', () => {
     expect('CASE_STUDY' in copy).toBe(false);
+    expect('FAQ' in copy).toBe(false);
   });
 });

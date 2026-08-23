@@ -3,12 +3,16 @@
 export const ACQ_PUBLIC_ORIGIN =
   process.env.NEXT_PUBLIC_ACQ_HOST?.replace(/\/$/, '') ?? 'https://acq.divineacquisition.io';
 
-/** Hero Wistia media id. Override with NEXT_PUBLIC_ACQ_WISTIA_ID when needed. */
+/**
+ * Hero Wistia media id for the issued embed. Ignore a stale
+ * NEXT_PUBLIC_ACQ_WISTIA_ID if it still points at the old player.
+ */
+const wistiaFromEnv = process.env.NEXT_PUBLIC_ACQ_WISTIA_ID?.trim() || '';
 export const ACQ_WISTIA_MEDIA_ID =
-  process.env.NEXT_PUBLIC_ACQ_WISTIA_ID?.trim() || 'h8ncqjru31';
+  !wistiaFromEnv || wistiaFromEnv === 'h8ncqjru31' ? 'topebzrych' : wistiaFromEnv;
 
 /** Native aspect ratio for the hero Wistia player (width / height). */
-export const ACQ_WISTIA_ASPECT = '2.060085836909871';
+export const ACQ_WISTIA_ASPECT = '1.7777777777777777';
 
 /** Meta Pixel id. Empty means the snippet is not injected. */
 export const ACQ_META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '';
