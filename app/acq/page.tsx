@@ -1,7 +1,7 @@
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
-import { FACEBOOK_DISCLAIMER, HEADLINE, SUBHEADLINE } from '@/lib/acq/copy';
+import { FACEBOOK_DISCLAIMER, HEADLINE, PILL_BANNER, SUBHEADLINE } from '@/lib/acq/copy';
 import HeroVideo from './components/HeroVideo';
 import { QualifyButton, QualifyProvider } from './components/QualifyGate';
 
@@ -20,12 +20,15 @@ export default async function AcqLandingPage({
 
         <div className="relative z-10">
           <header className="px-5 pt-6 sm:px-6 sm:pt-8">
-            <div className="mx-auto flex max-w-5xl justify-center">
+            <div className="mx-auto flex max-w-5xl flex-col items-center">
               <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
+              <p className="acq-headline animate-rise mt-6 inline-flex items-center rounded-full border border-brand-500/30 bg-brand-500/[0.08] px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-brand-200 sm:mt-7 sm:text-[13px]">
+                {PILL_BANNER}
+              </p>
             </div>
           </header>
 
-          <section className="px-5 pb-8 pt-10 sm:px-6 sm:pb-10 sm:pt-14 md:pt-16">
+          <section className="px-5 pb-8 pt-8 sm:px-6 sm:pb-10 sm:pt-10 md:pt-12">
             <div className="mx-auto max-w-[900px] text-center">
               <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-semibold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">
                 {HEADLINE}

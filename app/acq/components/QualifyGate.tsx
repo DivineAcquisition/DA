@@ -21,10 +21,30 @@ import {
 } from '@/lib/acq/qualify';
 import type { TrackingParamKey } from '@/lib/acq/config';
 
-const fieldClass =
-  'mt-1.5 min-h-11 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-[16px] text-white placeholder:text-neutral-600 outline-none transition focus:border-brand-500/60 focus:bg-white/[0.05] sm:text-sm';
+function Field({
+  label,
+  children,
+  className = '',
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="acq-headline text-[14px] font-semibold tracking-tight text-white">{label}</span>
+      <span className="acq-field mt-2 block">{children}</span>
+    </label>
+  );
+}
 
-const labelClass = 'block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500';
+function SelectChevron() {
+  return (
+    <svg className="acq-field-chevron" viewBox="0 0 16 16" fill="none" aria-hidden>
+      <path d="M4 6.2 8 10l4-3.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
 
 type QualifyContextValue = {
   open: () => void;
@@ -145,10 +165,10 @@ function QualifyDialog({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">
+          <p className="acq-headline text-[12px] font-semibold tracking-tight text-brand-300">
             Founding install
           </p>
-          <h2 id={titleId} className="mt-2 text-xl font-semibold tracking-tight text-white">
+          <h2 id={titleId} className="acq-headline mt-2 text-[1.55rem] font-semibold leading-[1.15] tracking-tight text-white">
             {QUALIFY_DIALOG.title}
           </h2>
           <p id={descId} className="mt-2 text-sm leading-relaxed text-neutral-400">
@@ -158,7 +178,7 @@ function QualifyDialog({
         <button
           type="button"
           onClick={close}
-          className="min-h-11 min-w-11 rounded-full text-neutral-500 transition hover:bg-white/[0.05] hover:text-white"
+          className="min-h-11 min-w-11 rounded-xl text-neutral-500 transition hover:bg-white/[0.05] hover:text-white"
           aria-label="Close"
         >
           <span aria-hidden className="text-xl leading-none">
@@ -167,33 +187,55 @@ function QualifyDialog({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-4" noValidate>
-        <label className={labelClass}>
-          Full Name
-          <input
-            ref={firstFieldRef}
-            name="fullName"
-            type="text"
-            autoComplete="name"
-            required
-            className={fieldClass}
-          />
-        </label>
-        <label className={labelClass}>
-          Email
-          <input name="email" type="email" autoComplete="email" required className={fieldClass} />
-        </label>
-        <label className={labelClass}>
-          Phone
-          <input name="phone" type="tel" autoComplete="tel" required inputMode="tel" className={fieldClass} />
-        </label>
-        <label className={labelClass}>
-          Company Name
-          <input name="companyName" type="text" autoComplete="organization" required className={fieldClass} />
-        </label>
-        <label className={labelClass}>
-          Roughly how much do you spend on ads per month?
-          <select name="adSpend" required defaultValue="" className={`${fieldClass} cursor-pointer`}>
+      <form onSubmit={onSubmit} className="mt-7 grid gap-4" noValidate>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Full name">
+            <input
+              ref={firstFieldRef}
+              name="fullName"
+              type="text"
+              autoComplete="name"
+              required
+              placeholder="Jordan Blake"
+              className="acq-field-control"
+            />
+          </Field>
+          <Field label="Email">
+            <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="you@company.com"
+              className="acq-field-control"
+            />
+          </Field>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label="Phone">
+            <input
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              required
+              inputMode="tel"
+              placeholder="(555) 201-8890"
+              className="acq-field-control"
+            />
+          </Field>
+          <Field label="Company name">
+            <input
+              name="companyName"
+              type="text"
+              autoComplete="organization"
+              required
+              placeholder="Your company"
+              className="acq-field-control"
+            />
+          </Field>
+        </div>
+        <Field label="Roughly how much do you spend on ads per month?">
+          <select name="adSpend" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
             </option>
@@ -203,10 +245,10 @@ function QualifyDialog({
               </option>
             ))}
           </select>
-        </label>
-        <label className={labelClass}>
-          Who handles follow-up on leads that don&apos;t book right away?
-          <select name="followUp" required defaultValue="" className={`${fieldClass} cursor-pointer`}>
+          <SelectChevron />
+        </Field>
+        <Field label="Who handles follow-up on leads that don't book right away?">
+          <select name="followUp" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
             </option>
@@ -216,10 +258,10 @@ function QualifyDialog({
               </option>
             ))}
           </select>
-        </label>
-        <label className={labelClass}>
-          What&apos;s your program priced at?
-          <select name="programPrice" required defaultValue="" className={`${fieldClass} cursor-pointer`}>
+          <SelectChevron />
+        </Field>
+        <Field label="What's your program priced at?">
+          <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
             </option>
@@ -229,7 +271,8 @@ function QualifyDialog({
               </option>
             ))}
           </select>
-        </label>
+          <SelectChevron />
+        </Field>
 
         <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
           <label>

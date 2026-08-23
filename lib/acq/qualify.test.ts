@@ -125,4 +125,8 @@ describe('founding landing media', () => {
     expect('CASE_STUDY' in copy).toBe(false);
     expect('FAQ' in copy).toBe(false);
   });
+
+  it('keeps the hero pill banner copy', () => {
+    expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
+  });
 });

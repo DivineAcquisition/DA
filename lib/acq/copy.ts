@@ -1,5 +1,7 @@
 /** Landing + qualification copy for the founding-install acq surface. */
 
+export const PILL_BANNER = 'Sales Operations For Coaching & Consultants';
+
 export const HEADLINE =
   "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls, Completely Done For You In The Next 14 Days To Increase Show Rate";
 
