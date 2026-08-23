@@ -18,8 +18,8 @@ export const ACQ_WISTIA_ASPECT = '1.7777777777777777';
 export const ACQ_META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '';
 
 /**
- * Conversion event fired on /thank-you after a qualification submit.
- * Must match the event Zap 6 / Meta ads is optimizing toward.
+ * Conversion event fired after /api/submit-lead succeeds, before redirect.
+ * Must match the event Meta ads is optimizing toward.
  */
 export const ACQ_PIXEL_LEAD_EVENT = (
   process.env.NEXT_PUBLIC_ACQ_PIXEL_LEAD_EVENT?.trim() || 'Lead'
@@ -32,13 +32,49 @@ export const ACQ_GHL_WEBHOOK_URL = process.env.ACQ_GHL_WEBHOOK_URL?.trim() || ''
 export const ACQ_GHL_FORM_ID = process.env.ACQ_GHL_FORM_ID?.trim() || '';
 
 /**
- * Client-acquisition location. Defaults to the shared GHL location when unset.
- * Keep talent booking on its own location; override this if the founding-install
- * pipeline lives in a different subaccount.
+ * Client-acquisition GHL location only. Never fall back to GHL_LOCATION_ID —
+ * that env is the talent Assessment Interview subaccount.
  */
-export const ACQ_GHL_LOCATION_ID = process.env.ACQ_GHL_LOCATION_ID?.trim() || '';
+export const ACQ_GHL_LOCATION_ID =
+  process.env.ACQ_GHL_LOCATION_ID?.trim() || process.env.GHL_ACQ_LOCATION_ID?.trim() || '';
 
-export const GHL_PIT_TOKEN = process.env.GHL_PIT_TOKEN?.trim() || '';
+/** Private Integration Token. GHL_PIT_KEY is accepted as an alias. */
+export const GHL_PIT_TOKEN =
+  process.env.GHL_PIT_TOKEN?.trim() || process.env.GHL_PIT_KEY?.trim() || '';
+
+/** Optional GHL custom-field ids when the location uses non-standard names. */
+export const GHL_FIELD_COMPANY_NAME = process.env.GHL_FIELD_COMPANY_NAME?.trim() || '';
+export const GHL_FIELD_AD_SPEND = process.env.GHL_FIELD_AD_SPEND?.trim() || '';
+export const GHL_FIELD_FOLLOW_UP = process.env.GHL_FIELD_FOLLOW_UP?.trim() || '';
+export const GHL_FIELD_PROGRAM_PRICE = process.env.GHL_FIELD_PROGRAM_PRICE?.trim() || '';
+export const GHL_FIELD_READINESS = process.env.GHL_FIELD_READINESS?.trim() || '';
+export const GHL_FIELD_QUAL_RESULT = process.env.GHL_FIELD_QUAL_RESULT?.trim() || '';
+
+export const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY?.trim() || '';
+export const AIRTABLE_BASE_ID = process.env.AIRTABLE_BASE_ID?.trim() || 'apprsfnMvzEAfsg39';
+export const AIRTABLE_LEADS_TABLE_ID =
+  process.env.AIRTABLE_LEADS_TABLE_ID?.trim() || 'tblDgFYwsGzoDqzF1';
+
+/**
+ * Airtable Entry Point select. "Landing Page" is the intended value but is not
+ * a choice on the Leads table yet — default stays Audit Booking so writes succeed.
+ */
+export const AIRTABLE_ENTRY_POINT = process.env.AIRTABLE_ENTRY_POINT?.trim() || 'Audit Booking';
+
+/** Optional Slack/webhook URL for Step 2/3 pipeline failures. */
+export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
+
+/**
+ * GHL "Lead Leak Audit (30 min)" calendar iframe src. Also accepts a widget id
+ * and builds the standard LeadConnector booking URL.
+ */
+const calendarEmbedFromEnv = process.env.NEXT_PUBLIC_ACQ_CALENDAR_EMBED_URL?.trim() || '';
+const calendarWidgetFromEnv = process.env.NEXT_PUBLIC_ACQ_CALENDAR_WIDGET_ID?.trim() || '';
+export const ACQ_CALENDAR_EMBED_URL =
+  calendarEmbedFromEnv ||
+  (calendarWidgetFromEnv
+    ? `https://api.leadconnectorhq.com/widget/booking/${calendarWidgetFromEnv}`
+    : '');
 
 /** Ad / click identifiers forwarded from the landing URL into the application. */
 export const TRACKING_PARAM_KEYS = [

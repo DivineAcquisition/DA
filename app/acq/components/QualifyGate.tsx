@@ -11,15 +11,15 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { submitQualification } from '@/lib/acq/actions';
-import { CTA_LABEL, QUALIFY_DIALOG } from '@/lib/acq/copy';
+import { CTA_LABEL, FORM_LABELS, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
   AD_SPEND_OPTIONS,
   FOLLOW_UP_OPTIONS,
   PROGRAM_PRICE_OPTIONS,
   type QualificationInput,
 } from '@/lib/acq/qualify';
-import type { TrackingParamKey } from '@/lib/acq/config';
+import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
+import { trackPixel } from './MetaPixel';
 
 function Field({
   label,
@@ -32,8 +32,8 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="acq-headline text-[14px] font-semibold tracking-tight text-white">{label}</span>
-      <span className="acq-field mt-2 block">{children}</span>
+      <span className="acq-headline text-[12px] font-semibold tracking-tight text-white">{label}</span>
+      <span className="acq-field mt-1.5 block">{children}</span>
     </label>
   );
 }
@@ -137,12 +137,18 @@ function QualifyDialog({
     };
 
     try {
-      const result = await submitQualification(input, window.location.host);
-      if (!result.ok) {
-        setError(result.error);
+      const response = await fetch('/api/submit-lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(input),
+      });
+      const result = (await response.json()) as { ok?: boolean; error?: string; redirectTo?: string };
+      if (!result.ok || !result.redirectTo) {
+        setError(result.error || 'We could not submit that just now. Try again in a moment.');
         setPending(false);
         return;
       }
+      trackPixel(ACQ_PIXEL_LEAD_EVENT);
       window.location.assign(result.redirectTo);
     } catch {
       setError('We could not submit that just now. Try again in a moment.');
@@ -163,33 +169,33 @@ function QualifyDialog({
         if (!pending) setError(null);
       }}
     >
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="acq-headline text-[12px] font-semibold tracking-tight text-brand-300">
+          <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
             Founding install
           </p>
-          <h2 id={titleId} className="acq-headline mt-2 text-[1.55rem] font-semibold leading-[1.15] tracking-tight text-white">
+          <h2 id={titleId} className="acq-headline mt-1 text-[1.2rem] font-semibold leading-[1.15] tracking-tight text-white">
             {QUALIFY_DIALOG.title}
           </h2>
-          <p id={descId} className="mt-2 text-sm leading-relaxed text-neutral-400">
+          <p id={descId} className="mt-1 text-[13px] leading-snug text-neutral-400">
             {QUALIFY_DIALOG.description}
           </p>
         </div>
         <button
           type="button"
           onClick={close}
-          className="min-h-11 min-w-11 rounded-xl text-neutral-500 transition hover:bg-white/[0.05] hover:text-white"
+          className="min-h-9 min-w-9 rounded-lg text-neutral-500 transition hover:bg-white/[0.05] hover:text-white"
           aria-label="Close"
         >
-          <span aria-hidden className="text-xl leading-none">
+          <span aria-hidden className="text-lg leading-none">
             ×
           </span>
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-7 grid gap-4" noValidate>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Full name">
+      <form onSubmit={onSubmit} className="mt-4 grid gap-2.5" noValidate>
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <Field label={FORM_LABELS.fullName}>
             <input
               ref={firstFieldRef}
               name="fullName"
@@ -200,7 +206,7 @@ function QualifyDialog({
               className="acq-field-control"
             />
           </Field>
-          <Field label="Email">
+          <Field label={FORM_LABELS.email}>
             <input
               name="email"
               type="email"
@@ -211,8 +217,8 @@ function QualifyDialog({
             />
           </Field>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Phone">
+        <div className="grid gap-2.5 sm:grid-cols-2">
+          <Field label={FORM_LABELS.phone}>
             <input
               name="phone"
               type="tel"
@@ -223,7 +229,7 @@ function QualifyDialog({
               className="acq-field-control"
             />
           </Field>
-          <Field label="Company name">
+          <Field label={FORM_LABELS.companyName}>
             <input
               name="companyName"
               type="text"
@@ -234,7 +240,7 @@ function QualifyDialog({
             />
           </Field>
         </div>
-        <Field label="Roughly how much do you spend on ads per month?">
+        <Field label={FORM_LABELS.adSpend}>
           <select name="adSpend" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
@@ -247,7 +253,7 @@ function QualifyDialog({
           </select>
           <SelectChevron />
         </Field>
-        <Field label="Who handles follow-up on leads that don't book right away?">
+        <Field label={FORM_LABELS.followUp}>
           <select name="followUp" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
@@ -260,7 +266,7 @@ function QualifyDialog({
           </select>
           <SelectChevron />
         </Field>
-        <Field label="What's your program priced at?">
+        <Field label={FORM_LABELS.programPrice}>
           <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
@@ -282,12 +288,12 @@ function QualifyDialog({
         </div>
 
         {error ? (
-          <p className="text-sm text-flag-critical" role="alert">
+          <p className="text-[13px] text-flag-critical" role="alert">
             {error}
           </p>
         ) : null}
 
-        <button type="submit" disabled={pending} className="acq-button acq-button-full mt-1">
+        <button type="submit" disabled={pending} className="acq-button acq-button-full mt-0.5">
           {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
         </button>
       </form>

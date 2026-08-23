@@ -148,6 +148,7 @@ const SURFACES: Surface[] = [
       pathname === '/privacy' ||
       pathname === '/thank-you' ||
       pathname.startsWith('/thank-you') ||
+      pathname === '/api/submit-lead' ||
       pathname.startsWith('/acq'),
   },
 ];
@@ -175,9 +176,13 @@ export async function proxy(request: NextRequest) {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
   const { pathname } = request.nextUrl;
 
-  // Machine doors and cron workers are not surfaces. They authenticate with their
-  // own secrets and must not be rewritten into a host surface prefix.
-  if (pathname.startsWith(MACHINE_DOOR_PREFIX) || pathname.startsWith(CRON_PREFIX)) {
+  // Machine doors, cron workers, and the acq lead API are not surfaces.
+  // They must not be rewritten into a host surface prefix.
+  if (
+    pathname.startsWith(MACHINE_DOOR_PREFIX) ||
+    pathname.startsWith(CRON_PREFIX) ||
+    pathname === '/api/submit-lead'
+  ) {
     const response = NextResponse.next();
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
     return response;

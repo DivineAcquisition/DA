@@ -7,10 +7,13 @@ import {
 } from './config';
 import * as copy from './copy';
 import {
+  airtableFieldsFromPayload,
   followUpValueFromInput,
   ghlWebhookBody,
   isHoneypot,
+  normalizeQualificationResult,
   parseQualification,
+  qualificationResultTag,
   QualificationError,
 } from './qualify';
 
@@ -40,6 +43,7 @@ describe('parseQualification', () => {
     expect(payload.entryPoint).toBe('Audit Booking');
     expect(payload.stage).toBe('Step 1 Captured');
     expect(payload.tags).toContain('founding-install');
+    expect(payload.tags).toContain('da-app-complete');
     expect(payload.tracking).toEqual({ utm_source: 'facebook', fbclid: 'abc.123' });
   });
 
@@ -121,12 +125,42 @@ describe('founding landing media', () => {
     expect(ACQ_WISTIA_MEDIA_ID).toBe('topebzrych');
   });
 
-  it('does not export case-study or FAQ blocks', () => {
-    expect('CASE_STUDY' in copy).toBe(false);
-    expect('FAQ' in copy).toBe(false);
+  it('keeps the issued landing copy blocks', () => {
+    expect(copy.HEADLINE).toContain('Booked Calls — Completely Done For You');
+    expect(copy.CASE_STUDY.callout).toBe('$16,000');
+    expect(copy.FOUNDING_OFFER.lead).toBe("We're only taking 3 businesses at this rate.");
+    expect(copy.FAQ).toHaveLength(6);
+    expect(copy.THANK_YOU.title).toBe("Thanks — you're in. Grab a time below.");
+    expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
+  });
+});
+
+describe('qualification scoring helpers', () => {
+  it('maps Airtable results onto GHL tags', () => {
+    expect(qualificationResultTag('Qualified')).toBe('da-qualified');
+    expect(qualificationResultTag('Manual Review')).toBe('da-manual-review');
+    expect(qualificationResultTag('Disqualified')).toBe('da-disqualified');
+    expect(normalizeQualificationResult(' manual-review ')).toBe('Manual Review');
+    expect(normalizeQualificationResult('nope')).toBeNull();
   });
 
-  it('keeps the hero pill banner copy', () => {
-    expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
+  it('writes the Leads table fields from a qualification payload', () => {
+    const fields = airtableFieldsFromPayload(parseQualification(valid), {
+      ghlContactId: 'ghl_123',
+      today: '2026-08-23',
+      entryPoint: 'Audit Booking',
+    });
+
+    expect(fields['Lead Name']).toBe('Jordan Blake');
+    expect(fields.Email).toBe('jordan@example.com');
+    expect(fields['Company Name']).toBe('Blake Coaching');
+    expect(fields['Monthly Ad Spend']).toBe('$5k+');
+    expect(fields['Follow-Up Owner']).toBe('Founder');
+    expect(fields['Program Price']).toBe('$2-5k');
+    expect(fields['Lead Source']).toBe('Paid Ad');
+    expect(fields['Entry Point']).toBe('Audit Booking');
+    expect(fields['Opt-In Date']).toBe('2026-08-23');
+    expect(fields.Campaign).toBe('Landing Page');
+    expect(fields['GHL Contact ID']).toBe('ghl_123');
   });
 });

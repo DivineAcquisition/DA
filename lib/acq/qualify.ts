@@ -41,12 +41,23 @@ export type QualificationPayload = {
   followUpOwnerLabel: string;
   programPrice: ProgramPrice;
   leadSource: 'Paid Ad';
-  entryPoint: 'Audit Booking';
+  entryPoint: 'Audit Booking' | 'Landing Page';
   stage: 'Step 1 Captured';
   source: 'Founding Install Qualification';
   tags: string[];
   tracking: Partial<Record<TrackingParamKey, string>>;
 };
+
+export type QualificationResult = 'Qualified' | 'Manual Review' | 'Disqualified';
+
+export const QUALIFICATION_RESULT_TAGS = {
+  Qualified: 'da-qualified',
+  'Manual Review': 'da-manual-review',
+  Disqualified: 'da-disqualified',
+} as const;
+
+export const APP_COMPLETE_TAG = 'da-app-complete';
+export const RESULT_TAGS = Object.values(QUALIFICATION_RESULT_TAGS);
 
 export type QualifyErrorField =
   | 'fullName'
@@ -158,9 +169,69 @@ export function parseQualification(input: QualificationInput): QualificationPayl
     entryPoint: 'Audit Booking',
     stage: 'Step 1 Captured',
     source: 'Founding Install Qualification',
-    tags: ['founding-install', 'acq-qualify'],
+    tags: ['founding-install', 'acq-qualify', APP_COMPLETE_TAG],
     tracking: cleanTracking(input.tracking),
   };
+}
+
+export function todayIsoDate(now = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
+export function normalizeQualificationResult(value: unknown): QualificationResult | null {
+  const text = String(value ?? '')
+    .trim()
+    .toLowerCase();
+  if (text === 'qualified') return 'Qualified';
+  if (text === 'manual review' || text === 'manual-review' || text === 'manualreview') {
+    return 'Manual Review';
+  }
+  if (text === 'disqualified') return 'Disqualified';
+  return null;
+}
+
+export function qualificationResultTag(result: QualificationResult): string {
+  return QUALIFICATION_RESULT_TAGS[result];
+}
+
+export function parseReadinessScore(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return null;
+}
+
+/** Fields written to the ClientAcquisition Leads table. */
+export function airtableFieldsFromPayload(
+  payload: QualificationPayload,
+  extras: {
+    ghlContactId?: string | null;
+    today?: string;
+    entryPoint?: string;
+  } = {},
+): Record<string, string> {
+  const fields: Record<string, string> = {
+    'Lead Name': payload.fullName,
+    Email: payload.email,
+    Phone: payload.phone,
+    'Company Name': payload.companyName,
+    'Coaching Niche': payload.coachingNiche,
+    'Monthly Ad Spend': payload.monthlyAdSpend,
+    'Follow-Up Owner': payload.followUpOwner,
+    'Program Price': payload.programPrice,
+    'Lead Source': payload.leadSource,
+    'Entry Point': extras.entryPoint ?? payload.entryPoint,
+    'Opt-In Date': extras.today ?? todayIsoDate(),
+    Stage: payload.stage,
+    Campaign: payload.tracking.utm_campaign || 'Landing Page',
+  };
+
+  if (payload.tracking.utm_content) fields['Ad Set'] = payload.tracking.utm_content;
+  if (extras.ghlContactId) fields['GHL Contact ID'] = extras.ghlContactId;
+
+  return fields;
 }
 
 /** JSON body posted to the GHL form webhook / Zap so it lands in the existing pipeline. */

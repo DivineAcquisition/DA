@@ -1,8 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useRef } from 'react';
-import { ACQ_META_PIXEL_ID, ACQ_PIXEL_LEAD_EVENT } from '@/lib/acq/config';
+import { ACQ_META_PIXEL_ID } from '@/lib/acq/config';
 
 declare global {
   interface Window {
@@ -51,24 +50,10 @@ export function MetaPixel() {
   );
 }
 
-/** Fires the configured Lead / CompleteRegistration event once on the thank-you page. */
+/**
+ * @deprecated Lead now fires client-side after /api/submit-lead succeeds,
+ * before the thank-you redirect. Kept as a no-op so old imports compile.
+ */
 export function ThankYouConversion() {
-  const fired = useRef(false);
-
-  useEffect(() => {
-    if (fired.current || !ACQ_META_PIXEL_ID) return;
-
-    const send = () => {
-      if (fired.current) return;
-      if (typeof window.fbq !== 'function') return;
-      fired.current = true;
-      trackPixel(ACQ_PIXEL_LEAD_EVENT);
-    };
-
-    send();
-    const timer = window.setTimeout(send, 400);
-    return () => window.clearTimeout(timer);
-  }, []);
-
   return null;
 }
