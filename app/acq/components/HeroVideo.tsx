@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ComponentType, type CSSProperties } from 'react';
 import Script from 'next/script';
+import { BorderBeam } from '@/components/ui/border-beam';
 import { ACQ_WISTIA_ASPECT, ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
@@ -85,6 +86,7 @@ export default function HeroVideo() {
       />
 
       <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
+        <BorderBeam size={80} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
         <div className="w-full overflow-hidden rounded-[1.25rem] bg-black">
           {mediaId ? (
             <WistiaPlayer media-id={mediaId} aspect={ACQ_WISTIA_ASPECT} />
