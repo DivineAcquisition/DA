@@ -38,6 +38,7 @@ const NAV: { heading: string; items: NavItem[] }[] = [
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
+      { href: '/workspace/bookings', label: 'Prospect calls', icon: 'bookings' },
       { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
   },
