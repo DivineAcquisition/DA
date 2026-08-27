@@ -135,6 +135,7 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/templates') ||
       pathname.startsWith('/mapping') ||
       pathname.startsWith('/calendar-links') ||
+      pathname.startsWith('/bookings') ||
       pathname.startsWith('/settings'),
   },
   {

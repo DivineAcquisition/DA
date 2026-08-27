@@ -1,9 +1,10 @@
 import { createSign } from 'node:crypto';
 
 /**
- * Google Calendar + Meet for assessment bookings.
+ * Google Calendar + Meet.
  * Reuses the Drive service-account JWT pattern with calendar scopes and
  * domain-wide delegation (GOOGLE_CALENDAR_SUBJECT_EMAIL / GOOGLE_DRIVE_SUBJECT_EMAIL).
+ * Used by talent assessment bookings and Client Acquisition internal booking.
  */
 
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -93,14 +94,18 @@ export type CreatedCalendarEvent = {
   htmlLink: string | null;
 };
 
-export async function createAssessmentCalendarEvent(input: {
+export type GoogleMeetEventInput = {
   summary: string;
   description: string;
   startsAt: string;
   endsAt: string;
   timeZone: string;
   attendeeEmails: string[];
-}): Promise<CreatedCalendarEvent> {
+};
+
+export async function createGoogleMeetEvent(
+  input: GoogleMeetEventInput,
+): Promise<CreatedCalendarEvent> {
   const config = readCalendarConfig();
   if (!config) throw new Error('calendar_not_configured');
 
@@ -123,7 +128,10 @@ export async function createAssessmentCalendarEvent(input: {
     },
     reminders: {
       useDefault: false,
-      overrides: [{ method: 'popup', minutes: 30 }],
+      overrides: [
+        { method: 'popup', minutes: 30 },
+        { method: 'email', minutes: 30 },
+      ],
     },
   };
 
@@ -162,3 +170,5 @@ export async function createAssessmentCalendarEvent(input: {
     htmlLink: event.htmlLink ?? null,
   };
 }
+
+export const createAssessmentCalendarEvent = createGoogleMeetEvent;
