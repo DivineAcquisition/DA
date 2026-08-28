@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import {
   Accordion,
@@ -10,9 +11,9 @@ import {
 } from '@/components/ui/accordion';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { MagicCard } from '@/components/ui/magic-card';
-import { NumberTicker } from '@/components/ui/number-ticker';
 import { Panel } from '@/components/ui/panel';
 import { ShineBorder } from '@/components/ui/shine-border';
+import { CTA_LABEL } from '@/lib/acq/copy';
 import { cn } from '@/lib/utils';
 
 export function StatusPill({ children }: { children: ReactNode }) {
@@ -29,43 +30,46 @@ export function StatusPill({ children }: { children: ReactNode }) {
   );
 }
 
-export function IncludedCards({ items }: { items: readonly string[] }) {
+function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" />
+    </svg>
+  );
+}
+
+export function BookCta({ href, className = '' }: { href: string; className?: string }) {
+  return (
+    <Link href={href} className={cn('acq-button no-underline max-w-sm', className)}>
+      {CTA_LABEL}
+      <ArrowIcon />
+    </Link>
+  );
+}
+
+export function IncludedCards({
+  items,
+}: {
+  items: readonly { title: string; body: string }[];
+}) {
   return (
     <ul className="mt-8 grid gap-3 sm:grid-cols-2">
       {items.map((item) => (
-        <li key={item}>
+        <li key={item.title}>
           <Panel className="h-full overflow-hidden p-0">
             <MagicCard className="flex h-full items-start gap-3 rounded-2xl p-4 sm:p-5">
               <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-brand-500/15 text-brand-300">
                 <Check className="size-3.5" aria-hidden />
               </span>
-              <p className="text-[15px] leading-relaxed text-white">{item}</p>
+              <div>
+                <p className="acq-headline text-[15px] font-semibold leading-snug text-white">{item.title}</p>
+                <p className="mt-1.5 text-sm leading-relaxed text-neutral-400">{item.body}</p>
+              </div>
             </MagicCard>
           </Panel>
         </li>
       ))}
     </ul>
-  );
-}
-
-export function CaseStudyCallout({
-  value,
-  label,
-}: {
-  value: number;
-  label: string;
-}) {
-  return (
-    <div className="panel relative mt-8 overflow-hidden rounded-3xl px-6 py-10 text-center sm:px-10 sm:py-14">
-      <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} duration={12} />
-      <p className="acq-headline relative text-[3.4rem] font-semibold leading-none tracking-tight text-white sm:text-[5rem]">
-        $
-        <NumberTicker value={value} className="acq-headline font-semibold tracking-tight text-white" />
-      </p>
-      <p className="relative mt-3 text-sm font-medium uppercase tracking-[0.14em] text-neutral-400 sm:text-[13px]">
-        {label}
-      </p>
-    </div>
   );
 }
 

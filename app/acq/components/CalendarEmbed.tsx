@@ -2,7 +2,11 @@
 
 import { useEffect, useRef } from 'react';
 import Script from 'next/script';
-import { ACQ_CALENDAR_EMBED_URL } from '@/lib/acq/config';
+import {
+  ACQ_CALENDAR_EMBED_SCRIPT,
+  ACQ_CALENDAR_EMBED_URL,
+  ACQ_CALENDAR_IFRAME_ID,
+} from '@/lib/acq/config';
 import { THANK_YOU_CALENDAR_PENDING } from '@/lib/acq/copy';
 import { trackPixel } from './MetaPixel';
 
@@ -12,7 +16,9 @@ function isGhlOrigin(origin: string): boolean {
     return (
       host.endsWith('leadconnectorhq.com') ||
       host.endsWith('msgsndr.com') ||
-      host.endsWith('gohighlevel.com')
+      host.endsWith('gohighlevel.com') ||
+      host === 'link.msgsndr.divineacquisition.io' ||
+      host.endsWith('.msgsndr.divineacquisition.io')
     );
   } catch {
     return false;
@@ -36,11 +42,14 @@ function looksLikeBooking(data: unknown): boolean {
   return tokens.some(
     (value) =>
       (value.includes('booking') || value.includes('appointment')) &&
-      (value.includes('complete') || value.includes('created') || value.includes('success') || value.includes('booked')),
+      (value.includes('complete') ||
+        value.includes('created') ||
+        value.includes('success') ||
+        value.includes('booked')),
   );
 }
 
-/** GHL Lead Leak Audit calendar. Visible for every applicant; fires Schedule on book. */
+/** GHL booking calendar. Visible on /book and /thank-you; fires Schedule on book. */
 export function CalendarEmbed() {
   const fired = useRef(false);
   const src = ACQ_CALENDAR_EMBED_URL;
@@ -72,13 +81,15 @@ export function CalendarEmbed() {
 
   return (
     <div className="panel mt-10 overflow-hidden rounded-3xl p-1.5 sm:p-2">
-      <Script src="https://link.msgsndr.com/js/form_embed.js" strategy="afterInteractive" />
       <iframe
+        id={ACQ_CALENDAR_IFRAME_ID}
         src={src}
-        title="Lead Leak Audit (30 min)"
+        title="Book a call"
+        allow="payment"
         className="h-[680px] w-full rounded-[1.15rem] border-0 bg-ink-900 sm:h-[720px]"
         scrolling="no"
       />
+      <Script src={ACQ_CALENDAR_EMBED_SCRIPT} strategy="afterInteractive" />
     </div>
   );
 }

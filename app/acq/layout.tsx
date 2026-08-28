@@ -5,6 +5,7 @@ import { MetaPixel } from './components/MetaPixel';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
+  style: ['normal', 'italic'],
   variable: '--font-acq-jakarta',
   display: 'swap',
 });

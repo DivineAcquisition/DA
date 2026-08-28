@@ -19,7 +19,7 @@ export default function DisclaimerPage() {
       <p>
         Information on this site describes the founding-install offer. Results vary by business,
         market, and execution. Nothing on this site is a guarantee of revenue, appointments, or
-        outcomes. The Will Coles figure is a single-client result and is not typical.
+        outcomes.
       </p>
       <p>
         This site is not a part of the Facebook website or Facebook Inc. Additionally, this site is

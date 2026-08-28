@@ -2,39 +2,59 @@
 
 export const PILL_BANNER = 'Sales Operations For Coaching & Consultants';
 
-export const HEADLINE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls — Completely Done For You In The Next 14 Days To Increase Show Rate";
+export const HEADLINE_BEFORE =
+  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls — ";
+
+export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+
+export const HEADLINE_AFTER = ' To Increase Show Rate';
+
+export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  "We're taking on 3 coaching businesses as founding installs at a reduced rate in exchange for a case study. Same system, same 14-day build, first-mover pricing.";
+  "We're taking on 3 coaching businesses as founding installs at a reduced rate. Same system, same 14-day build, first-mover pricing.";
 
 export const CTA_LABEL = 'See If You Qualify';
 export const SUBMIT_LABEL = 'Submit Application';
 
 export const INCLUDED_HEADLINE = "What's Included";
 export const INCLUDED = [
-  'Lead intake and readiness scoring',
-  'Two follow-up tracks: nurture for not-ready leads, fast-close cadence for ready leads',
-  'Full touch tracking across every call, text, and message',
-  'Call protection: reminders, no-show recovery, objection-branched follow-up',
-  'Dormant list reactivation',
-  'Revenue attribution by source',
-  'Operator dashboard and monthly report',
+  {
+    title: 'Lead intake and readiness scoring',
+    body: 'Every inquiry is captured, scored, and routed so your team only works leads that are ready.',
+  },
+  {
+    title: 'Two follow-up tracks',
+    body: 'Nurture for not-ready leads. Fast-close cadence for ready leads.',
+  },
+  {
+    title: 'Full touch tracking',
+    body: 'Every call, text, and message is logged against the deal so nothing falls through.',
+  },
+  {
+    title: 'Call protection',
+    body: 'Reminders, no-show recovery, and objection-branched follow-up so booked calls actually happen.',
+  },
+  {
+    title: 'Dormant list reactivation',
+    body: 'Old inquiries get a structured second chance instead of sitting in a spreadsheet.',
+  },
+  {
+    title: 'Revenue attribution',
+    body: 'You see which source produced the booked call and the closed deal.',
+  },
+  {
+    title: 'Operator dashboard and monthly report',
+    body: 'One view of pipeline health, plus a monthly readout you can actually use.',
+  },
 ] as const;
 export const INCLUDED_FOOTNOTE =
   'Built in 14 days. You keep your CRM, your calendar, and your payment processor.';
 
-export const CASE_STUDY = {
-  headline: 'Case Study',
-  body: 'Will Coles runs a youth football coaching program. We installed the same system. Same ads, same offer, same price. The only thing that changed was follow-up.',
-  callout: '$16,000',
-  calloutLabel: 'in added monthly recurring revenue',
-} as const;
-
 export const FOUNDING_OFFER = {
   eyebrow: 'Founding install',
   lead: "We're only taking 3 businesses at this rate.",
-  body: 'You get the full system, built in 14 days, at founding pricing in exchange for being a case study we can reference. Once these spots are filled, pricing goes to standard rate.',
+  body: 'You get the full system, built in 14 days, at founding pricing. Once these spots are filled, pricing goes to standard rate.',
 } as const;
 
 export const FAQ_HEADLINE = 'Questions';
@@ -64,6 +84,12 @@ export const FAQ = [
     a: "Then you'll know within 30 days, with actual numbers instead of a feeling.",
   },
 ] as const;
+
+export const BOOK_PAGE = {
+  eyebrow: 'Book a call',
+  title: 'Pick a time that works',
+  body: "We'll walk the 14-day install on the call and confirm whether the founding offer is a fit.",
+} as const;
 
 export const THANK_YOU = {
   title: "Thanks — you're in. Grab a time below.",

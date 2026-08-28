@@ -1,9 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
+  ACQ_CALENDAR_DEFAULT_EMBED_URL,
+  ACQ_CALENDAR_EMBED_URL,
   ACQ_WISTIA_MEDIA_ID,
+  acqPublicPath,
   qualificationThankYouPath,
   trackingFromSearchParams,
   withTrackingParams,
+  withTrackingQuery,
 } from './config';
 import * as copy from './copy';
 import {
@@ -94,6 +98,25 @@ describe('qualificationThankYouPath', () => {
   });
 });
 
+describe('acqPublicPath', () => {
+  it('uses the bare booking path on the dedicated acq host', () => {
+    expect(acqPublicPath('/book', 'acq.divineacquisition.io')).toBe('/book');
+  });
+
+  it('prefixes the booking path on localhost and previews', () => {
+    expect(acqPublicPath('/book', 'localhost')).toBe('/acq/book');
+    expect(acqPublicPath('/book', 'divine-acq-123.vercel.app')).toBe('/acq/book');
+  });
+});
+
+describe('withTrackingQuery', () => {
+  it('appends known ad params onto a relative path', () => {
+    expect(
+      withTrackingQuery('/acq/book', { utm_source: 'facebook', fbclid: 'abc.123' }),
+    ).toBe('/acq/book?utm_source=facebook&fbclid=abc.123');
+  });
+});
+
 describe('trackingFromSearchParams', () => {
   it('keeps known ad params and drops everything else', () => {
     expect(
@@ -126,12 +149,27 @@ describe('founding landing media', () => {
   });
 
   it('keeps the issued landing copy blocks', () => {
-    expect(copy.HEADLINE).toContain('Booked Calls — Completely Done For You');
-    expect(copy.CASE_STUDY.callout).toBe('$16,000');
+    expect(copy.HEADLINE).toBe(
+      `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
+    );
+    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
+    expect(copy.INCLUDED).toHaveLength(7);
+    expect(copy.INCLUDED[0]).toEqual({
+      title: 'Lead intake and readiness scoring',
+      body: 'Every inquiry is captured, scored, and routed so your team only works leads that are ready.',
+    });
     expect(copy.FOUNDING_OFFER.lead).toBe("We're only taking 3 businesses at this rate.");
+    expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
+    expect(copy.FOUNDING_OFFER.body.toLowerCase()).not.toContain('case study');
     expect(copy.FAQ).toHaveLength(6);
     expect(copy.THANK_YOU.title).toBe("Thanks — you're in. Grab a time below.");
     expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
+    expect(copy.BOOK_PAGE.title).toBe('Pick a time that works');
+  });
+
+  it('defaults the booking calendar to the issued GHL widget', () => {
+    expect(ACQ_CALENDAR_DEFAULT_EMBED_URL).toContain('v0e24e3kxYEGCTUkSP4A');
+    expect(ACQ_CALENDAR_EMBED_URL).toContain('widget/booking');
   });
 });
 

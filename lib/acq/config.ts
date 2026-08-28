@@ -64,9 +64,18 @@ export const AIRTABLE_ENTRY_POINT = process.env.AIRTABLE_ENTRY_POINT?.trim() || 
 /** Optional Slack/webhook URL for Step 2/3 pipeline failures. */
 export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 
+export const ACQ_THANK_YOU_PATH = '/thank-you';
+export const ACQ_BOOK_PATH = '/book';
+
+export const ACQ_CALENDAR_WIDGET_ID = 'v0e24e3kxYEGCTUkSP4A';
+export const ACQ_CALENDAR_IFRAME_ID = 'sJewwAfFLhmwqP9psUxK_1787884446665';
+export const ACQ_CALENDAR_EMBED_SCRIPT =
+  'https://link.msgsndr.divineacquisition.io/js/form_embed.js';
+export const ACQ_CALENDAR_DEFAULT_EMBED_URL = `https://link.msgsndr.divineacquisition.io/widget/booking/${ACQ_CALENDAR_WIDGET_ID}`;
+
 /**
- * GHL "Lead Leak Audit (30 min)" calendar iframe src. Also accepts a widget id
- * and builds the standard LeadConnector booking URL.
+ * GHL booking calendar iframe src. Env override wins; otherwise the issued
+ * msgsndr widget. Also accepts a widget id and builds a LeadConnector URL.
  */
 const calendarEmbedFromEnv = process.env.NEXT_PUBLIC_ACQ_CALENDAR_EMBED_URL?.trim() || '';
 const calendarWidgetFromEnv = process.env.NEXT_PUBLIC_ACQ_CALENDAR_WIDGET_ID?.trim() || '';
@@ -74,7 +83,7 @@ export const ACQ_CALENDAR_EMBED_URL =
   calendarEmbedFromEnv ||
   (calendarWidgetFromEnv
     ? `https://api.leadconnectorhq.com/widget/booking/${calendarWidgetFromEnv}`
-    : '');
+    : ACQ_CALENDAR_DEFAULT_EMBED_URL);
 
 /** Ad / click identifiers forwarded from the landing URL into the application. */
 export const TRACKING_PARAM_KEYS = [
@@ -132,15 +141,35 @@ export function withTrackingParams(
   return url.toString();
 }
 
-/** Path-based on localhost/previews; bare /thank-you on the dedicated acq host. */
-export function qualificationThankYouPath(host?: string): string {
+/** Dedicated acq host uses bare paths; localhost and previews stay under /acq. */
+export function isAcqHost(host?: string | null): boolean {
   const hostname = (host ?? '').toLowerCase().split(':')[0];
+  if (!hostname) return false;
   const acqHost = new URL(ACQ_PUBLIC_ORIGIN).hostname;
-  if (
+  return (
     hostname === acqHost ||
     (hostname.startsWith('acq.') && hostname.endsWith('.divineacquisition.io'))
-  ) {
-    return '/thank-you';
+  );
+}
+
+export function acqPublicPath(pathname: string, host?: string | null): string {
+  const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  return isAcqHost(host) ? path : `/acq${path}`;
+}
+
+export function qualificationThankYouPath(host?: string): string {
+  return acqPublicPath(ACQ_THANK_YOU_PATH, host);
+}
+
+export function withTrackingQuery(
+  pathname: string,
+  tracking: Partial<Record<TrackingParamKey, string>>,
+): string {
+  const params = new URLSearchParams();
+  for (const key of TRACKING_PARAM_KEYS) {
+    const value = tracking[key];
+    if (value) params.set(key, value);
   }
-  return '/acq/thank-you';
+  const qs = params.toString();
+  return qs ? `${pathname}?${qs}` : pathname;
 }

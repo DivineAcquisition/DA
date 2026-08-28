@@ -10,6 +10,13 @@
   font-feature-settings: 'ss01', 'ss02';
 }
 
+.acq-headline-accent {
+  font-style: italic;
+  font-weight: 600;
+  color: var(--color-brand-400);
+  font-synthesis: none;
+}
+
 .acq-dialog,
 .acq-dialog .acq-headline,
 .acq-field-control {
@@ -38,6 +45,11 @@
   white-space: nowrap;
   box-shadow: 0 14px 36px -14px rgba(154, 136, 252, 0.95);
   transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+a.acq-button {
+  text-decoration: none;
+  color: #fff;
 }
 
 .acq-button:hover {
