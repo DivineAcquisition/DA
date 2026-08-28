@@ -12,7 +12,6 @@ import {
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Panel } from '@/components/ui/panel';
-import { ShineBorder } from '@/components/ui/shine-border';
 import { CTA_LABEL } from '@/lib/acq/copy';
 import { cn } from '@/lib/utils';
 
@@ -40,7 +39,7 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
 
 export function BookCta({ href, className = '' }: { href: string; className?: string }) {
   return (
-    <Link href={href} className={cn('acq-button no-underline max-w-sm', className)}>
+    <Link href={href} className={cn('acq-button acq-button-full no-underline max-w-sm', className)}>
       {CTA_LABEL}
       <ArrowIcon />
     </Link>
@@ -91,25 +90,5 @@ export function FaqAccordion({
         </AccordionItem>
       ))}
     </Accordion>
-  );
-}
-
-export function FinalCtaFrame({ children }: { children: ReactNode }) {
-  return (
-    <div
-      className={cn(
-        'relative overflow-hidden rounded-2xl border border-white/[0.1] bg-ink-900 px-6 py-12 text-center sm:px-12 sm:py-16',
-      )}
-    >
-      <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} duration={12} />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: 'radial-gradient(ellipse at top, rgba(154,136,252,0.22) 0%, transparent 55%)',
-        }}
-      />
-      <div className="relative flex flex-col items-center">{children}</div>
-    </div>
   );
 }

@@ -11,8 +11,12 @@
 }
 
 .acq-headline-accent {
-  font-style: italic;
-  font-weight: 600;
+  font-family: var(--font-acq-script), cursive;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.28em;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
   color: var(--color-brand-400);
   font-synthesis: none;
 }
@@ -33,9 +37,9 @@
   min-height: 3.25rem;
   padding: 0.85rem 2rem;
   border: 0;
-  border-radius: 0.75rem;
-  background: #7e67f2;
-  color: #fff;
+  border-radius: 9999px;
+  background: #9a88fc;
+  color: #07070b;
   font-family: var(--font-acq-jakarta), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'ss01', 'ss02';
   font-size: 0.95rem;
@@ -43,21 +47,31 @@
   letter-spacing: -0.022em;
   line-height: 1.2;
   white-space: nowrap;
-  box-shadow: 0 14px 36px -14px rgba(154, 136, 252, 0.95);
-  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 12px 34px -14px rgba(154, 136, 252, 0.9);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
 }
 
 a.acq-button {
   text-decoration: none;
+  color: #07070b;
+}
+
+a.acq-button:hover {
+  color: #07070b;
+}
+
+a.acq-button:active {
   color: #fff;
 }
 
 .acq-button:hover {
-  background: #9a88fc;
+  background: #ae9dfd;
+  box-shadow: 0 16px 40px -14px rgba(154, 136, 252, 1);
 }
 
 .acq-button:active {
-  background: #6650d8;
+  background: #7e67f2;
+  color: #fff;
 }
 
 .acq-button:disabled {
