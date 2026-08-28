@@ -11,12 +11,9 @@
 }
 
 .acq-headline-accent {
-  font-family: var(--font-acq-script), cursive;
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.28em;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
+  font-family: inherit;
+  font-style: italic;
+  font-weight: 600;
   color: var(--color-brand-400);
   font-synthesis: none;
 }

@@ -67,7 +67,7 @@ export default async function AcqLandingPage({
 
           <section className="relative z-10 px-5 pb-8 pt-8 sm:px-6 sm:pb-10 sm:pt-10 md:pt-12">
             <div className="mx-auto max-w-[900px] text-center">
-              <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-semibold leading-[1.28] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.22]">
+              <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-semibold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">
                 {HEADLINE_BEFORE}
                 <em className="acq-headline-accent">{HEADLINE_ACCENT}</em>
                 {HEADLINE_AFTER}

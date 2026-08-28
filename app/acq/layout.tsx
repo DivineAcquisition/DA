@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Great_Vibes, Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './acq.css';
 import { MetaPixel } from './components/MetaPixel';
 
@@ -7,13 +7,6 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   style: ['normal', 'italic'],
   variable: '--font-acq-jakarta',
-  display: 'swap',
-});
-
-const greatVibes = Great_Vibes({
-  weight: '400',
-  subsets: ['latin'],
-  variable: '--font-acq-script',
   display: 'swap',
 });
 
@@ -64,7 +57,7 @@ export const metadata: Metadata = {
 
 export default function AcqLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${plusJakarta.variable} ${greatVibes.variable} ${interDisplay.variable} acq-surface`}>
+    <div className={`${plusJakarta.variable} ${interDisplay.variable} acq-surface`}>
       <link rel="preconnect" href="https://fast.wistia.net" />
       <link rel="preconnect" href="https://fast.wistia.com" />
       <link rel="preconnect" href="https://embed-ssl.wistia.com" />
