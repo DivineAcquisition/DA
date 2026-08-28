@@ -34,7 +34,7 @@
   min-height: 3.25rem;
   padding: 0.85rem 2rem;
   border: 0;
-  border-radius: 9999px;
+  border-radius: 0.75rem;
   background: #9a88fc;
   color: #07070b;
   font-family: var(--font-acq-jakarta), ui-sans-serif, system-ui, sans-serif;
