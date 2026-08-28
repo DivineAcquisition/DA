@@ -1,7 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import Script from 'next/script';
+import { BorderBeam } from '@/components/ui/border-beam';
 import {
   ACQ_CALENDAR_EMBED_SCRIPT,
   ACQ_CALENDAR_EMBED_URL,
@@ -49,6 +50,24 @@ function looksLikeBooking(data: unknown): boolean {
   );
 }
 
+function CalendarFrame({ children }: { children: ReactNode }) {
+  return (
+    <div className="animate-rise delay-2 relative mx-auto mt-10 w-full max-w-4xl">
+      <div
+        aria-hidden
+        className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)',
+        }}
+      />
+      <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
+        <BorderBeam size={80} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+        <div className="w-full overflow-hidden rounded-[1.25rem] bg-black">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 /** GHL booking calendar. Visible on /book and /thank-you; fires Schedule on book. */
 export function CalendarEmbed() {
   const fired = useRef(false);
@@ -73,23 +92,25 @@ export function CalendarEmbed() {
 
   if (!src) {
     return (
-      <div className="panel mt-10 rounded-3xl px-5 py-10 text-center sm:px-8">
-        <p className="text-sm leading-relaxed text-neutral-400">{THANK_YOU_CALENDAR_PENDING}</p>
-      </div>
+      <CalendarFrame>
+        <div className="px-5 py-16 text-center sm:px-8">
+          <p className="text-sm leading-relaxed text-neutral-400">{THANK_YOU_CALENDAR_PENDING}</p>
+        </div>
+      </CalendarFrame>
     );
   }
 
   return (
-    <div className="panel mt-10 overflow-hidden rounded-3xl p-1.5 sm:p-2">
+    <CalendarFrame>
       <iframe
         id={ACQ_CALENDAR_IFRAME_ID}
         src={src}
         title="Book a call"
         allow="payment"
-        className="h-[680px] w-full rounded-[1.15rem] border-0 bg-ink-900 sm:h-[720px]"
+        className="h-[680px] w-full border-0 bg-black sm:h-[720px]"
         scrolling="no"
       />
       <Script src={ACQ_CALENDAR_EMBED_SCRIPT} strategy="afterInteractive" />
-    </div>
+    </CalendarFrame>
   );
 }

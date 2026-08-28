@@ -34,9 +34,9 @@ export default function AcqBookPage() {
             <p className="animate-rise delay-1 mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-400">
               {BOOK_PAGE.body}
             </p>
-
-            <CalendarEmbed />
           </div>
+
+          <CalendarEmbed />
         </section>
 
         <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
