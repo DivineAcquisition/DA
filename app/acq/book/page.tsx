@@ -4,7 +4,7 @@ import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { CalendarEmbed } from '../components/CalendarEmbed';
 
 export const metadata = {
-  title: { absolute: 'Book a call | Divine Acquisition' },
+  title: { absolute: 'Free Sales Audit | Divine Acquisition' },
   robots: { index: false, follow: false },
   alternates: {
     canonical: 'https://acq.divineacquisition.io/book',
@@ -29,7 +29,8 @@ export default function AcqBookPage() {
               {BOOK_PAGE.eyebrow}
             </p>
             <h1 className="acq-headline animate-rise mt-3 text-[1.85rem] font-semibold leading-[1.12] sm:text-4xl">
-              {BOOK_PAGE.title}
+              {BOOK_PAGE.titleBefore}
+              <em className="acq-headline-accent">{BOOK_PAGE.titleAccent}</em>
             </h1>
             <p className="animate-rise delay-1 mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-400">
               {BOOK_PAGE.body}

@@ -105,7 +105,7 @@ export function CalendarEmbed() {
       <iframe
         id={ACQ_CALENDAR_IFRAME_ID}
         src={src}
-        title="Book a call"
+        title="Free sales audit"
         allow="payment"
         className="h-[680px] w-full border-0 bg-black sm:h-[720px]"
         scrolling="no"

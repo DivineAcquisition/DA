@@ -164,7 +164,12 @@ describe('founding landing media', () => {
     expect(copy.FAQ).toHaveLength(6);
     expect(copy.THANK_YOU.title).toBe("Thanks — you're in. Grab a time below.");
     expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
-    expect(copy.BOOK_PAGE.title).toBe('Pick a time that works');
+    expect(copy.BOOK_PAGE.title).toBe('Book your free sales audit');
+    expect(copy.BOOK_PAGE.title).toBe(
+      `${copy.BOOK_PAGE.titleBefore}${copy.BOOK_PAGE.titleAccent}`,
+    );
+    expect(copy.BOOK_PAGE.eyebrow.toLowerCase()).toContain('free');
+    expect(copy.BOOK_PAGE.body.toLowerCase()).toContain('free');
   });
 
   it('defaults the booking calendar to the issued GHL widget', () => {

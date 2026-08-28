@@ -86,9 +86,11 @@ export const FAQ = [
 ] as const;
 
 export const BOOK_PAGE = {
-  eyebrow: 'Book a call',
-  title: 'Pick a time that works',
-  body: "We'll walk the 14-day install on the call and confirm whether the founding offer is a fit.",
+  eyebrow: 'Free sales audit',
+  title: 'Book your free sales audit',
+  titleBefore: 'Book your ',
+  titleAccent: 'free sales audit',
+  body: "Pick a time. We'll walk your pipeline, show you where demand is leaking, and confirm whether the 14-day founding install is a fit. The audit is free.",
 } as const;
 
 export const THANK_YOU = {
@@ -97,7 +99,7 @@ export const THANK_YOU = {
 } as const;
 
 export const THANK_YOU_CALENDAR_PENDING =
-  'The booking calendar will appear here as soon as the Lead Leak Audit embed is connected.';
+  'The booking calendar will appear here as soon as the free sales audit embed is connected.';
 
 export const QUALIFY_DIALOG = {
   title: 'See if you qualify',
