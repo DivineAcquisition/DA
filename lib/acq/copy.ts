@@ -2,11 +2,12 @@
 
 export const PILL_BANNER = 'Sales operations for coaching & consulting';
 
-export const HEADLINE_BEFORE = 'Turn the demand you already generate into booked calls. ';
+export const HEADLINE_BEFORE =
+  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
 
-export const HEADLINE_ACCENT = 'Done for you in 14 days';
+export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
 
-export const HEADLINE_AFTER = '';
+export const HEADLINE_AFTER = ' To Increase Show Rate';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
