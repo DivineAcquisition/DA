@@ -152,18 +152,16 @@ describe('founding landing media', () => {
     expect(copy.HEADLINE).toBe(
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
-    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
+    expect(copy.HEADLINE).not.toMatch(/[—–]/);
+    expect(copy.HEADLINE_ACCENT).toBe('Done for you in 14 days');
     expect(copy.INCLUDED).toHaveLength(7);
-    expect(copy.INCLUDED[0]).toEqual({
-      title: 'Lead intake and readiness scoring',
-      body: 'Every inquiry is captured, scored, and routed so your team only works leads that are ready.',
-    });
-    expect(copy.FOUNDING_OFFER.lead).toBe("We're only taking 3 businesses at this rate.");
+    expect(copy.INCLUDED[0].title).toBe('Lead intake and scoring');
+    expect(copy.FOUNDING_OFFER.lead).toBe('Three founding seats.');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
-    expect(copy.FOUNDING_OFFER.body.toLowerCase()).not.toContain('case study');
-    expect(copy.FAQ).toHaveLength(6);
-    expect(copy.THANK_YOU.title).toBe("Thanks — you're in. Grab a time below.");
-    expect(copy.PILL_BANNER).toBe('Sales Operations For Coaching & Consultants');
+    expect(copy.PILL_BANNER).toBe('Sales operations for coaching & consulting');
+    expect(copy.CTA_LABEL).toBe('Book a free audit');
+    expect(copy.THANK_YOU.title).toBe("Thanks. You're in. Grab a time below.");
+    expect(copy.THANK_YOU.title).not.toMatch(/[—–]/);
     expect(copy.BOOK_PAGE.title).toBe('Book your free sales audit');
     expect(copy.BOOK_PAGE.title).toBe(
       `${copy.BOOK_PAGE.titleBefore}${copy.BOOK_PAGE.titleAccent}`,

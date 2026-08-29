@@ -1,89 +1,59 @@
 /** Landing + qualification copy for the founding-install acq surface. */
 
-export const PILL_BANNER = 'Sales Operations For Coaching & Consultants';
+export const PILL_BANNER = 'Sales operations for coaching & consulting';
 
-export const HEADLINE_BEFORE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls — ";
+export const HEADLINE_BEFORE = 'Turn the demand you already generate into booked calls. ';
 
-export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+export const HEADLINE_ACCENT = 'Done for you in 14 days';
 
-export const HEADLINE_AFTER = ' To Increase Show Rate';
+export const HEADLINE_AFTER = '';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  "We're taking on 3 coaching businesses as founding installs at a reduced rate. Same system, same 14-day build, first-mover pricing.";
+  'Intake, scoring, follow-up, booking, and reporting, installed in the stack you already use. Three founding seats at launch pricing.';
 
-export const CTA_LABEL = 'See If You Qualify';
+export const CTA_LABEL = 'Book a free audit';
 export const SUBMIT_LABEL = 'Submit Application';
 
-export const INCLUDED_HEADLINE = "What's Included";
+export const INCLUDED_HEADLINE = 'Product';
 export const INCLUDED = [
   {
-    title: 'Lead intake and readiness scoring',
-    body: 'Every inquiry is captured, scored, and routed so your team only works leads that are ready.',
+    title: 'Lead intake and scoring',
+    body: 'Every inquiry is captured, scored, and routed so only ready leads hit the calendar.',
   },
   {
-    title: 'Two follow-up tracks',
-    body: 'Nurture for not-ready leads. Fast-close cadence for ready leads.',
+    title: 'Dual follow-up sequences',
+    body: 'Nurture tracks for leads that need time. Fast-close cadence for leads that are ready now.',
   },
   {
-    title: 'Full touch tracking',
-    body: 'Every call, text, and message is logged against the deal so nothing falls through.',
+    title: 'Activity tracking',
+    body: 'Every call, text, and message is logged to the deal so nothing drops.',
   },
   {
-    title: 'Call protection',
-    body: 'Reminders, no-show recovery, and objection-branched follow-up so booked calls actually happen.',
+    title: 'Show-rate protection',
+    body: 'Reminders, reschedules, and no-show recovery so booked calls actually happen.',
   },
   {
-    title: 'Dormant list reactivation',
-    body: 'Old inquiries get a structured second chance instead of sitting in a spreadsheet.',
+    title: 'Pipeline reactivation',
+    body: 'Dormant inquiries get a structured second pass instead of sitting idle.',
   },
   {
     title: 'Revenue attribution',
-    body: 'You see which source produced the booked call and the closed deal.',
+    body: 'See which source produced the booked call and the closed deal.',
   },
   {
-    title: 'Operator dashboard and monthly report',
-    body: 'One view of pipeline health, plus a monthly readout you can actually use.',
+    title: 'Ops dashboard',
+    body: 'One view of pipeline health, plus a monthly report your team can run on.',
   },
 ] as const;
-export const INCLUDED_FOOTNOTE =
-  'Built in 14 days. You keep your CRM, your calendar, and your payment processor.';
+export const INCLUDED_FOOTNOTE = 'Live in 14 days. Keep your CRM, calendar, and processor.';
 
 export const FOUNDING_OFFER = {
-  eyebrow: 'Founding install',
-  lead: "We're only taking 3 businesses at this rate.",
-  body: 'You get the full system, built in 14 days, at founding pricing. Once these spots are filled, pricing goes to standard rate.',
+  eyebrow: 'Launch pricing',
+  lead: 'Three founding seats.',
+  body: 'Full system live in 14 days, at founding rate. When these seats fill, pricing moves to standard.',
 } as const;
-
-export const FAQ_HEADLINE = 'Questions';
-export const FAQ = [
-  {
-    q: 'I already have a setter doing follow-up.',
-    a: "Good. Then this makes them dramatically more effective, because right now you can't see what they're actually doing. Once touch tracking is on, you'll know how many calls they really made and which leads they never opened.",
-  },
-  {
-    q: 'I already use GoHighLevel and I have automations.',
-    a: "Almost everyone does. Automations send emails. What's missing is the layer that decides who deserves a human, when, and whether that human actually showed up. We build on top of your GHL, not instead of it.",
-  },
-  {
-    q: 'My list is burned out.',
-    a: "Then the dormant reactivation campaign is the first thing we run, and it's four messages, not forty.",
-  },
-  {
-    q: 'Do I have to switch anything?',
-    a: 'No. Not your CRM, not your processor, not your calendar.',
-  },
-  {
-    q: 'How fast will I see something?',
-    a: 'The build is 14 days, but the reactivation campaign runs in week one against leads you already have.',
-  },
-  {
-    q: 'What if my leads are just low quality?',
-    a: "Then you'll know within 30 days, with actual numbers instead of a feeling.",
-  },
-] as const;
 
 export const BOOK_PAGE = {
   eyebrow: 'Free sales audit',
@@ -94,7 +64,7 @@ export const BOOK_PAGE = {
 } as const;
 
 export const THANK_YOU = {
-  title: "Thanks — you're in. Grab a time below.",
+  title: "Thanks. You're in. Grab a time below.",
   body: 'The calendar is open for every applicant. Your score only affects what happens after the call.',
 } as const;
 

@@ -33,10 +33,10 @@
   width: 100%;
   min-height: 3.25rem;
   padding: 0.85rem 2rem;
-  border: 0;
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 0.75rem;
   background-color: #9a88fc;
-  background-image: linear-gradient(90deg, #d9d1fe 0%, #9a88fc 52%, #6650d8 100%);
+  background-image: linear-gradient(180deg, #c3b6fe 0%, #9a88fc 46%, #6650d8 100%);
   color: var(--color-ink-950);
   font-family: var(--font-acq-jakarta), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'ss01', 'ss02';
@@ -45,8 +45,10 @@
   letter-spacing: -0.022em;
   line-height: 1.2;
   white-space: nowrap;
-  box-shadow: 0 14px 36px -14px rgba(154, 136, 252, 0.95);
-  transition: box-shadow 0.15s ease, color 0.15s ease, filter 0.15s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 12px 28px -12px rgba(102, 80, 216, 0.9);
+  transition: box-shadow 0.15s ease, color 0.15s ease, filter 0.15s ease, border-color 0.15s ease;
 }
 
 a.acq-button {
@@ -63,13 +65,19 @@ a.acq-button:active {
 }
 
 .acq-button:hover {
+  border-color: rgba(255, 255, 255, 0.32);
   background-color: #ae9dfd;
-  background-image: linear-gradient(90deg, #ebe7ff 0%, #ae9dfd 52%, #7e67f2 100%);
-  box-shadow: 0 18px 42px -14px rgba(154, 136, 252, 1);
+  background-image: linear-gradient(180deg, #d9d1fe 0%, #ae9dfd 46%, #7e67f2 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.46),
+    0 16px 34px -12px rgba(102, 80, 216, 1);
 }
 
 .acq-button:active {
-  background-image: linear-gradient(90deg, #9a88fc 0%, #7e67f2 50%, #5140a9 100%);
+  background-image: linear-gradient(180deg, #9a88fc 0%, #7e67f2 50%, #5140a9 100%);
+  box-shadow:
+    inset 0 1px 3px rgba(30, 25, 64, 0.28),
+    0 8px 20px -12px rgba(102, 80, 216, 0.8);
   color: #fff;
 }
 

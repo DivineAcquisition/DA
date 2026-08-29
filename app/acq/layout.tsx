@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    "We'll build and run your sales operation systems to turn the demand you are generating into booked calls, done for you in 14 days. Founding installs for coaching businesses.",
+    'Sales operations that turn the demand you already generate into booked calls. Done for you in 14 days.',
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
-    title: 'Divine Acquisition — Founding Install',
+    title: 'Divine Acquisition | Founding Install',
     description:
-      'We build and run your sales operation systems to turn demand into booked calls. Done for you in 14 days.',
+      'Sales operations that turn demand into booked calls. Done for you in 14 days.',
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Divine Acquisition — Founding Install',
+    title: 'Divine Acquisition | Founding Install',
     description:
-      'We build and run your sales operation systems to turn demand into booked calls. Done for you in 14 days.',
+      'Sales operations that turn demand into booked calls. Done for you in 14 days.',
   },
   robots: {
     index: true,

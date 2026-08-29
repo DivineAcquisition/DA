@@ -3,12 +3,6 @@
 import { Check } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import {
-  Accordion,
-  AccordionItem,
-  AccordionPanel,
-  AccordionTrigger,
-} from '@/components/ui/accordion';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Panel } from '@/components/ui/panel';
@@ -69,26 +63,5 @@ export function IncludedCards({
         </li>
       ))}
     </ul>
-  );
-}
-
-export function FaqAccordion({
-  items,
-}: {
-  items: readonly { q: string; a: string }[];
-}) {
-  return (
-    <Accordion multiple className="mt-8 divide-y divide-white/[0.07] border-y border-white/[0.07]">
-      {items.map((item, index) => (
-        <AccordionItem key={item.q} value={`faq-${index}`}>
-          <AccordionTrigger className="acq-headline py-5 text-left text-[15px] font-semibold text-white">
-            {item.q}
-          </AccordionTrigger>
-          <AccordionPanel className="max-w-2xl pr-8 text-sm leading-relaxed text-neutral-400">
-            {item.a}
-          </AccordionPanel>
-        </AccordionItem>
-      ))}
-    </Accordion>
   );
 }

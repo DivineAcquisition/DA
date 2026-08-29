@@ -13,8 +13,6 @@ import {
 } from '@/lib/acq/config';
 import {
   FACEBOOK_DISCLAIMER,
-  FAQ,
-  FAQ_HEADLINE,
   FOUNDING_OFFER,
   HEADLINE_ACCENT,
   HEADLINE_AFTER,
@@ -28,7 +26,6 @@ import {
 import HeroVideo from './components/HeroVideo';
 import {
   BookCta,
-  FaqAccordion,
   IncludedCards,
   StatusPill,
 } from './components/marketing';
@@ -118,13 +115,6 @@ export default async function AcqLandingPage({
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-400 sm:text-[15px]">
               {FOUNDING_OFFER.body}
             </p>
-          </div>
-        </section>
-
-        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
-          <div className="mx-auto max-w-3xl">
-            <p className={sectionLabel}>{FAQ_HEADLINE}</p>
-            <FaqAccordion items={FAQ} />
           </div>
         </section>
 
