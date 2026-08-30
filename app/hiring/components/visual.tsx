@@ -9,7 +9,7 @@ import { Particles } from '@/components/ui/particles';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
 import { eyebrow } from '../../components/ui';
-import './hiring.css';
+import '../hiring.css';
 
 export const hiringBtn = 'hiring-button';
 export const hiringBtnSecondary = 'hiring-button-secondary';
