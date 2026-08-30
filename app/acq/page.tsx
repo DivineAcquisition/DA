@@ -1,14 +1,11 @@
-import { headers } from 'next/headers';
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { sectionLabel } from '@/app/components/ui';
 import { Particles } from '@/components/ui/particles';
 import { Marquee } from '@/components/ui/marquee';
 import {
-  ACQ_BOOK_PATH,
-  acqPublicPath,
+  acqApplyUrl,
   trackingFromSearchParams,
-  withTrackingQuery,
   type SearchParams,
 } from '@/lib/acq/config';
 import {
@@ -35,10 +32,8 @@ export default async function AcqLandingPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const [query, headerList] = await Promise.all([searchParams, headers()]);
-  const tracking = trackingFromSearchParams(query);
-  const host = headerList.get('host');
-  const bookHref = withTrackingQuery(acqPublicPath(ACQ_BOOK_PATH, host), tracking);
+  const query = await searchParams;
+  const applyHref = acqApplyUrl(trackingFromSearchParams(query));
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
@@ -81,7 +76,7 @@ export default async function AcqLandingPage({
           <HeroVideo />
 
           <div className="animate-rise delay-4 mx-auto mt-9 flex max-w-[900px] flex-col items-center">
-            <BookCta href={bookHref} />
+            <BookCta href={applyHref} />
           </div>
         </section>
 

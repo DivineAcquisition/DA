@@ -67,6 +67,11 @@ export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 export const ACQ_THANK_YOU_PATH = '/thank-you';
 export const ACQ_BOOK_PATH = '/book';
 
+/** Landing CTA destination. Replaces the /book calendar page. */
+export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
+export const ACQ_TYPEFORM_URL =
+  process.env.NEXT_PUBLIC_ACQ_TYPEFORM_URL?.trim() || ACQ_TYPEFORM_DEFAULT_URL;
+
 export const ACQ_CALENDAR_WIDGET_ID = 'v0e24e3kxYEGCTUkSP4A';
 export const ACQ_CALENDAR_IFRAME_ID = 'sJewwAfFLhmwqP9psUxK_1787884446665';
 export const ACQ_CALENDAR_EMBED_SCRIPT =
@@ -172,4 +177,11 @@ export function withTrackingQuery(
   }
   const qs = params.toString();
   return qs ? `${pathname}?${qs}` : pathname;
+}
+
+/** Typeform apply URL with ad params forwarded as hidden fields. */
+export function acqApplyUrl(
+  tracking: Partial<Record<TrackingParamKey, string>> = {},
+): string {
+  return withTrackingParams(ACQ_TYPEFORM_URL, tracking);
 }

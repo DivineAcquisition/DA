@@ -68,7 +68,7 @@ function CalendarFrame({ children }: { children: ReactNode }) {
   );
 }
 
-/** GHL booking calendar. Visible on /book and /thank-you; fires Schedule on book. */
+/** GHL booking calendar. Visible on /thank-you; fires Schedule on book. */
 export function CalendarEmbed() {
   const fired = useRef(false);
   const src = ACQ_CALENDAR_EMBED_URL;

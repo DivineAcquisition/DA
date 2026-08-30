@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
+  ACQ_TYPEFORM_DEFAULT_URL,
+  ACQ_TYPEFORM_URL,
   ACQ_WISTIA_MEDIA_ID,
+  acqApplyUrl,
   acqPublicPath,
   qualificationThankYouPath,
   trackingFromSearchParams,
@@ -114,6 +117,18 @@ describe('withTrackingQuery', () => {
     expect(
       withTrackingQuery('/acq/book', { utm_source: 'facebook', fbclid: 'abc.123' }),
     ).toBe('/acq/book?utm_source=facebook&fbclid=abc.123');
+  });
+});
+
+describe('acqApplyUrl', () => {
+  it('sends apply traffic to the issued Typeform with ad params', () => {
+    expect(ACQ_TYPEFORM_URL).toBe('https://form.typeform.com/to/lvtP8G4E');
+    expect(ACQ_TYPEFORM_DEFAULT_URL).toBe('https://form.typeform.com/to/lvtP8G4E');
+
+    const url = new URL(acqApplyUrl({ utm_source: 'facebook', fbclid: 'abc.123' }));
+    expect(`${url.origin}${url.pathname}`).toBe('https://form.typeform.com/to/lvtP8G4E');
+    expect(url.searchParams.get('utm_source')).toBe('facebook');
+    expect(url.searchParams.get('fbclid')).toBe('abc.123');
   });
 });
 
