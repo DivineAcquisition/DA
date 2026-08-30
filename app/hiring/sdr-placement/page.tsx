@@ -7,7 +7,8 @@ import Backdrop from '../../components/Backdrop';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import { SDR_MONTHLY_BASE } from '../../data/roles';
-import { btnPrimary, btnSecondary, btnSizeLg, btnSizeMd, btnSizeSm, eyebrow, sectionLabel } from '../../components/ui';
+import { btnPrimary, btnSecondary, btnSizeLg, btnSizeMd, btnSizeSm, sectionLabel } from '../../components/ui';
+import { BeamFrame, HiringParticles, HiringStatusPill, ShinePanel, SurfaceCard } from '../components/visual';
 
 const APPLY_URL = 'https://airtable.com/appI4kbEVdi5THUbs/pagQySxRueaPdgW4n/form';
 const WISTIA_MEDIA_ID = 'lrplfrikyd';
@@ -96,15 +97,13 @@ export default function SdrPlacementPage() {
         />
 
         {/* VSL hero */}
-        <section className="px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
+        <section className="relative overflow-hidden px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
+          <HiringParticles />
+          <div className="relative z-10">
           <div className="mx-auto max-w-3xl text-center">
-            <p className={`${eyebrow} animate-rise`}>
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-400" />
-              </span>
-              SDR Placement Role
-            </p>
+            <div className="animate-rise">
+              <HiringStatusPill>SDR Placement Role</HiringStatusPill>
+            </div>
 
             <h1 className="animate-rise delay-1 mt-6 text-[2.1rem] font-semibold leading-[1.06] sm:text-5xl md:text-[3.4rem]">
               We&apos;re Hiring Operators.
@@ -120,17 +119,12 @@ export default function SdrPlacementPage() {
           </div>
 
           {/* Video */}
-          <div className="animate-rise delay-3 relative mx-auto mt-10 max-w-4xl sm:mt-12">
-            <div
-              aria-hidden
-              className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
-              style={{ background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)' }}
-            />
-            <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
-              <div className="overflow-hidden rounded-[1.25rem] bg-black">
+          <div className="animate-rise delay-3 mx-auto mt-10 max-w-4xl sm:mt-12">
+            <BeamFrame>
+              <div className="bg-black">
                 <WistiaPlayer media-id={WISTIA_MEDIA_ID} aspect="1.7777777777777777" />
               </div>
-            </div>
+            </BeamFrame>
           </div>
 
           {/* Apply CTA + facts */}
@@ -146,6 +140,7 @@ export default function SdrPlacementPage() {
             </a>
             <FactsStrip className="mt-5" />
           </div>
+          </div>
         </section>
 
         {/* How placement works */}
@@ -160,12 +155,14 @@ export default function SdrPlacementPage() {
 
             <ol className="mt-9 grid gap-4 md:grid-cols-3">
               {steps.map((step, index) => (
-                <li key={step.label} className="panel rounded-2xl p-6">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-500/25 bg-brand-500/10 text-sm font-bold tabular-nums text-brand-300">
-                    {index + 1}
-                  </span>
-                  <h3 className="mt-4 text-base font-semibold text-white">{step.label}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
+                <li key={step.label}>
+                  <SurfaceCard as="div" cardClassName="rounded-2xl p-6">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-500/25 bg-brand-500/10 text-sm font-bold tabular-nums text-brand-300">
+                      {index + 1}
+                    </span>
+                    <h3 className="mt-4 text-base font-semibold text-white">{step.label}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
+                  </SurfaceCard>
                 </li>
               ))}
             </ol>
@@ -194,7 +191,7 @@ export default function SdrPlacementPage() {
         {/* Closing CTA */}
         <section className="px-5 pb-20 pt-6 sm:px-6">
           <div className="mx-auto max-w-4xl">
-            <div className="panel relative overflow-hidden rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16">
+            <ShinePanel className="rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16">
               <div
                 aria-hidden
                 className="absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2"
@@ -223,7 +220,7 @@ export default function SdrPlacementPage() {
                   </Link>
                 </div>
               </div>
-            </div>
+            </ShinePanel>
           </div>
         </section>
 

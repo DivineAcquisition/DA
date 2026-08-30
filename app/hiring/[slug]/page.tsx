@@ -10,6 +10,10 @@ import { aboutContent, getRole, type RoleDetail } from '../../data/roles';
 import type { ActionResult } from '@/lib/ad/rpc';
 import { submitApplicationAction } from '@/lib/careers/actions';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, sectionLabel } from '../../components/ui';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { Panel } from '@/components/ui/panel';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { HiringParticles, ShinePanel, SurfaceCard } from '../components/visual';
 
 function SectionHeading({ label }: { label: string }) {
   return (
@@ -204,7 +208,8 @@ function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: string; jobTitle: s
 function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string; slug: string }) {
   return (
     <section id="apply" className="scroll-mt-24">
-      <div className="panel overflow-hidden rounded-3xl">
+      <Panel className="relative overflow-hidden rounded-3xl p-0">
+        <BorderBeam size={80} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
         <div className="relative flex items-center gap-3 border-b border-white/[0.07] bg-white/[0.02] px-5 py-4 sm:px-7">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-sm font-bold text-ink-950">
             2
@@ -248,7 +253,7 @@ function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string
         ) : (
           <ApplicationForm roleSlug={slug} jobTitle={title} />
         )}
-      </div>
+      </Panel>
     </section>
   );
 }
@@ -308,10 +313,14 @@ export default function RolePage() {
         <main className="px-5 pb-20 pt-14 sm:px-6 sm:pt-20">
           <div className="mx-auto max-w-3xl">
             {/* Hero */}
-            <section className="mb-14">
+            <section className="relative mb-14 overflow-hidden">
+              <HiringParticles className="opacity-70" />
+              <div className="relative z-10">
               <div className="animate-rise flex items-center gap-3">
                 <span className="h-px w-6 bg-gradient-to-r from-brand-500 to-transparent" />
-                <span className={sectionLabel}>{role.departmentLabel}</span>
+                <AnimatedShinyText className={`${sectionLabel} mx-0 max-w-none dark:text-brand-300`}>
+                  {role.departmentLabel}
+                </AnimatedShinyText>
               </div>
 
               <h1 className="animate-rise delay-1 mt-5 text-[2.25rem] font-semibold leading-[1.05] sm:text-5xl md:text-6xl">
@@ -345,30 +354,33 @@ export default function RolePage() {
                   </svg>
                 </a>
               </div>
+              </div>
             </section>
 
             {/* Mission */}
             <section className="mb-14">
               <SectionHeading label="The mission" />
-              <p className="panel rounded-2xl p-6 text-base leading-relaxed text-neutral-300">
-                {detail.mission}
-              </p>
+              <SurfaceCard cardClassName="rounded-2xl p-6">
+                <p className="text-base leading-relaxed text-neutral-300">{detail.mission}</p>
+              </SurfaceCard>
             </section>
 
             {/* Tech stack */}
             {detail.techStack && (
               <section className="mb-14">
                 <SectionHeading label="Tech stack" />
-                <div className="flex flex-wrap gap-2">
-                  {detail.techStack.map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-lg border border-brand-500/20 bg-brand-500/[0.08] px-3 py-1.5 text-[13px] font-medium text-brand-200"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
+                <SurfaceCard cardClassName="rounded-2xl p-4 sm:p-5">
+                  <div className="flex flex-wrap gap-2">
+                    {detail.techStack.map((tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-lg border border-brand-500/20 bg-brand-500/[0.08] px-3 py-1.5 text-[13px] font-medium text-brand-200"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </SurfaceCard>
               </section>
             )}
 
@@ -396,7 +408,7 @@ export default function RolePage() {
 
             {/* About */}
             <section className="mb-14">
-              <div className="panel relative overflow-hidden rounded-3xl p-6 sm:p-8">
+              <ShinePanel className="rounded-3xl p-6 sm:p-8">
                 <div
                   aria-hidden
                   className="absolute -right-20 -top-20 h-56 w-56 rounded-full"
@@ -408,7 +420,7 @@ export default function RolePage() {
                     {aboutContent}
                   </p>
                 </div>
-              </div>
+              </ShinePanel>
             </section>
 
             <ApplyPanel detail={detail} title={role.title} slug={role.slug} />
