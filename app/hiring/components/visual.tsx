@@ -9,17 +9,56 @@ import { Particles } from '@/components/ui/particles';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
 import { eyebrow } from '../../components/ui';
+import './hiring.css';
 
-/** Particle field used behind hiring heroes. Same brand treatment as acq. */
-export function HiringParticles({ className = '' }: { className?: string }) {
+export const hiringBtn = 'hiring-button';
+export const hiringBtnSecondary = 'hiring-button-secondary';
+export const hiringBtnSm = 'hiring-button-sm';
+export const hiringBtnMd = 'hiring-button-md';
+export const hiringBtnLg = 'hiring-button-lg';
+export const hiringBtnFull = 'hiring-button-full hiring-button-full-mobile';
+
+/**
+ * Grid + particles + brand orbs, scoped to the hero and faded to black.
+ * Not a full-page backdrop.
+ */
+export function HiringHeroBackdrop({ className = '' }: { className?: string }) {
   return (
-    <Particles
-      className={cn('absolute inset-0 z-0', className)}
-      quantity={48}
-      color="#9A88FC"
-      ease={80}
-      size={0.5}
-    />
+    <div aria-hidden className={cn('pointer-events-none absolute inset-0 z-0 overflow-hidden', className)}>
+      <div
+        className="absolute inset-0 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(154,136,252,0.9) 1px, transparent 1px), linear-gradient(90deg, rgba(154,136,252,0.9) 1px, transparent 1px)',
+          backgroundSize: '72px 72px',
+        }}
+      />
+      <div
+        className="absolute -top-[30%] left-1/2 h-[640px] w-[1200px] -translate-x-1/2"
+        style={{
+          background:
+            'radial-gradient(ellipse at center, rgba(154,136,252,0.34) 0%, rgba(102,80,216,0.16) 40%, transparent 72%)',
+          filter: 'blur(80px)',
+        }}
+      />
+      <div
+        className="animate-drift absolute -right-32 top-[18%] h-[420px] w-[420px] rounded-full opacity-70"
+        style={{
+          background: 'radial-gradient(circle, rgba(154,136,252,0.22) 0%, transparent 68%)',
+          filter: 'blur(70px)',
+        }}
+      />
+      <div
+        className="animate-drift absolute -left-36 top-[42%] h-[380px] w-[380px] rounded-full opacity-60"
+        style={{
+          background: 'radial-gradient(circle, rgba(102,80,216,0.22) 0%, transparent 68%)',
+          filter: 'blur(70px)',
+          animationDelay: '2.4s',
+        }}
+      />
+      <Particles className="absolute inset-0" quantity={72} color="#9A88FC" ease={70} size={0.55} />
+      <div className="hiring-hero-fade" />
+    </div>
   );
 }
 

@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import Backdrop from '../components/Backdrop';
 import SiteHeader from '../components/SiteHeader';
 import SiteFooter from '../components/SiteFooter';
 import {
@@ -15,13 +14,22 @@ import {
   type LocationId,
   type Role,
 } from '../data/roles';
-import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, sectionLabel } from '../components/ui';
+import { sectionLabel } from '../components/ui';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { MagicCard } from '@/components/ui/magic-card';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Panel } from '@/components/ui/panel';
 import { ShineBorder } from '@/components/ui/shine-border';
-import { HiringParticles, HiringStatusPill, SurfaceCard } from './components/visual';
+import {
+  HiringHeroBackdrop,
+  HiringStatusPill,
+  SurfaceCard,
+  hiringBtn,
+  hiringBtnFull,
+  hiringBtnMd,
+  hiringBtnSecondary,
+  hiringBtnSm,
+} from './components/visual';
 
 const filterLabel = 'mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500';
 
@@ -113,7 +121,7 @@ function FeaturedRoleCard({ role }: { role: Role }) {
               ))}
             </div>
 
-            <span className={`${btnPrimary} ${btnSizeSm} mt-6`}>
+            <span className={`${hiringBtn} ${hiringBtnSm} mt-6`}>
               Watch the walkthrough
               <ArrowIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </span>
@@ -208,18 +216,16 @@ export default function HiringPage() {
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
-
       <div className="relative z-10">
         <SiteHeader
           action={
             <>
               <span className="hidden sm:contents">
-                <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeSm}`}>
+                <Link href="/hiring/sdr-placement" className={`${hiringBtnSecondary} ${hiringBtnSm}`}>
                   SDR Placement
                 </Link>
               </span>
-              <a href="#positions" className={`${btnPrimary} ${btnSizeSm}`}>
+              <a href="#positions" className={`${hiringBtn} ${hiringBtnSm}`}>
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink-950 opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ink-950" />
@@ -233,7 +239,7 @@ export default function HiringPage() {
 
         {/* Hero */}
         <section className="relative overflow-hidden px-5 pb-14 pt-16 sm:px-6 sm:pb-20 sm:pt-24 md:pb-24 md:pt-32">
-          <HiringParticles />
+          <HiringHeroBackdrop />
           <div className="relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <div className="animate-rise">
@@ -252,11 +258,11 @@ export default function HiringPage() {
             </p>
 
             <div className="animate-rise delay-3 mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a href="#positions" className={`${btnPrimary} ${btnSizeMd} w-full sm:w-auto`}>
+              <a href="#positions" className={`${hiringBtn} ${hiringBtnMd} ${hiringBtnFull}`}>
                 Browse open roles
                 <ArrowIcon />
               </a>
-              <Link href="/hiring/sdr-placement" className={`${btnSecondary} ${btnSizeMd} w-full sm:w-auto`}>
+              <Link href="/hiring/sdr-placement" className={`${hiringBtnSecondary} ${hiringBtnMd} ${hiringBtnFull}`}>
                 <svg className="h-3.5 w-3.5 text-brand-400" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5.14v14l11-7-11-7Z" />
                 </svg>
@@ -464,7 +470,7 @@ export default function HiringPage() {
                         setSelectedDept('all');
                         setSelectedLocations(['remote', 'us-md']);
                       }}
-                      className={`${btnSecondary} ${btnSizeSm} mt-5`}
+                      className={`${hiringBtnSecondary} ${hiringBtnSm} mt-5`}
                     >
                       Reset filters
                     </button>

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import './hiring.css'
 
 export const metadata: Metadata = {
   title: 'Open Positions | Divine Acquisition Careers',

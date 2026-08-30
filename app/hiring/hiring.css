@@ -1,0 +1,143 @@
+/* Hiring-only conversion buttons and hero field. */
+
+.hiring-button,
+.hiring-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    filter 0.2s ease,
+    color 0.15s ease,
+    background-image 0.2s ease;
+}
+
+.hiring-button {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background-color: #9a88fc;
+  background-image: linear-gradient(180deg, #c3b6fe 0%, #9a88fc 46%, #6650d8 100%);
+  color: var(--color-ink-950);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    0 12px 28px -12px rgba(102, 80, 216, 0.9);
+}
+
+.hiring-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.38) 48%,
+    transparent 62%
+  );
+  transform: translateX(-120%);
+  animation: hiring-button-shine 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.hiring-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.34);
+  background-image: linear-gradient(180deg, #d9d1fe 0%, #ae9dfd 46%, #7e67f2 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
+    0 18px 36px -12px rgba(102, 80, 216, 1);
+  color: var(--color-ink-950);
+}
+
+.hiring-button:active {
+  transform: translateY(0);
+  background-image: linear-gradient(180deg, #9a88fc 0%, #7e67f2 50%, #5140a9 100%);
+  color: #fff;
+}
+
+.hiring-button-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+}
+
+.hiring-button-secondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(154, 136, 252, 0.45);
+  background: rgba(154, 136, 252, 0.1);
+  color: #fff;
+  box-shadow: 0 14px 30px -16px rgba(102, 80, 216, 0.7);
+}
+
+.hiring-button:hover svg,
+.hiring-button-secondary:hover svg {
+  transform: translateX(3px);
+}
+
+.hiring-button svg,
+.hiring-button-secondary svg {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hiring-button:disabled,
+.hiring-button-secondary:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.hiring-button-sm {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.8125rem;
+}
+
+.hiring-button-md {
+  min-height: 2.85rem;
+  padding: 0.7rem 1.35rem;
+}
+
+.hiring-button-lg {
+  min-height: 3.25rem;
+  padding: 0.85rem 1.85rem;
+  font-size: 0.95rem;
+}
+
+.hiring-button-full {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .hiring-button-full-mobile {
+    width: auto;
+  }
+}
+
+@keyframes hiring-button-shine {
+  0%,
+  55% {
+    transform: translateX(-120%);
+  }
+  80%,
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+.hiring-hero-fade {
+  position: absolute;
+  inset-x: 0;
+  bottom: 0;
+  height: 8.5rem;
+  background: linear-gradient(180deg, rgba(7, 7, 11, 0) 0%, #07070b 88%);
+  pointer-events: none;
+}

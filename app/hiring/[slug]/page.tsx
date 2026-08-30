@@ -3,17 +3,24 @@
 import { useState, useTransition } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import Backdrop from '../../components/Backdrop';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import { aboutContent, getRole, type RoleDetail } from '../../data/roles';
 import type { ActionResult } from '@/lib/ad/rpc';
 import { submitApplicationAction } from '@/lib/careers/actions';
-import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm, sectionLabel } from '../../components/ui';
+import { sectionLabel } from '../../components/ui';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { Panel } from '@/components/ui/panel';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { HiringParticles, ShinePanel, SurfaceCard } from '../components/visual';
+import {
+  HiringHeroBackdrop,
+  ShinePanel,
+  SurfaceCard,
+  hiringBtn,
+  hiringBtnMd,
+  hiringBtnSecondary,
+  hiringBtnSm,
+} from '../components/visual';
 
 function SectionHeading({ label }: { label: string }) {
   return (
@@ -193,7 +200,7 @@ function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: string; jobTitle: s
         </p>
       )}
 
-      <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd} w-full`}>
+      <button type="submit" disabled={pending} className={`${hiringBtn} ${hiringBtnMd} w-full`}>
         {pending ? 'Submitting…' : 'Submit application'}
       </button>
 
@@ -246,7 +253,7 @@ function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string
           </div>
         ) : detail.apply.kind === 'external' ? (
           <div className="px-6 py-12 text-center">
-            <a href={detail.apply.href} target="_blank" rel="noopener noreferrer" className={`${btnPrimary} ${btnSizeMd}`}>
+            <a href={detail.apply.href} target="_blank" rel="noopener noreferrer" className={`${hiringBtn} ${hiringBtnMd}`}>
               Open application form
             </a>
           </div>
@@ -267,13 +274,12 @@ export default function RolePage() {
   if (!role || !detail) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-ink-950 px-6 text-white">
-        <Backdrop />
         <div className="relative z-10 text-center">
           <h1 className="text-2xl font-semibold">Position not found</h1>
           <p className="mt-2 text-sm text-neutral-500">
             This role may have been filled or moved.
           </p>
-          <Link href="/hiring" className={`${btnPrimary} ${btnSizeMd} mt-7`}>
+          <Link href="/hiring" className={`${hiringBtn} ${hiringBtnMd} mt-7`}>
             Back to all positions
           </Link>
         </div>
@@ -290,20 +296,18 @@ export default function RolePage() {
 
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
-
       <div className="relative z-10">
         <SiteHeader
           action={
             <>
-              <Link href="/hiring" className={`${btnSecondary} ${btnSizeSm}`}>
+              <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnSm}`}>
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0 5.5-5.5M5 12l5.5 5.5" />
                 </svg>
                 <span className="hidden sm:inline">All roles</span>
                 <span className="sm:hidden">Back</span>
               </Link>
-              <a href="#apply" className={`${btnPrimary} ${btnSizeSm}`}>
+              <a href="#apply" className={`${hiringBtn} ${hiringBtnSm}`}>
                 Apply
               </a>
             </>
@@ -314,7 +318,7 @@ export default function RolePage() {
           <div className="mx-auto max-w-3xl">
             {/* Hero */}
             <section className="relative mb-14 overflow-hidden">
-              <HiringParticles className="opacity-70" />
+              <HiringHeroBackdrop />
               <div className="relative z-10">
               <div className="animate-rise flex items-center gap-3">
                 <span className="h-px w-6 bg-gradient-to-r from-brand-500 to-transparent" />
@@ -347,7 +351,7 @@ export default function RolePage() {
               </dl>
 
               <div className="animate-rise delay-4 mt-7">
-                <a href="#apply" className={`${btnPrimary} ${btnSizeMd}`}>
+                <a href="#apply" className={`${hiringBtn} ${hiringBtnMd}`}>
                   Apply for this role
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" />

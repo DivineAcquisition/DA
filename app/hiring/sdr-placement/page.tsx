@@ -3,12 +3,23 @@
 import type { ComponentType, CSSProperties } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
-import Backdrop from '../../components/Backdrop';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import { SDR_MONTHLY_BASE } from '../../data/roles';
-import { btnPrimary, btnSecondary, btnSizeLg, btnSizeMd, btnSizeSm, sectionLabel } from '../../components/ui';
-import { BeamFrame, HiringParticles, HiringStatusPill, ShinePanel, SurfaceCard } from '../components/visual';
+import { sectionLabel } from '../../components/ui';
+import {
+  BeamFrame,
+  HiringHeroBackdrop,
+  HiringStatusPill,
+  ShinePanel,
+  SurfaceCard,
+  hiringBtn,
+  hiringBtnFull,
+  hiringBtnLg,
+  hiringBtnMd,
+  hiringBtnSecondary,
+  hiringBtnSm,
+} from '../components/visual';
 
 const APPLY_URL = 'https://airtable.com/appI4kbEVdi5THUbs/pagQySxRueaPdgW4n/form';
 const WISTIA_MEDIA_ID = 'lrplfrikyd';
@@ -78,18 +89,16 @@ export default function SdrPlacementPage() {
         type="module"
       />
 
-      <Backdrop />
-
       <div className="relative z-10">
         <SiteHeader
           action={
             <>
               <span className="hidden sm:contents">
-                <Link href="/hiring" className={`${btnSecondary} ${btnSizeSm}`}>
+                <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnSm}`}>
                   All roles
                 </Link>
               </span>
-              <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className={`${btnPrimary} ${btnSizeSm}`}>
+              <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className={`${hiringBtn} ${hiringBtnSm}`}>
                 Apply now
               </a>
             </>
@@ -98,7 +107,7 @@ export default function SdrPlacementPage() {
 
         {/* VSL hero */}
         <section className="relative overflow-hidden px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
-          <HiringParticles />
+          <HiringHeroBackdrop />
           <div className="relative z-10">
           <div className="mx-auto max-w-3xl text-center">
             <div className="animate-rise">
@@ -133,7 +142,7 @@ export default function SdrPlacementPage() {
               href={APPLY_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className={`${btnPrimary} ${btnSizeLg} w-full uppercase tracking-[0.06em] sm:w-auto`}
+              className={`${hiringBtn} ${hiringBtnLg} ${hiringBtnFull} uppercase tracking-[0.06em]`}
             >
               Apply now
               <ArrowIcon className="h-4 w-4" />
@@ -209,13 +218,13 @@ export default function SdrPlacementPage() {
                     href={APPLY_URL}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`${btnPrimary} ${btnSizeLg} w-full uppercase tracking-[0.06em] sm:w-auto`}
+                    className={`${hiringBtn} ${hiringBtnLg} ${hiringBtnFull} uppercase tracking-[0.06em]`}
                   >
                     Apply now
                     <ArrowIcon />
                   </a>
                   <FactsStrip />
-                  <Link href="/hiring" className={`${btnSecondary} ${btnSizeMd} mt-2`}>
+                  <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnMd} mt-2`}>
                     See all open roles
                   </Link>
                 </div>
