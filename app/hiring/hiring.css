@@ -141,3 +141,14 @@
   background: linear-gradient(180deg, rgba(7, 7, 11, 0) 0%, #07070b 88%);
   pointer-events: none;
 }
+
+.hiring-headline-accent {
+  font-style: italic;
+  font-weight: 600;
+  font-synthesis: none;
+  background: linear-gradient(102deg, #ffffff 0%, #f1eeff 38%, var(--brand) 78%, var(--brand-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
