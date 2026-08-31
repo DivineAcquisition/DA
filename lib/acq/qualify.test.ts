@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
+  ACQ_META_PIXEL_ID,
   ACQ_TYPEFORM_DEFAULT_URL,
   ACQ_TYPEFORM_URL,
   ACQ_WISTIA_MEDIA_ID,
@@ -161,6 +162,10 @@ describe('withTrackingParams', () => {
 describe('founding landing media', () => {
   it('embeds the issued Wistia VSL', () => {
     expect(ACQ_WISTIA_MEDIA_ID).toBe('topebzrych');
+  });
+
+  it('ships the Meta Pixel on the acq landing', () => {
+    expect(ACQ_META_PIXEL_ID).toBe('2779578425739507');
   });
 
   it('keeps the issued landing copy blocks', () => {
