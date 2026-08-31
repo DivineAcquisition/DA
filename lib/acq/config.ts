@@ -14,8 +14,9 @@ export const ACQ_WISTIA_MEDIA_ID =
 /** Native aspect ratio for the hero Wistia player (width / height). */
 export const ACQ_WISTIA_ASPECT = '1.7777777777777777';
 
-/** Meta Pixel id. Empty means the snippet is not injected. */
-export const ACQ_META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '';
+/** Meta Pixel id for the acq landing. Env overrides; default ships the ads pixel. */
+export const ACQ_META_PIXEL_ID =
+  process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '2779578425739507';
 
 /**
  * Conversion event fired after /api/submit-lead succeeds, before redirect.
