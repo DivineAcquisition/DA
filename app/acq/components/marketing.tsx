@@ -39,6 +39,36 @@ export function BookCta({ href, className = '' }: { href: string; className?: st
   );
 }
 
+export function StepCards({
+  items,
+}: {
+  items: readonly { label: string; body: string }[];
+}) {
+  return (
+    <div className="relative mt-9">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-10 right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-brand-500/0 via-brand-500/45 to-brand-500/0 md:block"
+      />
+      <ol className="grid gap-4 md:grid-cols-3">
+        {items.map((item, index) => (
+          <li key={item.label}>
+            <Panel className="h-full overflow-hidden p-0">
+              <MagicCard className="rounded-2xl p-6">
+                <span className="relative z-[1] flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/30 bg-brand-500/12 text-sm font-bold tabular-nums text-brand-200">
+                  {index + 1}
+                </span>
+                <h3 className="acq-headline mt-4 text-base font-semibold text-white">{item.label}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-400">{item.body}</p>
+              </MagicCard>
+            </Panel>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 export function IncludedCards({
   items,
 }: {

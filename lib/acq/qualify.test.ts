@@ -3,6 +3,8 @@ import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
   ACQ_META_PIXEL_ID,
+  ACQ_PRECALL_PATH,
+  ACQ_PRECALL_WISTIA_MEDIA_ID,
   ACQ_TYPEFORM_DEFAULT_URL,
   ACQ_TYPEFORM_URL,
   ACQ_WISTIA_MEDIA_ID,
@@ -111,6 +113,14 @@ describe('acqPublicPath', () => {
     expect(acqPublicPath('/book', 'localhost')).toBe('/acq/book');
     expect(acqPublicPath('/book', 'divine-acq-123.vercel.app')).toBe('/acq/book');
   });
+
+  it('uses the bare precall path on the dedicated acq host', () => {
+    expect(acqPublicPath('/precall', 'acq.divineacquisition.io')).toBe('/precall');
+  });
+
+  it('prefixes the precall path on localhost and previews', () => {
+    expect(acqPublicPath('/precall', 'localhost')).toBe('/acq/precall');
+  });
 });
 
 describe('withTrackingQuery', () => {
@@ -164,6 +174,11 @@ describe('founding landing media', () => {
     expect(ACQ_WISTIA_MEDIA_ID).toBe('topebzrych');
   });
 
+  it('embeds the issued precall Wistia briefing', () => {
+    expect(ACQ_PRECALL_WISTIA_MEDIA_ID).toBe('pk21l05fbv');
+    expect(ACQ_PRECALL_PATH).toBe('/precall');
+  });
+
   it('ships the Meta Pixel on the acq landing', () => {
     expect(ACQ_META_PIXEL_ID).toBe('2779578425739507');
   });
@@ -189,6 +204,15 @@ describe('founding landing media', () => {
     );
     expect(copy.BOOK_PAGE.eyebrow.toLowerCase()).toContain('free');
     expect(copy.BOOK_PAGE.body.toLowerCase()).toContain('free');
+    expect(copy.PRECALL.title).toBe('Your Free Sales Audit Has Been Confirmed');
+    expect(copy.PRECALL.title).toBe(`${copy.PRECALL.titleBefore}${copy.PRECALL.titleAccent}`);
+    expect(copy.PRECALL.title).not.toMatch(/[—–]/);
+    expect(copy.PRECALL.body).not.toMatch(/[—–]/);
+    expect(copy.PRECALL.stepsEyebrow).toBe('What To Expect');
+    expect(copy.PRECALL.stepsTitle).toBe('Here Are Your Next Steps After Booking A Call');
+    expect(copy.PRECALL.steps).toHaveLength(3);
+    expect(copy.PRECALL.steps[0].label.toLowerCase()).toContain('email');
+    expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
   });
 
   it('defaults the booking calendar to the issued GHL widget', () => {

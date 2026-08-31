@@ -6,6 +6,11 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { ACQ_WISTIA_ASPECT, ACQ_WISTIA_MEDIA_ID } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
+type HeroVideoProps = {
+  mediaId?: string;
+  contentName?: string;
+};
+
 const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
   'media-id': string;
   aspect?: string;
@@ -23,8 +28,10 @@ declare global {
  * (media-id topebzrych, 16:9). Scripts + :not(:defined) swatch match the
  * snippet Wistia issued. ViewContent fires once on first play.
  */
-export default function HeroVideo() {
-  const mediaId = ACQ_WISTIA_MEDIA_ID;
+export default function HeroVideo({
+  mediaId = ACQ_WISTIA_MEDIA_ID,
+  contentName = 'Founding Install VSL',
+}: HeroVideoProps) {
   const tracked = useRef(false);
 
   useEffect(() => {
@@ -33,7 +40,7 @@ export default function HeroVideo() {
     const markPlay = () => {
       if (tracked.current) return;
       tracked.current = true;
-      trackPixel('ViewContent', { content_name: 'Founding Install VSL', content_ids: [mediaId] });
+      trackPixel('ViewContent', { content_name: contentName, content_ids: [mediaId] });
     };
 
     let bound: Element | null = null;
@@ -61,7 +68,7 @@ export default function HeroVideo() {
       observer.disconnect();
       bound?.removeEventListener('play', markPlay);
     };
-  }, [mediaId]);
+  }, [mediaId, contentName]);
 
   return (
     <div className="animate-rise delay-3 relative mx-auto w-full max-w-4xl">
