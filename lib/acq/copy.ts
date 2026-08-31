@@ -72,6 +72,32 @@ export const THANK_YOU = {
 export const THANK_YOU_CALENDAR_PENDING =
   'The booking calendar will appear here as soon as the free sales audit embed is connected.';
 
+export const PRECALL = {
+  eyebrow: 'Confirmed',
+  title: 'Your Free Sales Audit Has Been Confirmed',
+  titleBefore: 'Your Free Sales Audit Has Been ',
+  titleAccent: 'Confirmed',
+  body: "Time is one of the most valuable things either of us has. This audit takes real energy on my end, and all I ask in return is that you respect that with the same devotion I'm putting into your business.",
+  stepsEyebrow: 'What To Expect',
+  stepsTitle: 'Here Are Your Next Steps After Booking A Call',
+  stepsBody:
+    'Do these three things before we talk so the hour is used the way it should be.',
+  steps: [
+    {
+      label: 'Check your email',
+      body: 'Open the confirmation we just sent. Accept the calendar invite so the time is locked on your phone, not only in your inbox.',
+    },
+    {
+      label: 'Protect the time',
+      body: 'Treat this slot as locked. If something changes, reschedule early. A no-show wastes the work already in motion for your audit.',
+    },
+    {
+      label: 'Self-educate',
+      body: 'Watch the video on this page before we talk. Come ready to walk through ad spend, show rate, and how follow-up happens today.',
+    },
+  ],
+} as const;
+
 export const QUALIFY_DIALOG = {
   title: 'See if you qualify',
   description: 'A few questions so we can review fit.',

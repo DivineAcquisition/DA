@@ -14,6 +14,9 @@ export const ACQ_WISTIA_MEDIA_ID =
 /** Native aspect ratio for the hero Wistia player (width / height). */
 export const ACQ_WISTIA_ASPECT = '1.7777777777777777';
 
+/** Precall briefing Wistia media id (issued embed). */
+export const ACQ_PRECALL_WISTIA_MEDIA_ID = 'pk21l05fbv';
+
 /** Meta Pixel id for the acq landing. Env overrides; default ships the ads pixel. */
 export const ACQ_META_PIXEL_ID =
   process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() || '2779578425739507';
@@ -67,6 +70,7 @@ export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 
 export const ACQ_THANK_YOU_PATH = '/thank-you';
 export const ACQ_BOOK_PATH = '/book';
+export const ACQ_PRECALL_PATH = '/precall';
 
 /** Landing CTA destination. Replaces the /book calendar page. */
 export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
