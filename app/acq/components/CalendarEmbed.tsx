@@ -50,7 +50,7 @@ function looksLikeBooking(data: unknown): boolean {
   );
 }
 
-function CalendarFrame({ children }: { children: ReactNode }) {
+export function CalendarFrame({ children }: { children: ReactNode }) {
   return (
     <div className="animate-rise delay-2 relative mx-auto mt-10 w-full max-w-4xl">
       <div
@@ -68,7 +68,7 @@ function CalendarFrame({ children }: { children: ReactNode }) {
   );
 }
 
-/** GHL booking calendar. Visible on /book and /thank-you; fires Schedule on book. */
+/** GHL booking calendar. Visible on /thank-you; fires Schedule on book. */
 export function CalendarEmbed() {
   const fired = useRef(false);
   const src = ACQ_CALENDAR_EMBED_URL;

@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
+  ACQ_CAL_EMBED_SCRIPT,
+  ACQ_CAL_LINK,
+  ACQ_CAL_NAMESPACE,
   ACQ_META_PIXEL_ID,
   ACQ_PRECALL_PATH,
   ACQ_PRECALL_WISTIA_MEDIA_ID,
@@ -225,7 +228,13 @@ describe('founding landing media', () => {
     expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
   });
 
-  it('defaults the booking calendar to the issued GHL widget', () => {
+  it('embeds the issued Cal.com event on /book', () => {
+    expect(ACQ_CAL_LINK).toBe('malik-sannie-zztskt/30min');
+    expect(ACQ_CAL_NAMESPACE).toBe('30min');
+    expect(ACQ_CAL_EMBED_SCRIPT).toBe('https://app.cal.com/embed/embed.js');
+  });
+
+  it('defaults the thank-you booking calendar to the issued GHL widget', () => {
     expect(ACQ_CALENDAR_DEFAULT_EMBED_URL).toContain('v0e24e3kxYEGCTUkSP4A');
     expect(ACQ_CALENDAR_EMBED_URL).toContain('widget/booking');
   });

@@ -72,7 +72,7 @@ export const ACQ_THANK_YOU_PATH = '/thank-you';
 export const ACQ_BOOK_PATH = '/book';
 export const ACQ_PRECALL_PATH = '/precall';
 
-/** Optional Typeform apply URL. The landing CTA uses /book (GHL calendar). */
+/** Optional Typeform apply URL. The landing CTA uses /book (Cal.com). */
 export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
 export const ACQ_TYPEFORM_URL =
   process.env.NEXT_PUBLIC_ACQ_TYPEFORM_URL?.trim() || ACQ_TYPEFORM_DEFAULT_URL;
@@ -94,6 +94,15 @@ export const ACQ_CALENDAR_EMBED_URL =
   (calendarWidgetFromEnv
     ? `https://api.leadconnectorhq.com/widget/booking/${calendarWidgetFromEnv}`
     : ACQ_CALENDAR_DEFAULT_EMBED_URL);
+
+/** Cal.com inline embed on /book. Env override is the event path only. */
+export const ACQ_CAL_EMBED_SCRIPT = 'https://app.cal.com/embed/embed.js';
+export const ACQ_CAL_ORIGIN = 'https://app.cal.com';
+export const ACQ_CAL_NAMESPACE = '30min';
+export const ACQ_CAL_LINK =
+  process.env.NEXT_PUBLIC_ACQ_CAL_LINK?.trim() || 'malik-sannie-zztskt/30min';
+export const ACQ_CAL_BRAND = '#8a7aff';
+export const ACQ_CAL_ELEMENT_ID = 'my-cal-inline-30min';
 
 /** Ad / click identifiers forwarded from the landing URL into the application. */
 export const TRACKING_PARAM_KEYS = [
