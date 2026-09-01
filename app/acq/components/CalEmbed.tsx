@@ -84,12 +84,22 @@ function readIframeHeight(event: unknown): number | null {
     : null;
 }
 
+function preferredHeight(reported: number): number {
+  // Cal's first pixel height tracks the month grid, which can clip the details
+  // column. Keep a desktop floor and a small buffer so the iframe can show the
+  // full event copy without an inner scrollbar.
+  const desktop = window.matchMedia('(min-width: 640px)').matches;
+  const floor = desktop ? 680 : 0;
+  return Math.max(Math.ceil(reported) + 16, floor);
+}
+
 function applyContentHeight(host: HTMLElement, height: number) {
+  const next = preferredHeight(height);
   const iframe = host.querySelector('iframe');
   if (iframe instanceof HTMLIFrameElement) {
-    iframe.style.height = `${height}px`;
+    iframe.style.height = `${next}px`;
   }
-  // Drop the loading min-height so later (smaller) reports can shrink the frame.
+  // Drop the loading min-height so later reports can shrink on small screens.
   host.style.minHeight = '0px';
   host.dataset.calSized = 'true';
 }
@@ -177,7 +187,7 @@ export default function CalEmbed() {
       <div
         id={ACQ_CAL_ELEMENT_ID}
         className={cn(
-          'w-full min-h-[36rem] overflow-visible bg-black',
+          'w-full min-h-[32rem] overflow-visible bg-black sm:min-h-[42.5rem]',
           '[&_iframe]:block [&_iframe]:w-full [&_iframe]:border-0',
         )}
       />
