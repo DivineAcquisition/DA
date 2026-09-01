@@ -69,13 +69,6 @@ function installCalStub() {
     } as CalFn;
 }
 
-function isDesktopCalendar(): boolean {
-  return window.matchMedia('(min-width: 640px)').matches;
-}
-
-/** Desktop floor so the details column can show the full event copy. */
-const DESKTOP_HEIGHT_FLOOR = 736;
-
 function readIframeHeight(event: unknown): number | null {
   if (!event || typeof event !== 'object') return null;
   const record = event as Record<string, unknown>;
@@ -91,23 +84,18 @@ function readIframeHeight(event: unknown): number | null {
     : null;
 }
 
-function syncIframeHeight(host: HTMLElement, reported?: number) {
+function followContentHeight(host: HTMLElement, height?: number) {
   const iframe = host.querySelector('iframe');
   if (!(iframe instanceof HTMLIFrameElement)) return;
 
-  const current = parseFloat(iframe.style.height);
-  const base = reported ?? (Number.isFinite(current) ? current : 0);
-  if (!base) return;
-
-  const desktop = isDesktopCalendar();
-  const next = Math.max(Math.ceil(base), desktop ? DESKTOP_HEIGHT_FLOOR : 0);
-  if (!Number.isFinite(current) || Math.abs(current - next) >= 1) {
-    iframe.style.height = `${next}px`;
+  if (typeof height === 'number') {
+    iframe.style.height = `${height}px`;
   }
 
-  // Mobile may shrink; desktop keeps the CSS floor via the iframe height.
-  host.style.minHeight = desktop ? '' : '0px';
-  host.dataset.calSized = 'true';
+  if (iframe.style.height.endsWith('px')) {
+    host.style.minHeight = '0px';
+    host.dataset.calSized = 'true';
+  }
 }
 
 /** Cal.com month-view calendar for /book. Height follows the iframe content. */
@@ -118,11 +106,7 @@ export default function CalEmbed() {
     const host = document.getElementById(ACQ_CAL_ELEMENT_ID);
     if (!host) return;
 
-    const sync = (reported?: number) => {
-      syncIframeHeight(host, reported);
-    };
-
-    const observer = new MutationObserver(() => sync());
+    const observer = new MutationObserver(() => followContentHeight(host));
     observer.observe(host, {
       childList: true,
       subtree: true,
@@ -131,7 +115,7 @@ export default function CalEmbed() {
     });
 
     if (host.dataset.calInitialized === 'true') {
-      sync();
+      followContentHeight(host);
       return () => observer.disconnect();
     }
     host.dataset.calInitialized = 'true';
@@ -168,7 +152,7 @@ export default function CalEmbed() {
       action: '__dimensionChanged',
       callback: (event: unknown) => {
         const height = readIframeHeight(event);
-        if (height) sync(height);
+        if (height) followContentHeight(host, height);
       },
     });
 
@@ -189,7 +173,7 @@ export default function CalEmbed() {
       <div
         id={ACQ_CAL_ELEMENT_ID}
         className={cn(
-          'w-full min-h-[32rem] overflow-visible bg-black sm:min-h-[46rem]',
+          'w-full min-h-[24rem] overflow-visible bg-black',
           '[&_iframe]:block [&_iframe]:w-full [&_iframe]:border-0',
         )}
       />
