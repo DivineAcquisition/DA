@@ -9,6 +9,7 @@ import {
   ACQ_CAL_NAMESPACE,
   ACQ_CAL_ORIGIN,
 } from '@/lib/acq/config';
+import { cn } from '@/lib/utils';
 import { CalendarFrame } from './CalendarEmbed';
 import { trackPixel } from './MetaPixel';
 
@@ -68,25 +69,71 @@ function installCalStub() {
     } as CalFn;
 }
 
-/** Cal.com month-view calendar for /book. Fires Schedule on a successful booking. */
+function readIframeHeight(event: unknown): number | null {
+  if (!event || typeof event !== 'object') return null;
+  const record = event as Record<string, unknown>;
+  const detail = record.detail;
+  const nested =
+    detail && typeof detail === 'object'
+      ? ((detail as Record<string, unknown>).data ?? detail)
+      : (record.data ?? record);
+  if (!nested || typeof nested !== 'object') return null;
+  const height = (nested as Record<string, unknown>).iframeHeight;
+  return typeof height === 'number' && Number.isFinite(height) && height > 0
+    ? Math.ceil(height)
+    : null;
+}
+
+function applyContentHeight(host: HTMLElement, height: number) {
+  const iframe = host.querySelector('iframe');
+  if (iframe instanceof HTMLIFrameElement) {
+    iframe.style.height = `${height}px`;
+  }
+  // Drop the loading min-height so later (smaller) reports can shrink the frame.
+  host.style.minHeight = '0px';
+  host.dataset.calSized = 'true';
+}
+
+/** Cal.com month-view calendar for /book. Height follows the iframe content. */
 export default function CalEmbed() {
   const pixelFired = useRef(false);
 
   useEffect(() => {
     const host = document.getElementById(ACQ_CAL_ELEMENT_ID);
-    if (!host || host.dataset.calInitialized === 'true') return;
+    if (!host) return;
+
+    const releaseMinHeight = () => {
+      const iframe = host.querySelector('iframe');
+      if (!(iframe instanceof HTMLIFrameElement)) return;
+      if (!iframe.style.height.endsWith('px')) return;
+      host.style.minHeight = '0px';
+      host.dataset.calSized = 'true';
+    };
+
+    const observer = new MutationObserver(releaseMinHeight);
+    observer.observe(host, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['style'],
+    });
+
+    if (host.dataset.calInitialized === 'true') {
+      releaseMinHeight();
+      return () => observer.disconnect();
+    }
     host.dataset.calInitialized = 'true';
 
     installCalStub();
     const Cal = window.Cal;
-    if (!Cal) return;
+    if (!Cal) return () => observer.disconnect();
 
     Cal('init', ACQ_CAL_NAMESPACE, { origin: ACQ_CAL_ORIGIN });
     Cal.config = Cal.config || {};
     Cal.config.forwardQueryParams = true;
 
     const ns = Cal.ns?.[ACQ_CAL_NAMESPACE];
-    if (!ns) return;
+    if (!ns) return () => observer.disconnect();
 
     ns('inline', {
       elementOrSelector: `#${ACQ_CAL_ELEMENT_ID}`,
@@ -106,6 +153,14 @@ export default function CalEmbed() {
     });
 
     ns('on', {
+      action: '__dimensionChanged',
+      callback: (event: unknown) => {
+        const height = readIframeHeight(event);
+        if (height) applyContentHeight(host, height);
+      },
+    });
+
+    ns('on', {
       action: 'bookingSuccessful',
       callback: () => {
         if (pixelFired.current) return;
@@ -113,16 +168,19 @@ export default function CalEmbed() {
         trackPixel('Schedule');
       },
     });
+
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <CalendarFrame>
-      <div className="h-[780px] w-full sm:h-[900px]">
-        <div
-          id={ACQ_CAL_ELEMENT_ID}
-          className="h-full w-full overflow-auto bg-black"
-        />
-      </div>
+    <CalendarFrame className="max-w-5xl">
+      <div
+        id={ACQ_CAL_ELEMENT_ID}
+        className={cn(
+          'w-full min-h-[36rem] overflow-visible bg-black',
+          '[&_iframe]:block [&_iframe]:w-full [&_iframe]:border-0',
+        )}
+      />
     </CalendarFrame>
   );
 }
