@@ -1,7 +1,7 @@
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
-import CalEmbed from '../components/CalEmbed';
+import IclosedEmbed from '../components/IclosedEmbed';
 
 export const metadata = {
   title: { absolute: 'Free Sales Audit | Divine Acquisition' },
@@ -11,7 +11,7 @@ export const metadata = {
   },
 };
 
-/** Cal.com booking calendar for the landing CTA. */
+/** iClosed booking calendar for the landing CTA. */
 export default function AcqBookPage() {
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
@@ -38,7 +38,7 @@ export default function AcqBookPage() {
             </p>
           </div>
 
-          <CalEmbed />
+          <IclosedEmbed />
         </section>
 
         <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
