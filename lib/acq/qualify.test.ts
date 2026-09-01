@@ -9,6 +9,7 @@ import {
   ACQ_TYPEFORM_URL,
   ACQ_WISTIA_MEDIA_ID,
   acqApplyUrl,
+  acqBookUrl,
   acqPublicPath,
   qualificationThankYouPath,
   trackingFromSearchParams,
@@ -131,8 +132,17 @@ describe('withTrackingQuery', () => {
   });
 });
 
+describe('acqBookUrl', () => {
+  it('sends landing CTA traffic to the GHL book page with ad params', () => {
+    expect(acqBookUrl({ utm_source: 'facebook', fbclid: 'abc.123' }, 'acq.divineacquisition.io')).toBe(
+      '/book?utm_source=facebook&fbclid=abc.123',
+    );
+    expect(acqBookUrl({ utm_source: 'facebook' }, 'localhost')).toBe('/acq/book?utm_source=facebook');
+  });
+});
+
 describe('acqApplyUrl', () => {
-  it('sends apply traffic to the issued Typeform with ad params', () => {
+  it('keeps the issued Typeform URL available with ad params', () => {
     expect(ACQ_TYPEFORM_URL).toBe('https://form.typeform.com/to/lvtP8G4E');
     expect(ACQ_TYPEFORM_DEFAULT_URL).toBe('https://form.typeform.com/to/lvtP8G4E');
 

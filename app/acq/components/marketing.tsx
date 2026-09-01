@@ -1,6 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { MagicCard } from '@/components/ui/magic-card';
@@ -32,10 +33,10 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
 
 export function BookCta({ href, className = '' }: { href: string; className?: string }) {
   return (
-    <a href={href} className={cn('acq-button acq-button-full no-underline max-w-sm', className)}>
+    <Link href={href} className={cn('acq-button acq-button-full no-underline max-w-sm', className)}>
       {CTA_LABEL}
       <ArrowIcon />
-    </a>
+    </Link>
   );
 }
 
