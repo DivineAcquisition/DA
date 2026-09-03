@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { EmptyState } from '@/app/vistrial/components/ui';
 import { isRecordId } from '@/lib/calls/cells';
-import { callsConfigured } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/config';
 import { getLeadProfile } from '@/lib/calls/queries';
 import ProfileView from '../components/ProfileView';
 
@@ -15,11 +15,11 @@ export default async function LeadProfilePage({
   const { leadId } = await params;
   const { saved } = await searchParams;
   if (!isRecordId(leadId)) notFound();
-  if (!callsConfigured()) {
+  if (!(await callsReady())) {
     return (
       <EmptyState
         title="Airtable is not configured"
-        detail="Set AIRTABLE_API_KEY to read this lead live from DA Pipeline."
+        detail="Set da_settings.pipeline_airtable_pat to read this lead live from DA Pipeline."
       />
     );
   }

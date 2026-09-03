@@ -1,10 +1,15 @@
 import { createHmac, timingSafeEqual } from 'crypto';
+import { cachedAirtableApiKey, resolveAirtableApiKey } from '@/lib/acq/airtable-key';
 import { isRecordId } from './cells';
 
 export function onboardTokenSecret(): string {
-  return (
-    process.env.ONBOARD_TOKEN_SECRET?.trim() || process.env.AIRTABLE_API_KEY?.trim() || ''
-  );
+  return process.env.ONBOARD_TOKEN_SECRET?.trim() || cachedAirtableApiKey();
+}
+
+export async function resolveOnboardTokenSecret(): Promise<string> {
+  const dedicated = process.env.ONBOARD_TOKEN_SECRET?.trim();
+  if (dedicated) return dedicated;
+  return resolveAirtableApiKey();
 }
 
 export function isTestLeadName(name: string): boolean {

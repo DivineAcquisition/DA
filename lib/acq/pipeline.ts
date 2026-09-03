@@ -1,7 +1,7 @@
+import { airtableKeyConfiguredSync, resolveAirtableApiKey } from './airtable-key';
 import {
   ACQ_ERROR_WEBHOOK,
   ACQ_GHL_LOCATION_ID,
-  AIRTABLE_API_KEY,
   AIRTABLE_BASE_ID,
   AIRTABLE_ENTRY_POINT,
   AIRTABLE_LEADS_TABLE_ID,
@@ -248,7 +248,11 @@ export function ghlConfigured(): boolean {
 }
 
 export function airtableConfigured(): boolean {
-  return Boolean(AIRTABLE_API_KEY && AIRTABLE_BASE_ID && AIRTABLE_LEADS_TABLE_ID);
+  return Boolean(AIRTABLE_BASE_ID && AIRTABLE_LEADS_TABLE_ID && airtableKeyConfiguredSync());
+}
+
+export async function airtableReady(): Promise<boolean> {
+  return Boolean(AIRTABLE_BASE_ID && AIRTABLE_LEADS_TABLE_ID && (await resolveAirtableApiKey()));
 }
 
 export async function upsertGhlContact(payload: QualificationPayload): Promise<GhlContactRef> {
@@ -349,20 +353,28 @@ function airtableUrl(path = ''): string {
   return `https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_LEADS_TABLE_ID}${path}`;
 }
 
-function airtableHeaders(): HeadersInit {
+async function airtableHeaders(): Promise<HeadersInit> {
+  const key = await resolveAirtableApiKey();
   return {
-    Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+    Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
   };
 }
 
 async function airtableFetch<T>(path: string, init: RequestInit, step: string): Promise<T> {
+  const key = await resolveAirtableApiKey();
+  if (!key) {
+    throw new PipelineStepError(
+      step,
+      'Airtable is not configured. Set da_settings.pipeline_airtable_pat.',
+    );
+  }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_MS);
   try {
     const response = await fetch(airtableUrl(path), {
       ...init,
-      headers: { ...airtableHeaders(), ...init.headers },
+      headers: { ...(await airtableHeaders()), ...init.headers },
       signal: controller.signal,
       cache: 'no-store',
     });
@@ -390,7 +402,7 @@ export async function upsertAirtableLead(
   payload: QualificationPayload,
   ghlContactId: string,
 ): Promise<AirtableScore> {
-  if (!airtableConfigured()) {
+  if (!(await airtableReady())) {
     throw new PipelineStepError('airtable-lead', 'Airtable API key or base/table id is not configured.');
   }
 

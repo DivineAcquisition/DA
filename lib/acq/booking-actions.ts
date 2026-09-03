@@ -6,7 +6,7 @@ import { recordAndSendBooking } from '@/lib/calls/sync';
 import { isoDateInTimeZone, localDateTimeToIso } from '@/lib/datetime/local';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { WORKSPACE_AGREEMENT_CC } from '@/lib/workspace/email';
-import { airtableConfigured } from './pipeline';
+import { airtableReady } from './pipeline';
 import { sendProspectCallConfirmationEmail } from './booking-email';
 import {
   airtableBookingFields,
@@ -36,10 +36,10 @@ export async function searchProspectsAction(
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
 
-  if (!airtableConfigured()) {
+  if (!(await airtableReady())) {
     return {
       ok: false,
-      error: 'Airtable is not configured. Set AIRTABLE_API_KEY (base and Leads table already default to DA Pipeline).',
+      error: 'Airtable is not configured. Set da_settings.pipeline_airtable_pat.',
     };
   }
 
@@ -60,7 +60,7 @@ export async function scheduleProspectCallAction(
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
 
-  if (!airtableConfigured()) {
+  if (!(await airtableReady())) {
     return { ok: false, error: 'Airtable is not configured.' };
   }
   if (!calendarConfigured()) {

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, EmptyState, PageHeader } from '@/app/vistrial/components/ui';
-import { callsConfigured } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/config';
 import { listLeads } from '@/lib/calls/queries';
 
 function scoreTone(score: number | null): 'good' | 'warning' | 'critical' | 'neutral' {
@@ -18,11 +18,11 @@ export default async function CallsHomePage({
 }) {
   const { q } = await searchParams;
 
-  if (!callsConfigured()) {
+  if (!(await callsReady())) {
     return (
       <EmptyState
         title="Airtable is not configured"
-        detail="Set AIRTABLE_API_KEY. The base and table ids already default to DA Pipeline — ClientAcquisition."
+        detail="Set da_settings.pipeline_airtable_pat. The base and table ids already default to DA Pipeline — ClientAcquisition."
       />
     );
   }

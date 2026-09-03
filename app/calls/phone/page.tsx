@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { EmptyState, PageHeader } from '@/app/vistrial/components/ui';
-import { callsConfigured } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/config';
 import { listLeads } from '@/lib/calls/queries';
 
 export default async function IndependentPhonePage({
@@ -9,8 +9,10 @@ export default async function IndependentPhonePage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
-  if (!callsConfigured()) {
-    return <EmptyState title="Airtable is not configured" detail="Set AIRTABLE_API_KEY." />;
+  if (!(await callsReady())) {
+    return (
+      <EmptyState title="Airtable is not configured" detail="Set da_settings.pipeline_airtable_pat." />
+    );
   }
   const leads = await listLeads(q);
 

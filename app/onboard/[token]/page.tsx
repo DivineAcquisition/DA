@@ -1,8 +1,13 @@
 import { EmptyState } from '@/app/vistrial/components/ui';
 import OnboardForm from '@/app/calls/components/OnboardForm';
-import { callsConfigured } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/config';
 import { clientBaseUrl, conversionFrom, onboardCta, onboardPrefillFrom } from '@/lib/calls/conversion';
-import { isSignedOnboardToken, isTestLeadName, readOnboardToken } from '@/lib/calls/onboard-token';
+import {
+  isSignedOnboardToken,
+  isTestLeadName,
+  readOnboardToken,
+  resolveOnboardTokenSecret,
+} from '@/lib/calls/onboard-token';
 import { getLeadProfile } from '@/lib/calls/queries';
 
 export default async function PublicOnboardPage({
@@ -15,7 +20,7 @@ export default async function PublicOnboardPage({
   const { token } = await params;
   const { saved } = await searchParams;
   const rawToken = decodeURIComponent(token);
-  const leadId = readOnboardToken(rawToken);
+  const leadId = readOnboardToken(rawToken, await resolveOnboardTokenSecret());
 
   if (!leadId) {
     return (
@@ -23,7 +28,7 @@ export default async function PublicOnboardPage({
     );
   }
 
-  if (!callsConfigured()) {
+  if (!(await callsReady())) {
     return <EmptyState title="Temporarily unavailable" detail="Try again in a few minutes." />;
   }
 

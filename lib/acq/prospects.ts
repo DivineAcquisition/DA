@@ -1,5 +1,5 @@
+import { resolveAirtableApiKey } from './airtable-key';
 import {
-  AIRTABLE_API_KEY,
   AIRTABLE_BASE_ID,
   AIRTABLE_LEADS_TABLE_ID,
 } from './config';
@@ -324,16 +324,21 @@ async function readBody(response: Response): Promise<string> {
   }
 }
 
-function airtableHeaders(): HeadersInit {
+async function airtableHeaders(): Promise<HeadersInit> {
+  const key = await resolveAirtableApiKey();
   return {
-    Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+    Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
   };
 }
 
 async function airtableFetch<T>(path: string, init: RequestInit): Promise<T> {
-  if (!AIRTABLE_API_KEY) {
-    throw new PipelineStepError('airtable-prospects', 'Airtable API key is not configured.');
+  const key = await resolveAirtableApiKey();
+  if (!key) {
+    throw new PipelineStepError(
+      'airtable-prospects',
+      'Airtable is not configured. Set da_settings.pipeline_airtable_pat.',
+    );
   }
 
   const controller = new AbortController();
@@ -343,7 +348,7 @@ async function airtableFetch<T>(path: string, init: RequestInit): Promise<T> {
   try {
     const response = await fetch(url, {
       ...init,
-      headers: { ...airtableHeaders(), ...init.headers },
+      headers: { ...(await airtableHeaders()), ...init.headers },
       signal: controller.signal,
       cache: 'no-store',
     });

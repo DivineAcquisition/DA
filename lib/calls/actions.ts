@@ -14,7 +14,7 @@ import {
   TOUCH_CHANNELS,
   TOUCH_OUTCOMES,
   TOUCH_SENTIMENTS,
-  callsConfigured,
+  callsReady,
   type DebriefCallType,
   type DebriefObjection,
   type DebriefOutcome,
@@ -26,7 +26,7 @@ import {
 } from './config';
 import { conversionFrom, parseAirtableBaseId } from './conversion';
 import { httpUrlOrEmpty, isDebriefComplete } from './map';
-import { readOnboardToken } from './onboard-token';
+import { readOnboardToken, resolveOnboardTokenSecret } from './onboard-token';
 import {
   attachDebriefArtifacts,
   confirmPaymentReceived,
@@ -97,8 +97,8 @@ export async function signOutAction(): Promise<void> {
 export async function searchLeadsAction(query?: string): Promise<SearchResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) {
-    return { ok: false, error: 'Airtable is not configured. Set AIRTABLE_API_KEY.' };
+  if (!(await callsReady())) {
+    return { ok: false, error: 'Airtable is not configured.' };
   }
   try {
     return { ok: true, leads: await listLeads(query) };
@@ -110,7 +110,7 @@ export async function searchLeadsAction(query?: string): Promise<SearchResult> {
 export async function saveBriefNoteAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const leadId = formString(formData, 'leadId');
   if (!isRecordId(leadId)) return { ok: false, error: 'Missing lead.' };
@@ -127,7 +127,7 @@ export async function saveBriefNoteAction(formData: FormData): Promise<ActionRes
 export async function logPhoneTouchAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const leadId = formString(formData, 'leadId');
   const channel = pick(TOUCH_CHANNELS, formData.get('channel')) as TouchChannel | null;
@@ -221,7 +221,7 @@ function debriefFromForm(formData: FormData, complete: boolean): AuditDebriefInp
 export async function saveAuditDebriefAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const complete = formString(formData, 'intent') !== 'draft';
   const parsed = debriefFromForm(formData, complete);
@@ -256,7 +256,7 @@ export async function saveAuditDebriefAction(formData: FormData): Promise<Action
 export async function attachTranscriptAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const leadId = formString(formData, 'leadId');
   const debriefId = formString(formData, 'debriefId');
@@ -295,7 +295,7 @@ export async function attachTranscriptAction(formData: FormData): Promise<Action
 export async function confirmPaymentAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const leadId = formString(formData, 'leadId');
   if (!isRecordId(leadId)) return { ok: false, error: 'Missing lead.' };
@@ -319,7 +319,7 @@ export async function confirmPaymentAction(formData: FormData): Promise<ActionRe
 export async function recordClientBaseAction(formData: FormData): Promise<ActionResult> {
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const leadId = formString(formData, 'leadId');
   const baseId = parseAirtableBaseId(formString(formData, 'baseId'));
@@ -347,7 +347,7 @@ export async function recordClientBaseAction(formData: FormData): Promise<Action
 }
 
 async function onboardLeadIdFromForm(formData: FormData): Promise<{ leadId: string } | { error: string }> {
-  const fromToken = readOnboardToken(formString(formData, 'token'));
+  const fromToken = readOnboardToken(formString(formData, 'token'), await resolveOnboardTokenSecret());
   if (fromToken) return { leadId: fromToken };
   const admin = await requireAdmin();
   if ('error' in admin) return { error: 'This onboarding link is not valid.' };
@@ -357,7 +357,7 @@ async function onboardLeadIdFromForm(formData: FormData): Promise<{ leadId: stri
 }
 
 export async function submitClientOnboardingAction(formData: FormData): Promise<ActionResult> {
-  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+  if (!(await callsReady())) return { ok: false, error: 'Airtable is not configured.' };
 
   const identified = await onboardLeadIdFromForm(formData);
   if ('error' in identified) return { ok: false, error: identified.error };

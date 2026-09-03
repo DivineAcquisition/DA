@@ -83,8 +83,8 @@ export default function ProspectBookingPanel({
   if (!airtableReady) {
     return (
       <div className={`${ws.card} px-6 py-10 text-sm text-neutral-400`}>
-        Airtable is not configured. Set <code className="text-brand-300">AIRTABLE_API_KEY</code> so
-        this page can search <span className="text-white">DA Pipeline — ClientAcquisition</span>.
+        Airtable is not configured. The pipeline token lives in Supabase{' '}
+        <code className="text-brand-300">da_settings</code>, not in the app.
       </div>
     );
   }

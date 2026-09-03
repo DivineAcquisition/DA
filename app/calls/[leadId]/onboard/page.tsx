@@ -8,7 +8,7 @@ import OnboardForm from '../../components/OnboardForm';
 import { isRecordId } from '@/lib/calls/cells';
 import { onboardAbsoluteUrl } from '@/lib/calls/config';
 import { clientBaseUrl, conversionFrom, onboardCta, onboardPrefillFrom } from '@/lib/calls/conversion';
-import { signOnboardToken } from '@/lib/calls/onboard-token';
+import { resolveOnboardTokenSecret, signOnboardToken } from '@/lib/calls/onboard-token';
 import { getLeadProfile } from '@/lib/calls/queries';
 
 export default async function LeadOnboardPage({
@@ -25,7 +25,7 @@ export default async function LeadOnboardPage({
   const conversion = conversionFrom(profile);
   const cta = onboardCta(conversion);
   const host = (await headers()).get('x-vistrial-host');
-  const token = signOnboardToken(leadId);
+  const token = signOnboardToken(leadId, await resolveOnboardTokenSecret());
   const publicUrl = token ? onboardAbsoluteUrl(token, host) : '';
 
   if (cta.kind === 'none') {

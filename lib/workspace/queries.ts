@@ -31,18 +31,28 @@ import type {
   AgreementStatus,
 } from './types';
 
-/** Columns added after the first release read as undefined on old rows. */
+/** Columns added after the first release read as undefined on old rows. Never send backend secrets to the client. */
+function omitBackendSecrets(row: Record<string, unknown>): Record<string, unknown> {
+  const {
+    pipeline_airtable_pat: _airtablePat,
+    pipeline_call_webhook_secret: _callSecret,
+    ...safe
+  } = row;
+  return safe;
+}
+
 function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings | null {
   if (!row) return null;
+  const safe = omitBackendSecrets(row);
   return {
-    ...(row as DaSettings),
-    auto_prefill: row.auto_prefill !== false,
-    prefill_readonly: row.prefill_readonly === true,
-    company_name: String(row.company_name ?? ''),
-    company_rep: String(row.company_rep ?? ''),
-    company_email: String(row.company_email ?? ''),
-    company_title: String(row.company_title ?? ''),
-    last_synced_at: (row.last_synced_at as string | null) ?? null,
+    ...(safe as DaSettings),
+    auto_prefill: safe.auto_prefill !== false,
+    prefill_readonly: safe.prefill_readonly === true,
+    company_name: String(safe.company_name ?? ''),
+    company_rep: String(safe.company_rep ?? ''),
+    company_email: String(safe.company_email ?? ''),
+    company_title: String(safe.company_title ?? ''),
+    last_synced_at: (safe.last_synced_at as string | null) ?? null,
   };
 }
 

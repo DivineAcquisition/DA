@@ -19,7 +19,8 @@ export async function workspaceClient(): Promise<UntypedClient | null> {
 }
 
 export function serviceClient(): UntypedClient | null {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
   if (!supabaseConfigured || !SUPABASE_URL || !serviceKey) {
     if (!supabaseConfigured || !SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return null;
     return createSupabaseClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
