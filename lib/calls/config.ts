@@ -1,4 +1,3 @@
-import { airtableKeyConfiguredSync, resolveAirtableApiKey } from '@/lib/acq/airtable-key';
 import {
   AIRTABLE_API_KEY,
   AIRTABLE_BASE_ID,
@@ -62,15 +61,9 @@ export function callsTablesConfigured(): boolean {
   );
 }
 
-/** Sync gate: true once a token is in env or already loaded from da_settings. */
+/** Sync env-only gate. Client components may import this file — keep it free of server secrets. */
 export function callsConfigured(): boolean {
-  return callsTablesConfigured() && airtableKeyConfiguredSync();
-}
-
-/** Production gate: loads the Airtable token from da_settings when env is empty. */
-export async function callsReady(): Promise<boolean> {
-  if (!callsTablesConfigured()) return false;
-  return Boolean(await resolveAirtableApiKey());
+  return callsTablesConfigured() && Boolean(AIRTABLE_API_KEY);
 }
 
 export function isCallsHost(host?: string | null): boolean {

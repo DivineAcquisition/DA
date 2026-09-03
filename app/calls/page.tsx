@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, EmptyState, PageHeader } from '@/app/vistrial/components/ui';
-import { callsReady } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/ready';
 import { listLeads } from '@/lib/calls/queries';
 
 function scoreTone(score: number | null): 'good' | 'warning' | 'critical' | 'neutral' {

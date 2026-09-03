@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { EmptyState, PageHeader } from '@/app/vistrial/components/ui';
-import { callsReady } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/ready';
 import { listLeads } from '@/lib/calls/queries';
 
 export default async function IndependentAuditPage({

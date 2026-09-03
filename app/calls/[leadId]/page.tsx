@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { EmptyState } from '@/app/vistrial/components/ui';
 import { isRecordId } from '@/lib/calls/cells';
-import { callsReady } from '@/lib/calls/config';
+import { callsReady } from '@/lib/calls/ready';
 import { getLeadProfile } from '@/lib/calls/queries';
 import ProfileView from '../components/ProfileView';
 

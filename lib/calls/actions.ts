@@ -14,7 +14,6 @@ import {
   TOUCH_CHANNELS,
   TOUCH_OUTCOMES,
   TOUCH_SENTIMENTS,
-  callsReady,
   type DebriefCallType,
   type DebriefObjection,
   type DebriefOutcome,
@@ -27,6 +26,7 @@ import {
 import { conversionFrom, parseAirtableBaseId } from './conversion';
 import { httpUrlOrEmpty, isDebriefComplete } from './map';
 import { readOnboardToken, resolveOnboardTokenSecret } from './onboard-token';
+import { callsReady } from './ready';
 import {
   attachDebriefArtifacts,
   confirmPaymentReceived,

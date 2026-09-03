@@ -1,6 +1,5 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { controlRpc } from '@/lib/ad/rpc';
-import { SUPABASE_URL } from '@/lib/supabase/server';
 
 /**
  * DA Pipeline Airtable token.
@@ -29,11 +28,16 @@ export function airtableKeyConfiguredSync(): boolean {
   return Boolean(cachedAirtableApiKey());
 }
 
+function supabaseUrl(): string {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || '';
+}
+
 function serviceRoleForSecrets() {
+  const url = supabaseUrl();
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim() || '';
-  if (!SUPABASE_URL || !key) return null;
-  return createSupabaseClient(SUPABASE_URL, key, {
+  if (!url || !key) return null;
+  return createSupabaseClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }
