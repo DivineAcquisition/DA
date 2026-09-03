@@ -136,6 +136,7 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/workspace') ||
       isUnifiedAdminPath(pathname) ||
       isPublicTokenPath(pathname) ||
+      pathname.startsWith('/onboard') ||
       pathname === '/login' ||
       pathname.startsWith('/overview') ||
       pathname.startsWith('/recipients') ||
@@ -162,7 +163,8 @@ const SURFACES: Surface[] = [
       pathname === '/precall' ||
       pathname.startsWith('/precall') ||
       pathname === '/api/submit-lead' ||
-      pathname.startsWith('/acq'),
+      pathname.startsWith('/acq') ||
+      pathname.startsWith('/onboard'),
   },
   {
     hosts: CALLS_HOSTS,
@@ -184,6 +186,13 @@ const isLocalHost = (host: string) =>
 
 function surfaceForHost(host: string): Surface | null {
   return SURFACES.find((surface) => surface.hosts.includes(host)) ?? null;
+}
+
+function isOnboardOnLiveHost(prefix: string | null, pathname: string): boolean {
+  return (
+    pathname.startsWith(ONBOARD_PREFIX) &&
+    (prefix === ACQ_PREFIX || prefix === WORKSPACE_PREFIX)
+  );
 }
 
 function isForeignSurfacePath(pathname: string, ownPrefix: string): boolean {
@@ -220,7 +229,8 @@ export async function proxy(request: NextRequest) {
     surface &&
     !local &&
     isForeignSurfacePath(pathname, surface.prefix) &&
-    !(surface.prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname))
+    !(surface.prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname)) &&
+    !isOnboardOnLiveHost(surface.prefix, pathname)
   ) {
     return new NextResponse('Not found', {
       status: 404,
@@ -252,7 +262,8 @@ export async function proxy(request: NextRequest) {
   const prefix = surface?.prefix ?? null;
   const skipRewrite =
     Boolean(prefix && isPublicTokenPath(pathname)) ||
-    Boolean(prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname));
+    Boolean(prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname)) ||
+    isOnboardOnLiveHost(prefix, pathname);
 
   const isInternal =
     prefix !== null ||
@@ -341,7 +352,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Acquisition landing is a public ad destination and must remain indexable.
-  if (isInternal && prefix !== ACQ_PREFIX) {
+  if ((isInternal && prefix !== ACQ_PREFIX) || pathname.startsWith(ONBOARD_PREFIX)) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }
 
