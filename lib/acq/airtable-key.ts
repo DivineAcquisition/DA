@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { controlRpc } from '@/lib/ad/rpc';
+import { publicDaRpc } from '@/lib/workspace/resolve-signing';
 
 /**
  * DA Pipeline Airtable token.
@@ -44,10 +45,24 @@ function serviceRoleForSecrets() {
 
 async function loadSettingsPat(): Promise<string> {
   const supabase = serviceRoleForSecrets();
-  if (!supabase) return '';
-  const { data, error } = await controlRpc<string>(supabase as never, 'da_get_pipeline_airtable_pat', {});
-  if (error) return '';
-  return (data ?? '').trim();
+  if (supabase) {
+    const { data, error } = await controlRpc<string>(
+      supabase as never,
+      'da_get_pipeline_airtable_pat',
+      {},
+    );
+    if (!error) {
+      const value = (data ?? '').trim();
+      if (value) return value;
+    }
+  }
+
+  const fallback = await publicDaRpc<string>(
+    'da_get_pipeline_airtable_pat',
+    {},
+    (data) => typeof data === 'string' && data.trim().length > 0,
+  );
+  return (fallback ?? '').trim();
 }
 
 export async function resolveAirtableApiKey(): Promise<string> {

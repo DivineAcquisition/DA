@@ -1,4 +1,5 @@
--- Pipeline Airtable token is backend-only: column exists, operators cannot read it.
+-- Pipeline Airtable token lives on da_settings. Operators cannot read it.
+-- Anon may call the reader so public onboard does not need a service-role key.
 \set ON_ERROR_STOP on
 set search_path = public;
 
@@ -26,6 +27,19 @@ begin
     raise exception 'an operator must not read the pipeline Airtable token';
   exception when insufficient_privilege then null;
   end;
+end $$;
+
+reset role;
+
+\echo '== anon can call the reader so public onboard does not need a service-role key =='
+set role anon;
+do $$
+declare
+  v text;
+begin
+  v := public.da_get_pipeline_airtable_pat();
+  assert v is not null,
+    'anon reader returns text, including empty when unset';
 end $$;
 
 reset role;
