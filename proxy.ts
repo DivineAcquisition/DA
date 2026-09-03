@@ -20,6 +20,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   ops.divineacquisition.io        -> /vistrial
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq
+ *   calls.divineacquisition.io      -> /calls
  *   careers / apex                  -> /hiring (and /)
  */
 
@@ -47,6 +48,7 @@ const WORKSPACE_HOSTS = hosts(
   'admin.divineacquisition.io',
 );
 const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
+const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 
 const CONTROL_PREFIX = '/ad';
 const ADMIN_PREFIX = '/da';
@@ -57,6 +59,7 @@ const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
 const WORKSPACE_PREFIX = '/workspace';
 const ACQ_PREFIX = '/acq';
+const CALLS_PREFIX = '/calls';
 
 const SURFACE_PREFIXES = [
   CONTROL_PREFIX,
@@ -68,6 +71,7 @@ const SURFACE_PREFIXES = [
   ASSESSMENT_ADMIN_PREFIX,
   WORKSPACE_PREFIX,
   ACQ_PREFIX,
+  CALLS_PREFIX,
 ];
 
 /** Surfaces co-hosted on admin.divineacquisition.io under one sidebar. */
@@ -155,6 +159,11 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/precall') ||
       pathname === '/api/submit-lead' ||
       pathname.startsWith('/acq'),
+  },
+  {
+    hosts: CALLS_HOSTS,
+    prefix: CALLS_PREFIX,
+    allow: (pathname) => pathname === '/' || pathname.startsWith('/calls'),
   },
 ];
 
@@ -245,6 +254,7 @@ export async function proxy(request: NextRequest) {
       OPS_PREFIX,
       ASSESSMENT_ADMIN_PREFIX,
       WORKSPACE_PREFIX,
+      CALLS_PREFIX,
     ].some((candidate) => pathname.startsWith(candidate)) ||
     isPublicTokenPath(pathname);
 
@@ -288,12 +298,14 @@ export async function proxy(request: NextRequest) {
     prefix === ACCT_PREFIX ||
     prefix === ASSESSMENT_ADMIN_PREFIX ||
     prefix === WORKSPACE_PREFIX ||
+    prefix === CALLS_PREFIX ||
     pathname.startsWith(ADMIN_PREFIX) ||
     pathname.startsWith(CONTROL_PREFIX) ||
     pathname.startsWith(ACCT_PREFIX) ||
     pathname.startsWith(OPS_PREFIX) ||
     pathname.startsWith(ASSESSMENT_ADMIN_PREFIX) ||
-    pathname.startsWith(WORKSPACE_PREFIX);
+    pathname.startsWith(WORKSPACE_PREFIX) ||
+    pathname.startsWith(CALLS_PREFIX);
 
   if (touchesAuth && supabaseUrl && supabaseKey) {
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
