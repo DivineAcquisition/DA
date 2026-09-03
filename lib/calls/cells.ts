@@ -1,4 +1,5 @@
 const RECORD_ID = /^rec[A-Za-z0-9]{14}$/;
+const BASE_ID = /^app[A-Za-z0-9]{14}$/;
 
 export function cellText(value: unknown): string {
   if (value == null || value === '') return '';
@@ -42,6 +43,26 @@ export function cellIds(value: unknown): string[] {
 
 export function isRecordId(value: string): boolean {
   return RECORD_ID.test(value);
+}
+
+export function isAirtableBaseId(value: string): boolean {
+  return BASE_ID.test(value);
+}
+
+/** Accepts a raw app id or an airtable.com URL that contains one. */
+export function parseAirtableBaseId(value: string): string | null {
+  const trimmed = value.trim();
+  if (isAirtableBaseId(trimmed)) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    if (!url.hostname.endsWith('airtable.com')) return null;
+    const fromPath = url.pathname.split('/').find((part) => isAirtableBaseId(part));
+    if (fromPath) return fromPath;
+  } catch {
+    const match = trimmed.match(/app[A-Za-z0-9]{14}/);
+    if (match && isAirtableBaseId(match[0])) return match[0];
+  }
+  return null;
 }
 
 export function escapeFormulaValue(value: string): string {

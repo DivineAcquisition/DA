@@ -43,8 +43,15 @@ export type LeadRecord = {
   googleMeetUrl: string;
   notes: string;
   callBriefNote: string;
+  monthlyLeadVolume: string;
+  paymentStatus: string;
+  paymentStructure: string;
+  clientBaseId: string;
+  clientBaseName: string;
+  clientBaseCreated: string;
   touchIds: string[];
   debriefIds: string[];
+  onboardingIds: string[];
   scoreInputs: ScoreInput[];
   airtableUrl: string;
 };
@@ -100,11 +107,74 @@ export type HistoryLine = {
   summary: string;
 };
 
+export type OnboardingRecord = {
+  recordId: string;
+  title: string;
+  submitted: string;
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  followUpOwner: string;
+  followUpHow: string;
+  programPrice: string;
+  decisionMakers: string;
+  monthlyLeadVolume: string;
+  crmAccess: string;
+  adminLogins: string;
+  databaseSize: string;
+  trainingSchedule: string;
+  leadIds: string[];
+};
+
 export type LeadProfile = {
   lead: LeadRecord;
   touches: TouchRecord[];
   debriefs: DebriefRecord[];
   history: HistoryLine[];
+  onboarding: OnboardingRecord | null;
+};
+
+export type ClientBaseRef = {
+  id: string;
+  name: string;
+  created: string;
+};
+
+export type Conversion = {
+  converted: boolean;
+  closedWonAt: string | null;
+  winningDebrief: DebriefRecord | null;
+  paymentStatus: string;
+  paymentConfirmed: boolean;
+  clientBase: ClientBaseRef | null;
+};
+
+export type OnboardCta =
+  | { kind: 'none' }
+  | { kind: 'waiting-payment'; closedWonAt: string | null }
+  | { kind: 'start'; closedWonAt: string | null }
+  | { kind: 'client-base'; base: ClientBaseRef };
+
+export type OnboardPrefill = {
+  businessName: string;
+  contactName: string;
+  email: string;
+  phone: string;
+  followUpOwner: string;
+  followUpHow: string;
+  programPrice: string;
+  programPriceSource: 'quote' | 'application' | '';
+  decisionMakers: string;
+  monthlyLeadVolume: string;
+  crmAccess: string;
+  adminLogins: string;
+  databaseSize: string;
+  trainingSchedule: string;
+};
+
+export type OnboardSubmitInput = OnboardPrefill & {
+  leadId: string;
 };
 
 export type PhoneTouchInput = {

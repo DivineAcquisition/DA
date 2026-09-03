@@ -4,6 +4,7 @@ import {
   AIRTABLE_BASE_ID,
   AIRTABLE_DEBRIEFS_TABLE_ID,
   AIRTABLE_LEADS_TABLE_ID,
+  AIRTABLE_ONBOARDING_TABLE_ID,
   AIRTABLE_TOUCHES_TABLE_ID,
   callsConfigured,
 } from './config';
@@ -180,4 +181,5 @@ export const tables = {
   leads: AIRTABLE_LEADS_TABLE_ID,
   touches: AIRTABLE_TOUCHES_TABLE_ID,
   debriefs: AIRTABLE_DEBRIEFS_TABLE_ID,
+  onboarding: AIRTABLE_ONBOARDING_TABLE_ID,
 };

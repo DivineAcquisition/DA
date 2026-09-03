@@ -21,6 +21,7 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq
  *   calls.divineacquisition.io      -> /calls
+ *   onboard.divineacquisition.io    -> /onboard
  *   careers / apex                  -> /hiring (and /)
  */
 
@@ -49,6 +50,7 @@ const WORKSPACE_HOSTS = hosts(
 );
 const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
+const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
 
 const CONTROL_PREFIX = '/ad';
 const ADMIN_PREFIX = '/da';
@@ -60,6 +62,7 @@ const ASSESSMENT_ADMIN_PREFIX = '/admin';
 const WORKSPACE_PREFIX = '/workspace';
 const ACQ_PREFIX = '/acq';
 const CALLS_PREFIX = '/calls';
+const ONBOARD_PREFIX = '/onboard';
 
 const SURFACE_PREFIXES = [
   CONTROL_PREFIX,
@@ -72,6 +75,7 @@ const SURFACE_PREFIXES = [
   WORKSPACE_PREFIX,
   ACQ_PREFIX,
   CALLS_PREFIX,
+  ONBOARD_PREFIX,
 ];
 
 /** Surfaces co-hosted on admin.divineacquisition.io under one sidebar. */
@@ -165,6 +169,11 @@ const SURFACES: Surface[] = [
     prefix: CALLS_PREFIX,
     allow: (pathname) => pathname === '/' || pathname.startsWith('/calls'),
   },
+  {
+    hosts: ONBOARD_HOSTS,
+    prefix: ONBOARD_PREFIX,
+    allow: (pathname) => pathname === '/' || pathname.startsWith('/onboard'),
+  },
 ];
 
 const isLocalHost = (host: string) =>
@@ -255,6 +264,7 @@ export async function proxy(request: NextRequest) {
       ASSESSMENT_ADMIN_PREFIX,
       WORKSPACE_PREFIX,
       CALLS_PREFIX,
+      ONBOARD_PREFIX,
     ].some((candidate) => pathname.startsWith(candidate)) ||
     isPublicTokenPath(pathname);
 

@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, EmptyState, Panel, StatGrid, StatTile } from '@/app/vistrial/components/ui';
+import { conversionFrom, onboardCta } from '@/lib/calls/conversion';
 import { airtableDebriefUrl, airtableTouchUrl, formatDisplayDate, formatShortDate } from '@/lib/calls/map';
 import type { DebriefRecord, LeadProfile, TouchRecord } from '@/lib/calls/types';
+import ConversionPanel from './ConversionPanel';
 import TranscriptAttachForm from './TranscriptAttachForm';
 
 function scoreTone(score: number | null): 'good' | 'warning' | 'critical' | 'neutral' {
@@ -15,8 +17,14 @@ function scoreTone(score: number | null): 'good' | 'warning' | 'critical' | 'neu
 const SAVED: Record<string, string> = {
   touch: 'Touch logged. It is on this profile now.',
   debrief: 'Debrief submitted as complete. Airtable will run its existing automations on that create.',
+  'closed-won':
+    'Closed Won is on this profile. Onboarding does not start from the debrief — confirm Commas payment first.',
   draft: 'Draft saved on this debrief. Finish it from Continue — it will not create a second record.',
   transcript: 'Attached to the existing debrief. Nothing new was created.',
+  payment: 'Payment marked Paid on this lead. Start onboarding when you are ready.',
+  onboard: 'Onboarding saved to the Client Onboarding table. The lead record was not changed.',
+  onboarding: 'Onboarding saved to the Client Onboarding table. The lead record was not changed.',
+  base: 'Operating base recorded. Start Onboarding is now a link to that base.',
 };
 
 export default function ProfileView({
@@ -27,6 +35,8 @@ export default function ProfileView({
   saved?: string;
 }) {
   const { lead, touches, debriefs } = profile;
+  const conversion = conversionFrom(profile);
+  const cta = onboardCta(conversion);
   const days =
     lead.daysSinceTouch == null
       ? '—'
@@ -66,6 +76,13 @@ export default function ProfileView({
           </Link>
         </div>
       </header>
+
+      <ConversionPanel
+        conversion={conversion}
+        cta={cta}
+        leadId={lead.recordId}
+        onboarding={profile.onboarding}
+      />
 
       <StatGrid columns={4}>
         <StatTile

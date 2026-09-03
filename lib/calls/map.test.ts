@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { escapeFormulaValue, isRecordId, sanitizeSearchQuery } from './cells';
-import { callsPublicPath, isCallsHost, leadProfilePath } from './config';
+import { callsPublicPath, isCallsHost, isOnboardHost, leadProfilePath, onboardFormPath } from './config';
 import {
   compareDatedDesc,
   compareLeads,
@@ -79,6 +79,13 @@ describe('host paths', () => {
     expect(leadProfilePath('recbhuwRMsnk618TH', 'localhost')).toBe('/calls/recbhuwRMsnk618TH');
     expect(leadProfilePath('recbhuwRMsnk618TH', 'calls.divineacquisition.io')).toBe(
       '/recbhuwRMsnk618TH',
+    );
+    expect(isOnboardHost('onboard.divineacquisition.io')).toBe(true);
+    expect(onboardFormPath('recbhuwRMsnk618TH.sig', 'onboard.divineacquisition.io')).toBe(
+      '/recbhuwRMsnk618TH.sig',
+    );
+    expect(onboardFormPath('recbhuwRMsnk618TH.sig', 'localhost')).toBe(
+      '/onboard/recbhuwRMsnk618TH.sig',
     );
   });
 });

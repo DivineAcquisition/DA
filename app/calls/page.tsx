@@ -77,6 +77,9 @@ export default async function CallsHomePage({
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
+                    {lead.clientBaseId || lead.stage === 'Closed Won' ? (
+                      <Badge tone="good">Client</Badge>
+                    ) : null}
                     <Badge tone={scoreTone(lead.readinessScore)}>
                       {lead.readinessScore ?? '—'} {lead.qualificationResult}
                     </Badge>

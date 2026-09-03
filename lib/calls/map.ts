@@ -202,8 +202,15 @@ export function mapLeadRecord(record: {
     googleMeetUrl: cellText(fields['Google Meet URL']),
     notes: cellText(fields.Notes),
     callBriefNote: cellText(fields['Call Brief Note']),
+    monthlyLeadVolume: cellText(fields['Monthly Lead Volume']),
+    paymentStatus: cellText(fields['Payment Status']),
+    paymentStructure: cellText(fields['Payment Structure']),
+    clientBaseId: cellText(fields['Client Base ID']),
+    clientBaseName: cellText(fields['Client Base Name']),
+    clientBaseCreated: cellText(fields['Client Base Created']),
     touchIds: cellIds(fields.Touches),
     debriefIds: cellIds(fields['Call Debriefs']),
+    onboardingIds: cellIds(fields['Client Onboarding']),
     scoreInputs: scoreInputsFromLead({ monthlyAdSpend, followUpOwner, programPrice }),
     airtableUrl: airtableLeadUrl(record.id),
   };
@@ -305,7 +312,7 @@ export function oneLineHistory(line: HistoryLine): string {
   return `${date} · ${line.type}${outcome}${summary}`;
 }
 
-function omitEmpty(fields: Record<string, unknown>): Record<string, unknown> {
+export function omitEmpty(fields: Record<string, unknown>): Record<string, unknown> {
   const next: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(fields)) {
     if (value == null) continue;
@@ -410,8 +417,15 @@ export const LEAD_LIST_FIELDS = [
   'Google Meet URL',
   'Notes',
   'Call Brief Note',
+  'Monthly Lead Volume',
+  'Payment Status',
+  'Payment Structure',
+  'Client Base ID',
+  'Client Base Name',
+  'Client Base Created',
   'Touches',
   'Call Debriefs',
+  'Client Onboarding',
 ] as const;
 
 export const TOUCH_FIELDS = [

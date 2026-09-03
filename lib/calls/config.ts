@@ -10,9 +10,19 @@ export const AIRTABLE_TOUCHES_TABLE_ID =
   process.env.AIRTABLE_TOUCHES_TABLE_ID?.trim() || 'tblLP6ejA1YKpRylk';
 export const AIRTABLE_DEBRIEFS_TABLE_ID =
   process.env.AIRTABLE_DEBRIEFS_TABLE_ID?.trim() || 'tbl4LW7Y6V8M8cPxX';
+export const AIRTABLE_ONBOARDING_TABLE_ID =
+  process.env.AIRTABLE_ONBOARDING_TABLE_ID?.trim() || 'tblJP76hY3SwFfvuF';
+
+export const STELLAR_MASTER_BASE_ID = 'app0I1Krtkcg6SEfd';
+export const STELLAR_MASTER_URL = `https://airtable.com/${STELLAR_MASTER_BASE_ID}`;
+
+export const CLOSED_WON_OUTCOME = 'Closed Won';
+export const PAYMENT_PAID = 'Paid';
 
 export const CALLS_PUBLIC_ORIGIN =
   process.env.NEXT_PUBLIC_CALLS_HOST?.replace(/\/$/, '') ?? 'https://calls.divineacquisition.io';
+export const ONBOARD_PUBLIC_ORIGIN =
+  process.env.NEXT_PUBLIC_ONBOARD_HOST?.replace(/\/$/, '') ?? 'https://onboard.divineacquisition.io';
 
 export const CALLS_TIME_ZONE = 'America/New_York';
 
@@ -47,7 +57,8 @@ export function callsConfigured(): boolean {
       AIRTABLE_BASE_ID &&
       AIRTABLE_LEADS_TABLE_ID &&
       AIRTABLE_TOUCHES_TABLE_ID &&
-      AIRTABLE_DEBRIEFS_TABLE_ID,
+      AIRTABLE_DEBRIEFS_TABLE_ID &&
+      AIRTABLE_ONBOARDING_TABLE_ID,
   );
 }
 
@@ -81,4 +92,46 @@ export function leadPhonePath(leadId: string, host?: string | null): string {
 export function leadAuditPath(leadId: string, debriefId?: string, host?: string | null): string {
   const suffix = debriefId ? `/${leadId}/audit/${debriefId}` : `/${leadId}/audit`;
   return callsPublicPath(suffix, host);
+}
+
+export function leadOnboardPath(leadId: string, host?: string | null): string {
+  return callsPublicPath(`/${leadId}/onboard`, host);
+}
+
+export function isOnboardHost(host?: string | null): boolean {
+  const hostname = (host ?? '').toLowerCase().split(':')[0];
+  if (!hostname) return false;
+  const onboardHost = new URL(ONBOARD_PUBLIC_ORIGIN).hostname;
+  return (
+    hostname === onboardHost ||
+    (hostname.startsWith('onboard.') && hostname.endsWith('.divineacquisition.io'))
+  );
+}
+
+export function onboardPublicPath(pathname: string, host?: string | null): string {
+  const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
+  if (isOnboardHost(host)) return path;
+  return `/onboard${path === '/' ? '' : path}`;
+}
+
+export function onboardFormPath(token: string, host?: string | null): string {
+  return onboardPublicPath(`/${token}`, host);
+}
+
+export function onboardAbsoluteUrl(token: string, host?: string | null): string {
+  if (isOnboardHost(host) || isLocalPreviewHost(host)) {
+    return onboardFormPath(token, host);
+  }
+  return `${ONBOARD_PUBLIC_ORIGIN}/${token}`;
+}
+
+function isLocalPreviewHost(host?: string | null): boolean {
+  const hostname = (host ?? '').toLowerCase().split(':')[0];
+  return (
+    !hostname ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname.endsWith('.localhost') ||
+    hostname.endsWith('.vercel.app')
+  );
 }

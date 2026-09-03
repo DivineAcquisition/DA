@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 import { isRecordId } from './cells';
 import {
+  CLOSED_WON_OUTCOME,
   DEBRIEF_CALL_TYPES,
   DEBRIEF_OBJECTIONS,
   DEBRIEF_OUTCOMES,
@@ -23,15 +24,21 @@ import {
   type TouchOutcome,
   type TouchSentiment,
 } from './config';
+import { conversionFrom, parseAirtableBaseId } from './conversion';
 import { httpUrlOrEmpty, isDebriefComplete } from './map';
+import { readOnboardToken } from './onboard-token';
 import {
   attachDebriefRecording,
   attachDebriefTranscript,
+  confirmPaymentReceived,
   createTouch,
   getDebrief,
   getLead,
+  getLeadProfile,
   listLeads,
+  recordClientBase,
   saveCallBriefNote,
+  saveClientOnboarding,
   saveDebrief,
 } from './queries';
 import type { AuditDebriefInput, LeadRecord } from './types';
@@ -51,6 +58,8 @@ function revalidateLead(leadId: string) {
   revalidatePath(`/calls/${leadId}/brief`);
   revalidatePath(`/calls/${leadId}/phone`);
   revalidatePath(`/calls/${leadId}/audit`, 'layout');
+  revalidatePath(`/calls/${leadId}/onboard`);
+  revalidatePath('/onboard', 'layout');
 }
 
 function pick<T extends readonly string[]>(options: T, value: unknown): T[number] | null {
@@ -236,7 +245,13 @@ export async function saveAuditDebriefAction(formData: FormData): Promise<Action
   }
 
   revalidateLead(parsed.leadId);
-  redirect(`/calls/${parsed.leadId}?saved=${complete ? 'debrief' : 'draft'}`);
+  const saved =
+    complete && parsed.outcome === CLOSED_WON_OUTCOME
+      ? 'closed-won'
+      : complete
+        ? 'debrief'
+        : 'draft';
+  redirect(`/calls/${parsed.leadId}?saved=${saved}`);
 }
 
 export async function attachTranscriptAction(formData: FormData): Promise<ActionResult> {
@@ -275,3 +290,122 @@ export async function attachTranscriptAction(formData: FormData): Promise<Action
   revalidateLead(leadId);
   redirect(`/calls/${leadId}?saved=transcript`);
 }
+
+export async function confirmPaymentAction(formData: FormData): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  if ('error' in admin) return { ok: false, error: admin.error };
+  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+
+  const leadId = formString(formData, 'leadId');
+  if (!isRecordId(leadId)) return { ok: false, error: 'Missing lead.' };
+
+  const profile = await getLeadProfile(leadId);
+  if (!profile) return { ok: false, error: 'Lead not found.' };
+  if (!conversionFrom(profile).converted) {
+    return { ok: false, error: 'Payment confirmation is for Closed Won leads.' };
+  }
+
+  try {
+    await confirmPaymentReceived(leadId);
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : 'Could not confirm payment.' };
+  }
+
+  revalidateLead(leadId);
+  redirect(`/calls/${leadId}?saved=payment`);
+}
+
+export async function recordClientBaseAction(formData: FormData): Promise<ActionResult> {
+  const admin = await requireAdmin();
+  if ('error' in admin) return { ok: false, error: admin.error };
+  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+
+  const leadId = formString(formData, 'leadId');
+  const baseId = parseAirtableBaseId(formString(formData, 'baseId'));
+  const name = formString(formData, 'baseName');
+  const created = formString(formData, 'created');
+
+  if (!isRecordId(leadId)) return { ok: false, error: 'Missing lead.' };
+  if (!baseId) return { ok: false, error: 'Paste the new base id (app…) or its Airtable URL.' };
+  if (!name) return { ok: false, error: 'Name the client base.' };
+
+  const profile = await getLeadProfile(leadId);
+  if (!profile) return { ok: false, error: 'Lead not found.' };
+  if (!conversionFrom(profile).converted) {
+    return { ok: false, error: 'Record a client base only after Closed Won.' };
+  }
+
+  try {
+    await recordClientBase(leadId, { baseId, name, created: created || undefined });
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : 'Could not save the base.' };
+  }
+
+  revalidateLead(leadId);
+  redirect(`/calls/${leadId}?saved=base`);
+}
+
+async function onboardLeadIdFromForm(formData: FormData): Promise<{ leadId: string } | { error: string }> {
+  const fromToken = readOnboardToken(formString(formData, 'token'));
+  if (fromToken) return { leadId: fromToken };
+  const admin = await requireAdmin();
+  if ('error' in admin) return { error: 'This onboarding link is not valid.' };
+  const leadId = formString(formData, 'leadId');
+  if (!isRecordId(leadId)) return { error: 'Missing lead.' };
+  return { leadId };
+}
+
+export async function submitClientOnboardingAction(formData: FormData): Promise<ActionResult> {
+  if (!callsConfigured()) return { ok: false, error: 'Airtable is not configured.' };
+
+  const identified = await onboardLeadIdFromForm(formData);
+  if ('error' in identified) return { ok: false, error: identified.error };
+
+  const profile = await getLeadProfile(identified.leadId);
+  if (!profile) return { ok: false, error: 'Lead not found.' };
+
+  const conversion = conversionFrom(profile);
+  if (!conversion.converted) {
+    return { ok: false, error: 'Onboarding is only for Closed Won leads.' };
+  }
+  if (!conversion.paymentConfirmed) {
+    return { ok: false, error: 'Confirm Commas payment before submitting onboarding.' };
+  }
+  if (conversion.clientBase) {
+    return { ok: false, error: 'This client already has an operating base. Nothing was written to the lead.' };
+  }
+
+  try {
+    await saveClientOnboarding(
+      {
+        leadId: identified.leadId,
+        businessName: formString(formData, 'businessName'),
+        contactName: formString(formData, 'contactName'),
+        email: formString(formData, 'email'),
+        phone: formString(formData, 'phone'),
+        followUpOwner: formString(formData, 'followUpOwner'),
+        followUpHow: formString(formData, 'followUpHow'),
+        programPrice: formString(formData, 'programPrice'),
+        programPriceSource: '',
+        decisionMakers: formString(formData, 'decisionMakers'),
+        monthlyLeadVolume: formString(formData, 'monthlyLeadVolume'),
+        crmAccess: formString(formData, 'crmAccess'),
+        adminLogins: formString(formData, 'adminLogins'),
+        databaseSize: formString(formData, 'databaseSize'),
+        trainingSchedule: formString(formData, 'trainingSchedule'),
+      },
+      profile.lead.fullName,
+    );
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'Could not save onboarding.',
+    };
+  }
+
+  revalidateLead(identified.leadId);
+  const token = formString(formData, 'token');
+  if (token) redirect(`/onboard/${token}?saved=1`);
+  redirect(`/calls/${identified.leadId}?saved=onboarding`);
+}
+
