@@ -12,7 +12,7 @@ import {
   paymentPaidWriteFields,
 } from './conversion';
 import { mapLeadRecord } from './map';
-import { readOnboardToken, signOnboardToken } from './onboard-token';
+import { isTestLeadName, readOnboardToken, signOnboardToken } from './onboard-token';
 import type { DebriefRecord, LeadRecord } from './types';
 
 function leadFrom(fields: Record<string, unknown>, id = 'recbhuwRMsnk618TH'): LeadRecord {
@@ -256,5 +256,11 @@ describe('onboard tokens', () => {
     expect(readOnboardToken(token, 'test-secret')).toBe('recbhuwRMsnk618TH');
     expect(readOnboardToken(`${token}x`, 'test-secret')).toBeNull();
     expect(readOnboardToken(token, 'other-secret')).toBeNull();
+  });
+
+  it('accepts a bare record id only as a TEST-lead sandbox token', () => {
+    expect(readOnboardToken('recbhuwRMsnk618TH')).toBe('recbhuwRMsnk618TH');
+    expect(isTestLeadName('TEST - Closed Won (DM)')).toBe(true);
+    expect(isTestLeadName('Maria Lopez')).toBe(false);
   });
 });

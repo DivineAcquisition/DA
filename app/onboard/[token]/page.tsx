@@ -2,7 +2,7 @@ import { EmptyState } from '@/app/vistrial/components/ui';
 import OnboardForm from '@/app/calls/components/OnboardForm';
 import { callsConfigured } from '@/lib/calls/config';
 import { clientBaseUrl, conversionFrom, onboardCta, onboardPrefillFrom } from '@/lib/calls/conversion';
-import { readOnboardToken } from '@/lib/calls/onboard-token';
+import { isSignedOnboardToken, isTestLeadName, readOnboardToken } from '@/lib/calls/onboard-token';
 import { getLeadProfile } from '@/lib/calls/queries';
 
 export default async function PublicOnboardPage({
@@ -14,7 +14,8 @@ export default async function PublicOnboardPage({
 }) {
   const { token } = await params;
   const { saved } = await searchParams;
-  const leadId = readOnboardToken(decodeURIComponent(token));
+  const rawToken = decodeURIComponent(token);
+  const leadId = readOnboardToken(rawToken);
 
   if (!leadId) {
     return (
@@ -28,7 +29,15 @@ export default async function PublicOnboardPage({
 
   const profile = await getLeadProfile(leadId);
   if (!profile) {
-    return <EmptyState title="This link is not valid" detail="Ask for a new onboarding link from Divine Acquisition." />;
+    return (
+      <EmptyState title="This link is not valid" detail="Ask for a new onboarding link from Divine Acquisition." />
+    );
+  }
+
+  if (!isSignedOnboardToken(rawToken) && !isTestLeadName(profile.lead.fullName)) {
+    return (
+      <EmptyState title="This link is not valid" detail="Ask for a new onboarding link from Divine Acquisition." />
+    );
   }
 
   const conversion = conversionFrom(profile);
