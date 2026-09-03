@@ -5,12 +5,21 @@ import { btnPrimary, btnSizeMd } from '@/app/components/ui';
 import { inputClass, labelClass } from '@/app/vistrial/components/ui';
 import { logPhoneTouchAction } from '@/lib/calls/actions';
 import { TOUCH_CHANNELS, TOUCH_OUTCOMES, TOUCH_SENTIMENTS } from '@/lib/calls/config';
-import type { LeadRecord } from '@/lib/calls/types';
+import { recordingPrefillFrom } from '@/lib/calls/overlay';
+import type { IncomingCall, LeadRecord } from '@/lib/calls/types';
 import LeadPicker from './LeadPicker';
 
-export default function PhoneForm({ lead }: { lead?: LeadRecord | null }) {
+export default function PhoneForm({
+  lead,
+  incomingCall,
+}: {
+  lead?: LeadRecord | null;
+  incomingCall?: IncomingCall | null;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const recordingPrefill = recordingPrefillFrom(incomingCall, lead?.googleMeetUrl);
+  const [recordingOpen, setRecordingOpen] = useState(Boolean(recordingPrefill));
 
   return (
     <form
@@ -72,23 +81,37 @@ export default function PhoneForm({ lead }: { lead?: LeadRecord | null }) {
         />
       </label>
 
-      <details className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+      <details
+        open={recordingOpen}
+        onToggle={(event) => setRecordingOpen(event.currentTarget.open)}
+        className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3"
+      >
         <summary className="cursor-pointer text-sm font-medium text-neutral-300">
           Recording and transcript — optional
         </summary>
+        <p className="mt-2 text-xs text-neutral-500">
+          Prefills from the booked call when it arrived through Supabase. Paste a transcript if
+          Meet did not send one.
+        </p>
         <div className="mt-4 space-y-4">
           <label className="block">
             <span className={labelClass}>Recording link</span>
             <input
               name="recordingLink"
               type="url"
+              defaultValue={recordingPrefill}
               placeholder="https://drive.google.com/…"
               className={inputClass}
             />
           </label>
           <label className="block">
             <span className={labelClass}>Short transcript</span>
-            <textarea name="transcript" rows={4} className={`${inputClass} resize-y`} />
+            <textarea
+              name="transcript"
+              rows={4}
+              defaultValue={incomingCall?.transcript || ''}
+              className={`${inputClass} resize-y`}
+            />
           </label>
         </div>
       </details>

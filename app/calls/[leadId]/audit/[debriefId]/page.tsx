@@ -23,7 +23,7 @@ export default async function ContinueAuditPage({
       <PageHeader
         eyebrow={debrief.complete ? 'Edit debrief' : 'Continue draft'}
         title={debrief.title || profile.lead.fullName}
-        description="This is the same Call Debriefs record. Finishing it patches Airtable; it does not create a duplicate."
+        description="This is the same Call Debriefs record. Finishing it patches through Supabase, then Airtable — it does not create a duplicate."
         actions={
           <Link href={`/calls/${leadId}`} className={`${btnSecondary} ${btnSizeSm}`}>
             Profile
@@ -31,7 +31,12 @@ export default async function ContinueAuditPage({
         }
       />
       <CallBrief lead={profile.lead} history={profile.history} />
-      <AuditForm lead={profile.lead} debrief={debrief} today={todayInCallsZone()} />
+      <AuditForm
+        lead={profile.lead}
+        debrief={debrief}
+        incomingCall={profile.incomingCall}
+        today={todayInCallsZone()}
+      />
     </div>
   );
 }

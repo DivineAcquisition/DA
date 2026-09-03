@@ -11,6 +11,10 @@
     {
       "path": "/api/cron/docuseal-sync",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/pipeline-call-sync",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

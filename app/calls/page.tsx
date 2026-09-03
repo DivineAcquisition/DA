@@ -34,7 +34,7 @@ export default async function CallsHomePage({
       <PageHeader
         eyebrow="DA Pipeline"
         title="Leads"
-        description="Live from Airtable. Open a profile, read the brief, then log the phone touch or the audit debrief."
+        description="Live CRM from Airtable. Call events land in Supabase first, then are sent to Touches and Call Debriefs."
         actions={
           <>
             <Link href="/calls/phone" className={`${btnSecondary} ${btnSizeSm}`}>

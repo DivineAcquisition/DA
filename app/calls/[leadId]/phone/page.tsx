@@ -22,7 +22,7 @@ export default async function LeadPhonePage({
       <PageHeader
         eyebrow="Phone touch"
         title="Log a call, SMS, or voicemail"
-        description="The brief first. Then the same fields as the Log Touch form. Submitting writes one Touches record and brings you back to the profile."
+        description="The brief first. Submitting logs the touch in Supabase, then sends one Touches record to Airtable."
         actions={
           <Link href={`/calls/${leadId}`} className={`${btnSecondary} ${btnSizeSm}`}>
             Profile
@@ -30,7 +30,7 @@ export default async function LeadPhonePage({
         }
       />
       <CallBrief lead={profile.lead} history={profile.history} />
-      <PhoneForm lead={profile.lead} />
+      <PhoneForm lead={profile.lead} incomingCall={profile.incomingCall} />
     </div>
   );
 }

@@ -11,7 +11,6 @@ import {
   compareDatedDesc,
   compareLeads,
   DEBRIEF_FIELDS,
-  debriefWriteFields,
   historyFrom,
   isDebriefComplete,
   LEAD_LIST_FIELDS,
@@ -20,15 +19,24 @@ import {
   mapTouchRecord,
   todayInCallsZone,
   TOUCH_FIELDS,
-  touchWriteFields,
 } from './map';
+import { overlayCallsOnProfile } from './overlay';
+import { listProspectCalls } from './store';
+import {
+  recordAndSendArtifact,
+  recordAndSendDebrief,
+  recordAndSendPhone,
+} from './sync';
 import type {
   AuditDebriefInput,
+  DebriefRecord,
   LeadProfile,
   LeadRecord,
   OnboardSubmitInput,
   OnboardingRecord,
   PhoneTouchInput,
+  ProspectCall,
+  TouchRecord,
 } from './types';
 
 export function linkedToLeadFormula(leadId: string): string {
@@ -98,13 +106,31 @@ export async function getLeadProfile(recordId: string): Promise<LeadProfile | nu
       ),
     )[0] ?? null;
 
-  return {
+  const profile: LeadProfile = {
     lead,
     touches,
     debriefs,
     history: historyFrom(touches, debriefs),
     onboarding,
+    incomingCall: null,
+    pendingAirtableSend: false,
   };
+
+  try {
+    const calls = await listProspectCalls(lead.recordId);
+    return overlayCallsOnProfile(profile, calls);
+  } catch (error) {
+    console.error('listProspectCalls', error);
+    return profile;
+  }
+}
+
+export async function findProspectCallByDebrief(
+  leadId: string,
+  debriefId: string,
+): Promise<ProspectCall | null> {
+  const rows = await listProspectCalls(leadId);
+  return rows.find((row) => row.airtableDebriefId === debriefId) ?? null;
 }
 
 export async function getDebrief(recordId: string) {
@@ -124,27 +150,33 @@ export async function createTouch(
   input: PhoneTouchInput,
   leadName: string,
   date = todayInCallsZone(),
-) {
-  const written = await createRecord(tables.touches, touchWriteFields({ ...input, leadName, date }));
-  return mapTouchRecord(written);
+): Promise<TouchRecord> {
+  return recordAndSendPhone(input, leadName, date);
 }
 
-export async function saveDebrief(input: AuditDebriefInput, leadName: string) {
-  const fields = debriefWriteFields({ ...input, leadName });
-  const written = input.debriefId
-    ? await updateRecord(tables.debriefs, input.debriefId, fields)
-    : await createRecord(tables.debriefs, fields);
-  return mapDebriefRecord(written);
+export async function saveDebrief(input: AuditDebriefInput, leadName: string): Promise<DebriefRecord> {
+  const existing = input.debriefId
+    ? await findProspectCallByDebrief(input.leadId, input.debriefId)
+    : null;
+  return recordAndSendDebrief(input, leadName, existing?.id);
 }
 
-export async function attachDebriefTranscript(debriefId: string, transcript: string) {
-  const written = await updateRecord(tables.debriefs, debriefId, { Transcript: transcript });
-  return mapDebriefRecord(written);
-}
-
-export async function attachDebriefRecording(debriefId: string, recordingLink: string) {
-  const written = await updateRecord(tables.debriefs, debriefId, { 'Recording Link': recordingLink });
-  return mapDebriefRecord(written);
+export async function attachDebriefArtifacts(
+  leadId: string,
+  debriefId: string,
+  input: { transcript?: string; recordingLink?: string },
+): Promise<DebriefRecord> {
+  const existing = await findProspectCallByDebrief(leadId, debriefId);
+  await recordAndSendArtifact({
+    leadId,
+    debriefId,
+    existingCallId: existing?.id,
+    recordingUrl: input.recordingLink,
+    transcript: input.transcript,
+  });
+  const debrief = await getDebrief(debriefId);
+  if (!debrief) throw new Error('Debrief could not be reloaded after attach.');
+  return debrief;
 }
 
 export async function confirmPaymentReceived(leadId: string) {

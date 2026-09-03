@@ -11,7 +11,8 @@ import {
   DEBRIEF_OWNERS,
   DEBRIEF_TIMELINES,
 } from '@/lib/calls/config';
-import type { DebriefRecord, LeadRecord } from '@/lib/calls/types';
+import { recordingPrefillFrom } from '@/lib/calls/overlay';
+import type { DebriefRecord, IncomingCall, LeadRecord } from '@/lib/calls/types';
 import LeadPicker from './LeadPicker';
 
 function Field({
@@ -44,14 +45,21 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function AuditForm({
   lead,
   debrief,
+  incomingCall,
   today,
 }: {
   lead?: LeadRecord | null;
   debrief?: DebriefRecord | null;
+  incomingCall?: IncomingCall | null;
   today: string;
 }) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const recordingPrefill = recordingPrefillFrom(
+    incomingCall,
+    lead?.googleMeetUrl,
+    debrief?.recordingLink,
+  );
 
   const submit = (intent: 'draft' | 'complete') => (formData: FormData) => {
     formData.set('intent', intent);
@@ -200,17 +208,28 @@ export default function AuditForm({
         <Field label="Deal risk" hint="Required to mark complete. One honest sentence.">
           <textarea name="dealRisk" rows={3} defaultValue={debrief?.dealRisk} className={`${inputClass} resize-y`} />
         </Field>
-        <Field label="Recording link" hint="Google Meet / Drive URL. Link only — no upload.">
+        <Field
+          label="Recording link"
+          hint="Prefills from the booked Meet when Supabase already has it. Link only — no upload."
+        >
           <input
             name="recordingLink"
             type="url"
-            defaultValue={debrief?.recordingLink}
+            defaultValue={recordingPrefill}
             placeholder="https://drive.google.com/…"
             className={inputClass}
           />
         </Field>
-        <Field label="Transcript" hint="Paste Meet's transcript. Attach later from the profile if it is not ready.">
-          <textarea name="transcript" rows={6} defaultValue={debrief?.transcript} className={`${inputClass} resize-y`} />
+        <Field
+          label="Transcript"
+          hint="Paste Meet's transcript if it did not arrive through Supabase. Attach later from the profile if it is not ready."
+        >
+          <textarea
+            name="transcript"
+            rows={6}
+            defaultValue={debrief?.transcript || incomingCall?.transcript || ''}
+            className={`${inputClass} resize-y`}
+          />
         </Field>
       </Section>
 
@@ -239,8 +258,9 @@ export default function AuditForm({
         </button>
       </div>
       <p className="text-xs text-neutral-500">
-        Drafts write the same Call Debriefs record. Completing later patches that record — it does not
-        create a second one. Airtable automations fire on the first create.
+        Drafts write the same Call Debriefs record after landing in Supabase. Completing later
+        patches that record — it does not create a second one. Airtable automations fire on the
+        first create.
       </p>
     </form>
   );

@@ -15,12 +15,12 @@ function scoreTone(score: number | null): 'good' | 'warning' | 'critical' | 'neu
 }
 
 const SAVED: Record<string, string> = {
-  touch: 'Touch logged. It is on this profile now.',
-  debrief: 'Debrief submitted as complete. Airtable will run its existing automations on that create.',
+  touch: 'Touch logged in Supabase and sent to Airtable. It is on this profile now.',
+  debrief: 'Debrief submitted as complete. It landed in Supabase, then Call Debriefs — Airtable will run its existing automations on that create.',
   'closed-won':
     'Closed Won is on this profile. Onboarding does not start from the debrief — confirm Commas payment first.',
-  draft: 'Draft saved on this debrief. Finish it from Continue — it will not create a second record.',
-  transcript: 'Attached to the existing debrief. Nothing new was created.',
+  draft: 'Draft saved through Supabase onto this debrief. Finish it from Continue — it will not create a second record.',
+  transcript: 'Attached through Supabase onto the existing debrief. Nothing new was created.',
   payment: 'Payment marked Paid on this lead. Start onboarding when you are ready.',
   onboard: 'Onboarding saved to the Client Onboarding table. The lead record was not changed.',
   onboarding: 'Onboarding saved to the Client Onboarding table. The lead record was not changed.',
@@ -46,6 +46,13 @@ export default function ProfileView({
 
   return (
     <div className="space-y-6">
+      {profile.pendingAirtableSend && (
+        <p className="rounded-2xl border border-flag-warning/25 bg-flag-warning/[0.08] px-4 py-3 text-sm text-flag-warning">
+          A call event is in Supabase and has not finished sending to Airtable. It will retry
+          automatically.
+        </p>
+      )}
+
       {saved && SAVED[saved] && (
         <p className="rounded-2xl border border-flag-good/25 bg-flag-good/[0.08] px-4 py-3 text-sm text-flag-good">
           {SAVED[saved]}
@@ -138,8 +145,28 @@ export default function ProfileView({
             <a href={lead.googleMeetUrl} className="text-brand-300 hover:underline" target="_blank" rel="noreferrer">
               Google Meet
             </a>
+            {profile.incomingCall?.meetUrl === lead.googleMeetUrl ? (
+              <span className="ml-2 text-xs text-neutral-500">from the booked call</span>
+            ) : null}
           </p>
         )}
+        {profile.incomingCall?.recordingUrl && profile.incomingCall.recordingUrl !== lead.googleMeetUrl && (
+          <p className="mt-2 text-sm">
+            <a
+              href={profile.incomingCall.recordingUrl}
+              className="text-brand-300 hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Incoming recording
+            </a>
+            <span className="ml-2 text-xs text-neutral-500">arrived through Supabase</span>
+          </p>
+        )}
+        <p className="mt-4 text-xs text-neutral-500">
+          Call events land in Supabase, then are sent to Airtable. The rest of this profile is live
+          from DA Pipeline.
+        </p>
         <p className="mt-4 text-xs">
           <a href={lead.airtableUrl} className="text-neutral-500 hover:text-neutral-300 hover:underline" target="_blank" rel="noreferrer">
             Open in Airtable

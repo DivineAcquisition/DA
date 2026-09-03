@@ -127,12 +127,46 @@ export type OnboardingRecord = {
   leadIds: string[];
 };
 
+export type ProspectCallKind = 'booking' | 'phone' | 'audit' | 'artifact';
+export type ProspectCallSource = 'operator' | 'ghl' | 'calendar';
+
+export type ProspectCall = {
+  id: string;
+  airtableLeadId: string;
+  email: string;
+  fullName: string;
+  kind: ProspectCallKind;
+  source: ProspectCallSource;
+  externalRef: string;
+  occurredAt: string;
+  meetUrl: string;
+  recordingUrl: string;
+  transcript: string;
+  googleEventId: string;
+  payload: Record<string, unknown>;
+  airtableTouchId: string;
+  airtableDebriefId: string;
+  airtableSyncedAt: string | null;
+  airtableSyncError: string | null;
+};
+
+export type IncomingCall = {
+  meetUrl: string;
+  recordingUrl: string;
+  transcript: string;
+  occurredAt: string;
+  source: ProspectCallSource;
+  synced: boolean;
+};
+
 export type LeadProfile = {
   lead: LeadRecord;
   touches: TouchRecord[];
   debriefs: DebriefRecord[];
   history: HistoryLine[];
   onboarding: OnboardingRecord | null;
+  incomingCall: IncomingCall | null;
+  pendingAirtableSend: boolean;
 };
 
 export type ClientBaseRef = {

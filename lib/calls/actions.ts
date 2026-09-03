@@ -28,8 +28,7 @@ import { conversionFrom, parseAirtableBaseId } from './conversion';
 import { httpUrlOrEmpty, isDebriefComplete } from './map';
 import { readOnboardToken } from './onboard-token';
 import {
-  attachDebriefRecording,
-  attachDebriefTranscript,
+  attachDebriefArtifacts,
   confirmPaymentReceived,
   createTouch,
   getDebrief,
@@ -281,8 +280,10 @@ export async function attachTranscriptAction(formData: FormData): Promise<Action
   }
 
   try {
-    if (transcript) await attachDebriefTranscript(debriefId, transcript);
-    if (recordingLink) await attachDebriefRecording(debriefId, recordingLink);
+    await attachDebriefArtifacts(leadId, debriefId, {
+      transcript: transcript || undefined,
+      recordingLink: recordingLink || undefined,
+    });
   } catch (error) {
     return { ok: false, error: error instanceof Error ? error.message : 'Could not attach the transcript.' };
   }

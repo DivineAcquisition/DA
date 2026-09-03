@@ -23,7 +23,7 @@ export default async function LeadAuditPage({
       <PageHeader
         eyebrow="Lead Leak Audit"
         title="Debrief this call"
-        description="Same fields as the Airtable form, grouped the same way. Save a draft mid-call. Mark complete only when Outcome, Agreed Next Step, and Deal Risk are filled."
+        description="Same fields as the Airtable form, grouped the same way. The debrief lands in Supabase first, then is sent to Call Debriefs. Save a draft mid-call. Mark complete only when Outcome, Agreed Next Step, and Deal Risk are filled."
         actions={
           <Link href={`/calls/${leadId}`} className={`${btnSecondary} ${btnSizeSm}`}>
             Profile
@@ -31,7 +31,7 @@ export default async function LeadAuditPage({
         }
       />
       <CallBrief lead={profile.lead} history={profile.history} />
-      <AuditForm lead={profile.lead} today={todayInCallsZone()} />
+      <AuditForm lead={profile.lead} incomingCall={profile.incomingCall} today={todayInCallsZone()} />
     </div>
   );
 }

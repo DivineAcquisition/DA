@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache';
 import { calendarConfigured, createGoogleMeetEvent } from '@/lib/assessment/calendar';
+import { recordAndSendBooking } from '@/lib/calls/sync';
 import { isoDateInTimeZone, localDateTimeToIso } from '@/lib/datetime/local';
-import { getSessionContext } from '@/lib/supabase/server';
+import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { WORKSPACE_AGREEMENT_CC } from '@/lib/workspace/email';
 import { airtableConfigured } from './pipeline';
 import { sendProspectCallConfirmationEmail } from './booking-email';
@@ -153,14 +154,51 @@ export async function scheduleProspectCallAction(
     existingEmail: prospect.email,
   });
 
+  let pipelineWarning: string | null = null;
   let airtableWarning: string | null = null;
-  try {
-    await writeBookingToAirtable(recordId, fields);
-  } catch (writeError) {
-    airtableWarning =
-      writeError instanceof Error
-        ? `Meet was created, but Airtable did not update: ${writeError.message}`
-        : 'Meet was created, but Airtable did not update.';
+  const bookingInput = {
+    leadId: recordId,
+    email,
+    fullName,
+    startsAtIso,
+    timeZone,
+    durationMinutes,
+    meetUrl,
+    eventId,
+    currentStage: prospect.stage,
+    existingNotes: prospect.notes,
+    existingEmail: prospect.email,
+  };
+
+  if (supabaseConfigured) {
+    try {
+      await recordAndSendBooking(bookingInput);
+    } catch (error) {
+      pipelineWarning =
+        error instanceof Error
+          ? `Call landed after Meet, but the Supabase→Airtable send failed: ${error.message}`
+          : 'Call landed after Meet, but the Supabase→Airtable send failed.';
+      try {
+        await writeBookingToAirtable(recordId, fields);
+        airtableWarning = null;
+      } catch (writeError) {
+        airtableWarning =
+          writeError instanceof Error
+            ? `Meet was created, but Airtable did not update: ${writeError.message}`
+            : 'Meet was created, but Airtable did not update.';
+      }
+    }
+  } else {
+    pipelineWarning =
+      'Supabase is not configured, so the call could not land there first. Meet was still written to Airtable so it is not lost.';
+    try {
+      await writeBookingToAirtable(recordId, fields);
+    } catch (writeError) {
+      airtableWarning =
+        writeError instanceof Error
+          ? `Meet was created, but Airtable did not update: ${writeError.message}`
+          : 'Meet was created, but Airtable did not update.';
+    }
   }
 
   let emailWarning: string | null = null;
@@ -193,7 +231,8 @@ export async function scheduleProspectCallAction(
     message: [
       `Booked ${fullName} for ${when}.`,
       meetUrl ? `Google Meet is on the invite.` : 'Calendar event created (Meet link pending).',
-      airtableWarning ?? `Airtable moved to Audit Booked (${dateStamp}).`,
+      pipelineWarning ?? `Logged in Supabase and sent to Airtable (Audit Booked, ${dateStamp}).`,
+      airtableWarning,
       emailWarning ?? 'Confirmation emailed (CC Malik).',
     ]
       .filter(Boolean)

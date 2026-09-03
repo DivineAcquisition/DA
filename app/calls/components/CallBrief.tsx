@@ -49,6 +49,13 @@ export default function CallBrief({
         ) : (
           <p className="mt-4 text-sm text-neutral-500">No stated pain on the application.</p>
         )}
+        {lead.googleMeetUrl && (
+          <p className="mt-3 text-sm">
+            <a href={lead.googleMeetUrl} className="text-brand-300 hover:underline" target="_blank" rel="noreferrer">
+              Google Meet
+            </a>
+          </p>
+        )}
       </Panel>
 
       <Panel className="px-5 py-5 sm:px-6">

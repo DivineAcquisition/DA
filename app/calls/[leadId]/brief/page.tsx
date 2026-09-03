@@ -21,7 +21,7 @@ export default async function CallBriefPage({
       <PageHeader
         eyebrow="Before you dial"
         title="Call brief"
-        description="Everything in front of you thirty seconds before the call. One editable note. Everything else is live from Airtable."
+        description="Everything in front of you thirty seconds before the call. One editable note. The CRM is live from Airtable; booked Meet / recording arrive through Supabase."
         actions={
           <>
             <Link href={`/calls/${leadId}`} className={`${btnSecondary} ${btnSizeSm}`}>
