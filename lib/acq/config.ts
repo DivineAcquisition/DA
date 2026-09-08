@@ -75,6 +75,7 @@ export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 export const ACQ_THANK_YOU_PATH = '/thank-you';
 export const ACQ_BOOK_PATH = '/book';
 export const ACQ_PRECALL_PATH = '/precall';
+export const ACQ_PRACTICES_PATH = '/practices';
 
 /** Optional Typeform apply URL. The landing CTA uses /book (iClosed). */
 export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
@@ -209,4 +210,29 @@ export function acqBookUrl(
   host?: string | null,
 ): string {
   return withTrackingQuery(acqPublicPath(ACQ_BOOK_PATH, host), tracking);
+}
+
+/** Med spa / dental direct-book landing, with ad params forwarded. */
+export function acqPracticesUrl(
+  tracking: Partial<Record<TrackingParamKey, string>> = {},
+  host?: string | null,
+): string {
+  return withTrackingQuery(acqPublicPath(ACQ_PRACTICES_PATH, host), tracking);
+}
+
+/**
+ * GHL booking iframe src with ad params attached so the widget can inherit
+ * campaign attribution from the landing URL.
+ */
+export function acqCalendarEmbedSrc(
+  tracking: Partial<Record<TrackingParamKey, string>> = {},
+  extras?: { redirectUrl?: string | null },
+): string {
+  const url = new URL(ACQ_CALENDAR_EMBED_URL);
+  for (const key of TRACKING_PARAM_KEYS) {
+    const value = tracking[key];
+    if (value) url.searchParams.set(key, value);
+  }
+  if (extras?.redirectUrl) url.searchParams.set('redirect_url', extras.redirectUrl);
+  return url.toString();
 }

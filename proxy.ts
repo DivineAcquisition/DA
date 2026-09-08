@@ -162,6 +162,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/book') ||
       pathname === '/precall' ||
       pathname.startsWith('/precall') ||
+      pathname === '/practices' ||
+      pathname.startsWith('/practices') ||
       pathname === '/api/submit-lead' ||
       pathname.startsWith('/acq') ||
       pathname.startsWith('/onboard'),

@@ -31,10 +31,18 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
   );
 }
 
-export function BookCta({ href, className = '' }: { href: string; className?: string }) {
+export function BookCta({
+  href,
+  className = '',
+  children = CTA_LABEL,
+}: {
+  href: string;
+  className?: string;
+  children?: ReactNode;
+}) {
   return (
     <Link href={href} className={cn('acq-button acq-button-full no-underline max-w-sm', className)}>
-      {CTA_LABEL}
+      {children}
       <ArrowIcon />
     </Link>
   );

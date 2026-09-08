@@ -6,6 +6,7 @@ import {
   ACQ_ICLOSED_EVENT_URL,
   ACQ_ICLOSED_HEIGHT,
   ACQ_META_PIXEL_ID,
+  ACQ_PRACTICES_PATH,
   ACQ_PRECALL_PATH,
   ACQ_PRECALL_WISTIA_MEDIA_ID,
   ACQ_TYPEFORM_DEFAULT_URL,
@@ -13,6 +14,8 @@ import {
   ACQ_WISTIA_MEDIA_ID,
   acqApplyUrl,
   acqBookUrl,
+  acqCalendarEmbedSrc,
+  acqPracticesUrl,
   acqPublicPath,
   qualificationThankYouPath,
   trackingFromSearchParams,
@@ -125,6 +128,15 @@ describe('acqPublicPath', () => {
   it('prefixes the precall path on localhost and previews', () => {
     expect(acqPublicPath('/precall', 'localhost')).toBe('/acq/precall');
   });
+
+  it('uses the bare practices path on the dedicated acq host', () => {
+    expect(acqPublicPath(ACQ_PRACTICES_PATH, 'acq.divineacquisition.io')).toBe('/practices');
+  });
+
+  it('prefixes the practices path on localhost and previews', () => {
+    expect(acqPublicPath(ACQ_PRACTICES_PATH, 'localhost')).toBe('/acq/practices');
+    expect(acqPublicPath(ACQ_PRACTICES_PATH, 'divine-acq-123.vercel.app')).toBe('/acq/practices');
+  });
 });
 
 describe('withTrackingQuery', () => {
@@ -141,6 +153,35 @@ describe('acqBookUrl', () => {
       '/book?utm_source=facebook&fbclid=abc.123',
     );
     expect(acqBookUrl({ utm_source: 'facebook' }, 'localhost')).toBe('/acq/book?utm_source=facebook');
+  });
+});
+
+describe('acqPracticesUrl', () => {
+  it('sends practice traffic to the GHL calendar landing with ad params', () => {
+    expect(
+      acqPracticesUrl({ utm_source: 'facebook', fbclid: 'abc.123' }, 'acq.divineacquisition.io'),
+    ).toBe('/practices?utm_source=facebook&fbclid=abc.123');
+    expect(acqPracticesUrl({ utm_source: 'facebook' }, 'localhost')).toBe(
+      '/acq/practices?utm_source=facebook',
+    );
+  });
+});
+
+describe('acqCalendarEmbedSrc', () => {
+  it('forwards ad params onto the issued GHL booking widget', () => {
+    const src = acqCalendarEmbedSrc({ utm_source: 'facebook', utm_campaign: 'practices' });
+    const url = new URL(src);
+    expect(url.origin + url.pathname).toBe(
+      'https://link.msgsndr.divineacquisition.io/widget/booking/v0e24e3kxYEGCTUkSP4A',
+    );
+    expect(url.searchParams.get('utm_source')).toBe('facebook');
+    expect(url.searchParams.get('utm_campaign')).toBe('practices');
+  });
+
+  it('attaches a GHL redirect when provided', () => {
+    const src = acqCalendarEmbedSrc({}, { redirectUrl: 'https://acq.divineacquisition.io/precall' });
+    const url = new URL(src);
+    expect(url.searchParams.get('redirect_url')).toBe('https://acq.divineacquisition.io/precall');
   });
 });
 
@@ -226,6 +267,19 @@ describe('founding landing media', () => {
     expect(copy.PRECALL.steps).toHaveLength(3);
     expect(copy.PRECALL.steps[0].label.toLowerCase()).toContain('email');
     expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
+    expect(copy.PRACTICES.title).toBe('Book more patients without adding a single lead');
+    expect(copy.PRACTICES.title).toBe(
+      `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}`,
+    );
+    expect(copy.PRACTICES.body).toBe(
+      'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
+    );
+    expect(copy.PRACTICES.pill.toLowerCase()).toContain('med spas');
+    expect(copy.PRACTICES.pill.toLowerCase()).toContain('dental');
+    expect(copy.PRACTICES.title).not.toMatch(/[—–]/);
+    expect(copy.PRACTICES.body).not.toMatch(/[—–]/);
+    expect(copy.PRACTICES.covers).toHaveLength(3);
+    expect(copy.PRACTICES.cta).toBe('Pick a time');
   });
 
   it('embeds the issued iClosed event on /book', () => {

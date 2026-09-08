@@ -75,10 +75,21 @@ export function CalendarFrame({
   );
 }
 
-/** GHL booking calendar. Visible on /thank-you; fires Schedule on book. */
-export function CalendarEmbed() {
+type CalendarEmbedProps = {
+  src?: string;
+  title?: string;
+  className?: string;
+  iframeClassName?: string;
+};
+
+/** GHL booking calendar. Visible on /thank-you and /practices; fires Schedule on book. */
+export function CalendarEmbed({
+  src = ACQ_CALENDAR_EMBED_URL,
+  title = 'Free sales audit',
+  className,
+  iframeClassName,
+}: CalendarEmbedProps = {}) {
   const fired = useRef(false);
-  const src = ACQ_CALENDAR_EMBED_URL;
 
   useEffect(() => {
     if (!src) return;
@@ -99,7 +110,7 @@ export function CalendarEmbed() {
 
   if (!src) {
     return (
-      <CalendarFrame>
+      <CalendarFrame className={className}>
         <div className="px-5 py-16 text-center sm:px-8">
           <p className="text-sm leading-relaxed text-neutral-400">{THANK_YOU_CALENDAR_PENDING}</p>
         </div>
@@ -108,13 +119,13 @@ export function CalendarEmbed() {
   }
 
   return (
-    <CalendarFrame>
+    <CalendarFrame className={className}>
       <iframe
         id={ACQ_CALENDAR_IFRAME_ID}
         src={src}
-        title="Free sales audit"
+        title={title}
         allow="payment"
-        className="h-[680px] w-full border-0 bg-black sm:h-[720px]"
+        className={cn('h-[680px] w-full border-0 bg-black sm:h-[720px]', iframeClassName)}
         scrolling="no"
       />
       <Script src={ACQ_CALENDAR_EMBED_SCRIPT} strategy="afterInteractive" />

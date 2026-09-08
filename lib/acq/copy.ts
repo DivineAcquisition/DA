@@ -116,3 +116,30 @@ export const FORM_LABELS = {
 
 export const FACEBOOK_DISCLAIMER =
   'This site is not a part of the Facebook website or Facebook Inc. Additionally, this site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of META PLATFORMS, Inc.';
+
+/** Direct-book landing for med spas and dental practices (`/practices`). */
+export const PRACTICES = {
+  pill: 'For med spas & dental practices',
+  titleBefore: 'Book more patients ',
+  titleAccent: 'without adding a single lead',
+  title: 'Book more patients without adding a single lead',
+  body: 'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
+  calendarTitle: 'Book your 30-minute practice audit',
+  cta: 'Pick a time',
+  coversEyebrow: 'On the call',
+  coversTitle: 'What we will look at',
+  covers: [
+    {
+      title: 'Demand you already paid for',
+      body: 'Inquiries, DMs, web forms, and abandoned consults sitting idle while ads keep running.',
+    },
+    {
+      title: 'Where patients drop',
+      body: 'No-shows, unconfirmed appointments, and follow-up that stops after the first text.',
+    },
+    {
+      title: 'What it would take',
+      body: 'The system to work that inventory, and whether it is worth installing in your practice.',
+    },
+  ],
+} as const;
