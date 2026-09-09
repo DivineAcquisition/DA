@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
+  ACQ_CAL_EMBED_SCRIPT,
+  ACQ_CAL_LINK,
+  ACQ_CAL_ORIGIN,
   ACQ_ICLOSED_EMBED_SCRIPT,
   ACQ_ICLOSED_EVENT_URL,
   ACQ_ICLOSED_HEIGHT,
@@ -157,7 +160,7 @@ describe('acqBookUrl', () => {
 });
 
 describe('acqPracticesUrl', () => {
-  it('sends practice traffic to the GHL calendar landing with ad params', () => {
+  it('sends practice traffic to the Cal.com landing with ad params', () => {
     expect(
       acqPracticesUrl({ utm_source: 'facebook', fbclid: 'abc.123' }, 'acq.divineacquisition.io'),
     ).toBe('/practices?utm_source=facebook&fbclid=abc.123');
@@ -280,6 +283,12 @@ describe('founding landing media', () => {
     expect(copy.PRACTICES.body).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.covers).toHaveLength(3);
     expect(copy.PRACTICES.cta).toBe('Pick a time');
+  });
+
+  it('embeds the issued Cal.com 30-min event on /practices', () => {
+    expect(ACQ_CAL_LINK).toBe('malik-sannie-zztskt/30min');
+    expect(ACQ_CAL_EMBED_SCRIPT).toBe('https://app.cal.com/embed/embed.js');
+    expect(ACQ_CAL_ORIGIN).toBe('https://app.cal.com');
   });
 
   it('embeds the issued iClosed event on /book', () => {

@@ -100,6 +100,15 @@ export const ACQ_CALENDAR_EMBED_URL =
     ? `https://api.leadconnectorhq.com/widget/booking/${calendarWidgetFromEnv}`
     : ACQ_CALENDAR_DEFAULT_EMBED_URL);
 
+/** Cal.com inline embed on /practices. Env override is the event path only. */
+export const ACQ_CAL_EMBED_SCRIPT = 'https://app.cal.com/embed/embed.js';
+export const ACQ_CAL_ORIGIN = 'https://app.cal.com';
+export const ACQ_CAL_NAMESPACE = '30min';
+export const ACQ_CAL_LINK =
+  process.env.NEXT_PUBLIC_ACQ_CAL_LINK?.trim() || 'malik-sannie-zztskt/30min';
+export const ACQ_CAL_BRAND = '#9A88FC';
+export const ACQ_CAL_ELEMENT_ID = 'my-cal-inline-practices';
+
 /** iClosed inline scheduler on /book. */
 export const ACQ_ICLOSED_EMBED_SCRIPT = 'https://app.iclosed.io/assets/widget.js';
 export const ACQ_ICLOSED_EVENT_URL =
