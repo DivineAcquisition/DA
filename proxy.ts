@@ -138,6 +138,8 @@ const SURFACES: Surface[] = [
     // keeps the public practices landing.
     // /hs/calls on this host is the home-services qualifying workspace
     // (rewritten to /workspace/hs/calls).
+    // /hs/companies on this host is the home-services audit/debrief/requirements
+    // workspace (rewritten to /workspace/hs/companies).
     allow: (pathname) =>
       pathname === '/' ||
       pathname.startsWith('/workspace') ||
@@ -158,6 +160,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/practices/') ||
       pathname === '/hs/calls' ||
       pathname.startsWith('/hs/calls/') ||
+      pathname === '/hs/companies' ||
+      pathname.startsWith('/hs/companies/') ||
       pathname.startsWith('/settings'),
   },
   {
