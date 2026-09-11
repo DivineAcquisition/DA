@@ -1,6 +1,6 @@
 import { serviceClient, workspaceClient } from '@/lib/workspace/db';
 import { supabaseConfigured } from '@/lib/supabase/server';
-import { CLOSED_STAGES, closedStagesPostgrestIn } from './stages';
+import { closedStagesPostgrestIn, isClosedStage } from './stages';
 import type { QualificationPayload } from './qualify';
 import { scoreQualification, type WorkspaceScore } from './score';
 
@@ -109,7 +109,7 @@ export function isBookableLead(
   lead: Pick<LeadRow, 'qualification_result' | 'stage'>,
   includeManualReview = false,
 ): boolean {
-  if ((CLOSED_STAGES as readonly string[]).includes(lead.stage)) return false;
+  if (isClosedStage(lead.stage)) return false;
   if (lead.qualification_result === 'Qualified') return true;
   return includeManualReview && lead.qualification_result === 'Manual Review';
 }

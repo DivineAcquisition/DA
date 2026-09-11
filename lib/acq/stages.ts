@@ -5,6 +5,10 @@ export const CLOSED_STAGES = [
   'Recycled',
 ] as const;
 
+export function isClosedStage(stage: string): boolean {
+  return (CLOSED_STAGES as readonly string[]).includes(stage);
+}
+
 export const STAGE_ADVANCE_TO_BOOKED = [
   'Step 1 Captured',
   'Application Abandoned',

@@ -12,6 +12,7 @@ import {
   FOLLOW_UP_OPTIONS,
   PROGRAM_PRICE_OPTIONS,
 } from '@/lib/acq/qualify';
+import { isClosedStage } from '@/lib/acq/stages';
 import { Badge, Button, Card, Dialog, Field, Input, Select, Textarea } from './ui';
 
 const TIME_ZONES = [
@@ -77,12 +78,16 @@ export default function ProspectBookingPanel({
       ]);
       if (!open.ok) {
         setSearchError(open.error);
-        setProspects(keepProspect ? [keepProspect] : []);
+        setProspects(keepProspect && !isClosedStage(keepProspect.stage) ? [keepProspect] : []);
       } else {
         const rows = open.prospects;
-        const missing =
-          keepProspect && !rows.some((row) => row.recordId === keepProspect.recordId);
-        setProspects(missing && keepProspect ? [keepProspect, ...rows] : rows);
+        const keep =
+          keepProspect &&
+          !isClosedStage(keepProspect.stage) &&
+          !rows.some((row) => row.recordId === keepProspect.recordId)
+            ? keepProspect
+            : null;
+        setProspects(keep ? [keep, ...rows] : rows);
       }
       if (alreadyBooked.ok) setBooked(alreadyBooked.prospects);
     });
@@ -410,6 +415,11 @@ export default function ProspectBookingPanel({
               }
               setCreateOpen(false);
               setMessage(result.message);
+              if (isClosedStage(result.prospect.stage)) {
+                setSelectedId(null);
+                runSearch(query, includeManualReview);
+                return;
+              }
               setSelectedId(result.prospect.recordId);
               const includeManual =
                 includeManualReview || result.prospect.qualificationResult === 'Manual Review';

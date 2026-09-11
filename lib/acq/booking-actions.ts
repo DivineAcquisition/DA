@@ -25,6 +25,7 @@ import {
   QualificationError,
 } from './qualify';
 import { scoreQualification } from './score';
+import { isClosedStage } from './stages';
 
 export type ProspectSearchResult =
   | { ok: true; prospects: ProspectRecord[] }
@@ -96,10 +97,13 @@ export async function createProspectAction(
     }
 
     revalidatePath('/workspace/bookings');
+    const closed = isClosedStage(lead.stage);
     return {
       ok: true,
       prospect: { ...prospect, airtableRecordId: lead.airtable_record_id ?? prospect.airtableRecordId },
-      message: `Saved ${payload.fullName} (${score.qualificationResult}, ${score.readinessScore}). ${airtableNote}`,
+      message: closed
+        ? `${payload.fullName} is already ${lead.stage}. The workspace row was updated; they stay out of Bookable. ${airtableNote}`
+        : `Saved ${payload.fullName} (${score.qualificationResult}, ${score.readinessScore}). ${airtableNote}`,
     };
   } catch (error) {
     if (error instanceof QualificationError) {
@@ -153,6 +157,12 @@ export async function scheduleProspectCallAction(
   const prospect = await getProspect(recordId);
   if (!prospect) {
     return { ok: false, error: 'That workspace lead could not be loaded.' };
+  }
+  if (isClosedStage(prospect.stage)) {
+    return {
+      ok: false,
+      error: `${prospect.fullName} is ${prospect.stage}. Closed deals are not bookable.`,
+    };
   }
 
   const setup = mapProspectToCallSetup(

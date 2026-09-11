@@ -8,7 +8,7 @@ import {
 } from './leads';
 import { parseQualification } from './qualify';
 import { scoreQualification } from './score';
-import { closedStagesPostgrestIn } from './stages';
+import { closedStagesPostgrestIn, isClosedStage } from './stages';
 
 const payload = parseQualification({
   fullName: 'Jordan Blake',
@@ -66,6 +66,8 @@ describe('workspace lead helpers', () => {
     expect(closedStagesPostgrestIn()).toBe(
       '("Closed Won","Closed Lost","Disqualified","Recycled")',
     );
+    expect(isClosedStage('Closed Won')).toBe(true);
+    expect(isClosedStage('Qualified - Not Booked')).toBe(false);
   });
 
   it('writes in-app score onto the workspace row, not an Airtable formula', () => {
