@@ -23,7 +23,8 @@ type NavIcon =
   | 'audit'
   | 'talent'
   | 'ops'
-  | 'bookings';
+  | 'bookings'
+  | 'phone';
 
 /**
  * Agreements-focused admin nav. Growth / Control / Ops surfaces still exist
@@ -38,6 +39,7 @@ const NAV: { heading: string; items: NavItem[] }[] = [
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
+      { href: '/workspace/calls', label: 'Calls', icon: 'phone' },
       { href: '/workspace/bookings', label: 'Prospect calls', icon: 'bookings' },
       { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
@@ -61,6 +63,8 @@ const ICON_PATHS: Record<NavIcon, string> = {
   talent: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9a7 7 0 0 1 14 0',
   ops: 'M4 8h16M4 12h16M4 16h10',
   bookings: 'M7 3v3M17 3v3M4 8h16v12H4V8Zm4 5h3v3H8v-3Z',
+  phone:
+    'M6.7 10.8c1.4 2.7 3.8 5.1 6.5 6.5l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.1 2.1Z',
 };
 
 function NavIconGlyph({ icon }: { icon: NavIcon }) {

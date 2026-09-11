@@ -131,6 +131,8 @@ const SURFACES: Surface[] = [
     prefix: WORKSPACE_PREFIX,
     // Unified admin portal: agreements plus the former Vistrial admin surfaces.
     // Public token routes stay at /p, /c, /s without the workspace prefix.
+    // /calls on this host is the 15-minute qualifying workspace (rewritten to
+    // /workspace/calls). calls.divineacquisition.io keeps Call Intelligence.
     allow: (pathname) =>
       pathname === '/' ||
       pathname.startsWith('/workspace') ||
@@ -145,6 +147,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/mapping') ||
       pathname.startsWith('/calendar-links') ||
       pathname.startsWith('/bookings') ||
+      pathname === '/calls' ||
+      pathname.startsWith('/calls/') ||
       pathname.startsWith('/settings'),
   },
   {
@@ -232,6 +236,10 @@ export async function proxy(request: NextRequest) {
     !local &&
     isForeignSurfacePath(pathname, surface.prefix) &&
     !(surface.prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname)) &&
+    !(
+      surface.prefix === WORKSPACE_PREFIX &&
+      (pathname === '/calls' || pathname.startsWith('/calls/'))
+    ) &&
     !isOnboardOnLiveHost(surface.prefix, pathname)
   ) {
     return new NextResponse('Not found', {
