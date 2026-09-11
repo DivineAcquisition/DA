@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { calendarConfigured, createGoogleMeetEvent } from '@/lib/assessment/calendar';
-import { recordProspectCall } from '@/lib/calls/store';
+import { markProspectCallAirtable, recordProspectCall } from '@/lib/calls/store';
 import { isoDateInTimeZone, localDateTimeToIso } from '@/lib/datetime/local';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { workspaceClient } from '@/lib/workspace/db';
@@ -240,10 +240,12 @@ export async function scheduleProspectCallAction(
 
   let airtableWarning: string | null = null;
   let airtableRecordId = booked.airtableRecordId;
+  let airtableSent = false;
   if (await airtableReady()) {
     try {
       airtableRecordId = await sendProspectToAirtable({ ...booked, email, fullName });
       await markLeadAirtable(booked.recordId, { recordId: airtableRecordId });
+      airtableSent = Boolean(airtableRecordId);
     } catch (error) {
       const detail = error instanceof Error ? error.message : 'Airtable send failed.';
       await markLeadAirtable(booked.recordId, { error: detail });
@@ -277,6 +279,16 @@ export async function scheduleProspectCallAction(
     const supabase = await workspaceClient();
     if (supabase) {
       await supabase.from('da_prospect_call').update({ lead_id: booked.recordId }).eq('id', saved.id);
+    }
+    if (airtableSent && airtableRecordId) {
+      try {
+        await markProspectCallAirtable({
+          id: saved.id,
+          airtableLeadId: airtableRecordId,
+        });
+      } catch {
+        // Cron may retry. appendBookingNote skips a stamp already in Notes.
+      }
     }
   } catch (error) {
     airtableWarning = [

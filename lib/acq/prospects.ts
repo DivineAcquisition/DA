@@ -238,7 +238,11 @@ export function mapProspectToCallSetup(
 
 export function appendBookingNote(existing: string, stamp: string): string {
   const prior = existing.trim();
-  return prior ? `${prior}\n\n${stamp}` : stamp;
+  const next = stamp.trim();
+  if (!next) return prior;
+  if (!prior) return next;
+  if (prior.includes(next)) return prior;
+  return `${prior}\n\n${next}`;
 }
 
 export function bookingNoteStamp(input: {

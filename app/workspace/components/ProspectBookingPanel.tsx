@@ -64,7 +64,11 @@ export default function ProspectBookingPanel({
     [prospects, selectedId],
   );
 
-  const runSearch = (nextQuery = query, nextInclude = includeManualReview) => {
+  const runSearch = (
+    nextQuery = query,
+    nextInclude = includeManualReview,
+    keepProspect?: ProspectRecord | null,
+  ) => {
     setSearchError(null);
     startSearch(async () => {
       const [open, alreadyBooked] = await Promise.all([
@@ -73,9 +77,12 @@ export default function ProspectBookingPanel({
       ]);
       if (!open.ok) {
         setSearchError(open.error);
-        setProspects([]);
+        setProspects(keepProspect ? [keepProspect] : []);
       } else {
-        setProspects(open.prospects);
+        const rows = open.prospects;
+        const missing =
+          keepProspect && !rows.some((row) => row.recordId === keepProspect.recordId);
+        setProspects(missing && keepProspect ? [keepProspect, ...rows] : rows);
       }
       if (alreadyBooked.ok) setBooked(alreadyBooked.prospects);
     });
@@ -403,7 +410,11 @@ export default function ProspectBookingPanel({
               }
               setCreateOpen(false);
               setMessage(result.message);
-              runSearch();
+              setSelectedId(result.prospect.recordId);
+              const includeManual =
+                includeManualReview || result.prospect.qualificationResult === 'Manual Review';
+              if (includeManual) setIncludeManualReview(true);
+              runSearch(query, includeManual, result.prospect);
             });
           }}
         >

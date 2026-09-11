@@ -1,6 +1,6 @@
 import { serviceClient, workspaceClient } from '@/lib/workspace/db';
 import { supabaseConfigured } from '@/lib/supabase/server';
-import { CLOSED_STAGES } from './stages';
+import { CLOSED_STAGES, closedStagesPostgrestIn } from './stages';
 import type { QualificationPayload } from './qualify';
 import { scoreQualification, type WorkspaceScore } from './score';
 
@@ -130,7 +130,8 @@ export function leadWriteFromQualification(
     monthly_ad_spend: payload.monthlyAdSpend,
     follow_up_owner: payload.followUpOwner,
     program_price: payload.programPrice,
-    ghl_contact_id: extras.ghlContactId ?? extras.existing?.ghl_contact_id ?? '',
+    ghl_contact_id:
+      extras.ghlContactId?.trim() || extras.existing?.ghl_contact_id?.trim() || '',
     payload: {
       ...(extras.existing?.payload ?? {}),
       tracking: payload.tracking,
@@ -183,6 +184,7 @@ export async function searchLeadRows(input: {
       : ['Qualified'];
     query = query
       .in('qualification_result', results)
+      .not('stage', 'in', closedStagesPostgrestIn())
       .order('readiness_score', { ascending: false, nullsFirst: false });
   }
 

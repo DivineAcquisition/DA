@@ -8,6 +8,7 @@ import {
 } from './leads';
 import { parseQualification } from './qualify';
 import { scoreQualification } from './score';
+import { closedStagesPostgrestIn } from './stages';
 
 const payload = parseQualification({
   fullName: 'Jordan Blake',
@@ -61,6 +62,12 @@ describe('workspace lead helpers', () => {
     ).toBe(false);
   });
 
+  it('excludes closed stages in the PostgREST filter so high-score Closed Won rows do not fill the page', () => {
+    expect(closedStagesPostgrestIn()).toBe(
+      '("Closed Won","Closed Lost","Disqualified","Recycled")',
+    );
+  });
+
   it('writes in-app score onto the workspace row, not an Airtable formula', () => {
     const score = scoreQualification(payload);
     const write = leadWriteFromQualification(payload, { ghlContactId: 'ghl_123', score });
@@ -69,5 +76,22 @@ describe('workspace lead helpers', () => {
     expect(write.readiness_score).toBe(85);
     expect(write.qualification_result).toBe('Qualified');
     expect(write.stage).toBe('Step 1 Captured');
+  });
+
+  it('keeps an existing GHL contact id when the incoming value is blank', () => {
+    const existing = mapStoredLead({
+      id: '11111111-1111-4111-8111-111111111111',
+      email: 'jordan@example.com',
+      ghl_contact_id: 'ghl_keep',
+      stage: 'Qualified - Not Booked',
+    });
+    const score = scoreQualification(payload);
+    const write = leadWriteFromQualification(payload, {
+      ghlContactId: '',
+      score,
+      existing,
+    });
+    expect(write.ghl_contact_id).toBe('ghl_keep');
+    expect(write.stage).toBe('Qualified - Not Booked');
   });
 });

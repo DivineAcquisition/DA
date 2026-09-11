@@ -12,3 +12,8 @@ export const STAGE_ADVANCE_TO_BOOKED = [
   'Qualified - Not Booked',
   'Audit Booked',
 ] as const;
+
+/** PostgREST `not.in` list. Quotes keep spaces in Closed Won / Closed Lost. */
+export function closedStagesPostgrestIn(): string {
+  return `(${CLOSED_STAGES.map((stage) => `"${stage}"`).join(',')})`;
+}

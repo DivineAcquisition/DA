@@ -174,6 +174,7 @@ describe('airtableBookingFields', () => {
   it('appends a booking stamp onto existing notes', () => {
     expect(appendBookingNote('Prior', 'Next')).toBe('Prior\n\nNext');
     expect(appendBookingNote('  ', 'Next')).toBe('Next');
+    expect(appendBookingNote('Prior\n\nNext', 'Next')).toBe('Prior\n\nNext');
   });
 });
 
