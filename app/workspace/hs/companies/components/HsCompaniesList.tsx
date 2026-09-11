@@ -64,7 +64,7 @@ export default function HsCompaniesList({ companies }: { companies: HsCompanyLis
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Company or contact"
-            className="w-full rounded-xl border border-[#2A2A3A] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#937DFF]/60"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-brand-500/60"
           />
         </label>
         <div className="flex flex-wrap gap-1.5">

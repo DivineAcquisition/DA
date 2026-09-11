@@ -71,7 +71,7 @@ export default function PracticeShell({
 
   return (
     <div className="animate-rise">
-      <header className="mb-6 rounded-2xl border border-[#2A2A3A] bg-[#1C1C26] p-5 sm:p-6">
+      <header className="mb-6 rounded-2xl border border-white/10 bg-[#1C1C26] p-5 sm:p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -122,7 +122,7 @@ export default function PracticeShell({
         {error && <p className="mt-3 text-sm text-[#FF6A6A]">{error}</p>}
       </header>
 
-      <div className="mb-6 flex flex-wrap gap-1 border-b border-[#2A2A3A]">
+      <div className="mb-6 flex flex-wrap gap-1 border-b border-white/10">
         {tabs.map((tab) => {
           const active = pathname === tab.href || pathname.startsWith(`${tab.href}/`);
           return (
@@ -159,7 +159,7 @@ export default function PracticeShell({
         <input
           value={typedName}
           onChange={(e) => setTypedName(e.target.value)}
-          className="mt-4 w-full rounded-xl border border-[#2A2A3A] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white outline-none focus:border-[#937DFF]/60"
+          className="mt-4 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white outline-none focus:border-brand-500/60"
         />
         <div className="mt-5 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={() => setDeleteOpen(false)}>

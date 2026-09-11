@@ -195,7 +195,7 @@ export default function CallWorkspace({
 
   return (
     <div className="-mx-5 -my-8 flex min-h-[calc(100vh-4rem)] flex-col sm:-mx-8 sm:-my-10 lg:min-h-screen">
-      <header className="sticky top-16 z-20 flex flex-wrap items-center gap-3 border-b border-[#2A2A3A] bg-[#0B0B0F]/90 px-4 py-3 backdrop-blur-xl lg:top-0 lg:px-6">
+      <header className="sticky top-16 z-20 flex flex-wrap items-center gap-3 border-b border-white/10 bg-[#0B0B0F]/90 px-4 py-3 backdrop-blur-xl lg:top-0 lg:px-6">
         <div className="min-w-0 flex-1">
           <p className={headingClass('truncate text-base font-semibold')}>{call.contact_name}</p>
           <p className="truncate text-sm text-[#B0AEC0]">{call.practice_name}</p>
@@ -377,7 +377,7 @@ export default function CallWorkspace({
                       {stage.objections && (
                         <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                           {stage.objections.map((row) => (
-                            <div key={row.ifTheySay} className="rounded-xl border border-[#2A2A3A] bg-[#1C1C26] p-3">
+                            <div key={row.ifTheySay} className="rounded-xl border border-white/10 bg-[#1C1C26] p-3">
                               <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6E6C80]">
                                 If they say
                               </p>
@@ -442,7 +442,7 @@ export default function CallWorkspace({
                   Generate calendar link
                 </Button>
                 {linkUrl && (
-                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-[#2A2A3A] p-3">
+                  <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-white/10 p-3">
                     <code className="min-w-0 flex-1 truncate text-xs text-[#937DFF]">{linkUrl}</code>
                     <CopyButton value={linkUrl} />
                   </div>

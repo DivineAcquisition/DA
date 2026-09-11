@@ -123,7 +123,7 @@ export default function HsRequirementsForm({
               .filter((item) => item.group === group)
               .map((item) => (
                 <li key={item.key}>
-                  <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#2A2A3A] bg-[#1C1C26] px-4 py-3">
+                  <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-[#1C1C26] px-4 py-3">
                     <input
                       type="checkbox"
                       checked={item.checked}
@@ -140,7 +140,7 @@ export default function HsRequirementsForm({
 
       <section className="space-y-4">
         <h2 className={headingClass('text-lg font-semibold')}>Named owners</h2>
-        <div className="rounded-2xl border border-[#2A2A3A] bg-[#1C1C26] p-4 sm:p-5">
+        <div className="rounded-2xl border border-white/10 bg-[#1C1C26] p-4 sm:p-5">
           <p className="mb-1 text-sm font-semibold text-white">
             CRM export owner <span style={{ color: '#FF6A6A' }}>*</span>
           </p>

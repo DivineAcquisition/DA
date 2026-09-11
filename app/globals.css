@@ -37,6 +37,18 @@
   --color-primary-foreground: #07070b;
   --color-ring: #9a88fc;
 
+  --color-background: #0b0a11;
+  --color-foreground: #ffffff;
+  --color-input: rgb(255 255 255 / 0.10);
+  --color-border: rgb(255 255 255 / 0.07);
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #f87171;
+  --color-popover: #100f18;
+  --color-popover-foreground: #ffffff;
+  --color-accent: rgb(154 136 252 / 0.12);
+  --color-accent-foreground: #c3b6fe;
+  --color-muted: #100f18;
+
   --animate-marquee: marquee var(--duration, 40s) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration, 40s) linear infinite;
   --animate-shine: shine var(--duration, 14s) infinite linear;

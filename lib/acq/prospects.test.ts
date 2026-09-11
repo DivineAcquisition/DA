@@ -4,6 +4,7 @@ import {
   appendBookingNote,
   callSetupNote,
   mapAirtableRecord,
+  mapLeadRow,
   mapProspectToCallSetup,
   prospectSearchFormula,
   sanitizeSearchQuery,
@@ -62,6 +63,7 @@ describe('mapAirtableRecord', () => {
   it('maps select objects and formulas onto call-setup fields', () => {
     const prospect = mapAirtableRecord(qualifiedRecord);
     expect(prospect.recordId).toBe('recsGCP9YvsZMeKmX');
+    expect(prospect.airtableRecordId).toBe('recsGCP9YvsZMeKmX');
     expect(prospect.fullName).toBe('Jordan Blake');
     expect(prospect.email).toBe('jordan@example.com');
     expect(prospect.companyName).toBe('Blake Coaching');
@@ -94,6 +96,40 @@ describe('mapProspectToCallSetup', () => {
     expect(setup.note).toContain('Follow-up Dedicated setter');
     expect(setup.description).toContain('jordan@example.com');
     expect(setup.description).toContain('Airtable:');
+  });
+
+  it('omits the Airtable line when the workspace lead has not been sent yet', () => {
+    const setup = mapProspectToCallSetup(
+      mapLeadRow({
+        id: '11111111-1111-4111-8111-111111111111',
+        created_at: '',
+        updated_at: '',
+        full_name: 'Pat',
+        email: 'pat@example.com',
+        phone: '',
+        company_name: '',
+        coaching_niche: '',
+        stage: 'Step 1 Captured',
+        qualification_result: 'Qualified',
+        readiness_score: 60,
+        monthly_ad_spend: '',
+        follow_up_owner: '',
+        program_price: '',
+        next_action: '',
+        ghl_contact_id: '',
+        audit_booked_date: '',
+        notes: '',
+        meet_url: '',
+        calendar_event_id: '',
+        payload: {},
+        airtable_record_id: null,
+        airtable_synced_at: null,
+        airtable_sync_error: null,
+      }),
+    );
+    expect(setup.description).toContain('pat@example.com');
+    expect(setup.description).not.toContain('Airtable:');
+    expect(setup.recordId).toBe('11111111-1111-4111-8111-111111111111');
   });
 });
 
@@ -138,6 +174,7 @@ describe('airtableBookingFields', () => {
   it('appends a booking stamp onto existing notes', () => {
     expect(appendBookingNote('Prior', 'Next')).toBe('Prior\n\nNext');
     expect(appendBookingNote('  ', 'Next')).toBe('Next');
+    expect(appendBookingNote('Prior\n\nNext', 'Next')).toBe('Prior\n\nNext');
   });
 });
 

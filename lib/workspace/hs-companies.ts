@@ -486,6 +486,25 @@ export function hsStageAfterDebriefOutcome(outcome: HsDebriefOutcome): HsCompany
   return null
 }
 
+/** Pipeline rank. Won and lost are both terminal so they do not overwrite each other. */
+export function hsStageRank(stage: HsCompanyStage): number {
+  switch (stage) {
+    case 'audit_scheduled':
+      return 0
+    case 'audited':
+      return 1
+    case 'proposal_sent':
+      return 2
+    case 'won':
+    case 'lost':
+      return 3
+  }
+}
+
+export function hsStageWouldAdvance(current: HsCompanyStage, next: HsCompanyStage): boolean {
+  return hsStageRank(next) > hsStageRank(current)
+}
+
 export function hsRequirementsDueAt(sentAt: Date): Date {
   return new Date(sentAt.getTime() + 72 * 60 * 60 * 1000)
 }

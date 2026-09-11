@@ -69,7 +69,10 @@ function omitBackendSecrets(row: Record<string, unknown>): Record<string, unknow
     pipeline_call_webhook_secret: _callSecret,
     ...safe
   } = row;
-  return safe;
+  return {
+    ...safe,
+    pipeline_airtable_pat_set: Boolean(String(_airtablePat ?? '').trim()),
+  };
 }
 
 function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings | null {
@@ -84,6 +87,7 @@ function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings |
     company_email: String(safe.company_email ?? ''),
     company_title: String(safe.company_title ?? ''),
     last_synced_at: (safe.last_synced_at as string | null) ?? null,
+    pipeline_airtable_pat_set: Boolean(safe.pipeline_airtable_pat_set),
   };
 }
 
@@ -873,8 +877,13 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
     company_rep: String(formData.get('company_rep') ?? '').trim(),
     company_email: String(formData.get('company_email') ?? '').trim(),
     company_title: String(formData.get('company_title') ?? '').trim(),
+    pipeline_airtable_pat: keepIfBlank('pipeline_airtable_pat', current?.pipeline_airtable_pat_set ? 'keep' : ''),
     updated_at: new Date().toISOString(),
   };
+
+  if (payload.pipeline_airtable_pat === 'keep') {
+    delete (payload as { pipeline_airtable_pat?: string }).pipeline_airtable_pat;
+  }
 
   const { error } = await supabase.from('da_settings').upsert({ id: 1, ...payload });
   if (error) return { ok: false, error: error.message };

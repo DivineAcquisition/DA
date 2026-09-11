@@ -6,8 +6,9 @@ import { publicDaRpc } from '@/lib/workspace/resolve-signing';
  * DA Pipeline Airtable token.
  *
  * Production source is `da_settings.pipeline_airtable_pat` (Supabase backend).
- * `AIRTABLE_API_KEY` is a local-dev fallback only — never a NEXT_PUBLIC value,
- * never sent to a client component.
+ * Used as an outbound destination token so the workspace can send a copy of
+ * leads it already owns. `AIRTABLE_API_KEY` is a local-dev fallback only —
+ * never a NEXT_PUBLIC value, never sent to a client component.
  */
 export function pickAirtableApiKey(fromSettings: string, fromEnv: string): string {
   return fromSettings.trim() || fromEnv.trim();

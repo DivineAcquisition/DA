@@ -147,6 +147,7 @@ export default function HsAuditForm({
   const router = useRouter()
   const [values, setValues] = useState<FormValues>(() => valuesFrom(audit))
   const [error, setError] = useState<string | null>(null)
+  const [completed, setCompleted] = useState(() => Boolean(audit?.completed_at))
   const [pending, startTransition] = useTransition()
   const auditIdRef = useRef(audit?.id ?? null)
   const valuesRef = useRef(values)
@@ -285,7 +286,7 @@ export default function HsAuditForm({
                 <p className="text-xs text-[#6E6C80]">{pillar.helper}</p>
               </div>
               <div
-                className="flex overflow-hidden rounded-xl border border-[#2A2A3A]"
+                className="flex overflow-hidden rounded-xl border border-white/10"
                 role="radiogroup"
                 aria-label={pillar.label}
               >
@@ -382,7 +383,7 @@ export default function HsAuditForm({
           </Field>
         </div>
         {leadGap != null && (
-          <div className="mt-4 rounded-2xl border border-[#2A2A3A] bg-[#1C1C26] px-6 py-6 text-center">
+          <div className="mt-4 rounded-2xl border border-white/10 bg-[#1C1C26] px-6 py-6 text-center">
             <p className="text-sm text-[#6E6C80]">Leads that did not become jobs</p>
             <p className="mt-3 font-[family-name:var(--font-plus-jakarta)] text-[32px] leading-none text-white">
               {leadGap}
@@ -393,29 +394,34 @@ export default function HsAuditForm({
 
       {error && <p className="text-sm text-[#FF6A6A]">{error}</p>}
 
-      <Button
-        type="button"
-        disabled={pending}
-        style={{ backgroundColor: '#6A00FF', color: '#fff' }}
-        onClick={() => {
-          startTransition(async () => {
-            const result = await markHsAuditCompleteAction(
-              companyId,
-              auditIdRef.current,
-              toDraft(valuesRef.current),
-            )
-            if (!result.ok) {
-              setError(result.error)
-              return
-            }
-            setError(null)
-            if (typeof result.data?.id === 'string') auditIdRef.current = result.data.id
-            router.refresh()
-          })
-        }}
-      >
-        Mark audit complete
-      </Button>
+      {completed ? (
+        <p className="text-sm text-[#7AFF8A]">Audit complete</p>
+      ) : (
+        <Button
+          type="button"
+          disabled={pending}
+          style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+          onClick={() => {
+            startTransition(async () => {
+              const result = await markHsAuditCompleteAction(
+                companyId,
+                auditIdRef.current,
+                toDraft(valuesRef.current),
+              )
+              if (!result.ok) {
+                setError(result.error)
+                return
+              }
+              setError(null)
+              setCompleted(true)
+              if (typeof result.data?.id === 'string') auditIdRef.current = result.data.id
+              router.refresh()
+            })
+          }}
+        >
+          Mark audit complete
+        </Button>
+      )}
     </div>
   )
 }

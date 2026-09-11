@@ -11,7 +11,9 @@ import {
   parseNumberInput,
   parsePercentInput,
   percentDisplay,
+  practiceStageAfterDebriefOutcome,
   practiceStageColor,
+  practiceStageWouldAdvance,
   remainingLabel,
   REQUIREMENT_ITEMS,
   tabDot,
@@ -139,6 +141,27 @@ describe('practiceStageColor', () => {
     expect(practiceStageColor('proposal_sent')).toBe('#937DFF');
     expect(practiceStageColor('won')).toBe('#7AFF8A');
     expect(practiceStageColor('lost')).toBe('#FF6A6A');
+  });
+});
+
+describe('practice stage side effects', () => {
+  it('moves verbal yes to proposal sent and not a fit to lost', () => {
+    expect(practiceStageAfterDebriefOutcome('verbal_yes')).toBe('proposal_sent');
+    expect(practiceStageAfterDebriefOutcome('not_a_fit')).toBe('lost');
+    expect(practiceStageAfterDebriefOutcome('thinking')).toBeNull();
+  });
+
+  it('does not roll a later stage back to audited or proposal sent', () => {
+    expect(practiceStageWouldAdvance('proposal_sent', 'audited')).toBe(false);
+    expect(practiceStageWouldAdvance('won', 'audited')).toBe(false);
+    expect(practiceStageWouldAdvance('lost', 'proposal_sent')).toBe(false);
+    expect(practiceStageWouldAdvance('won', 'lost')).toBe(false);
+  });
+
+  it('still advances earlier stages', () => {
+    expect(practiceStageWouldAdvance('audit_scheduled', 'audited')).toBe(true);
+    expect(practiceStageWouldAdvance('audited', 'proposal_sent')).toBe(true);
+    expect(practiceStageWouldAdvance('proposal_sent', 'won')).toBe(true);
   });
 });
 

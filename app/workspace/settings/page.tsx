@@ -18,7 +18,7 @@ export default async function SettingsPage() {
     <div className="animate-rise space-y-6">
       <PageHeader
         title="Settings"
-        description="DocuSeal credentials, automatic field mapping, and public URL configuration. Values are stored in the database."
+        description="DocuSeal credentials, Airtable send destination, automatic field mapping, and public URL configuration. Values are stored in the database."
         actions={<SyncDocuSealButton variant="secondary" />}
       />
 

@@ -55,7 +55,7 @@ export const GHL_FIELD_READINESS = process.env.GHL_FIELD_READINESS?.trim() || ''
 export const GHL_FIELD_QUAL_RESULT = process.env.GHL_FIELD_QUAL_RESULT?.trim() || '';
 
 /**
- * Local-dev fallback only. Production reads the token from
+ * Local-dev fallback only. Production reads the destination token from
  * `da_settings.pipeline_airtable_pat` via the service role. Never NEXT_PUBLIC.
  */
 export const AIRTABLE_API_KEY = process.env.AIRTABLE_API_KEY?.trim() || '';

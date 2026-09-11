@@ -2,6 +2,12 @@
 
 import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { Input as CossInput } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/select';
+import { ShineBorder } from '@/components/ui/shine-border';
+import { Textarea as CossTextarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import { ws } from './tokens';
 
 /** Workspace-scoped SaaS primitives — hiring-page visual language + brief brand tokens. */
@@ -35,15 +41,15 @@ export function Button({
 }
 
 export function Input({ className = '', ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`${ws.input} ${className}`} {...props} />;
+  return <CossInput nativeInput className={className} {...props} />;
 }
 
 export function Textarea({ className = '', ...props }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={`${ws.input} min-h-28 resize-y ${className}`} {...props} />;
+  return <CossTextarea className={className} {...props} />;
 }
 
 export function Select({ className = '', ...props }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={`${ws.input} ${className}`} {...props} />;
+  return <NativeSelect className={className} {...props} />;
 }
 
 export function Field({
@@ -59,8 +65,29 @@ export function Field({
     <label className="block">
       <span className={ws.label}>{label}</span>
       {children}
-      {hint && <span className="mt-1 block text-xs text-neutral-500">{hint}</span>}
+      {hint ? <span className="mt-1 block text-xs text-neutral-500">{hint}</span> : null}
     </label>
+  );
+}
+
+/** Workspace card: Vistrial panel surface with Magic shine on the border. */
+export function Card({
+  children,
+  className = '',
+  shine = true,
+  beam = false,
+}: {
+  children: ReactNode;
+  className?: string;
+  shine?: boolean;
+  beam?: boolean;
+}) {
+  return (
+    <div className={cn(ws.card, className)}>
+      {shine ? <ShineBorder borderWidth={1} duration={14} /> : null}
+      {beam ? <BorderBeam borderWidth={1} colorFrom="#9A88FC" colorTo="#C3B6FE" /> : null}
+      <div className="relative z-[1]">{children}</div>
+    </div>
   );
 }
 
@@ -138,10 +165,10 @@ export function PageHeader({
 
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
-    <div className={`${ws.card} px-6 py-14 text-center`}>
+    <Card className="px-6 py-14 text-center">
       <p className={`${ws.heading} text-base font-semibold`}>{title}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-neutral-400">{description}</p>
-    </div>
+    </Card>
   );
 }
 
@@ -199,6 +226,7 @@ export function Dialog({
         aria-labelledby={titleId}
         className={`${ws.card} relative z-10 max-h-[min(90vh,52rem)] w-full max-w-lg overflow-y-auto animate-rise p-5 shadow-2xl sm:p-6`}
       >
+        <ShineBorder borderWidth={1} duration={14} />
         <div className="mb-5 flex items-start justify-between gap-3">
           <h2 id={titleId} className={`${ws.heading} text-lg font-semibold`}>
             {title}
@@ -288,6 +316,7 @@ export function DataTable({
 }) {
   return (
     <div className={`${ws.card} overflow-hidden`}>
+      <ShineBorder borderWidth={1} duration={18} />
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className={ws.panelHeader}>

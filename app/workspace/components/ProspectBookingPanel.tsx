@@ -2,12 +2,18 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react';
 import {
+  createProspectAction,
   scheduleProspectCallAction,
   searchProspectsAction,
 } from '@/lib/acq/booking-actions';
 import type { ProspectRecord } from '@/lib/acq/prospects';
-import { Badge, Button, Field, Input, Select, Textarea } from './ui';
-import { ws } from './tokens';
+import {
+  AD_SPEND_OPTIONS,
+  FOLLOW_UP_OPTIONS,
+  PROGRAM_PRICE_OPTIONS,
+} from '@/lib/acq/qualify';
+import { isClosedStage } from '@/lib/acq/stages';
+import { Badge, Button, Card, Dialog, Field, Input, Select, Textarea } from './ui';
 
 const TIME_ZONES = [
   'America/New_York',
@@ -47,8 +53,11 @@ export default function ProspectBookingPanel({
   const [searchError, setSearchError] = useState<string | null>(null);
   const [searching, startSearch] = useTransition();
   const [booking, startBooking] = useTransition();
+  const [creating, startCreate] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const selected = useMemo(
@@ -56,7 +65,11 @@ export default function ProspectBookingPanel({
     [prospects, selectedId],
   );
 
-  const runSearch = (nextQuery = query, nextInclude = includeManualReview) => {
+  const runSearch = (
+    nextQuery = query,
+    nextInclude = includeManualReview,
+    keepProspect?: ProspectRecord | null,
+  ) => {
     setSearchError(null);
     startSearch(async () => {
       const [open, alreadyBooked] = await Promise.all([
@@ -65,43 +78,43 @@ export default function ProspectBookingPanel({
       ]);
       if (!open.ok) {
         setSearchError(open.error);
-        setProspects([]);
+        setProspects(keepProspect && !isClosedStage(keepProspect.stage) ? [keepProspect] : []);
       } else {
-        setProspects(open.prospects);
+        const rows = open.prospects;
+        const keep =
+          keepProspect &&
+          !isClosedStage(keepProspect.stage) &&
+          !rows.some((row) => row.recordId === keepProspect.recordId)
+            ? keepProspect
+            : null;
+        setProspects(keep ? [keep, ...rows] : rows);
       }
       if (alreadyBooked.ok) setBooked(alreadyBooked.prospects);
     });
   };
 
   useEffect(() => {
-    if (!airtableReady) return;
     runSearch('', false);
     // Initial load only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [airtableReady]);
-
-  if (!airtableReady) {
-    return (
-      <div className={`${ws.card} px-6 py-10 text-sm text-neutral-400`}>
-        Airtable is not configured. The pipeline token lives in Supabase{' '}
-        <code className="text-brand-300">da_settings</code>, not in the app.
-      </div>
-    );
-  }
+  }, []);
 
   return (
     <div className="space-y-8">
-      <section className={`${ws.card} p-5 sm:p-7`}>
+      <Card className="p-5 sm:p-7" beam>
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
-          DA Pipeline
+          Workspace leads
         </p>
         <h2 className="mt-2 text-lg font-semibold text-white">Search legit prospects</h2>
         <p className="mt-2 max-w-2xl text-sm text-neutral-500">
-          Pulls Qualified leads (readiness 60+) from the Client Acquisition Leads table. Pick one to
-          map name, email, company, and score into a 30-minute Lead Leak Audit with Google Meet.
+          Qualified leads (readiness 60+) stored in this workspace. Pick one to map name, email,
+          company, and score into a 30-minute Lead Leak Audit with Google Meet. A copy is sent to
+          Airtable when a destination PAT is set.
         </p>
         <p className="mt-2 text-xs text-neutral-600">
           Google Calendar / Meet: {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_*'}
+          {' · '}
+          Airtable send: {airtableReady ? 'destination ready' : 'no PAT — bookings still save here'}
         </p>
 
         <form
@@ -136,6 +149,17 @@ export default function ProspectBookingPanel({
           <Button type="submit" disabled={searching} className="sm:mb-0.5">
             {searching ? 'Searching…' : 'Search'}
           </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            className="sm:mb-0.5"
+            onClick={() => {
+              setCreateError(null);
+              setCreateOpen(true);
+            }}
+          >
+            New prospect
+          </Button>
         </form>
 
         {searchError && (
@@ -143,7 +167,7 @@ export default function ProspectBookingPanel({
             {searchError}
           </p>
         )}
-      </section>
+      </Card>
 
       <section>
         <div className="mb-3 flex items-end justify-between gap-3">
@@ -158,9 +182,10 @@ export default function ProspectBookingPanel({
         </div>
 
         {prospects.length === 0 && !searching ? (
-          <div className={`${ws.card} px-6 py-10 text-center text-sm text-neutral-500`}>
-            No legit prospects match that search. Qualified leads who are not closed will show here.
-          </div>
+          <Card className="px-6 py-10 text-center text-sm text-neutral-500" shine={false}>
+            No legit prospects match that search. Qualified workspace leads who are not closed will
+            show here. Use New prospect if the public form has not landed them yet.
+          </Card>
         ) : (
           <div className="space-y-2.5">
             {prospects.map((prospect) => {
@@ -168,7 +193,7 @@ export default function ProspectBookingPanel({
               return (
                 <article
                   key={prospect.recordId}
-                  className={`${ws.card} flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
+                  className={`panel relative overflow-hidden rounded-2xl flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${
                     active ? 'ring-1 ring-brand-500/40' : ''
                   }`}
                 >
@@ -192,14 +217,18 @@ export default function ProspectBookingPanel({
                     ) : null}
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
-                    <a
-                      href={prospect.airtableUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-brand-300 hover:underline"
-                    >
-                      Airtable
-                    </a>
+                    {prospect.airtableUrl ? (
+                      <a
+                        href={prospect.airtableUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs text-brand-300 hover:underline"
+                      >
+                        Airtable
+                      </a>
+                    ) : (
+                      <span className="text-xs text-neutral-600">Not sent</span>
+                    )}
                     <Button
                       type="button"
                       size="sm"
@@ -221,7 +250,7 @@ export default function ProspectBookingPanel({
       </section>
 
       {selected && (
-        <section className={`${ws.card} p-5 sm:p-7`}>
+        <Card className="p-5 sm:p-7">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
             Call setup
           </p>
@@ -294,7 +323,7 @@ export default function ProspectBookingPanel({
                 </Select>
               </Field>
             </div>
-            <Field label="Internal note" hint="Appended to the calendar description. Airtable already gets the score brief.">
+            <Field label="Internal note" hint="Appended to the calendar description. The workspace lead already has the score brief.">
               <Textarea name="note" rows={3} placeholder="Optional context for the call" />
             </Field>
 
@@ -318,7 +347,7 @@ export default function ProspectBookingPanel({
               </p>
             )}
           </form>
-        </section>
+        </Card>
       )}
 
       <section>
@@ -328,14 +357,14 @@ export default function ProspectBookingPanel({
         <h3 className="mt-1 text-lg font-semibold text-white">Audit Booked</h3>
         <div className="mt-4 space-y-2.5">
           {booked.length === 0 ? (
-            <div className={`${ws.card} px-5 py-8 text-center text-sm text-neutral-500`}>
+            <Card className="px-5 py-8 text-center text-sm text-neutral-500" shine={false}>
               No internally booked audits yet.
-            </div>
+            </Card>
           ) : (
             booked.map((prospect) => (
               <article
                 key={prospect.recordId}
-                className={`${ws.card} flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between`}
+                className="panel rounded-2xl flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-white">{prospect.fullName}</p>
@@ -353,15 +382,110 @@ export default function ProspectBookingPanel({
                   ) : (
                     <span className="text-neutral-600">No Meet URL</span>
                   )}
-                  <a href={prospect.airtableUrl} className="text-neutral-500 hover:underline" target="_blank" rel="noreferrer">
-                    Airtable
-                  </a>
+                  {prospect.airtableUrl ? (
+                    <a href={prospect.airtableUrl} className="text-neutral-500 hover:underline" target="_blank" rel="noreferrer">
+                      Airtable
+                    </a>
+                  ) : (
+                    <span className="text-neutral-600">Not sent</span>
+                  )}
                 </div>
               </article>
             ))
           )}
         </div>
       </section>
+
+      <Dialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title="New prospect"
+      >
+        <form
+          className="space-y-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const formData = new FormData(event.currentTarget);
+            setCreateError(null);
+            startCreate(async () => {
+              const result = await createProspectAction(formData);
+              if (!result.ok) {
+                setCreateError(result.error);
+                return;
+              }
+              setCreateOpen(false);
+              setMessage(result.message);
+              if (isClosedStage(result.prospect.stage)) {
+                setSelectedId(null);
+                runSearch(query, includeManualReview);
+                return;
+              }
+              setSelectedId(result.prospect.recordId);
+              const includeManual =
+                includeManualReview || result.prospect.qualificationResult === 'Manual Review';
+              if (includeManual) setIncludeManualReview(true);
+              runSearch(query, includeManual, result.prospect);
+            });
+          }}
+        >
+          <p className="text-sm text-neutral-500">
+            Stored in the workspace. Score is computed here, then a copy is sent to Airtable when
+            the destination PAT is set.
+          </p>
+          <Field label="Full name">
+            <Input name="fullName" required placeholder="Jordan Blake" />
+          </Field>
+          <Field label="Email">
+            <Input name="email" type="email" required placeholder="jordan@example.com" />
+          </Field>
+          <Field label="Phone">
+            <Input name="phone" required placeholder="555-201-8890" />
+          </Field>
+          <Field label="Company">
+            <Input name="companyName" required placeholder="Blake Coaching" />
+          </Field>
+          <Field label="Monthly ad spend">
+            <Select name="adSpend" required defaultValue="$2-5k">
+              {AD_SPEND_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Follow-up owner">
+            <Select name="followUp" required defaultValue="Founder">
+              {FOLLOW_UP_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Program price">
+            <Select name="programPrice" required defaultValue="$2-5k">
+              {PROGRAM_PRICE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          {createError && (
+            <p className="rounded-xl border border-flag-critical/25 bg-flag-critical/[0.08] px-3.5 py-2.5 text-sm text-flag-critical">
+              {createError}
+            </p>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="secondary" onClick={() => setCreateOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={creating}>
+              {creating ? 'Saving…' : 'Save prospect'}
+            </Button>
+          </div>
+        </form>
+      </Dialog>
     </div>
   );
 }

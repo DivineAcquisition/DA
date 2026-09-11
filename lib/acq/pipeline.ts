@@ -17,8 +17,6 @@ import {
   APP_COMPLETE_TAG,
   RESULT_TAGS,
   airtableFieldsFromPayload,
-  normalizeQualificationResult,
-  parseReadinessScore,
   qualificationResultTag,
   type QualificationPayload,
   type QualificationResult,
@@ -401,9 +399,10 @@ function escapeFormulaValue(value: string): string {
 export async function upsertAirtableLead(
   payload: QualificationPayload,
   ghlContactId: string,
+  existingRecordId?: string | null,
 ): Promise<AirtableScore> {
   if (!(await airtableReady())) {
-    throw new PipelineStepError('airtable-lead', 'Airtable API key or base/table id is not configured.');
+    throw new PipelineStepError('airtable-lead', 'Airtable destination is not configured.');
   }
 
   const fields = airtableFieldsFromPayload(payload, {
@@ -411,14 +410,16 @@ export async function upsertAirtableLead(
     entryPoint: AIRTABLE_ENTRY_POINT,
   });
 
-  const formula = `LOWER({Email})='${escapeFormulaValue(payload.email)}'`;
-  const found = await airtableFetch<{ records?: Array<{ id: string }> }>(
-    `?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`,
-    { method: 'GET' },
-    'airtable-lead',
-  );
-
-  const existingId = found.records?.[0]?.id;
+  let existingId = existingRecordId?.trim() || '';
+  if (!existingId) {
+    const formula = `LOWER({Email})='${escapeFormulaValue(payload.email)}'`;
+    const found = await airtableFetch<{ records?: Array<{ id: string }> }>(
+      `?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`,
+      { method: 'GET' },
+      'airtable-lead',
+    );
+    existingId = found.records?.[0]?.id ?? '';
+  }
   const written = existingId
     ? await airtableFetch<{ id: string }>(
         `/${existingId}`,
@@ -436,15 +437,10 @@ export async function upsertAirtableLead(
     throw new PipelineStepError('airtable-lead', 'Airtable write returned no record id');
   }
 
-  const read = await airtableFetch<{
-    id: string;
-    fields?: Record<string, unknown>;
-  }>(`/${recordId}`, { method: 'GET' }, 'airtable-lead');
-
   return {
     recordId,
-    readinessScore: parseReadinessScore(read.fields?.['Readiness Score']),
-    qualificationResult: normalizeQualificationResult(read.fields?.['Qualification Result']),
+    readinessScore: null,
+    qualificationResult: null,
   };
 }
 
