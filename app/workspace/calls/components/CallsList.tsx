@@ -11,10 +11,7 @@ import {
   type CallStatus,
 } from '@/lib/workspace/calls';
 import { nicheFamily, nicheLabel, type NicheFamily } from '@/lib/workspace/niches';
-import {
-  matchesWorkspaceSearch,
-  type WorkspaceCallListRow,
-} from '@/lib/workspace/workspace-lists';
+import { matchesWorkspaceSearch, type WorkspaceCallListRow } from '@/lib/workspace/workspace-list-types';
 
 function StatusBadge({ status }: { status: CallStatus }) {
   const color = callStatusColor(status);

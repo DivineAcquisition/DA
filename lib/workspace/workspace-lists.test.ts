@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { matchesWorkspaceSearch } from './workspace-lists';
+import { matchesWorkspaceSearch } from './workspace-list-types';
 
 describe('matchesWorkspaceSearch', () => {
   it('matches contact, account, and niche label', () => {

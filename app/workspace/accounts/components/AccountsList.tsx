@@ -7,14 +7,11 @@ import { formatDate } from '@/lib/workspace/format';
 import { nicheFamily, nicheLabel, type NicheFamily, type WorkspaceNiche } from '@/lib/workspace/niches';
 import {
   PRACTICE_STAGES,
+  formatCurrency,
   practiceStageLabel,
   type PracticeStage,
 } from '@/lib/workspace/practices';
-import {
-  formatCurrency,
-  matchesWorkspaceSearch,
-  type WorkspaceAccountListRow,
-} from '@/lib/workspace/workspace-lists';
+import { matchesWorkspaceSearch, type WorkspaceAccountListRow } from '@/lib/workspace/workspace-list-types';
 import NicheSelect from '../../components/NicheSelect';
 import { Button, DataTable, Dialog, EmptyState, Field, Input, PageHeader } from '../../components/ui';
 import { StageBadge } from '../../practices/components/badges';
