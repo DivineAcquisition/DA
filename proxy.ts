@@ -136,6 +136,8 @@ const SURFACES: Surface[] = [
     // /practices on this host is the internal audit/debrief/requirements
     // workspace (rewritten to /workspace/practices). acq.divineacquisition.io
     // keeps the public practices landing.
+    // /hs/calls on this host is the home-services qualifying workspace
+    // (rewritten to /workspace/hs/calls).
     allow: (pathname) =>
       pathname === '/' ||
       pathname.startsWith('/workspace') ||
@@ -154,6 +156,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/calls/') ||
       pathname === '/practices' ||
       pathname.startsWith('/practices/') ||
+      pathname === '/hs/calls' ||
+      pathname.startsWith('/hs/calls/') ||
       pathname.startsWith('/settings'),
   },
   {
