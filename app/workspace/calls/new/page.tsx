@@ -9,7 +9,7 @@ export default function NewCallPage() {
     <div className="animate-rise mx-auto w-full max-w-[640px]">
       <PageHeader
         title="New call"
-        description="Create a qualifying call record, then open the live workspace."
+        description="Select a niche first. The qualifying script, roles, and size questions follow that niche."
         actions={
           <Link href="/workspace/calls" className="text-sm text-brand-300 hover:underline">
             Back to calls

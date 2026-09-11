@@ -1,18 +1,18 @@
 import Link from 'next/link';
 import { PageHeader } from '../components/ui';
-import { listCalls } from '@/lib/workspace/call-queries';
+import { listWorkspaceCalls } from '@/lib/workspace/workspace-lists';
 import CallsList from './components/CallsList';
 
 export const dynamic = 'force-dynamic';
 
 export default async function CallsPage() {
-  const calls = await listCalls();
+  const calls = await listWorkspaceCalls();
 
   return (
     <div className="animate-rise">
       <PageHeader
         title="Calls"
-        description="15-minute qualifying calls. The only goal is booking the practice audit."
+        description="15-minute qualifying calls. Pick a niche when you create the record — practice scripts and home-services scripts stay separate after that."
         actions={
           <Link
             href="/workspace/calls/new"

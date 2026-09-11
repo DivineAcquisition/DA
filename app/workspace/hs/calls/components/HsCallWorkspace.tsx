@@ -510,7 +510,7 @@ export default function HsCallWorkspace({
                   setError(result.error);
                   setPendingOutcome(null);
                 } else {
-                  router.push('/workspace/hs/calls');
+                  router.push('/workspace/calls');
                 }
               });
             }}

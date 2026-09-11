@@ -8,7 +8,7 @@ import Backdrop from '@/app/components/Backdrop';
 import { signOutAction } from '@/lib/workspace/actions';
 import { Button } from './ui';
 
-type NavItem = { href: string; label: string; icon: NavIcon; match?: string };
+type NavItem = { href: string; label: string; icon: NavIcon; match?: string; aliases?: string[] };
 type NavIcon =
   | 'grid'
   | 'people'
@@ -42,10 +42,8 @@ const NAV: { heading: string; items: NavItem[] }[] = [
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
       { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
-      { href: '/workspace/calls', label: 'Calls', icon: 'phone' },
-      { href: '/workspace/hs/calls', label: 'HS calls', icon: 'home' },
-      { href: '/workspace/hs/companies', label: 'HS companies', icon: 'company' },
-      { href: '/workspace/practices', label: 'Practices', icon: 'clinic' },
+      { href: '/workspace/calls', label: 'Calls', icon: 'phone', aliases: ['/workspace/hs/calls'] },
+      { href: '/workspace/accounts', label: 'Accounts', icon: 'clinic', aliases: ['/workspace/practices', '/workspace/hs/companies'] },
       { href: '/workspace/bookings', label: 'Prospect calls', icon: 'bookings' },
       { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
@@ -94,19 +92,16 @@ function NavIconGlyph({ icon }: { icon: NavIcon }) {
   );
 }
 
+function pathMatches(pathname: string, href: string) {
+  return pathname === href || pathname === `${href}/` || pathname.startsWith(`${href}/`);
+}
+
 function isActive(pathname: string, item: NavItem) {
-  const exact = pathname === item.href || pathname === `${item.href}/`;
-  if (item.match && item.href === item.match) return exact;
-  if (exact) return true;
-  if (!pathname.startsWith(`${item.href}/`)) return false;
-  // A child route owns the highlight — parents stay quiet.
-  const allHrefs = NAV.flatMap((group) => group.items.map((entry) => entry.href));
-  return !allHrefs.some(
-    (href) =>
-      href !== item.href &&
-      href.startsWith(`${item.href}/`) &&
-      (pathname === href || pathname.startsWith(`${href}/`)),
-  );
+  const candidates = [item.href, ...(item.aliases ?? [])];
+  if (item.match && item.href === item.match) {
+    return candidates.some((href) => pathname === href || pathname === `${href}/`);
+  }
+  return candidates.some((href) => pathMatches(pathname, href));
 }
 
 function SidebarContent({

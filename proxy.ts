@@ -133,9 +133,10 @@ const SURFACES: Surface[] = [
     // Public token routes stay at /p, /c, /s without the workspace prefix.
     // /calls on this host is the 15-minute qualifying workspace (rewritten to
     // /workspace/calls). calls.divineacquisition.io keeps Call Intelligence.
-    // /practices on this host is the internal audit/debrief/requirements
-    // workspace (rewritten to /workspace/practices). acq.divineacquisition.io
-    // keeps the public practices landing.
+    // /accounts on this host is the audit/debrief/requirements workspace
+    // (rewritten to /workspace/accounts). /practices and /hs/companies still
+    // open existing records. acq.divineacquisition.io keeps the public
+    // practices landing.
     // /hs/calls on this host is the home-services qualifying workspace
     // (rewritten to /workspace/hs/calls).
     // /hs/companies on this host is the home-services audit/debrief/requirements
@@ -156,6 +157,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/bookings') ||
       pathname === '/calls' ||
       pathname.startsWith('/calls/') ||
+      pathname === '/accounts' ||
+      pathname.startsWith('/accounts/') ||
       pathname === '/practices' ||
       pathname.startsWith('/practices/') ||
       pathname === '/hs/calls' ||

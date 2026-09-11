@@ -46,6 +46,8 @@ async function maybeAdvancePracticeStage(
 function revalidatePractice(id?: string) {
   revalidatePath('/workspace/practices');
   revalidatePath('/practices');
+  revalidatePath('/workspace/accounts');
+  revalidatePath('/accounts');
   if (id) {
     revalidatePath(`/workspace/practices/${id}`);
     revalidatePath(`/practices/${id}`);
@@ -168,6 +170,19 @@ export async function updatePracticeStageAction(id: string, stage: string): Prom
   return { ok: true, message: 'Stage updated.' };
 }
 
+export async function updatePracticeTypeAction(id: string, practiceType: string): Promise<ActionResult> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return { ok: false, error: 'Admin access required.' };
+  const next = asPracticeType(practiceType);
+  if (!next) return { ok: false, error: 'Unknown niche.' };
+
+  const { error } = await supabase.from('practices').update({ practice_type: next }).eq('id', id);
+  if (error) return { ok: false, error: error.message };
+  revalidatePractice(id);
+  return { ok: true, message: 'Niche updated.' };
+}
+
 export async function deletePracticeAction(id: string, typedName: string): Promise<ActionResult> {
   const session = await requireAdmin();
   const supabase = await workspaceClient();
@@ -182,7 +197,7 @@ export async function deletePracticeAction(id: string, typedName: string): Promi
   const { error } = await supabase.from('practices').delete().eq('id', id);
   if (error) return { ok: false, error: error.message };
   revalidatePractice();
-  redirect('/workspace/practices');
+  redirect('/workspace/accounts');
 }
 
 function auditRow(draft: AuditDraft): Record<string, unknown> {

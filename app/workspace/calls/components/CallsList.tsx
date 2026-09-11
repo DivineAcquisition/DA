@@ -8,12 +8,13 @@ import {
   CALL_STATUSES,
   callStatusColor,
   callStatusLabel,
-  frontDeskLabel,
-  matchesCallSearch,
-  practiceTypeLabel,
-  type CallRecord,
   type CallStatus,
 } from '@/lib/workspace/calls';
+import { nicheFamily, nicheLabel, type NicheFamily } from '@/lib/workspace/niches';
+import {
+  matchesWorkspaceSearch,
+  type WorkspaceCallListRow,
+} from '@/lib/workspace/workspace-lists';
 
 function StatusBadge({ status }: { status: CallStatus }) {
   const color = callStatusColor(status);
@@ -27,17 +28,25 @@ function StatusBadge({ status }: { status: CallStatus }) {
   );
 }
 
-export default function CallsList({ calls }: { calls: CallRecord[] }) {
+const FAMILY_FILTERS: { id: NicheFamily | 'all'; label: string }[] = [
+  { id: 'all', label: 'All niches' },
+  { id: 'practice', label: 'Practices' },
+  { id: 'home_services', label: 'Home services' },
+];
+
+export default function CallsList({ calls }: { calls: WorkspaceCallListRow[] }) {
   const [query, setQuery] = useState('');
   const [statuses, setStatuses] = useState<CallStatus[]>([]);
+  const [family, setFamily] = useState<NicheFamily | 'all'>('all');
 
   const visible = useMemo(() => {
     return calls.filter((call) => {
-      if (!matchesCallSearch(call, query)) return false;
+      if (!matchesWorkspaceSearch(call, query)) return false;
       if (statuses.length > 0 && !statuses.includes(call.status)) return false;
+      if (family !== 'all' && nicheFamily(call.niche) !== family) return false;
       return true;
     });
-  }, [calls, query, statuses]);
+  }, [calls, query, statuses, family]);
 
   function toggleStatus(status: CallStatus) {
     setStatuses((current) =>
@@ -47,35 +56,57 @@ export default function CallsList({ calls }: { calls: CallRecord[] }) {
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <label className="block flex-1 sm:max-w-sm">
-          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-dim)]">
-            Search
-          </span>
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Contact or practice"
-            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-brand-500/60"
-          />
-        </label>
+      <div className="mb-5 flex flex-col gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <label className="block flex-1 sm:max-w-sm">
+            <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-dim)]">
+              Search
+            </span>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Contact, account, or niche"
+              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-brand-500/60"
+            />
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {CALL_STATUSES.map((status) => {
+              const active = statuses.includes(status);
+              const color = callStatusColor(status);
+              return (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => toggleStatus(status)}
+                  className="rounded-full border px-3 py-1 text-[12px] font-semibold transition"
+                  style={{
+                    color: active ? color : '#6E6C80',
+                    borderColor: active ? `${color}88` : 'rgba(255,255,255,0.1)',
+                    backgroundColor: active ? `${color}22` : 'transparent',
+                  }}
+                >
+                  {callStatusLabel(status)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div className="flex flex-wrap gap-1.5">
-          {CALL_STATUSES.map((status) => {
-            const active = statuses.includes(status);
-            const color = callStatusColor(status);
+          {FAMILY_FILTERS.map((item) => {
+            const active = family === item.id;
             return (
               <button
-                key={status}
+                key={item.id}
                 type="button"
-                onClick={() => toggleStatus(status)}
+                onClick={() => setFamily(item.id)}
                 className="rounded-full border px-3 py-1 text-[12px] font-semibold transition"
                 style={{
-                  color: active ? color : '#6E6C80',
-                  borderColor: active ? `${color}88` : 'rgba(255,255,255,0.1)',
-                  backgroundColor: active ? `${color}22` : 'transparent',
+                  color: active ? '#937DFF' : '#6E6C80',
+                  borderColor: active ? '#937DFF88' : 'rgba(255,255,255,0.1)',
+                  backgroundColor: active ? '#937DFF22' : 'transparent',
                 }}
               >
-                {callStatusLabel(status)}
+                {item.label}
               </button>
             );
           })}
@@ -87,28 +118,26 @@ export default function CallsList({ calls }: { calls: CallRecord[] }) {
           title={calls.length === 0 ? 'No calls yet' : 'No matching calls'}
           description={
             calls.length === 0
-              ? 'Create a call record to open the live workspace.'
-              : 'Clear the status pills or search to see more records.'
+              ? 'Create a call record. The script follows the niche you pick.'
+              : 'Clear the filters or search to see more records.'
           }
         />
       ) : (
-        <DataTable
-          headers={['Contact', 'Practice', 'Type', 'Front desk', 'Status', 'Created']}
-        >
+        <DataTable headers={['Contact', 'Account', 'Niche', 'Size', 'Status', 'Created']}>
           {visible.map((call) => (
-            <tr key={call.id} className="hover:bg-white/[0.02]">
+            <tr key={`${call.family}:${call.id}`} className="hover:bg-white/[0.02]">
               <td className="px-4 py-3">
-                <Link href={`/workspace/calls/${call.id}`} className="font-medium text-white hover:text-brand-300">
+                <Link href={call.href} className="font-medium text-white hover:text-brand-300">
                   {call.contact_name}
                 </Link>
               </td>
-              <td className="px-4 py-3 text-[var(--ws-body)]">{call.practice_name}</td>
+              <td className="px-4 py-3 text-[var(--ws-body)]">{call.account_name}</td>
               <td className="px-4 py-3">
                 <span className="inline-flex items-center rounded-full border border-brand-500/25 bg-brand-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-brand-300">
-                  {practiceTypeLabel(call.practice_type)}
+                  {nicheLabel(call.niche)}
                 </span>
               </td>
-              <td className="px-4 py-3 tabular-nums text-white">{frontDeskLabel(call.front_desk_size)}</td>
+              <td className="px-4 py-3 tabular-nums text-white">{call.size_label}</td>
               <td className="px-4 py-3">
                 <StatusBadge status={call.status} />
               </td>

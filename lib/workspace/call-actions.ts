@@ -27,6 +27,8 @@ import {
 function revalidateCall(id?: string) {
   revalidatePath('/workspace/calls');
   revalidatePath('/calls');
+  revalidatePath('/workspace/hs/calls');
+  revalidatePath('/hs/calls');
   if (id) {
     revalidatePath(`/workspace/calls/${id}`);
     revalidatePath(`/calls/${id}`);

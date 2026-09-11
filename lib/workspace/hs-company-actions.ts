@@ -49,6 +49,8 @@ async function maybeAdvanceHsCompanyStage(
 function revalidateHsCompany(id?: string) {
   revalidatePath('/workspace/hs/companies')
   revalidatePath('/hs/companies')
+  revalidatePath('/workspace/accounts')
+  revalidatePath('/accounts')
   if (id) {
     revalidatePath(`/workspace/hs/companies/${id}`)
     revalidatePath(`/hs/companies/${id}`)
@@ -173,6 +175,19 @@ export async function updateHsCompanyStageAction(id: string, stage: string): Pro
   return { ok: true, message: 'Stage updated.' }
 }
 
+export async function updateHsCompanyTradeAction(id: string, trade: string): Promise<ActionResult> {
+  const session = await requireAdmin()
+  const supabase = await workspaceClient()
+  if (!session || !supabase) return { ok: false, error: 'Admin access required.' }
+  const next = asTrade(trade)
+  if (!next) return { ok: false, error: 'Unknown niche.' }
+
+  const { error } = await supabase.from('hs_companies').update({ trade: next }).eq('id', id)
+  if (error) return { ok: false, error: error.message }
+  revalidateHsCompany(id)
+  return { ok: true, message: 'Niche updated.' }
+}
+
 export async function deleteHsCompanyAction(id: string, typedName: string): Promise<ActionResult> {
   const session = await requireAdmin()
   const supabase = await workspaceClient()
@@ -187,7 +202,7 @@ export async function deleteHsCompanyAction(id: string, typedName: string): Prom
   const { error } = await supabase.from('hs_companies').delete().eq('id', id)
   if (error) return { ok: false, error: error.message }
   revalidateHsCompany()
-  redirect('/workspace/hs/companies')
+  redirect('/workspace/accounts')
 }
 
 function auditRow(draft: HsAuditDraft): Record<string, unknown> {

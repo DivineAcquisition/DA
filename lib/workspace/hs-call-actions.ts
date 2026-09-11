@@ -29,6 +29,8 @@ import {
 function revalidateHsCall(id?: string) {
   revalidatePath('/workspace/hs/calls');
   revalidatePath('/hs/calls');
+  revalidatePath('/workspace/calls');
+  revalidatePath('/calls');
   if (id) {
     revalidatePath(`/workspace/hs/calls/${id}`);
     revalidatePath(`/hs/calls/${id}`);
@@ -240,5 +242,5 @@ export async function setHsCallOutcomeAction(
   if (error) return { ok: false, error: error.message };
 
   revalidateHsCall(callId);
-  redirect('/workspace/hs/calls');
+  redirect('/workspace/calls');
 }

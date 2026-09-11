@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { deletePracticeAction, updatePracticeStageAction } from '@/lib/workspace/practice-actions';
+import { deletePracticeAction, updatePracticeStageAction, updatePracticeTypeAction } from '@/lib/workspace/practice-actions';
+import { PRACTICE_TYPES, practiceTypeLabel } from '@/lib/workspace/calls';
 import {
   auditFormDot,
   debriefFormDot,
@@ -19,7 +20,7 @@ import {
   type RequirementsRecord,
 } from '@/lib/workspace/practices';
 import { Button, Dialog, Select } from '../../components/ui';
-import { StageBadge, TypeBadge } from './badges';
+import { StageBadge } from './badges';
 
 function headingClass(extra = '') {
   return `font-[family-name:var(--font-plus-jakarta)] tracking-tight text-white ${extra}`;
@@ -76,7 +77,6 @@ export default function PracticeShell({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className={headingClass('text-2xl font-semibold sm:text-[28px]')}>{practice.practice_name}</h1>
-              <TypeBadge type={practice.practice_type} />
               <StageBadge stage={practice.stage} />
             </div>
             <p className="mt-2 text-sm text-[#B0AEC0]">{practice.contact_name}</p>
@@ -90,6 +90,30 @@ export default function PracticeShell({
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-sm text-[#6E6C80]">
+              <span>Niche</span>
+              <Select
+                value={practice.practice_type}
+                onChange={(e) => {
+                  const next = e.target.value;
+                  startTransition(async () => {
+                    const result = await updatePracticeTypeAction(practice.id, next);
+                    if (!result.ok) setError(result.error);
+                    else {
+                      setError(null);
+                      router.refresh();
+                    }
+                  });
+                }}
+                className="w-auto min-w-36"
+              >
+                {PRACTICE_TYPES.map((value) => (
+                  <option key={value} value={value}>
+                    {practiceTypeLabel(value)}
+                  </option>
+                ))}
+              </Select>
+            </label>
             <label className="flex items-center gap-2 text-sm text-[#6E6C80]">
               <span>Stage</span>
               <Select

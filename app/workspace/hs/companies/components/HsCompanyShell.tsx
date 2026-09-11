@@ -3,7 +3,7 @@
 import { useEffect, useState, useTransition, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { deleteHsCompanyAction, updateHsCompanyStageAction } from '@/lib/workspace/hs-company-actions'
+import { deleteHsCompanyAction, updateHsCompanyStageAction, updateHsCompanyTradeAction } from '@/lib/workspace/hs-company-actions'
 import {
   HS_COMPANY_STAGES,
   hsAuditFormDot,
@@ -18,8 +18,9 @@ import {
   type HsDebriefRecord,
   type HsRequirementsRecord,
 } from '@/lib/workspace/hs-companies'
+import { HS_TRADES, hsTradeLabel } from '@/lib/workspace/hs-calls'
 import { Button, Dialog, Select } from '../../../components/ui'
-import { StageBadge, TradeBadge } from './badges'
+import { StageBadge } from './badges'
 
 function headingClass(extra = '') {
   return `font-[family-name:var(--font-plus-jakarta)] tracking-tight text-white ${extra}`
@@ -76,7 +77,6 @@ export default function HsCompanyShell({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className={headingClass('text-2xl font-semibold sm:text-[28px]')}>{company.company_name}</h1>
-              <TradeBadge trade={company.trade} />
               <StageBadge stage={company.stage} />
             </div>
             <p className="mt-2 text-sm text-[#B0AEC0]">{company.contact_name}</p>
@@ -90,6 +90,30 @@ export default function HsCompanyShell({
             )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-sm text-[#6E6C80]">
+              <span>Niche</span>
+              <Select
+                value={company.trade}
+                onChange={(e) => {
+                  const next = e.target.value
+                  startTransition(async () => {
+                    const result = await updateHsCompanyTradeAction(company.id, next)
+                    if (!result.ok) setError(result.error)
+                    else {
+                      setError(null)
+                      router.refresh()
+                    }
+                  })
+                }}
+                className="w-auto min-w-36"
+              >
+                {HS_TRADES.map((value) => (
+                  <option key={value} value={value}>
+                    {hsTradeLabel(value)}
+                  </option>
+                ))}
+              </Select>
+            </label>
             <label className="flex items-center gap-2 text-sm text-[#6E6C80]">
               <span>Stage</span>
               <Select

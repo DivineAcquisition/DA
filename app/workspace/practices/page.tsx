@@ -1,13 +1,7 @@
-import { listPractices } from '@/lib/workspace/practice-queries';
-import PracticesList from './components/PracticesList';
+import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
-export default async function PracticesPage() {
-  const practices = await listPractices();
-  return (
-    <div className="animate-rise">
-      <PracticesList practices={practices} />
-    </div>
-  );
+export default function PracticesIndexRedirect() {
+  redirect('/workspace/accounts');
 }
