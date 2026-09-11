@@ -2,13 +2,14 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { requireAdmin, workspaceClient } from './db'
+import { requireAdmin, workspaceClient, type UntypedClient } from './db'
 import type { ActionResult } from './types'
 import {
   HS_OBJECTION_CHIPS,
   HS_REQUIREMENT_ITEMS,
   blankToNull,
   hsStageAfterDebriefOutcome,
+  hsStageWouldAdvance,
   isHsCompanyStage,
   isHsCrewCount,
   isHsDebriefOutcome,
@@ -23,6 +24,27 @@ import {
   type HsRequirementDraft,
   type HsTrade,
 } from './hs-companies'
+
+async function maybeAdvanceHsCompanyStage(
+  supabase: UntypedClient,
+  companyId: string,
+  next: HsCompanyStage,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('hs_companies')
+    .select('stage')
+    .eq('id', companyId)
+    .maybeSingle()
+  if (error) return error.message
+  const current = data ? String(data.stage) : ''
+  if (!isHsCompanyStage(current)) return 'Company not found.'
+  if (!hsStageWouldAdvance(current, next)) return null
+  const { error: updateError } = await supabase
+    .from('hs_companies')
+    .update({ stage: next })
+    .eq('id', companyId)
+  return updateError?.message ?? null
+}
 
 function revalidateHsCompany(id?: string) {
   revalidatePath('/workspace/hs/companies')
@@ -231,11 +253,8 @@ export async function markHsAuditCompleteAction(
     .eq('id', saved.id)
   if (auditError) return { ok: false, error: auditError.message }
 
-  const { error: companyError } = await supabase
-    .from('hs_companies')
-    .update({ stage: 'audited' satisfies HsCompanyStage })
-    .eq('id', companyId)
-  if (companyError) return { ok: false, error: companyError.message }
+  const companyError = await maybeAdvanceHsCompanyStage(supabase, companyId, 'audited')
+  if (companyError) return { ok: false, error: companyError }
 
   revalidateHsCompany(companyId)
   return { ok: true, message: 'Audit marked complete.', data: { id: saved.id } }
@@ -281,8 +300,8 @@ export async function saveHsDebriefAction(
   if (applyOutcomeStage && draft.outcome && isHsDebriefOutcome(draft.outcome)) {
     const stage = hsStageAfterDebriefOutcome(draft.outcome)
     if (stage) {
-      const { error } = await supabase.from('hs_companies').update({ stage }).eq('id', companyId)
-      if (error) return { ok: false, error: error.message }
+      const error = await maybeAdvanceHsCompanyStage(supabase, companyId, stage)
+      if (error) return { ok: false, error }
     }
   }
 

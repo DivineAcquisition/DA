@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { requireAdmin, workspaceClient } from './db';
+import { requireAdmin, workspaceClient, type UntypedClient } from './db';
 import { PRACTICE_TYPES, type PracticeType } from './calls';
 import type { ActionResult } from './types';
 import {
@@ -12,14 +12,36 @@ import {
   isFrontDeskSize,
   isPillarScore,
   isPracticeStage,
+  practiceStageAfterDebriefOutcome,
+  practiceStageWouldAdvance,
   OBJECTION_CHIPS,
   REQUIREMENT_ITEMS,
   type AuditDraft,
   type DebriefDraft,
-  type DebriefOutcome,
   type PracticeStage,
   type RequirementDraft,
 } from './practices';
+
+async function maybeAdvancePracticeStage(
+  supabase: UntypedClient,
+  practiceId: string,
+  next: PracticeStage,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from('practices')
+    .select('stage')
+    .eq('id', practiceId)
+    .maybeSingle();
+  if (error) return error.message;
+  const current = data ? String(data.stage) : '';
+  if (!isPracticeStage(current)) return 'Practice not found.';
+  if (!practiceStageWouldAdvance(current, next)) return null;
+  const { error: updateError } = await supabase
+    .from('practices')
+    .update({ stage: next })
+    .eq('id', practiceId);
+  return updateError?.message ?? null;
+}
 
 function revalidatePractice(id?: string) {
   revalidatePath('/workspace/practices');
@@ -225,11 +247,8 @@ export async function markAuditCompleteAction(
     .eq('id', saved.id);
   if (auditError) return { ok: false, error: auditError.message };
 
-  const { error: practiceError } = await supabase
-    .from('practices')
-    .update({ stage: 'audited' satisfies PracticeStage })
-    .eq('id', practiceId);
-  if (practiceError) return { ok: false, error: practiceError.message };
+  const practiceError = await maybeAdvancePracticeStage(supabase, practiceId, 'audited');
+  if (practiceError) return { ok: false, error: practiceError };
 
   revalidatePractice(practiceId);
   return { ok: true, message: 'Audit marked complete.', data: { id: saved.id } };
@@ -256,12 +275,6 @@ function debriefRow(draft: DebriefDraft): Record<string, unknown> {
   };
 }
 
-function stageForOutcome(outcome: DebriefOutcome): PracticeStage | null {
-  if (outcome === 'verbal_yes') return 'proposal_sent';
-  if (outcome === 'not_a_fit') return 'lost';
-  return null;
-}
-
 export async function saveDebriefAction(
   practiceId: string,
   debriefId: string | null,
@@ -276,10 +289,10 @@ export async function saveDebriefAction(
   if ('error' in saved) return { ok: false, error: saved.error };
 
   if (applyOutcomeStage && draft.outcome && isDebriefOutcome(draft.outcome)) {
-    const stage = stageForOutcome(draft.outcome);
+    const stage = practiceStageAfterDebriefOutcome(draft.outcome);
     if (stage) {
-      const { error } = await supabase.from('practices').update({ stage }).eq('id', practiceId);
-      if (error) return { ok: false, error: error.message };
+      const error = await maybeAdvancePracticeStage(supabase, practiceId, stage);
+      if (error) return { ok: false, error };
     }
   }
 

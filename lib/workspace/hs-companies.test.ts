@@ -15,6 +15,7 @@ import {
   hsRequirementsComplete,
   hsRequirementsDueAt,
   hsStageAfterDebriefOutcome,
+  hsStageWouldAdvance,
   parsePercentInput,
   parseUsdInput,
   mergeHsRequirementItems,
@@ -109,6 +110,23 @@ describe('debrief stage side effects', () => {
     expect(hsStageAfterDebriefOutcome('thinking')).toBeNull()
     expect(hsStageAfterDebriefOutcome('needs_partner')).toBeNull()
     expect(hsStageAfterDebriefOutcome('no_decision')).toBeNull()
+  })
+
+  it('does not roll a later stage back to audited or proposal sent', () => {
+    expect(hsStageWouldAdvance('proposal_sent', 'audited')).toBe(false)
+    expect(hsStageWouldAdvance('won', 'audited')).toBe(false)
+    expect(hsStageWouldAdvance('lost', 'audited')).toBe(false)
+    expect(hsStageWouldAdvance('won', 'proposal_sent')).toBe(false)
+    expect(hsStageWouldAdvance('lost', 'proposal_sent')).toBe(false)
+    expect(hsStageWouldAdvance('won', 'lost')).toBe(false)
+    expect(hsStageWouldAdvance('lost', 'won')).toBe(false)
+  })
+
+  it('still advances earlier stages', () => {
+    expect(hsStageWouldAdvance('audit_scheduled', 'audited')).toBe(true)
+    expect(hsStageWouldAdvance('audited', 'proposal_sent')).toBe(true)
+    expect(hsStageWouldAdvance('proposal_sent', 'lost')).toBe(true)
+    expect(hsStageWouldAdvance('audited', 'audited')).toBe(false)
   })
 })
 

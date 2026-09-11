@@ -207,6 +207,31 @@ export function practiceStageColor(stage: PracticeStage): string {
   }
 }
 
+export function practiceStageAfterDebriefOutcome(outcome: DebriefOutcome): PracticeStage | null {
+  if (outcome === 'verbal_yes') return 'proposal_sent';
+  if (outcome === 'not_a_fit') return 'lost';
+  return null;
+}
+
+/** Pipeline rank. Won and lost are both terminal so they do not overwrite each other. */
+export function practiceStageRank(stage: PracticeStage): number {
+  switch (stage) {
+    case 'audit_scheduled':
+      return 0;
+    case 'audited':
+      return 1;
+    case 'proposal_sent':
+      return 2;
+    case 'won':
+    case 'lost':
+      return 3;
+  }
+}
+
+export function practiceStageWouldAdvance(current: PracticeStage, next: PracticeStage): boolean {
+  return practiceStageRank(next) > practiceStageRank(current);
+}
+
 export function debriefOutcomeLabel(outcome: DebriefOutcome): string {
   switch (outcome) {
     case 'verbal_yes':

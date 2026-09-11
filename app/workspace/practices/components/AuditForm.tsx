@@ -132,6 +132,7 @@ export default function AuditForm({
   const router = useRouter();
   const [values, setValues] = useState<FormValues>(() => valuesFrom(audit));
   const [error, setError] = useState<string | null>(null);
+  const [completed, setCompleted] = useState(() => Boolean(audit?.completed_at));
   const [pending, startTransition] = useTransition();
   const auditIdRef = useRef(audit?.id ?? null);
   const valuesRef = useRef(values);
@@ -336,25 +337,30 @@ export default function AuditForm({
 
       {error && <p className="text-sm text-[#FF6A6A]">{error}</p>}
 
-      <Button
-        type="button"
-        disabled={pending}
-        style={{ backgroundColor: '#6A00FF', color: '#fff' }}
-        onClick={() => {
-          startTransition(async () => {
-            const result = await markAuditCompleteAction(practiceId, auditIdRef.current, toDraft(valuesRef.current));
-            if (!result.ok) {
-              setError(result.error);
-              return;
-            }
-            setError(null);
-            if (typeof result.data?.id === 'string') auditIdRef.current = result.data.id;
-            router.refresh();
-          });
-        }}
-      >
-        Mark audit complete
-      </Button>
+      {completed ? (
+        <p className="text-sm text-[#7AFF8A]">Audit complete</p>
+      ) : (
+        <Button
+          type="button"
+          disabled={pending}
+          style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+          onClick={() => {
+            startTransition(async () => {
+              const result = await markAuditCompleteAction(practiceId, auditIdRef.current, toDraft(valuesRef.current));
+              if (!result.ok) {
+                setError(result.error);
+                return;
+              }
+              setError(null);
+              setCompleted(true);
+              if (typeof result.data?.id === 'string') auditIdRef.current = result.data.id;
+              router.refresh();
+            });
+          }}
+        >
+          Mark audit complete
+        </Button>
+      )}
     </div>
   );
 }
