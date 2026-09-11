@@ -281,7 +281,7 @@ export default function DebriefForm({
         <p className="mt-4 mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500">
           Would I take them as a client?
         </p>
-        <div className="flex overflow-hidden rounded-xl border border-[#2A2A3A]" role="radiogroup" aria-label="Would I take them as a client?">
+        <div className="flex overflow-hidden rounded-xl border border-white/10" role="radiogroup" aria-label="Would I take them as a client?">
           {[
             { label: 'Yes', value: true },
             { label: 'No', value: false },

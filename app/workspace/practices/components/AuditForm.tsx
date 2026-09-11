@@ -239,7 +239,7 @@ export default function AuditForm({
                 <p className="text-sm font-semibold text-white">{pillar.label}</p>
                 <p className="text-xs text-[#6E6C80]">{pillar.helper}</p>
               </div>
-              <div className="flex overflow-hidden rounded-xl border border-[#2A2A3A]" role="radiogroup" aria-label={pillar.label}>
+              <div className="flex overflow-hidden rounded-xl border border-white/10" role="radiogroup" aria-label={pillar.label}>
                 {PILLAR_SCORES.map((score) => {
                   const active = values[pillar.key] === score;
                   return (

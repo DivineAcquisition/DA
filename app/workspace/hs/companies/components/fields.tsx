@@ -15,7 +15,7 @@ export function CurrencyInput({
 }) {
   return (
     <div
-      className={`flex items-center rounded-xl border border-[#2A2A3A] bg-white/[0.03] ${
+      className={`flex items-center rounded-xl border border-white/10 bg-white/[0.03] transition-colors focus-within:border-brand-500/60 ${
         large ? 'px-4 py-3.5' : 'px-3.5 py-2.5'
       }`}
     >
@@ -47,7 +47,7 @@ export function PercentInput({
   ariaLabel?: string
 }) {
   return (
-    <div className="flex items-center rounded-xl border border-[#2A2A3A] bg-white/[0.03] px-3.5 py-2.5">
+    <div className="flex items-center rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 transition-colors focus-within:border-brand-500/60">
       <input
         aria-label={ariaLabel}
         inputMode="decimal"

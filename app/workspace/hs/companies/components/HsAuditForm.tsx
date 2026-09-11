@@ -285,7 +285,7 @@ export default function HsAuditForm({
                 <p className="text-xs text-[#6E6C80]">{pillar.helper}</p>
               </div>
               <div
-                className="flex overflow-hidden rounded-xl border border-[#2A2A3A]"
+                className="flex overflow-hidden rounded-xl border border-white/10"
                 role="radiogroup"
                 aria-label={pillar.label}
               >
@@ -382,7 +382,7 @@ export default function HsAuditForm({
           </Field>
         </div>
         {leadGap != null && (
-          <div className="mt-4 rounded-2xl border border-[#2A2A3A] bg-[#1C1C26] px-6 py-6 text-center">
+          <div className="mt-4 rounded-2xl border border-white/10 bg-[#1C1C26] px-6 py-6 text-center">
             <p className="text-sm text-[#6E6C80]">Leads that did not become jobs</p>
             <p className="mt-3 font-[family-name:var(--font-plus-jakarta)] text-[32px] leading-none text-white">
               {leadGap}

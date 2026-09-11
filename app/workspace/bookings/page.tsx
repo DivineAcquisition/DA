@@ -10,7 +10,7 @@ export default async function ProspectCallsPage() {
     <div className="animate-rise">
       <PageHeader
         title="Prospect calls"
-        description="Internal booking for legit Client Acquisition prospects. Search DA Pipeline, map the lead onto a Lead Leak Audit, and create a Google Meet."
+        description="Internal booking for Client Acquisition prospects stored in this workspace. Search, map the lead onto a Lead Leak Audit, and create a Google Meet. Airtable receives a copy when a destination PAT is set."
       />
       <ProspectBookingPanel airtableReady={await airtableReady()} calendarReady={calendarConfigured()} />
     </div>

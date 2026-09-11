@@ -2,21 +2,29 @@
 
 import { revalidatePath } from 'next/cache';
 import { calendarConfigured, createGoogleMeetEvent } from '@/lib/assessment/calendar';
-import { recordAndSendBooking } from '@/lib/calls/sync';
+import { recordProspectCall } from '@/lib/calls/store';
 import { isoDateInTimeZone, localDateTimeToIso } from '@/lib/datetime/local';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import { workspaceClient } from '@/lib/workspace/db';
 import { WORKSPACE_AGREEMENT_CC } from '@/lib/workspace/email';
+import { applyBookingToLead, markLeadAirtable, upsertLeadFromQualification } from './leads';
 import { airtableReady } from './pipeline';
 import { sendProspectCallConfirmationEmail } from './booking-email';
 import {
   airtableBookingFields,
   getProspect,
+  mapLeadRow,
   mapProspectToCallSetup,
   searchProspects,
-  writeBookingToAirtable,
+  sendProspectToAirtable,
   type ProspectRecord,
   type ProspectSearchInput,
 } from './prospects';
+import {
+  parseQualification,
+  QualificationError,
+} from './qualify';
+import { scoreQualification } from './score';
 
 export type ProspectSearchResult =
   | { ok: true; prospects: ProspectRecord[] }
@@ -36,11 +44,8 @@ export async function searchProspectsAction(
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
 
-  if (!(await airtableReady())) {
-    return {
-      ok: false,
-      error: 'Airtable is not configured. Set da_settings.pipeline_airtable_pat.',
-    };
+  if (!supabaseConfigured) {
+    return { ok: false, error: 'Supabase is not configured. Prospect records live in the workspace.' };
   }
 
   try {
@@ -49,8 +54,58 @@ export async function searchProspectsAction(
   } catch (error) {
     return {
       ok: false,
-      error: error instanceof Error ? error.message : 'Airtable search failed.',
+      error: error instanceof Error ? error.message : 'Workspace search failed.',
     };
+  }
+}
+
+export async function createProspectAction(
+  formData: FormData,
+): Promise<{ ok: true; message: string; prospect: ProspectRecord } | { ok: false; error: string }> {
+  const admin = await requireAdmin();
+  if ('error' in admin) return { ok: false, error: admin.error };
+  if (!supabaseConfigured) {
+    return { ok: false, error: 'Supabase is not configured. The workspace cannot store this prospect.' };
+  }
+
+  try {
+    const payload = parseQualification({
+      fullName: String(formData.get('fullName') ?? ''),
+      email: String(formData.get('email') ?? ''),
+      phone: String(formData.get('phone') ?? ''),
+      companyName: String(formData.get('companyName') ?? ''),
+      adSpend: String(formData.get('adSpend') ?? ''),
+      followUp: String(formData.get('followUp') ?? ''),
+      programPrice: String(formData.get('programPrice') ?? ''),
+    });
+    const lead = await upsertLeadFromQualification(payload, '', false);
+    const prospect = mapLeadRow(lead);
+    const score = scoreQualification(payload);
+
+    let airtableNote = 'Airtable send skipped — no destination PAT.';
+    if (await airtableReady()) {
+      try {
+        const recordId = await sendProspectToAirtable(prospect);
+        await markLeadAirtable(lead.id, { recordId });
+        airtableNote = 'Copy sent to Airtable.';
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : 'Airtable send failed.';
+        await markLeadAirtable(lead.id, { error: detail });
+        airtableNote = `Saved in the workspace. Airtable send failed: ${detail}`;
+      }
+    }
+
+    revalidatePath('/workspace/bookings');
+    return {
+      ok: true,
+      prospect: { ...prospect, airtableRecordId: lead.airtable_record_id ?? prospect.airtableRecordId },
+      message: `Saved ${payload.fullName} (${score.qualificationResult}, ${score.readinessScore}). ${airtableNote}`,
+    };
+  } catch (error) {
+    if (error instanceof QualificationError) {
+      return { ok: false, error: error.message };
+    }
+    return { ok: false, error: error instanceof Error ? error.message : 'Could not create that prospect.' };
   }
 }
 
@@ -60,8 +115,8 @@ export async function scheduleProspectCallAction(
   const admin = await requireAdmin();
   if ('error' in admin) return { ok: false, error: admin.error };
 
-  if (!(await airtableReady())) {
-    return { ok: false, error: 'Airtable is not configured.' };
+  if (!supabaseConfigured) {
+    return { ok: false, error: 'Supabase is not configured. Bookings land in the workspace first.' };
   }
   if (!calendarConfigured()) {
     return {
@@ -97,7 +152,7 @@ export async function scheduleProspectCallAction(
 
   const prospect = await getProspect(recordId);
   if (!prospect) {
-    return { ok: false, error: 'That Airtable lead could not be loaded.' };
+    return { ok: false, error: 'That workspace lead could not be loaded.' };
   }
 
   const setup = mapProspectToCallSetup(
@@ -154,51 +209,84 @@ export async function scheduleProspectCallAction(
     existingEmail: prospect.email,
   });
 
-  let pipelineWarning: string | null = null;
-  let airtableWarning: string | null = null;
-  const bookingInput = {
-    leadId: recordId,
-    email,
-    fullName,
-    startsAtIso,
-    timeZone,
-    durationMinutes,
-    meetUrl,
-    eventId,
-    currentStage: prospect.stage,
-    existingNotes: prospect.notes,
-    existingEmail: prospect.email,
-  };
+  const nextStage = fields.Stage || prospect.stage;
+  const nextNotes = fields.Notes || prospect.notes;
+  const dateStamp = isoDateInTimeZone(startsAtIso, timeZone);
 
-  if (supabaseConfigured) {
-    try {
-      await recordAndSendBooking(bookingInput);
-    } catch (error) {
-      pipelineWarning =
+  let booked: ProspectRecord;
+  try {
+    booked = mapLeadRow(
+      await applyBookingToLead({
+        leadId: prospect.recordId,
+        email,
+        fullName,
+        companyName: companyName || prospect.companyName,
+        auditBookedDate: dateStamp,
+        notes: nextNotes,
+        stage: nextStage,
+        meetUrl,
+        eventId,
+      }),
+    );
+  } catch (error) {
+    return {
+      ok: false,
+      error:
         error instanceof Error
-          ? `Call landed after Meet, but the Supabase→Airtable send failed: ${error.message}`
-          : 'Call landed after Meet, but the Supabase→Airtable send failed.';
-      try {
-        await writeBookingToAirtable(recordId, fields);
-        airtableWarning = null;
-      } catch (writeError) {
-        airtableWarning =
-          writeError instanceof Error
-            ? `Meet was created, but Airtable did not update: ${writeError.message}`
-            : 'Meet was created, but Airtable did not update.';
-      }
+          ? `Meet was created, but the workspace lead did not update: ${error.message}`
+          : 'Meet was created, but the workspace lead did not update.',
+    };
+  }
+
+  let airtableWarning: string | null = null;
+  let airtableRecordId = booked.airtableRecordId;
+  if (await airtableReady()) {
+    try {
+      airtableRecordId = await sendProspectToAirtable({ ...booked, email, fullName });
+      await markLeadAirtable(booked.recordId, { recordId: airtableRecordId });
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : 'Airtable send failed.';
+      await markLeadAirtable(booked.recordId, { error: detail });
+      airtableWarning = `Meet is on the calendar and the workspace has the booking. Airtable did not update: ${detail}`;
     }
   } else {
-    pipelineWarning =
-      'Supabase is not configured, so the call could not land there first. Meet was still written to Airtable so it is not lost.';
-    try {
-      await writeBookingToAirtable(recordId, fields);
-    } catch (writeError) {
-      airtableWarning =
-        writeError instanceof Error
-          ? `Meet was created, but Airtable did not update: ${writeError.message}`
-          : 'Meet was created, but Airtable did not update.';
+    airtableWarning = 'Booking saved in the workspace. Airtable destination PAT is not set, so no copy was sent.';
+  }
+
+  try {
+    const saved = await recordProspectCall({
+      kind: 'booking',
+      source: 'calendar',
+      airtableLeadId: airtableRecordId || undefined,
+      email,
+      fullName,
+      externalRef: eventId || undefined,
+      occurredAt: startsAtIso,
+      meetUrl: meetUrl || undefined,
+      googleEventId: eventId || undefined,
+      payload: {
+        leadId: booked.recordId,
+        startsAtIso,
+        timeZone,
+        durationMinutes,
+        currentStage: prospect.stage,
+        existingNotes: prospect.notes,
+        existingEmail: prospect.email,
+      },
+    });
+    const supabase = await workspaceClient();
+    if (supabase) {
+      await supabase.from('da_prospect_call').update({ lead_id: booked.recordId }).eq('id', saved.id);
     }
+  } catch (error) {
+    airtableWarning = [
+      airtableWarning,
+      error instanceof Error
+        ? `Call log failed: ${error.message}`
+        : 'Call log failed.',
+    ]
+      .filter(Boolean)
+      .join(' ');
   }
 
   let emailWarning: string | null = null;
@@ -223,16 +311,14 @@ export async function scheduleProspectCallAction(
   revalidatePath('/workspace/bookings');
 
   const when = new Date(startsAtIso).toLocaleString('en-US', { timeZone });
-  const dateStamp = isoDateInTimeZone(startsAtIso, timeZone);
 
   return {
     ok: true,
     meetUrl,
     message: [
       `Booked ${fullName} for ${when}.`,
-      meetUrl ? `Google Meet is on the invite.` : 'Calendar event created (Meet link pending).',
-      pipelineWarning ?? `Logged in Supabase and sent to Airtable (Audit Booked, ${dateStamp}).`,
-      airtableWarning,
+      meetUrl ? 'Google Meet is on the invite.' : 'Calendar event created (Meet link pending).',
+      airtableWarning ?? `Logged in the workspace and sent to Airtable (Audit Booked, ${dateStamp}).`,
       emailWarning ?? 'Confirmation emailed (CC Malik).',
     ]
       .filter(Boolean)

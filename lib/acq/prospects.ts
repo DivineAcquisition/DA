@@ -3,32 +3,21 @@ import {
   AIRTABLE_BASE_ID,
   AIRTABLE_LEADS_TABLE_ID,
 } from './config';
+import { getLeadRow, searchLeadRows, type LeadRow } from './leads';
 import { PipelineStepError } from './pipeline';
 import {
   normalizeQualificationResult,
   parseReadinessScore,
   type QualificationResult,
 } from './qualify';
+import { CLOSED_STAGES, STAGE_ADVANCE_TO_BOOKED } from './stages';
 import { isoDateInTimeZone } from '../datetime/local';
 
 const REQUEST_MS = 20_000;
 
 export const AIRTABLE_LEADS_URL = `https://airtable.com/${AIRTABLE_BASE_ID}/${AIRTABLE_LEADS_TABLE_ID}`;
 
-export const CLOSED_STAGES = [
-  'Closed Won',
-  'Closed Lost',
-  'Disqualified',
-  'Recycled',
-] as const;
-
-export const STAGE_ADVANCE_TO_BOOKED = [
-  'Step 1 Captured',
-  'Application Abandoned',
-  'Manual Review',
-  'Qualified - Not Booked',
-  'Audit Booked',
-] as const;
+export { CLOSED_STAGES, STAGE_ADVANCE_TO_BOOKED };
 
 export const PROSPECT_FIELD_NAMES = [
   'Lead Name',
@@ -53,7 +42,9 @@ export const PROSPECT_FIELD_NAMES = [
 const MEET_WRITE_FIELDS = ['Google Meet URL', 'Calendar Event ID'] as const;
 
 export type ProspectRecord = {
+  /** Workspace `da_leads.id` (uuid). Airtable rec* lives on `airtableRecordId`. */
   recordId: string;
+  airtableRecordId: string;
   fullName: string;
   email: string;
   phone: string;
@@ -164,6 +155,7 @@ export function mapAirtableRecord(record: {
 
   const mapped: ProspectRecord = {
     recordId: record.id,
+    airtableRecordId: record.id,
     fullName,
     email: cellText(fields.Email).toLowerCase(),
     phone: cellText(fields.Phone),
@@ -225,7 +217,7 @@ export function mapProspectToCallSetup(
     prospect.email ? `Email: ${prospect.email}` : null,
     prospect.phone ? `Phone: ${prospect.phone}` : null,
     callSetupNote(prospect),
-    `Airtable: ${prospect.airtableUrl}`,
+    prospect.airtableUrl ? `Airtable: ${prospect.airtableUrl}` : null,
   ]
     .filter((line): line is string => Boolean(line && line.trim()))
     .join('\n');
@@ -337,7 +329,7 @@ async function airtableFetch<T>(path: string, init: RequestInit): Promise<T> {
   if (!key) {
     throw new PipelineStepError(
       'airtable-prospects',
-      'Airtable is not configured. Set da_settings.pipeline_airtable_pat.',
+      'Airtable destination is not configured. Set da_settings.pipeline_airtable_pat.',
     );
   }
 
@@ -368,57 +360,114 @@ async function airtableFetch<T>(path: string, init: RequestInit): Promise<T> {
   }
 }
 
-function listPath(
-  input: ProspectSearchInput,
-  fieldNames: readonly string[] = PROSPECT_FIELD_NAMES,
-): string {
-  const params = new URLSearchParams();
-  params.set('filterByFormula', prospectSearchFormula(input));
-  params.set('maxRecords', String(Math.max(1, Math.min(input.limit ?? 40, 50))));
-  const sortField = input.bookedOnly ? 'Audit Booked Date' : 'Readiness Score';
-  params.set('sort[0][field]', sortField);
-  params.set('sort[0][direction]', 'desc');
-  for (const field of fieldNames) {
-    params.append('fields[]', field);
-  }
-  return `?${params.toString()}`;
+export function mapLeadRow(row: LeadRow): ProspectRecord {
+  const airtableRecordId = row.airtable_record_id ?? '';
+  const mapped: ProspectRecord = {
+    recordId: row.id,
+    airtableRecordId,
+    fullName: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    companyName: row.company_name || row.coaching_niche,
+    coachingNiche: row.coaching_niche,
+    stage: row.stage,
+    qualificationResult: normalizeQualificationResult(row.qualification_result),
+    readinessScore: row.readiness_score,
+    monthlyAdSpend: row.monthly_ad_spend,
+    followUpOwner: row.follow_up_owner,
+    programPrice: row.program_price,
+    nextAction: row.next_action,
+    ghlContactId: row.ghl_contact_id,
+    auditBookedDate: row.audit_booked_date,
+    notes: row.notes,
+    meetUrl: row.meet_url,
+    calendarEventId: row.calendar_event_id,
+    airtableUrl: airtableRecordId ? airtableRecordUrl(airtableRecordId) : '',
+    briefing: '',
+  };
+  mapped.briefing = callSetupNote(mapped);
+  return mapped;
 }
 
-async function listMapped(
-  input: ProspectSearchInput,
-  fieldNames: readonly string[],
-): Promise<ProspectRecord[]> {
-  const payload = await airtableFetch<{ records?: Array<{ id: string; fields?: Record<string, unknown> }> }>(
-    listPath(input, fieldNames),
-    { method: 'GET' },
-  );
-  return (payload.records ?? []).map(mapAirtableRecord);
+export function airtableFieldsFromLead(lead: ProspectRecord): Record<string, string> {
+  const fields: Record<string, string> = {
+    'Lead Name': lead.fullName,
+    Email: lead.email,
+    Phone: lead.phone,
+    'Company Name': lead.companyName,
+    'Coaching Niche': lead.coachingNiche,
+    Stage: lead.stage,
+    'Monthly Ad Spend': lead.monthlyAdSpend,
+    'Follow-Up Owner': lead.followUpOwner,
+    'Program Price': lead.programPrice,
+  };
+  if (lead.nextAction) fields['Next Action'] = lead.nextAction;
+  if (lead.ghlContactId) fields['GHL Contact ID'] = lead.ghlContactId;
+  if (lead.auditBookedDate) fields['Audit Booked Date'] = lead.auditBookedDate;
+  if (lead.notes) fields.Notes = lead.notes;
+  if (lead.meetUrl) fields['Google Meet URL'] = lead.meetUrl;
+  if (lead.calendarEventId) fields['Calendar Event ID'] = lead.calendarEventId;
+  return fields;
 }
 
 export async function searchProspects(input: ProspectSearchInput = {}): Promise<ProspectRecord[]> {
-  try {
-    return await listMapped(input, PROSPECT_FIELD_NAMES);
-  } catch (error) {
-    const detail = error instanceof Error ? error.message : String(error);
-    if (!detail.includes('UNKNOWN_FIELD_NAME')) throw error;
-    return listMapped(
-      input,
-      PROSPECT_FIELD_NAMES.filter((field) => !(MEET_WRITE_FIELDS as readonly string[]).includes(field)),
-    );
-  }
+  const rows = await searchLeadRows(input);
+  return rows.map(mapLeadRow);
 }
 
 export async function getProspect(recordId: string): Promise<ProspectRecord | null> {
-  if (!/^rec[A-Za-z0-9]{14}$/.test(recordId)) return null;
-  try {
-    const record = await airtableFetch<{ id: string; fields?: Record<string, unknown> }>(
-      `/${recordId}`,
-      { method: 'GET' },
-    );
-    return mapAirtableRecord(record);
-  } catch {
-    return null;
+  const row = await getLeadRow(recordId);
+  return row ? mapLeadRow(row) : null;
+}
+
+/** POST a new destination row, or PATCH if we already have a rec*. */
+export async function upsertAirtableDestination(
+  fields: Record<string, string>,
+  existingRecordId?: string | null,
+): Promise<string> {
+  const body = JSON.stringify({ fields, typecast: true });
+  if (existingRecordId) {
+    const written = await airtableFetch<{ id: string }>(`/${existingRecordId}`, {
+      method: 'PATCH',
+      body,
+    });
+    if (!written.id) {
+      throw new PipelineStepError('airtable-send', 'Airtable write returned no record id');
+    }
+    return written.id;
   }
+  const created = await airtableFetch<{ id: string }>('', { method: 'POST', body });
+  if (!created.id) {
+    throw new PipelineStepError('airtable-send', 'Airtable write returned no record id');
+  }
+  return created.id;
+}
+
+export async function sendProspectToAirtable(prospect: ProspectRecord): Promise<string> {
+  let recordId = prospect.airtableRecordId;
+  if (!recordId && prospect.email) {
+    recordId = await findAirtableRecordIdByEmail(prospect.email);
+  }
+  try {
+    return await upsertAirtableDestination(airtableFieldsFromLead(prospect), recordId || null);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    if (!detail.includes('UNKNOWN_FIELD_NAME')) throw error;
+    const stripped = airtableFieldsFromLead(prospect);
+    for (const field of MEET_WRITE_FIELDS) {
+      delete stripped[field];
+    }
+    return upsertAirtableDestination(stripped, recordId || null);
+  }
+}
+
+async function findAirtableRecordIdByEmail(email: string): Promise<string> {
+  const formula = `LOWER({Email})='${escapeFormulaValue(email)}'`;
+  const found = await airtableFetch<{ records?: Array<{ id: string }> }>(
+    `?filterByFormula=${encodeURIComponent(formula)}&maxRecords=1`,
+    { method: 'GET' },
+  );
+  return found.records?.[0]?.id ?? '';
 }
 
 export async function writeBookingToAirtable(

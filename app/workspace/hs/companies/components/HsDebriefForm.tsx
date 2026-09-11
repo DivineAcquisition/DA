@@ -320,7 +320,7 @@ export default function HsDebriefForm({
           Would I take them as a client?
         </p>
         <div
-          className="flex overflow-hidden rounded-xl border border-[#2A2A3A]"
+          className="flex overflow-hidden rounded-xl border border-white/10"
           role="radiogroup"
           aria-label="Would I take them as a client?"
         >

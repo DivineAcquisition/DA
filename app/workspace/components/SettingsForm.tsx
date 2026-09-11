@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { saveSettingsAction } from '@/lib/workspace/actions';
 import type { DaSettings } from '@/lib/workspace/types';
-import { Button, Field, Input, SecretInput, Toggle, ws } from './ui';
+import { Button, Card, Field, Input, SecretInput, Toggle } from './ui';
 
 export default function SettingsForm({ settings }: { settings: DaSettings }) {
   const [error, setError] = useState<string | null>(null);
@@ -11,9 +11,10 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
   const [pending, startTransition] = useTransition();
 
   return (
-    <form
-      className={`${ws.card} space-y-5 p-5 sm:p-7`}
-      action={(fd) => {
+    <Card className="space-y-5 p-5 sm:p-7">
+      <form
+        className="space-y-5"
+        action={(fd) => {
         setError(null);
         setMessage(null);
         startTransition(async () => {
@@ -85,6 +86,26 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
         </Field>
       </div>
 
+      <div className="space-y-3 rounded-xl border border-white/10 bg-ink-950 p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">
+          Airtable destination
+        </p>
+        <p className="text-sm text-neutral-500">
+          The workspace owns prospect records. This PAT is only used to send a copy to the DA
+          Pipeline Leads table. Booking and search work without it.
+        </p>
+        <Field
+          label="Airtable personal access token"
+          hint="Stored in da_settings. Leave blank to keep the current token."
+        >
+          <SecretInput
+            name="pipeline_airtable_pat"
+            defaultValue={settings.pipeline_airtable_pat_set ? 'stored' : ''}
+            placeholder="pat…"
+          />
+        </Field>
+      </div>
+
       <div className="space-y-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]">
           Automatic field mapping
@@ -112,5 +133,6 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
         </Button>
       </div>
     </form>
+    </Card>
   );
 }

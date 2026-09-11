@@ -5,6 +5,7 @@ import {
   GHL_PIT_TOKEN,
   qualificationThankYouPath,
 } from './config';
+import { markLeadAirtable, upsertLeadFromQualification } from './leads';
 import {
   ghlConfigured,
   logPipelineFailure,
@@ -12,6 +13,7 @@ import {
   upsertGhlContact,
   writeScoreToGhl,
 } from './pipeline';
+import { scoreQualification } from './score';
 import {
   ghlWebhookBody,
   isHoneypot,
@@ -70,8 +72,9 @@ async function postForm(payload: QualificationPayload): Promise<void> {
 }
 
 /**
- * Qualification pipeline. Step 1 (GHL contact) is required. Steps 2–3 are
- * best-effort: failures are logged and the applicant still reaches thank-you.
+ * Qualification pipeline. Step 1 (GHL contact) is required. The workspace
+ * stores the lead next. Airtable is a send destination — missing PAT does
+ * not block thank-you. Score is computed in-app, not read from Airtable.
  */
 export async function submitLead(input: QualificationInput, host?: string): Promise<QualifyResult> {
   if (isHoneypot(input)) {
@@ -115,15 +118,42 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     console.error('[acq:ghl-form]', error);
   });
 
+  const score = scoreQualification(payload);
+
+  let leadId = '';
+  let airtableRecordId: string | null = null;
   try {
-    const score = await upsertAirtableLead(payload, contactId);
-    try {
-      await writeScoreToGhl(contactId, score);
-    } catch (error) {
-      await logPipelineFailure('ghl-score', payload.email, error);
+    const lead = await upsertLeadFromQualification(payload, contactId);
+    leadId = lead.id;
+    airtableRecordId = lead.airtable_record_id;
+  } catch (error) {
+    await logPipelineFailure('workspace-lead', payload.email, error);
+  }
+
+  try {
+    await writeScoreToGhl(contactId, {
+      recordId: leadId || contactId,
+      readinessScore: score.readinessScore,
+      qualificationResult: score.qualificationResult,
+    });
+  } catch (error) {
+    await logPipelineFailure('ghl-score', payload.email, error);
+  }
+
+  try {
+    const sent = await upsertAirtableLead(payload, contactId, airtableRecordId);
+    if (leadId) {
+      await markLeadAirtable(leadId, { recordId: sent.recordId }, true);
     }
   } catch (error) {
     await logPipelineFailure('airtable-lead', payload.email, error);
+    if (leadId) {
+      await markLeadAirtable(
+        leadId,
+        { error: error instanceof Error ? error.message : 'Airtable send failed' },
+        true,
+      );
+    }
   }
 
   return { ok: true, redirectTo: redirectTo(host) };
