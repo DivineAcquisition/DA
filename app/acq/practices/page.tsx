@@ -1,7 +1,7 @@
 import Logo from '@/app/components/Logo';
 import { sectionLabel } from '@/app/components/ui';
 import type { Metadata } from 'next';
-import { FACEBOOK_DISCLAIMER, PRACTICES } from '@/lib/acq/copy';
+import { PRACTICES } from '@/lib/acq/copy';
 import CalEmbed from '../components/CalEmbed';
 import PracticesBackdrop from '../components/PracticesBackdrop';
 import { BookCta, IncludedCards, StatusPill } from '../components/marketing';
@@ -50,24 +50,24 @@ export default function PracticesLandingPage() {
 
         <section className="relative z-10 px-5 pb-6 pt-8 sm:px-6 sm:pb-8 sm:pt-10 md:pt-12">
           <div className="mx-auto max-w-[900px] text-center">
-            <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[34rem] text-[1.65rem] font-semibold leading-[1.14] tracking-tight text-white sm:text-[2.2rem] md:text-[2.55rem] md:leading-[1.1]">
+            <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[36rem] text-[1.65rem] font-bold leading-[1.14] tracking-tight text-white sm:text-[2.2rem] md:text-[2.55rem] md:leading-[1.1]">
               {PRACTICES.titleBefore}
               <em className="acq-headline-accent">{PRACTICES.titleAccent}</em>
             </h1>
-            <p className="animate-rise delay-2 mx-auto mt-5 max-w-[34rem] text-sm leading-relaxed text-neutral-400 sm:mt-6 sm:text-[15px]">
+            <p className="animate-rise delay-2 mx-auto mt-5 max-w-[36rem] text-sm font-semibold leading-relaxed text-neutral-300 sm:mt-6 sm:text-[15px]">
               {PRACTICES.body}
             </p>
           </div>
         </section>
 
-        <section id="book" className="scroll-mt-8 px-5 pb-16 sm:px-6 sm:pb-20">
+        <section id="book" className="scroll-mt-8 px-3 pb-16 sm:px-6 sm:pb-20 lg:px-8">
           <CalEmbed className="mt-0" />
         </section>
 
         <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-3xl">
             <p className={sectionLabel}>{PRACTICES.coversEyebrow}</p>
-            <h2 className="acq-headline mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+            <h2 className="acq-headline mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
               {PRACTICES.coversTitle}
             </h2>
             <IncludedCards items={PRACTICES.covers} />
@@ -80,9 +80,8 @@ export default function PracticesLandingPage() {
         </section>
 
         <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
-          <p className="text-xs text-neutral-600">© Divine Acquisition. All rights reserved.</p>
-          <p className="mx-auto mt-5 max-w-2xl text-[10px] leading-relaxed text-neutral-600 sm:text-[11px]">
-            {FACEBOOK_DISCLAIMER}
+          <p className="mx-auto max-w-2xl text-[11px] font-semibold leading-relaxed text-neutral-500 sm:text-xs">
+            {PRACTICES.compliance}
           </p>
         </footer>
       </div>

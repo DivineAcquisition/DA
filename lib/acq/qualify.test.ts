@@ -283,6 +283,10 @@ describe('founding landing media', () => {
     expect(copy.PRACTICES.body).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.covers).toHaveLength(3);
     expect(copy.PRACTICES.cta).toBe('Pick a time');
+    expect(copy.PRACTICES.compliance).toBe(
+      "This site is not part of, or endorsed by, Facebook or any social platform. Results shown are specific partners' outcomes and are not typical or guaranteed. © 2026 DivineACQ. All rights reserved.",
+    );
+    expect(copy.PRACTICES_COMPLIANCE).toBe(copy.PRACTICES.compliance);
   });
 
   it('embeds the issued Cal.com 30-min event on /practices', () => {

@@ -117,6 +117,9 @@ export const FORM_LABELS = {
 export const FACEBOOK_DISCLAIMER =
   'This site is not a part of the Facebook website or Facebook Inc. Additionally, this site is NOT endorsed by Facebook in any way. FACEBOOK is a trademark of META PLATFORMS, Inc.';
 
+export const PRACTICES_COMPLIANCE =
+  "This site is not part of, or endorsed by, Facebook or any social platform. Results shown are specific partners' outcomes and are not typical or guaranteed. © 2026 DivineACQ. All rights reserved.";
+
 /** Direct-book landing for med spas and dental practices (`/practices`). */
 export const PRACTICES = {
   pill: 'For med spas & dental practices',
@@ -126,6 +129,7 @@ export const PRACTICES = {
   body: 'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
   calendarTitle: 'Book your 30-minute practice audit',
   cta: 'Pick a time',
+  compliance: PRACTICES_COMPLIANCE,
   coversEyebrow: 'On the call',
   coversTitle: 'What we will look at',
   covers: [

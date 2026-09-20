@@ -13,9 +13,32 @@
 .acq-headline-accent {
   font-family: inherit;
   font-style: italic;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--color-brand-400);
   font-synthesis: none;
+}
+
+/* Cal.com inline embed: hug reported iframe height; never pin a desktop floor. */
+.acq-cal-embed {
+  width: 100%;
+  min-height: 24rem;
+  overflow: visible;
+  background: #000;
+  color-scheme: dark;
+}
+
+.acq-cal-embed cal-inline {
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+.acq-cal-embed iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  max-height: none;
 }
 
 .acq-dialog,
