@@ -1,10 +1,11 @@
 import Logo from '@/app/components/Logo';
 import { sectionLabel } from '@/app/components/ui';
 import type { Metadata } from 'next';
-import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import { acqCalendarEmbedSrc, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
 import { PRACTICES } from '@/lib/acq/copy';
+import { CalendarEmbed } from '../components/CalendarEmbed';
 import PracticesBackdrop from '../components/PracticesBackdrop';
-import PracticesForm from '../components/PracticesForm';
+import PracticesFounder from '../components/PracticesFounder';
 import { BookCta, IncludedCards, StatusPill } from '../components/marketing';
 
 export const metadata: Metadata = {
@@ -69,8 +70,21 @@ export default async function PracticesLandingPage({
           </div>
         </section>
 
-        <section id="book" className="scroll-mt-8 px-5 pb-16 sm:px-6 sm:pb-20">
-          <PracticesForm tracking={tracking} />
+        <section id="book" className="scroll-mt-8 px-3 pb-12 sm:px-6 sm:pb-14 lg:px-8">
+          <CalendarEmbed
+            src={acqCalendarEmbedSrc(tracking)}
+            title={PRACTICES.calendarTitle}
+            className="mt-0"
+          />
+          <p className="acq-headline mt-6 text-center text-sm font-semibold tracking-tight text-neutral-200 sm:text-base">
+            {PRACTICES.calendarNote}
+          </p>
+        </section>
+
+        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-5xl">
+            <PracticesFounder />
+          </div>
         </section>
 
         <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">

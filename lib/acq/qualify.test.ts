@@ -2,9 +2,6 @@ import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
-  ACQ_CAL_EMBED_SCRIPT,
-  ACQ_CAL_LINK,
-  ACQ_CAL_ORIGIN,
   ACQ_ICLOSED_EMBED_SCRIPT,
   ACQ_ICLOSED_EVENT_URL,
   ACQ_ICLOSED_HEIGHT,
@@ -277,7 +274,7 @@ describe('founding landing media', () => {
       `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}${copy.PRACTICES.titleAfter}`,
     );
     expect(copy.PRACTICES.body).toBe(
-      'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Fill out the form below.',
+      'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
     );
     expect(copy.PRACTICES.pill).toBe('For Med Spas & Dental Practices');
     expect(copy.PRACTICES.pill.toLowerCase()).toContain('med spas');
@@ -285,19 +282,22 @@ describe('founding landing media', () => {
     expect(copy.PRACTICES.title).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.body).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.covers).toHaveLength(3);
-    expect(copy.PRACTICES.cta).toBe('Submit application');
-    expect(copy.PRACTICES.formTitle).toBe('Book your 30-minute practice audit');
-    expect(copy.PRACTICES.formLabels.practiceName.toLowerCase()).toContain('practice');
+    expect(copy.PRACTICES.cta).toBe('Pick a time');
+    expect(copy.PRACTICES.calendarNote).toBe('15-30 mins & Free Audit.');
+    expect(copy.PRACTICES.founder.intro).toBe("I'm Malik, founder of Divine Acquisition.");
+    expect(copy.PRACTICES.founder.paragraphs).toHaveLength(4);
+    expect(copy.PRACTICES.beliefs.items).toHaveLength(3);
+    expect(copy.PRACTICES.beliefs.closeTitle).toBe('Devotion. Value. Exclusivity.');
     expect(copy.PRACTICES.compliance).toBe(
       "This site is not part of, or endorsed by, Facebook or any social platform. Results shown are specific partners' outcomes and are not typical or guaranteed. © 2026 DivineACQ. All rights reserved.",
     );
     expect(copy.PRACTICES_COMPLIANCE).toBe(copy.PRACTICES.compliance);
   });
 
-  it('embeds the issued Cal.com 30-min event on /practices', () => {
-    expect(ACQ_CAL_LINK).toBe('malik-sannie-zztskt/30min');
-    expect(ACQ_CAL_EMBED_SCRIPT).toBe('https://app.cal.com/embed/embed.js');
-    expect(ACQ_CAL_ORIGIN).toBe('https://app.cal.com');
+  it('embeds the issued GHL booking widget on /practices', () => {
+    expect(ACQ_CALENDAR_DEFAULT_EMBED_URL).toContain('v0e24e3kxYEGCTUkSP4A');
+    expect(ACQ_CALENDAR_EMBED_URL).toContain('widget/booking');
+    expect(ACQ_CALENDAR_EMBED_URL).toContain('msgsndr');
   });
 
   it('embeds the issued iClosed event on /book', () => {
