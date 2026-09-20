@@ -9,6 +9,7 @@ import {
   ACQ_CAL_NAMESPACE,
   ACQ_CAL_ORIGIN,
 } from '@/lib/acq/config';
+import { applyCalIframeHeight, isCalOrigin, readCalIframeHeight } from '@/lib/acq/cal-embed';
 import { cn } from '@/lib/utils';
 import { CalendarFrame } from './CalendarEmbed';
 import { trackPixel } from './MetaPixel';
@@ -69,44 +70,22 @@ function installCalStub() {
     } as CalFn;
 }
 
-function readIframeHeight(event: unknown): number | null {
-  if (!event || typeof event !== 'object') return null;
-  const record = event as Record<string, unknown>;
-  const detail = record.detail;
-  const nested =
-    detail && typeof detail === 'object'
-      ? ((detail as Record<string, unknown>).data ?? detail)
-      : (record.data ?? record);
-  if (!nested || typeof nested !== 'object') return null;
-  const height = (nested as Record<string, unknown>).iframeHeight;
-  return typeof height === 'number' && Number.isFinite(height) && height > 0
-    ? Math.ceil(height)
-    : null;
-}
-
-function followContentHeight(host: HTMLElement, height?: number) {
-  const iframe = host.querySelector('iframe');
-  if (!(iframe instanceof HTMLIFrameElement)) return;
-
-  if (typeof height === 'number') {
-    iframe.style.height = `${height}px`;
-  }
-
-  if (iframe.style.height.endsWith('px')) {
-    host.style.minHeight = '0px';
-    host.dataset.calSized = 'true';
-  }
+function namespaceApi(): CalFn | undefined {
+  return window.Cal?.ns?.[ACQ_CAL_NAMESPACE];
 }
 
 /** Cal.com month-view calendar. Height follows the iframe content. */
 export default function CalEmbed({ className }: { className?: string }) {
+  const hostRef = useRef<HTMLDivElement>(null);
   const pixelFired = useRef(false);
 
   useEffect(() => {
-    const host = document.getElementById(ACQ_CAL_ELEMENT_ID);
+    const host = hostRef.current;
     if (!host) return;
 
-    const observer = new MutationObserver(() => followContentHeight(host));
+    const applyHeight = (height?: number) => applyCalIframeHeight(host, height);
+
+    const observer = new MutationObserver(() => applyHeight());
     observer.observe(host, {
       childList: true,
       subtree: true,
@@ -114,49 +93,52 @@ export default function CalEmbed({ className }: { className?: string }) {
       attributeFilter: ['style'],
     });
 
-    if (host.dataset.calInitialized === 'true') {
-      followContentHeight(host);
-      return () => observer.disconnect();
+    const onMessage = (event: MessageEvent) => {
+      if (event.origin && event.origin !== window.location.origin && !isCalOrigin(event.origin)) {
+        return;
+      }
+      const height = readCalIframeHeight(event.data);
+      if (height) applyHeight(height);
+    };
+    window.addEventListener('message', onMessage);
+
+    if (host.dataset.calInitialized !== 'true') {
+      host.dataset.calInitialized = 'true';
+      installCalStub();
+      const Cal = window.Cal;
+      if (Cal) {
+        Cal('init', ACQ_CAL_NAMESPACE, { origin: ACQ_CAL_ORIGIN });
+        Cal.config = Cal.config || {};
+        Cal.config.forwardQueryParams = true;
+
+        const ns = namespaceApi();
+        ns?.('inline', {
+          elementOrSelector: `#${ACQ_CAL_ELEMENT_ID}`,
+          config: {
+            layout: 'month_view',
+            useSlotsViewOnSmallScreen: 'true',
+            theme: 'dark',
+          },
+          calLink: ACQ_CAL_LINK,
+        });
+        ns?.('ui', {
+          theme: 'dark',
+          cssVarsPerTheme: { dark: { 'cal-brand': ACQ_CAL_BRAND } },
+          hideEventTypeDetails: false,
+          layout: 'month_view',
+        });
+      }
     }
-    host.dataset.calInitialized = 'true';
 
-    installCalStub();
-    const Cal = window.Cal;
-    if (!Cal) return () => observer.disconnect();
-
-    Cal('init', ACQ_CAL_NAMESPACE, { origin: ACQ_CAL_ORIGIN });
-    Cal.config = Cal.config || {};
-    Cal.config.forwardQueryParams = true;
-
-    const ns = Cal.ns?.[ACQ_CAL_NAMESPACE];
-    if (!ns) return () => observer.disconnect();
-
-    ns('inline', {
-      elementOrSelector: `#${ACQ_CAL_ELEMENT_ID}`,
-      config: {
-        layout: 'month_view',
-        useSlotsViewOnSmallScreen: 'true',
-        theme: 'dark',
-      },
-      calLink: ACQ_CAL_LINK,
-    });
-
-    ns('ui', {
-      theme: 'dark',
-      cssVarsPerTheme: { dark: { 'cal-brand': ACQ_CAL_BRAND } },
-      hideEventTypeDetails: false,
-      layout: 'month_view',
-    });
-
-    ns('on', {
+    const ns = namespaceApi();
+    ns?.('on', {
       action: '__dimensionChanged',
       callback: (event: unknown) => {
-        const height = readIframeHeight(event);
-        if (height) followContentHeight(host, height);
+        const height = readCalIframeHeight(event);
+        if (height) applyHeight(height);
       },
     });
-
-    ns('on', {
+    ns?.('on', {
       action: 'bookingSuccessful',
       callback: () => {
         if (pixelFired.current) return;
@@ -165,18 +147,17 @@ export default function CalEmbed({ className }: { className?: string }) {
       },
     });
 
-    return () => observer.disconnect();
+    applyHeight();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('message', onMessage);
+    };
   }, []);
 
   return (
-    <CalendarFrame className={cn('max-w-5xl', className)}>
-      <div
-        id={ACQ_CAL_ELEMENT_ID}
-        className={cn(
-          'w-full min-h-[32rem] overflow-visible bg-black sm:min-h-[46rem]',
-          '[&_iframe]:block [&_iframe]:w-full [&_iframe]:border-0',
-        )}
-      />
+    <CalendarFrame className={cn('w-full max-w-7xl', className)}>
+      <div ref={hostRef} id={ACQ_CAL_ELEMENT_ID} className="acq-cal-embed" />
     </CalendarFrame>
   );
 }

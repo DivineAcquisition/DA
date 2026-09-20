@@ -9,7 +9,25 @@ import { Panel } from '@/components/ui/panel';
 import { CTA_LABEL } from '@/lib/acq/copy';
 import { cn } from '@/lib/utils';
 
-export function StatusPill({ children }: { children: ReactNode }) {
+export function StatusPill({
+  children,
+  variant = 'default',
+}: {
+  children: ReactNode;
+  variant?: 'default' | 'solid';
+}) {
+  if (variant === 'solid') {
+    return (
+      <p className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-ink-950 sm:text-[13px]">
+        <span className="relative flex size-1.5">
+          <span className="absolute inline-flex size-full animate-ping rounded-full bg-ink-950 opacity-40" />
+          <span className="relative inline-flex size-1.5 rounded-full bg-ink-950" />
+        </span>
+        <span className="acq-headline">{children}</span>
+      </p>
+    );
+  }
+
   return (
     <p className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/[0.08] px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-brand-200 sm:text-[13px]">
       <span className="relative flex size-1.5">
