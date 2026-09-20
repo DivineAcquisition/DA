@@ -129,25 +129,44 @@ export const PRACTICES = {
   titleAfter: ' To Increase Booked Consults',
   title:
     "We'll Run Your Meta Ads & Build The Follow\u2011Up System That Answers Every Lead In Under 60 Seconds, Completely Done For You, In The Next 14 Days, To Increase Booked Consults",
-  body: 'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Fill out the form below.',
+  body: 'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
   calendarTitle: 'Book your 30-minute practice audit',
-  cta: 'Submit application',
-  formTitle: 'Book your 30-minute practice audit',
-  formBody: 'Complete the form below to submit your application',
-  formSubmit: 'Submit application',
-  formSuccessTitle: 'Application submitted',
-  formSuccessBody:
-    "Thanks. We'll review your practice and follow up shortly about the 30-minute audit.",
-  formPrivacy:
-    'By submitting, you agree to our privacy policy and consent to being contacted about this audit.',
-  formLabels: {
-    fullName: 'Full name *',
-    email: 'Email address *',
-    phone: 'Phone number *',
-    practiceName: 'Practice name *',
-    adSpend: 'Roughly how much do you spend on ads per month? *',
-    followUp: "Who handles follow-up on leads that don't book right away? *",
-    programPrice: "What's your average new-patient visit priced at? *",
+  calendarNote: '15-30 mins & Free Audit.',
+  cta: 'Pick a time',
+  founder: {
+    eyebrow: "Who's behind this",
+    name: 'Malik',
+    role: 'Founder of Divine Acquisition',
+    photoAlt: 'Malik, founder of Divine Acquisition',
+    intro: "I'm Malik, founder of Divine Acquisition.",
+    paragraphs: [
+      "I've run ads and built acquisition systems across a few industries, and the same thing was true in every one: the ads worked. Leads came in. Then they sat. These businesses weren't short on demand, they were short on a way to respond to it, and almost all of them were buying more leads to fix a problem more leads couldn't fix.",
+      "That's what led me here. I stopped selling traffic and started building the layer underneath it, the one that answers every lead in under 60 seconds and follows up until someone books.",
+      'Med spas have that problem worse than most. The decision is impulsive, it happens at night, and the person who should be answering is usually with a client.',
+      "You'll be working with me directly, not an account manager. That's also why I only take on a few practices at a time.",
+    ],
+  },
+  beliefs: {
+    eyebrow: 'What I believe about growth',
+    lead: "Growth is not a demand problem. It's an operations problem.",
+    body: "Almost every business I've worked with believed it needed more leads. Almost none of them did. The gap between interest and revenue is operational, and no amount of traffic closes it. Buy more leads into a broken response layer and you get the same outcome at a higher cost.",
+    items: [
+      {
+        title: 'Systems over hustle.',
+        body: "Nobody outworks a structural problem. Answering faster is not a discipline issue you solve by trying harder, it's a system you either have or you don't. I build the system so the outcome stops depending on whether anyone remembered.",
+      },
+      {
+        title: 'Truth over comfort.',
+        body: "If the numbers say something isn't working, you'll hear it from me. I'd rather tell you the install isn't producing than invoice you for another month of activity.",
+      },
+      {
+        title: 'Value that compounds.',
+        body: "I'm not optimizing for a good first month. I'm building infrastructure that gets more valuable the longer it runs, because every lead it catches is one you already paid for and would otherwise have lost.",
+      },
+    ],
+    closeTitle: 'Devotion. Value. Exclusivity.',
+    closeBody:
+      "I do the work myself. I measure in booked consults, not impressions. And I take one practice per territory, so your system is never also your competitor's.",
   },
   compliance: PRACTICES_COMPLIANCE,
   coversEyebrow: 'On the call',
