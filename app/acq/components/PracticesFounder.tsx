@@ -19,7 +19,7 @@ export default function PracticesFounder() {
                   fill
                   priority
                   sizes="(min-width: 1024px) 420px, 90vw"
-                  className="object-cover object-[50%_18%]"
+                  className="object-cover object-center"
                 />
               </div>
             </Panel>
