@@ -123,9 +123,9 @@ export const PRACTICES_COMPLIANCE =
 /** Direct-book landing for med spas and dental practices (`/practices`). */
 export const PRACTICES = {
   pill: 'For med spas & dental practices',
-  titleBefore: 'Book more patients ',
-  titleAccent: 'without adding a single lead',
-  title: 'Book more patients without adding a single lead',
+  titleBefore: 'Book More Patients ',
+  titleAccent: 'Without Adding A Single Lead',
+  title: 'Book More Patients Without Adding A Single Lead',
   body: 'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
   calendarTitle: 'Book your 30-minute practice audit',
   cta: 'Pick a time',

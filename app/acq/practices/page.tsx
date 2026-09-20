@@ -7,7 +7,7 @@ import PracticesBackdrop from '../components/PracticesBackdrop';
 import { BookCta, IncludedCards, StatusPill } from '../components/marketing';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Book more patients | Divine Acquisition' },
+  title: { absolute: 'Book More Patients | Divine Acquisition' },
   description: PRACTICES.body,
   alternates: {
     canonical: 'https://acq.divineacquisition.io/practices',

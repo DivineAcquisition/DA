@@ -270,7 +270,7 @@ describe('founding landing media', () => {
     expect(copy.PRECALL.steps).toHaveLength(3);
     expect(copy.PRECALL.steps[0].label.toLowerCase()).toContain('email');
     expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
-    expect(copy.PRACTICES.title).toBe('Book more patients without adding a single lead');
+    expect(copy.PRACTICES.title).toBe('Book More Patients Without Adding A Single Lead');
     expect(copy.PRACTICES.title).toBe(
       `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}`,
     );
