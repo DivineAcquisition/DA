@@ -124,8 +124,7 @@ export default function CalEmbed({ className }: { className?: string }) {
         ns?.('ui', {
           theme: 'dark',
           cssVarsPerTheme: { dark: { 'cal-brand': ACQ_CAL_BRAND } },
-          hideEventTypeDetails: true,
-          showTimezoneWhenEventDetailsHidden: true,
+          hideEventTypeDetails: false,
           layout: 'month_view',
         });
       }

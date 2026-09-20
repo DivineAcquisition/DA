@@ -59,12 +59,5 @@ export function applyCalIframeHeight(host: HTMLElement, height?: number): number
   host.style.height = px;
   host.style.minHeight = '0px';
   host.dataset.calSized = 'true';
-
-  const inline = host.querySelector('cal-inline');
-  if (inline instanceof HTMLElement) {
-    inline.style.height = px;
-    inline.style.maxHeight = 'none';
-  }
-
   return next;
 }
