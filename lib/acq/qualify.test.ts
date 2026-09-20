@@ -271,7 +271,7 @@ describe('founding landing media', () => {
     expect(copy.PRECALL.steps[0].label.toLowerCase()).toContain('email');
     expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
     expect(copy.PRACTICES.title).toBe(
-      "We'll Run Your Meta Ads & Build The Follow-Up System That Answers Every Lead In Under 60 Seconds, Completely Done For You, In The Next 14 Days, To Increase Booked Consults",
+      "We'll Run Your Meta Ads & Build The Follow\u2011Up System That Answers Every Lead In Under 60 Seconds, Completely Done For You, In The Next 14 Days, To Increase Booked Consults",
     );
     expect(copy.PRACTICES.title).toBe(
       `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}${copy.PRACTICES.titleAfter}`,
