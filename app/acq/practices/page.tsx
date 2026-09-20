@@ -7,7 +7,7 @@ import PracticesBackdrop from '../components/PracticesBackdrop';
 import { BookCta, IncludedCards, StatusPill } from '../components/marketing';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Book More Patients | Divine Acquisition' },
+  title: { absolute: "We'll Run Your Meta Ads | Divine Acquisition" },
   description: PRACTICES.body,
   alternates: {
     canonical: 'https://acq.divineacquisition.io/practices',
@@ -50,9 +50,10 @@ export default function PracticesLandingPage() {
 
         <section className="relative z-10 px-5 pb-6 pt-8 sm:px-6 sm:pb-8 sm:pt-10 md:pt-12">
           <div className="mx-auto max-w-[900px] text-center">
-            <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[36rem] text-[1.65rem] font-bold leading-[1.14] tracking-tight text-white sm:text-[2.2rem] md:text-[2.55rem] md:leading-[1.1]">
+            <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-bold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">
               {PRACTICES.titleBefore}
               <em className="acq-headline-accent">{PRACTICES.titleAccent}</em>
+              {PRACTICES.titleAfter}
             </h1>
             <p className="animate-rise delay-2 mx-auto mt-5 max-w-[36rem] text-sm font-semibold leading-relaxed text-neutral-300 sm:mt-6 sm:text-[15px]">
               {PRACTICES.body}

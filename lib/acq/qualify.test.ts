@@ -270,9 +270,11 @@ describe('founding landing media', () => {
     expect(copy.PRECALL.steps).toHaveLength(3);
     expect(copy.PRECALL.steps[0].label.toLowerCase()).toContain('email');
     expect(copy.PRECALL.steps[2].label.toLowerCase()).toContain('self-educate');
-    expect(copy.PRACTICES.title).toBe('Book More Patients Without Adding A Single Lead');
     expect(copy.PRACTICES.title).toBe(
-      `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}`,
+      "We'll Run Your Meta Ads & Build The Follow-Up System That Answers Every Lead In Under 60 Seconds, Completely Done For You, In The Next 14 Days, To Increase Booked Consults",
+    );
+    expect(copy.PRACTICES.title).toBe(
+      `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}${copy.PRACTICES.titleAfter}`,
     );
     expect(copy.PRACTICES.body).toBe(
       'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
