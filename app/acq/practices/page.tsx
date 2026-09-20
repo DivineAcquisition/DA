@@ -1,9 +1,10 @@
 import Logo from '@/app/components/Logo';
 import { sectionLabel } from '@/app/components/ui';
 import type { Metadata } from 'next';
+import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
 import { PRACTICES } from '@/lib/acq/copy';
-import CalEmbed from '../components/CalEmbed';
 import PracticesBackdrop from '../components/PracticesBackdrop';
+import PracticesForm from '../components/PracticesForm';
 import { BookCta, IncludedCards, StatusPill } from '../components/marketing';
 
 export const metadata: Metadata = {
@@ -33,7 +34,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function PracticesLandingPage() {
+export default async function PracticesLandingPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const query = await searchParams;
+  const tracking = trackingFromSearchParams(query);
+
   return (
     <div className="min-h-screen bg-ink-950 text-white antialiased">
       <PracticesBackdrop />
@@ -43,7 +51,7 @@ export default function PracticesLandingPage() {
           <div className="mx-auto flex max-w-5xl flex-col items-center">
             <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
             <div className="acq-headline animate-rise mt-6">
-              <StatusPill>{PRACTICES.pill}</StatusPill>
+              <StatusPill variant="solid">{PRACTICES.pill}</StatusPill>
             </div>
           </div>
         </header>
@@ -61,8 +69,8 @@ export default function PracticesLandingPage() {
           </div>
         </section>
 
-        <section id="book" className="scroll-mt-8 px-3 pb-16 sm:px-6 sm:pb-20 lg:px-8">
-          <CalEmbed className="mt-0" />
+        <section id="book" className="scroll-mt-8 px-5 pb-16 sm:px-6 sm:pb-20">
+          <PracticesForm tracking={tracking} />
         </section>
 
         <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">

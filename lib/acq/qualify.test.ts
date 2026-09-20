@@ -160,7 +160,7 @@ describe('acqBookUrl', () => {
 });
 
 describe('acqPracticesUrl', () => {
-  it('sends practice traffic to the Cal.com landing with ad params', () => {
+  it('sends practice traffic to the practices landing with ad params', () => {
     expect(
       acqPracticesUrl({ utm_source: 'facebook', fbclid: 'abc.123' }, 'acq.divineacquisition.io'),
     ).toBe('/practices?utm_source=facebook&fbclid=abc.123');
@@ -277,14 +277,17 @@ describe('founding landing media', () => {
       `${copy.PRACTICES.titleBefore}${copy.PRACTICES.titleAccent}${copy.PRACTICES.titleAfter}`,
     );
     expect(copy.PRACTICES.body).toBe(
-      'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Pick a time below.',
+      'A 30-minute audit showing you what your practice is already sitting on, and what it would take to work it. Fill out the form below.',
     );
+    expect(copy.PRACTICES.pill).toBe('For Med Spas & Dental Practices');
     expect(copy.PRACTICES.pill.toLowerCase()).toContain('med spas');
     expect(copy.PRACTICES.pill.toLowerCase()).toContain('dental');
     expect(copy.PRACTICES.title).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.body).not.toMatch(/[—–]/);
     expect(copy.PRACTICES.covers).toHaveLength(3);
-    expect(copy.PRACTICES.cta).toBe('Pick a time');
+    expect(copy.PRACTICES.cta).toBe('Submit application');
+    expect(copy.PRACTICES.formTitle).toBe('Book your 30-minute practice audit');
+    expect(copy.PRACTICES.formLabels.practiceName.toLowerCase()).toContain('practice');
     expect(copy.PRACTICES.compliance).toBe(
       "This site is not part of, or endorsed by, Facebook or any social platform. Results shown are specific partners' outcomes and are not typical or guaranteed. © 2026 DivineACQ. All rights reserved.",
     );

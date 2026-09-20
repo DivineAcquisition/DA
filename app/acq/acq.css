@@ -202,7 +202,8 @@ a.acq-button:active {
   background: rgba(7, 7, 11, 0.78);
 }
 
-.acq-dialog select option {
+.acq-dialog select option,
+.acq-surface select option {
   background: #0b0a11;
   color: #fff;
 }
