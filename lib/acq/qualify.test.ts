@@ -250,6 +250,14 @@ describe('founding landing media', () => {
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
     expect(copy.PILL_BANNER).toBe('Sales operations for coaching & consulting');
     expect(copy.CTA_LABEL).toBe('Book a free audit');
+    expect(copy.LANDING_REQUIREMENT).toBe('Three founding seats.');
+    expect(copy.LANDING_STATS).toHaveLength(3);
+    expect(copy.LANDING_GET_TITLE).toBe('What you actually get');
+    expect(copy.LANDING_WHY.points).toHaveLength(4);
+    expect(copy.LANDING_WHO.items.map((item) => item.title)).toEqual(['Coaches', 'Consultants']);
+    expect(copy.LANDING_FAQ.length).toBeGreaterThanOrEqual(5);
+    expect(JSON.stringify(copy.LANDING_WHY)).not.toMatch(/[—–]/);
+    expect(JSON.stringify(copy.LANDING_FAQ)).not.toMatch(/[—–]/);
     expect(copy.THANK_YOU.title).toBe("Thanks. You're in. Grab a time below.");
     expect(copy.THANK_YOU.title).not.toMatch(/[—–]/);
     expect(copy.BOOK_PAGE.title).toBe('Book your free sales audit');

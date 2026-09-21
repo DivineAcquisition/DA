@@ -12,13 +12,15 @@ import { cn } from '@/lib/utils';
 export function StatusPill({
   children,
   variant = 'default',
+  className,
 }: {
   children: ReactNode;
   variant?: 'default' | 'solid';
+  className?: string;
 }) {
   if (variant === 'solid') {
     return (
-      <p className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-ink-950 sm:text-[13px]">
+      <p className={cn('inline-flex items-center gap-2 rounded-full bg-brand-500 px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-ink-950 sm:text-[13px]', className)}>
         <span className="relative flex size-1.5">
           <span className="absolute inline-flex size-full animate-ping rounded-full bg-ink-950 opacity-40" />
           <span className="relative inline-flex size-1.5 rounded-full bg-ink-950" />
@@ -29,7 +31,7 @@ export function StatusPill({
   }
 
   return (
-    <p className="inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/[0.08] px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-brand-200 sm:text-[13px]">
+    <p className={cn('inline-flex items-center gap-2 rounded-full border border-brand-500/30 bg-brand-500/[0.08] px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-brand-200 sm:text-[13px]', className)}>
       <span className="relative flex size-1.5">
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand-400 opacity-70" />
         <span className="relative inline-flex size-1.5 rounded-full bg-brand-400" />
