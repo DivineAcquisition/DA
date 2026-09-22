@@ -1,5 +1,8 @@
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
+import { sectionLabel } from '@/app/components/ui';
+import { Particles } from '@/components/ui/particles';
+import { Marquee } from '@/components/ui/marquee';
 import { headers } from 'next/headers';
 import {
   acqBookUrl,
@@ -14,27 +17,16 @@ import {
   HEADLINE_BEFORE,
   INCLUDED,
   INCLUDED_FOOTNOTE,
-  LANDING_FAQ,
-  LANDING_FAQ_TITLE,
-  LANDING_GET_TITLE,
-  LANDING_REQUIREMENT,
-  LANDING_STATS,
-  LANDING_WHO,
-  LANDING_WHY,
+  INCLUDED_HEADLINE,
   PILL_BANNER,
   SUBHEADLINE,
 } from '@/lib/acq/copy';
 import HeroVideo from './components/HeroVideo';
-import { BookCta, StatusPill } from './components/marketing';
-import { Panel } from '@/components/ui/panel';
-
-function LandingCta({ href }: { href: string }) {
-  return (
-    <div className="flex justify-center">
-      <BookCta href={href} className="max-w-xl uppercase tracking-[0.04em]" />
-    </div>
-  );
-}
+import {
+  BookCta,
+  IncludedCards,
+  StatusPill,
+} from './components/marketing';
 
 export default async function AcqLandingPage({
   searchParams,
@@ -49,164 +41,80 @@ export default async function AcqLandingPage({
       <Backdrop />
 
       <div className="relative z-10">
-        <header className="relative z-10 px-5 pt-6 sm:px-6 sm:pt-8">
-          <div className="mx-auto flex max-w-5xl flex-col items-center">
-            <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
-            <div className="acq-headline mt-8">
-              <StatusPill variant="solid" className="uppercase tracking-[0.08em]">
-                {PILL_BANNER}
-              </StatusPill>
-            </div>
-          </div>
-        </header>
-
-        <section className="relative z-10 px-5 pb-6 pt-8 sm:px-6 sm:pt-10">
-          <div className="mx-auto max-w-[920px] text-center">
-            <h1 className="acq-headline mx-auto max-w-[920px] text-[1.55rem] font-bold uppercase leading-[1.08] tracking-tight text-white sm:text-[2.15rem] md:text-[2.55rem]">
-              {HEADLINE_BEFORE}
-              <em className="acq-headline-accent">{HEADLINE_ACCENT}</em>
-              {HEADLINE_AFTER}
-            </h1>
-            <p className="mx-auto mt-6 max-w-[40rem] text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-              {SUBHEADLINE}
-            </p>
-            <p className="acq-headline mt-8 text-sm font-bold uppercase tracking-tight text-white sm:text-base">
-              {LANDING_REQUIREMENT}
-            </p>
-            <div className="mt-5">
-              <LandingCta href={bookHref} />
-            </div>
-          </div>
-
-          <dl className="mx-auto mt-12 grid max-w-3xl grid-cols-1 divide-y divide-white/10 sm:mt-14 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-            {LANDING_STATS.map((stat) => (
-              <div key={stat.label} className="px-4 py-5 text-center sm:py-2">
-                <dt className="acq-headline text-sm font-bold uppercase tracking-tight text-white sm:text-[15px]">
-                  {stat.label}
-                </dt>
-                <dd className="mt-2 text-xs leading-relaxed text-neutral-400 sm:text-sm">{stat.detail}</dd>
+        <div className="relative overflow-hidden">
+          <Particles
+            className="absolute inset-0 z-0"
+            quantity={48}
+            color="#9A88FC"
+            ease={80}
+            size={0.5}
+          />
+          <header className="relative z-10 px-5 pt-6 sm:px-6 sm:pt-8">
+            <div className="mx-auto flex max-w-5xl flex-col items-center">
+              <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
+              <div className="acq-headline animate-rise mt-6">
+                <StatusPill>{PILL_BANNER}</StatusPill>
               </div>
-            ))}
-          </dl>
-        </section>
+            </div>
+          </header>
 
-        <section className="px-5 pb-16 pt-6 sm:px-6 sm:pb-20">
+          <section className="relative z-10 px-5 pb-8 pt-8 sm:px-6 sm:pb-10 sm:pt-10 md:pt-12">
+            <div className="mx-auto max-w-[900px] text-center">
+              <h1 className="acq-headline animate-rise delay-1 mx-auto max-w-[920px] text-[1.45rem] font-semibold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">
+                {HEADLINE_BEFORE}
+                <em className="acq-headline-accent">{HEADLINE_ACCENT}</em>
+                {HEADLINE_AFTER}
+              </h1>
+
+              <p className="animate-rise delay-2 mx-auto mt-4 max-w-[34rem] text-sm leading-relaxed text-neutral-400 sm:mt-5 sm:text-[15px]">
+                {SUBHEADLINE}
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <section className="px-5 pb-16 sm:px-6 sm:pb-20">
           <HeroVideo />
-        </section>
 
-        <section className="border-t border-white/[0.08] px-5 py-16 sm:px-6 sm:py-24">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="acq-headline text-center text-sm font-bold uppercase tracking-[0.16em] text-neutral-400">
-              {LANDING_GET_TITLE}
-            </h2>
-            <div className="mt-12 space-y-14">
-              {INCLUDED.map((item) => (
-                <article key={item.title}>
-                  <h3 className="acq-headline text-[1.65rem] font-bold uppercase leading-[1.05] tracking-tight text-white sm:text-4xl">
-                    {item.title}
-                  </h3>
-                  <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-                    {item.body}
-                  </p>
-                </article>
-              ))}
-            </div>
-            <p className="mt-12 text-sm font-medium leading-relaxed text-neutral-400">{INCLUDED_FOOTNOTE}</p>
-            <div className="mt-10">
-              <LandingCta href={bookHref} />
-            </div>
+          <div className="animate-rise delay-4 mx-auto mt-9 flex max-w-[900px] flex-col items-center">
+            <BookCta href={bookHref} />
           </div>
         </section>
 
-        <section className="border-t border-white/[0.08] px-5 py-16 sm:px-6 sm:py-24">
+        <div className="relative overflow-hidden border-y border-white/[0.07]">
+          <Marquee pauseOnHover className="[--duration:36s]">
+            {INCLUDED.map((item) => (
+              <span
+                key={item.title}
+                className="mx-4 text-[13px] font-medium tracking-wide text-neutral-400"
+              >
+                {item.title}
+              </span>
+            ))}
+          </Marquee>
+        </div>
+
+        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-3xl">
-            <h2 className="acq-headline text-center text-sm font-bold uppercase tracking-[0.16em] text-neutral-400">
-              {LANDING_WHY.eyebrow}
+            <p className={sectionLabel}>{INCLUDED_HEADLINE}</p>
+            <IncludedCards items={INCLUDED} />
+            <p className="mt-6 text-sm leading-relaxed text-neutral-400">{INCLUDED_FOOTNOTE}</p>
+          </div>
+        </section>
+
+        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-3xl">
+            <p className={sectionLabel}>{FOUNDING_OFFER.eyebrow}</p>
+            <h2 className="acq-headline mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              {FOUNDING_OFFER.lead}
             </h2>
-            <p className="acq-headline mt-10 text-2xl font-bold text-white sm:text-3xl">{LANDING_WHY.intro}</p>
-            <p className="mt-5 text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">{LANDING_WHY.body}</p>
-            <ol className="mt-12 space-y-10">
-              {LANDING_WHY.points.map((point, index) => (
-                <li key={point.title} className="grid grid-cols-[2.5rem_1fr] gap-3 sm:gap-5">
-                  <span className="acq-headline pt-1 text-sm font-bold tabular-nums text-brand-300">
-                    {String(index + 1).padStart(2, '0')}
-                  </span>
-                  <div>
-                    <h3 className="acq-headline text-xl font-bold uppercase leading-tight tracking-tight text-white sm:text-2xl">
-                      {point.title}
-                    </h3>
-                    <p className="mt-3 text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-                      {point.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <h3 className="acq-headline mt-14 text-2xl font-bold uppercase tracking-tight text-white sm:text-3xl">
-              {LANDING_WHY.closeTitle}
-            </h3>
-            <p className="mt-4 max-w-2xl text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-              {LANDING_WHY.closeBody}
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-neutral-400 sm:text-[15px]">
+              {FOUNDING_OFFER.body}
             </p>
-            <p className="mt-6 text-sm font-medium leading-relaxed text-neutral-400">{FOUNDING_OFFER.body}</p>
-            <div className="mt-10">
-              <LandingCta href={bookHref} />
-            </div>
           </div>
         </section>
 
-        <section className="border-t border-white/[0.08] px-5 py-16 sm:px-6 sm:py-24">
-          <div className="mx-auto max-w-4xl">
-            <h2 className="acq-headline text-center text-sm font-bold uppercase tracking-[0.16em] text-neutral-400">
-              {LANDING_WHO.eyebrow}
-            </h2>
-            <ul className="mt-12 grid gap-4 sm:grid-cols-2">
-              {LANDING_WHO.items.map((item) => (
-                <li key={item.title}>
-                  <Panel className="h-full rounded-3xl p-6 sm:p-8">
-                    <h3 className="acq-headline text-2xl font-bold uppercase tracking-tight text-white sm:text-3xl">
-                      {item.title}
-                    </h3>
-                    <p className="mt-4 text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-                      {item.body}
-                    </p>
-                  </Panel>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-12">
-              <LandingCta href={bookHref} />
-            </div>
-          </div>
-        </section>
-
-        <section className="border-t border-white/[0.08] px-5 py-16 sm:px-6 sm:py-24">
-          <div className="mx-auto max-w-3xl">
-            <h2 className="acq-headline text-center text-sm font-bold uppercase tracking-[0.16em] text-neutral-400">
-              {LANDING_FAQ_TITLE}
-            </h2>
-            <div className="mt-8 border-t border-white/10">
-              {LANDING_FAQ.map((item) => (
-                <details key={item.q} className="group border-b border-white/10">
-                  <summary className="acq-headline flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-base font-semibold text-white sm:text-lg [&::-webkit-details-marker]:hidden">
-                    {item.q}
-                    <span className="text-xl font-light text-brand-300 transition-transform group-open:rotate-45">
-                      +
-                    </span>
-                  </summary>
-                  <p className="max-w-2xl pb-5 text-sm font-medium leading-relaxed text-neutral-300 sm:text-base">
-                    {item.a}
-                  </p>
-                </details>
-              ))}
-            </div>
-            <div className="mt-12">
-              <LandingCta href={bookHref} />
-            </div>
-          </div>
-        </section>
-
-        <footer className="border-t border-white/[0.08] px-5 py-10 text-center sm:px-6">
+        <footer className="hairline-glow relative border-t border-white/[0.06] px-5 py-10 text-center sm:px-6">
           <p className="text-xs text-neutral-600">© Divine Acquisition. All rights reserved.</p>
           <p className="mx-auto mt-5 max-w-2xl text-[10px] leading-relaxed text-neutral-600 sm:text-[11px]">
             {FACEBOOK_DISCLAIMER}
