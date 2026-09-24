@@ -129,8 +129,99 @@ begin
   r := public.review_role_application(v_id, 'advanced', 'Booked a call');
   assert r.status = 'advanced';
   assert r.reviewed_by = 'aaaaaaaa-0000-0000-0000-000000000001';
+  assert r.review_note = 'Booked a call';
   assert exists (select 1 from public.audit_event where action = 'careers.application_reviewed'),
     'rule 10: the decision is in the audit log';
+
+  assert r.converted_operator_id is not null, 'advancing creates an operator';
+  assert (
+    select o.status = 'applicant'
+       and o.role_application_id = r.id
+       and o.profile_id is not null
+       and o.email = r.email
+       and o.phone = r.phone
+       and o.joined_on = current_date
+       and o.country is null
+       and o.payout_method is null
+    from public.operator o
+    where o.id = r.converted_operator_id
+  ), 'the operator is an applicant linked back to this application';
+  assert (
+    select count(*) from public.operator o where o.role_application_id = r.id
+  ) = 1, 'exactly one operator row';
+end $$;
+
+\echo '== advancing again does not create a second operator =='
+do $$
+declare
+  v_id uuid;
+  v_operator uuid;
+  v_count integer;
+begin
+  select id, converted_operator_id into v_id, v_operator
+  from public.role_application where role_slug = 'growth-engineer';
+
+  update public.role_application
+     set status = 'advanced', review_note = 'Booked a call'
+   where id = v_id;
+
+  select count(*) into v_count from public.operator where role_application_id = v_id;
+  assert v_count = 1, 'a second save of advanced does not hire them twice';
+  assert (select converted_operator_id from public.role_application where id = v_id) = v_operator,
+    'the original operator link stays';
+  assert (select review_note from public.role_application where id = v_id) = 'Booked a call';
+end $$;
+
+\echo '== rejected and withdrawn do not create an operator =='
+do $$
+declare
+  v_rejected uuid;
+  v_withdrawn uuid;
+begin
+  insert into public.role_application (role_slug, role_title, full_name, email, status)
+  values ('setter', 'Setter', 'Riley Chen', 'riley.chen@example.test', 'reviewing')
+  returning id into v_rejected;
+
+  update public.role_application set status = 'rejected' where id = v_rejected;
+  assert (select converted_operator_id from public.role_application where id = v_rejected) is null;
+  assert not exists (select 1 from public.operator where email = 'riley.chen@example.test'),
+    'rejected does not create an operator';
+
+  insert into public.role_application (role_slug, role_title, full_name, email, status)
+  values ('setter', 'Setter', 'Sam Okonkwo', 'sam.okonkwo@example.test', 'reviewing')
+  returning id into v_withdrawn;
+
+  update public.role_application set status = 'withdrawn' where id = v_withdrawn;
+  assert (select converted_operator_id from public.role_application where id = v_withdrawn) is null;
+  assert not exists (select 1 from public.operator where email = 'sam.okonkwo@example.test'),
+    'withdrawn does not create an operator';
+end $$;
+
+\echo '== an existing profile is reused and its role is left alone =='
+do $$
+declare
+  v_id uuid;
+  v_profile uuid := 'cccccccc-0000-0000-0000-000000000009';
+  v_operator uuid;
+begin
+  insert into auth.users (id, email) values (v_profile, 'existing.hire@example.test');
+  update public.profile
+     set role = 'admin', state = 'active', full_name = 'Existing Hire'
+   where id = v_profile;
+
+  insert into public.role_application (role_slug, role_title, full_name, email, phone, status)
+  values ('closer', 'Closer', 'Existing Hire', 'Existing.Hire@example.test', '+1 555 0100', 'reviewing')
+  returning id into v_id;
+
+  update public.role_application set status = 'advanced' where id = v_id
+  returning converted_operator_id into v_operator;
+
+  assert (select count(*) from public.profile where lower(email) = 'existing.hire@example.test') = 1,
+    'no duplicate profile';
+  assert (select role from public.profile where id = v_profile) = 'admin', 'role is untouched';
+  assert (select state from public.profile where id = v_profile) = 'active', 'state is untouched';
+  assert (select profile_id from public.operator where id = v_operator) = v_profile;
+  assert (select role_application_id from public.operator where id = v_operator) = v_id;
 end $$;
 
 set role authenticated;
