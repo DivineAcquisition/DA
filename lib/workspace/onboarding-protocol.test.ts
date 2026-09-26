@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   VA_SALES_OPERATOR_ONBOARDING,
+  getOnboardingProtocol,
   onboardingProtocolForTemplate,
   validateOnboardingAnswers,
 } from './onboarding-protocol';
@@ -55,5 +56,42 @@ describe('validateOnboardingAnswers', () => {
         training_availability: 'conflict',
       }).ok,
     ).toBe(true);
+  });
+});
+
+describe('protocolFromStoredSteps', () => {
+  const stored = {
+    key: 'standard_operator',
+    name: 'Standard Operator Onboarding',
+    description: '',
+    steps: [
+      { key: 'sop_reviewed', label: 'I have reviewed the operator SOP.', kind: 'acknowledgment' as const, help: null, options: null, required: true, asset: { title: 'Operator SOP', url: 'https://drive.google.com/x' } },
+      { key: 'tool_access_granted', label: 'Tool access has been granted.', kind: 'credential_handoff' as const, help: null, options: ['GHL', 'Discord', 'Vistrial'], required: true, asset: null },
+      { key: 'notes', label: 'Anything we should know?', kind: 'form_question' as const, help: null, options: null, required: false, asset: null },
+    ],
+  };
+
+  it('renders confirmations as checkboxes and questions as text, in order', () => {
+    const protocol = getOnboardingProtocol('standard_operator', stored);
+    const fields = protocol?.sections[0].fields ?? [];
+    expect(fields.map((f) => [f.id, f.type])).toEqual([
+      ['sop_reviewed', 'checkbox'],
+      ['tool_access_granted', 'checkbox'],
+      ['notes', 'textarea'],
+    ]);
+    expect(fields[0].link).toEqual({ href: 'https://drive.google.com/x', label: 'Operator SOP' });
+    expect(fields[1].help).toContain('GHL, Discord, Vistrial');
+  });
+
+  it('requires every required confirmation before submitting', () => {
+    const protocol = getOnboardingProtocol('standard_operator', stored)!;
+    expect(validateOnboardingAnswers(protocol, { sop_reviewed: 'true' }).ok).toBe(false);
+    expect(
+      validateOnboardingAnswers(protocol, { sop_reviewed: 'true', tool_access_granted: 'true' }).ok,
+    ).toBe(true);
+  });
+
+  it('does not resolve a stored protocol under a different key', () => {
+    expect(getOnboardingProtocol('something_else', stored)).toBeNull();
   });
 });

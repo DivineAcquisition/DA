@@ -226,8 +226,61 @@ export const VA_SALES_OPERATOR_ONBOARDING: OnboardingProtocol = {
   ],
 };
 
-export function getOnboardingProtocol(key: string): OnboardingProtocol | null {
+/** A protocol defined in da_onboarding_protocol / da_onboarding_protocol_step. */
+export type StoredOnboardingProtocol = {
+  key: string | null;
+  name: string | null;
+  description: string | null;
+  steps: Array<{
+    key: string;
+    label: string;
+    kind: 'form_question' | 'acknowledgment' | 'credential_handoff' | 'material_review';
+    help: string | null;
+    options: string[] | null;
+    required: boolean;
+    asset: { title: string; url: string | null } | null;
+  }>;
+};
+
+/**
+ * Builds the form for a protocol that lives only in the database. A form
+ * question is a text answer; the other three kinds are confirmations.
+ */
+export function protocolFromStoredSteps(stored: StoredOnboardingProtocol): OnboardingProtocol | null {
+  if (!stored.key || stored.steps.length === 0) return null;
+  return {
+    key: stored.key,
+    title: stored.name ?? 'Onboarding',
+    intro: stored.description ?? '',
+    sections: [
+      {
+        id: stored.key,
+        title: stored.name ?? 'Onboarding',
+        fields: stored.steps.map((step) => {
+          const help =
+            step.kind === 'credential_handoff' && step.options?.length
+              ? [step.help, `Tools: ${step.options.join(', ')}`].filter(Boolean).join(' ')
+              : step.help ?? undefined;
+          return {
+            id: step.key,
+            label: step.label,
+            type: step.kind === 'form_question' ? 'textarea' : 'checkbox',
+            required: step.required,
+            help,
+            link: step.asset?.url ? { href: step.asset.url, label: step.asset.title } : undefined,
+          };
+        }),
+      },
+    ],
+  };
+}
+
+export function getOnboardingProtocol(
+  key: string,
+  stored?: StoredOnboardingProtocol | null,
+): OnboardingProtocol | null {
   if (key === VA_SALES_OPERATOR_ONBOARDING_KEY) return VA_SALES_OPERATOR_ONBOARDING;
+  if (stored && stored.key === key) return protocolFromStoredSteps(stored);
   return null;
 }
 

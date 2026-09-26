@@ -6,6 +6,7 @@ import {
   type DocuSealFieldInput,
 } from './docuseal';
 import { buildSalesOperatorSignerValues, resolveOperatorSignerRoleName } from './operator-agreement';
+import { serviceClient } from './db';
 import { publicDaRpc } from './resolve-signing';
 
 export type SigningField = {
@@ -28,7 +29,10 @@ export type SigningPagePayload = {
   templateName: string;
   fields: SigningField[];
   consents: ConsentItem[];
+  /** Same-origin URLs for the browser (see proxiedDocumentUrl). */
   documents: Array<{ name: string; url: string }>;
+  /** DocuSeal's own file URLs. Server-only: the document proxy reads these. */
+  sourceDocuments: Array<{ name: string; url: string }>;
   signedDocumentUrl: string | null;
   submitterId: string | null;
   submissionId: string | null;
@@ -49,6 +53,7 @@ type LoadedBundle = {
     template_id: string;
     onboarding_token?: string | null;
     onboarding_url?: string | null;
+    access_token_expires_at?: string | null;
   };
   recipient: {
     full_name: string;
@@ -102,11 +107,32 @@ function toDateInputValue(raw: string): string {
   return value;
 }
 
+/**
+ * Server-only RPC with the service role. The DocuSeal key and the signed
+ * stamp are not the public anon key's to reach; the anon fallback only covers
+ * a deploy that has no service key yet, and stops working once
+ * da_docuseal_key_lockdown is applied.
+ */
+async function serviceRpc<T>(fn: string, args: Record<string, unknown>): Promise<T | null> {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
+  const client = key ? serviceClient() : null;
+  if (client) {
+    const { data, error } = await client.rpc(fn, args);
+    if (!error) return (data ?? null) as T | null;
+  }
+  return publicDaRpc<T>(fn, args, () => true);
+}
+
 async function resolveDocuSealApiKey(): Promise<string> {
   const fromEnv = (process.env.DOCUSEAL_API_KEY ?? '').trim();
   if (fromEnv) return fromEnv;
-  const data = await publicDaRpc<string>('da_get_docuseal_api_key', {});
+  const data = await serviceRpc<string>('da_get_docuseal_api_key', {});
   return (data ?? '').trim();
+}
+
+/** Serve a DocuSeal file through this origin so mobile browsers render it. */
+export function proxiedDocumentUrl(token: string, index: number): string {
+  return `/s/${encodeURIComponent(token)}/document/${index}`;
 }
 
 function dedupeFields(fields: SigningField[]): SigningField[] {
@@ -124,11 +150,22 @@ function dedupeFields(fields: SigningField[]): SigningField[] {
   return [...byName.values()];
 }
 
+/** Why a link cannot be signed, when it is one we recognise. */
+export type SigningUnavailable = { unavailable: 'link_expired' };
+
 export async function loadSigningPage(token: string): Promise<SigningPagePayload | null> {
+  const loaded = await loadSigningPageOrReason(token);
+  return loaded && 'unavailable' in loaded ? null : loaded;
+}
+
+export async function loadSigningPageOrReason(
+  token: string,
+): Promise<SigningPagePayload | SigningUnavailable | null> {
   if (token.trim().length < 32) return null;
-  const data = await publicDaRpc<LoadedBundle>('da_load_signing_page', {
+  const data = await publicDaRpc<LoadedBundle | SigningUnavailable>('da_load_signing_page', {
     p_token: token.trim(),
   });
+  if (data && 'unavailable' in data) return { unavailable: data.unavailable };
   if (!data?.agreement || !data.recipient || !data.template) return null;
 
   const { agreement, recipient, template } = data;
@@ -213,7 +250,11 @@ export async function loadSigningPage(token: string): Promise<SigningPagePayload
     templateName: template.name,
     fields,
     consents: consentsForRecipientType(recipient.recipient_type),
-    documents,
+    documents: documents.map((doc, index) => ({
+      name: doc.name,
+      url: proxiedDocumentUrl(token.trim(), index),
+    })),
+    sourceDocuments: documents,
     signedDocumentUrl: agreement.signed_document_url,
     submitterId: agreement.docuseal_submitter_id,
     submissionId: agreement.docuseal_submission_id,
@@ -308,15 +349,11 @@ export async function completeSigning(input: {
 
   const signedUrl = completed.documents?.[0]?.url ?? null;
 
-  const marked = await publicDaRpc<boolean>(
-    'da_mark_agreement_signed',
-    {
-      p_token: input.token.trim(),
-      p_submitted: submitted,
-      p_signed_document_url: signedUrl,
-    },
-    (value) => value === true,
-  );
+  const marked = await serviceRpc<boolean>('da_mark_agreement_signed', {
+    p_token: input.token.trim(),
+    p_submitted: submitted,
+    p_signed_document_url: signedUrl,
+  });
 
   if (!marked) {
     return { ok: false, error: 'Signed in DocuSeal but local record failed to update.' };

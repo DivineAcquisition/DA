@@ -134,7 +134,22 @@ export default function OnboardingForm({
                             }))
                           }
                         />
-                        <span>{field.label}</span>
+                        <span>
+                          {field.label}
+                          {field.help && (
+                            <span className="mt-1 block text-xs text-[var(--ws-dim)]">{field.help}</span>
+                          )}
+                          {field.link && (
+                            <a
+                              href={field.link.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="mt-1 inline-block text-xs font-medium text-[var(--ws-accent)] hover:underline"
+                            >
+                              {field.link.label}
+                            </a>
+                          )}
+                        </span>
                       </label>
                     );
                   }

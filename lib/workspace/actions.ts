@@ -44,6 +44,8 @@ import {
 } from './tokens';
 import type { ActionResult, DaSettings, RecipientStatus, RecipientType } from './types';
 
+const SIGNING_LINK_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
 function revalidateWorkspace() {
   revalidatePath('/workspace');
   revalidatePath('/workspace/overview');
@@ -583,6 +585,8 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
       docuseal_slug: docuseal.submitterSlug || null,
       submitter_email: recipient.email,
       access_token: accessToken,
+      // Same window NovaraCleaning gives a contractor signing link.
+      access_token_expires_at: new Date(Date.now() + SIGNING_LINK_TTL_MS).toISOString(),
       provider_signing_url: providerUrl,
       signing_url: publicUrl,
       onboarding_token: onboardingToken,

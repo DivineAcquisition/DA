@@ -2,6 +2,7 @@ import {
   getOnboardingProtocol,
   validateOnboardingAnswers,
   type OnboardingProtocol,
+  type StoredOnboardingProtocol,
 } from './onboarding-protocol';
 import { publicDaRpc } from './resolve-signing';
 
@@ -26,6 +27,7 @@ type LoadedBundle = {
     completed_at: string | null;
     agreement_id: string | null;
   };
+  protocol?: StoredOnboardingProtocol | null;
   recipient: {
     full_name: string;
     email: string;
@@ -46,7 +48,7 @@ export async function loadOnboardingPage(token: string): Promise<OnboardingPageP
   });
   if (!data?.submission || !data.recipient) return null;
 
-  const protocol = getOnboardingProtocol(data.submission.protocol_key);
+  const protocol = getOnboardingProtocol(data.submission.protocol_key, data.protocol);
   if (!protocol) return null;
 
   const answers = (data.submission.answers ?? {}) as Record<string, string>;
@@ -57,7 +59,9 @@ export async function loadOnboardingPage(token: string): Promise<OnboardingPageP
     recipientName: data.recipient.full_name,
     recipientEmail: data.recipient.email,
     recipientPhone: data.recipient.phone,
-    agreementSigned: Boolean(data.agreement?.signed),
+    // Only a submission tied to an agreement waits on a signature; Standard
+    // Operator Onboarding starts before any agreement exists.
+    agreementSigned: data.agreement ? Boolean(data.agreement.signed) : true,
     agreementTemplateName: data.agreement?.template_name ?? null,
     completed: data.submission.status === 'completed',
     answers,
