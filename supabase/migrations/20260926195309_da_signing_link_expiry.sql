@@ -234,7 +234,7 @@ begin
 end;
 $$;
 
--- Grants unchanged here. supabase/pending/da_docuseal_key_lockdown.sql takes
+-- Grants unchanged here. 20260927181858_da_docuseal_key_lockdown.sql takes
 -- this and da_get_docuseal_api_key away from anon once the app calls them with
 -- the service role.
 revoke all on function public.da_mark_agreement_signed(text, jsonb, text) from public;
