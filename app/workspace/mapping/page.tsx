@@ -15,8 +15,8 @@ export default async function FieldMappingPage() {
     <div className="animate-rise space-y-10">
       <PageHeader
         title="Field mapping"
-        description="Every field on every DocuSeal template, and the value the workspace fills it with before signing. Automatic matches use the recipient record and anything that recipient has submitted before; override any field that guesses wrong."
-        actions={<SyncDocuSealButton label="Refresh from DocuSeal" variant="secondary" />}
+        description="Every field on every signing template, and the value the workspace fills it with before signing. Automatic matches use the recipient record and anything that recipient has submitted before; override any field that guesses wrong."
+        actions={<SyncDocuSealButton label="Refresh templates" variant="secondary" />}
       />
 
       {settings && !settings.auto_prefill && (
@@ -28,7 +28,7 @@ export default async function FieldMappingPage() {
       {withFields.length === 0 ? (
         <EmptyState
           title="No template fields yet"
-          description="Pull from DocuSeal to load each template's field catalogue, then mapping runs against it."
+          description="Refresh templates to load each field catalogue, then mapping runs against it."
         />
       ) : (
         withFields.map(({ template, fields, summary, sampleRecipient }) => (
@@ -38,7 +38,7 @@ export default async function FieldMappingPage() {
                 <h2 className={`${ws.heading} text-lg font-semibold`}>{template.name}</h2>
                 <p className="mt-1 text-sm text-[var(--ws-dim)]">
                   {recipientTypeLabel(template.recipient_type)}
-                  {template.docuseal_folder ? ` · ${template.docuseal_folder}` : ''} · DocuSeal template{' '}
+                  {template.docuseal_folder ? ` · ${template.docuseal_folder}` : ''} · Template{' '}
                   {template.docuseal_template_id}
                   {sampleRecipient ? ` · previewed against ${sampleRecipient.full_name}` : ''}
                 </p>

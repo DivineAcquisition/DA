@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     default: 'Admin | Divine Acquisition',
     template: '%s | Divine Acquisition Admin',
   },
-  description: 'Agreements, tokenized pages, and calendar links.',
+  description: 'VA performance, accounts, and calendar links.',
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -21,9 +21,9 @@ function NotConfigured() {
   return (
     <div className="da-workspace flex min-h-screen items-center justify-center bg-ink-950 px-5">
       <div className="panel max-w-md rounded-2xl p-8 text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-white">Supabase not configured</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-white">Database not configured</h1>
         <p className="mt-3 text-sm text-neutral-400">
-          Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY on this deploy.
+          This deploy is missing its database connection.
         </p>
       </div>
     </div>

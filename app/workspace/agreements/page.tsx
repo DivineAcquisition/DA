@@ -34,8 +34,8 @@ export default async function AgreementsPage({
         title="Agreements"
         description={
           lastSync
-            ? `Every DocuSeal agreement, pulled and pre-filled. Last pull ${formatDateTime(lastSync.started_at)}.`
-            : 'Every DocuSeal agreement, pulled and pre-filled. Nothing has been pulled yet.'
+            ? `Agreements on file, pulled and pre-filled. Last refresh ${formatDateTime(lastSync.started_at)}.`
+            : 'Agreements on file. Nothing has been refreshed yet.'
         }
         actions={
           <>

@@ -108,13 +108,13 @@ export default function ProspectBookingPanel({
         <h2 className="mt-2 text-lg font-semibold text-white">Search legit prospects</h2>
         <p className="mt-2 max-w-2xl text-sm text-neutral-500">
           Qualified leads (readiness 60+) stored in this workspace. Pick one to map name, email,
-          company, and score into a 30-minute Lead Leak Audit with Google Meet. A copy is sent to
-          Airtable when a destination PAT is set.
+          company, and score into a 30-minute Lead Leak Audit with a meeting link. A copy is sent to
+          the lead list when a destination token is set.
         </p>
         <p className="mt-2 text-xs text-neutral-600">
-          Google Calendar / Meet: {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_*'}
+          Calendar: {calendarReady ? 'connected' : 'not configured'}
           {' · '}
-          Airtable send: {airtableReady ? 'destination ready' : 'no PAT — bookings still save here'}
+          Lead list: {airtableReady ? 'destination ready' : 'not connected — bookings still save here'}
         </p>
 
         <form
@@ -224,7 +224,7 @@ export default function ProspectBookingPanel({
                         rel="noreferrer"
                         className="text-xs text-brand-300 hover:underline"
                       >
-                        Airtable
+                        Lead list
                       </a>
                     ) : (
                       <span className="text-xs text-neutral-600">Not sent</span>
@@ -339,11 +339,11 @@ export default function ProspectBookingPanel({
             )}
 
             <Button type="submit" disabled={booking || !calendarReady}>
-              {booking ? 'Creating Meet…' : 'Create Google Meet + book'}
+              {booking ? 'Creating meeting…' : 'Create meeting + book'}
             </Button>
             {!calendarReady && (
               <p className="text-xs text-flag-warning">
-                Google Calendar is not configured on this deploy, so Meet links cannot be created yet.
+                Calendar is not configured on this deploy, so meeting links cannot be created yet.
               </p>
             )}
           </form>
@@ -377,14 +377,14 @@ export default function ProspectBookingPanel({
                 <div className="flex shrink-0 items-center gap-3 text-xs">
                   {prospect.meetUrl ? (
                     <a href={prospect.meetUrl} className="text-brand-300 hover:underline" target="_blank" rel="noreferrer">
-                      Meet
+                      Meeting
                     </a>
                   ) : (
-                    <span className="text-neutral-600">No Meet URL</span>
+                    <span className="text-neutral-600">No meeting link</span>
                   )}
                   {prospect.airtableUrl ? (
                     <a href={prospect.airtableUrl} className="text-neutral-500 hover:underline" target="_blank" rel="noreferrer">
-                      Airtable
+                      Lead list
                     </a>
                   ) : (
                     <span className="text-neutral-600">Not sent</span>
@@ -429,8 +429,8 @@ export default function ProspectBookingPanel({
           }}
         >
           <p className="text-sm text-neutral-500">
-            Stored in the workspace. Score is computed here, then a copy is sent to Airtable when
-            the destination PAT is set.
+            Stored in the workspace. Score is computed here, then a copy is sent to the lead list
+            when a destination token is set.
           </p>
           <Field label="Full name">
             <Input name="fullName" required placeholder="Jordan Blake" />

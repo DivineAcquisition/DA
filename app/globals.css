@@ -128,10 +128,23 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  color-scheme: dark;
+  scroll-behavior: auto;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
   scroll-padding-top: 6rem;
+}
+
+/* Native menus inherit body text color. Without an explicit dark scheme the
+   popup stays white and the options disappear. */
+select {
+  color-scheme: dark;
+}
+
+select option,
+select optgroup {
+  background-color: #0b0a11;
+  color: #fff;
 }
 
 /* `clip` rather than `hidden`: `overflow-x: hidden` turns these into scroll

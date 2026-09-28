@@ -10,7 +10,7 @@ import { Button } from './ui';
  * form still waiting on a signature.
  */
 export default function SyncDocuSealButton({
-  label = 'Pull from DocuSeal',
+  label = 'Refresh',
   variant = 'primary',
 }: {
   label?: string;
@@ -36,7 +36,7 @@ export default function SyncDocuSealButton({
           });
         }}
       >
-        {pending ? 'Pulling…' : label}
+        {pending ? 'Refreshing…' : label}
       </Button>
       {error && <p className="max-w-md text-right text-xs text-[var(--ws-error)]">{error}</p>}
       {message && <p className="max-w-md text-right text-xs text-[var(--ws-success)]">{message}</p>}

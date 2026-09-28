@@ -125,7 +125,7 @@ export function AgreementTemplateDialog({
               <option value="operator">Operator</option>
             </Select>
           </Field>
-          <Field label="DocuSeal template id">
+          <Field label="Template id">
             <Input name="docuseal_template_id" required defaultValue={template?.docuseal_template_id} />
           </Field>
 
@@ -149,7 +149,7 @@ export function AgreementTemplateDialog({
                         next[index] = { ...row, docuseal_field_name: e.target.value };
                         setSelected(next);
                       }}
-                      placeholder="DocuSeal field name"
+                      placeholder="Field name"
                       className="sm:max-w-[200px]"
                     />
                     <Button

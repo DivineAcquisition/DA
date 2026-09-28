@@ -50,12 +50,11 @@ export default async function AssessmentBookingPanel() {
         </p>
         <h2 className="mt-2 text-xl font-semibold text-white">Talent assessment calls</h2>
         <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">
-          Schedule a call yourself (GHL via PIT + Google Meet), or send a 24-hour self-serve booking
-          link. Confirmations and 30-minute reminders go out over email.
+          Schedule a call yourself, or send a 24-hour self-serve booking link. Confirmations and
+          30-minute reminders go out over email.
         </p>
         <p className="mt-2 text-xs text-neutral-600">
-          GHL PIT: {ghlReady ? 'connected' : 'not configured — set GHL_PIT_TOKEN'} · Google Calendar:{' '}
-          {calendarReady ? 'connected' : 'not configured — set GOOGLE_CALENDAR_* / Drive SA + subject'}
+          Calendar: {ghlReady && calendarReady ? 'connected' : calendarReady || ghlReady ? 'partially connected' : 'not configured'}
         </p>
       </div>
 
@@ -64,8 +63,8 @@ export default async function AssessmentBookingPanel() {
           <p className={sectionLabel}>Schedule a call</p>
           <h3 className="mt-2 text-lg font-semibold text-white">Set date &amp; time</h3>
           <p className="mt-2 text-sm text-neutral-500">
-            Creates the appointment in GHL through the talent PIT, adds Google Meet when configured,
-            emails confirmation now, and auto-reminds 30 minutes before.
+            Creates the appointment, adds a meeting link when configured, emails confirmation now,
+            and reminds them 30 minutes before.
           </p>
           <div className="mt-6">
             <ScheduleBookingForm />

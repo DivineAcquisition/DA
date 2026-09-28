@@ -30,9 +30,7 @@ type NavIcon =
   | 'company';
 
 /**
- * Agreements-focused admin nav. Growth / Control / Ops surfaces still exist
- * at their routes, but stay out of the sidebar until those products are the
- * daily admin workflow.
+ * Daily admin nav. Growth, control, and ops stay reachable by URL.
  */
 const NAV: { heading: string; items: NavItem[] }[] = [
   {
@@ -40,11 +38,9 @@ const NAV: { heading: string; items: NavItem[] }[] = [
     items: [
       { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
       { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
-      { href: '/workspace/agreements', label: 'Agreements', icon: 'document' },
       { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
       { href: '/workspace/calls', label: 'Calls', icon: 'phone', aliases: ['/workspace/hs/calls'] },
       { href: '/workspace/accounts', label: 'Accounts', icon: 'clinic', aliases: ['/workspace/practices', '/workspace/hs/companies'] },
-      { href: '/workspace/bookings', label: 'Prospect calls', icon: 'bookings' },
       { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
     ],
   },
@@ -107,17 +103,20 @@ function isActive(pathname: string, item: NavItem) {
 function SidebarContent({
   pathname,
   email,
+  pendingHref,
   onNavigate,
 }: {
   pathname: string;
   email: string;
-  onNavigate?: () => void;
+  pendingHref?: string | null;
+  onNavigate?: (href: string) => void;
 }) {
   return (
     <div className="flex h-full flex-col">
       <Link
         href="/workspace/overview"
-        onClick={onNavigate}
+        prefetch
+        onClick={() => onNavigate?.('/workspace/overview')}
         className="flex items-center gap-2.5 px-5 py-6 transition-opacity hover:opacity-80"
       >
         <Logo className="h-[26px] w-auto" />
@@ -132,12 +131,15 @@ function SidebarContent({
             </p>
             <ul className="space-y-1">
               {group.items.map((item) => {
-                const active = isActive(pathname, item);
+                const active = pendingHref
+                  ? pathMatches(pendingHref, item.href) || (item.aliases ?? []).some((href) => pathMatches(pendingHref, href))
+                  : isActive(pathname, item);
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      onClick={onNavigate}
+                      prefetch
+                      onClick={() => onNavigate?.(item.href)}
                       aria-current={active ? 'page' : undefined}
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                         active
@@ -179,16 +181,26 @@ export default function Shell({
 }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const pendingItem = NAV.flatMap((group) => group.items).find((item) => item.href === pendingHref);
+  const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
 
   const currentLabel =
-    NAV.flatMap((group) => group.items).find((item) => isActive(pathname, item))?.label ?? 'Admin';
+    NAV.flatMap((group) => group.items).find((item) =>
+      navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item),
+    )?.label ?? 'Admin';
 
   return (
     <div className="relative flex min-h-screen bg-ink-950 text-white antialiased">
       <Backdrop />
 
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/[0.06] bg-ink-900/60 backdrop-blur-xl lg:block">
-        <SidebarContent pathname={pathname} email={email} />
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/[0.06] bg-ink-900 lg:block">
+        <SidebarContent
+          pathname={pathname}
+          email={email}
+          pendingHref={navigating ? pendingHref : null}
+          onNavigate={setPendingHref}
+        />
       </aside>
 
       {drawerOpen && (
@@ -196,21 +208,25 @@ export default function Shell({
           <button
             type="button"
             aria-label="Close menu"
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/80"
             onClick={() => setDrawerOpen(false)}
           />
           <div className="absolute inset-y-0 left-0 w-72 border-r border-white/[0.06] bg-ink-900 shadow-2xl">
             <SidebarContent
               pathname={pathname}
               email={email}
-              onNavigate={() => setDrawerOpen(false)}
+              pendingHref={navigating ? pendingHref : null}
+              onNavigate={(href) => {
+                setPendingHref(href);
+                setDrawerOpen(false);
+              }}
             />
           </div>
         </div>
       )}
 
       <div className="relative z-10 flex min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.06] bg-ink-950/70 px-4 backdrop-blur-xl lg:hidden">
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.06] bg-ink-950 px-4 lg:hidden">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}

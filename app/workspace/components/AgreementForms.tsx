@@ -26,7 +26,7 @@ function PrefillPreview({ preview, loading }: { preview: Preview | null; loading
   if (preview.summary.total === 0) {
     return (
       <p className="text-sm text-[var(--ws-dim)]">
-        This template has no field catalogue yet. Pull from DocuSeal to load its fields.
+        This template has no field catalogue yet. Refresh templates to load its fields.
       </p>
     );
   }

@@ -22,7 +22,13 @@ const FAMILY_FILTERS: { id: NicheFamily | 'all'; label: string }[] = [
   { id: 'home_services', label: 'Home services' },
 ];
 
-export default function AccountsList({ accounts }: { accounts: WorkspaceAccountListRow[] }) {
+export default function AccountsList({
+  accounts,
+  loadError,
+}: {
+  accounts: WorkspaceAccountListRow[];
+  loadError?: string;
+}) {
   const [query, setQuery] = useState('');
   const [stages, setStages] = useState<PracticeStage[]>([]);
   const [family, setFamily] = useState<NicheFamily | 'all'>('all');
@@ -110,6 +116,12 @@ export default function AccountsList({ accounts }: { accounts: WorkspaceAccountL
           })}
         </div>
       </div>
+
+      {loadError && (
+        <p className="mb-4 rounded-xl border border-[#FF6A6A]/40 bg-[#FF6A6A]/10 px-4 py-3 text-sm text-[#FF6A6A]">
+          {loadError}
+        </p>
+      )}
 
       {visible.length === 0 ? (
         <EmptyState

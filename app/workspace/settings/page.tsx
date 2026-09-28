@@ -18,7 +18,7 @@ export default async function SettingsPage() {
     <div className="animate-rise space-y-6">
       <PageHeader
         title="Settings"
-        description="DocuSeal credentials, Airtable send destination, automatic field mapping, and public URL configuration. Values are stored in the database."
+        description="Signing credentials, lead-list destination, field mapping, and the public URL. Values are stored in the database."
         actions={<SyncDocuSealButton variant="secondary" />}
       />
 
@@ -26,7 +26,7 @@ export default async function SettingsPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className={`${ws.heading} text-base font-semibold`}>DocuSeal</h2>
+              <h2 className={`${ws.heading} text-base font-semibold`}>Signing</h2>
               {connection.state === 'connected' && <Badge tone="success">Connected</Badge>}
               {connection.state === 'error' && <Badge tone="error">Not connecting</Badge>}
               {connection.state === 'missing' && <Badge tone="pending">No API key</Badge>}
@@ -34,11 +34,11 @@ export default async function SettingsPage() {
             <p className="mt-1.5 text-sm text-[var(--ws-dim)]">
               {connection.state === 'connected' &&
                 `${connection.templates} template${connection.templates === 1 ? '' : 's'} visible · key from ${
-                  connection.source === 'settings' ? 'Settings' : 'the DOCUSEAL_API_KEY environment variable'
+                  connection.source === 'settings' ? 'Settings' : 'the server environment'
                 }.`}
               {connection.state === 'error' && connection.error}
               {connection.state === 'missing' &&
-                'Add a key below, or set DOCUSEAL_API_KEY on the deploy, then pull.'}
+                'Add a signing key below, then refresh.'}
             </p>
             <p className="mt-1 text-sm text-[var(--ws-dim)]">
               {lastSync

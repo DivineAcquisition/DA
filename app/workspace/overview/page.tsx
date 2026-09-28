@@ -1,120 +1,102 @@
-import Link from 'next/link';
-import SyncDocuSealButton from '../components/SyncControls';
-import { DataTable, EmptyState, PageHeader, StatusBadge } from '../components/ui';
+import { DataTable, EmptyState, PageHeader } from '../components/ui';
 import { ws } from '../components/tokens';
-import { formatDate, formatDateTime, recipientTypeLabel } from '@/lib/workspace/format';
-import {
-  getLatestSyncRun,
-  getSettings,
-  listAgreementTemplates,
-  listAgreements,
-  listRecipients,
-} from '@/lib/workspace/queries';
-import type { AgreementStatus } from '@/lib/workspace/types';
+import { loadVaOverview, vaStatusLabel } from '@/lib/workspace/va-performance';
 
 export const dynamic = 'force-dynamic';
 
 function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
     <div className={`${ws.card} p-5`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
-        {label}
-      </p>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">{label}</p>
       <p className={`${ws.heading} mt-2 text-3xl font-semibold tabular-nums`}>{value}</p>
       {hint && <p className="mt-1 text-xs text-[var(--ws-dim)]">{hint}</p>}
     </div>
   );
 }
 
-export default async function OverviewPage() {
-  const [agreements, recipients, templates, settings, lastSync] = await Promise.all([
-    listAgreements(),
-    listRecipients(),
-    listAgreementTemplates(),
-    getSettings(),
-    getLatestSyncRun(),
-  ]);
+function percent(part: number, whole: number) {
+  if (whole <= 0) return '—';
+  return `${Math.round((part / whole) * 100)}%`;
+}
 
-  const count = (status: AgreementStatus) => agreements.filter((a) => a.status === status).length;
-  const awaiting = count('sent') + count('viewed');
-  const recent = agreements.slice(0, 8);
-  const prefilledCount = agreements.filter(
-    (a) => Object.keys(a.prefilled_values ?? {}).length > 0,
-  ).length;
+export default async function OverviewPage() {
+  const overview = await loadVaOverview();
+  const response =
+    overview.conversations > 0
+      ? percent(overview.withinStandard, overview.conversations)
+      : '—';
 
   return (
-    <div className="animate-rise space-y-8">
+    <div className="space-y-8">
       <PageHeader
         title="Overview"
-        description="Everything DocuSeal knows, pulled into one place. Fields are mapped from the recipient record and their earlier answers before an agreement reaches the signer."
-        actions={<SyncDocuSealButton />}
+        description="VA performance for this month: booked appointments, quota, response time, and end-of-day reports."
       />
 
+      {overview.error && (
+        <p className="rounded-xl border border-[var(--ws-error)]/40 bg-[var(--ws-error)]/10 px-4 py-3 text-sm text-[var(--ws-error)]">
+          {overview.error}
+        </p>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Agreements" value={agreements.length} hint={`${prefilledCount} pre-filled`} />
-        <Stat label="Awaiting signature" value={awaiting} hint={`${count('viewed')} opened`} />
-        <Stat label="Completed" value={count('completed')} />
         <Stat
-          label="Recipients"
-          value={recipients.length}
-          hint={`${templates.length} template${templates.length === 1 ? '' : 's'}`}
+          label="Placed VAs"
+          value={overview.placed}
+          hint={`${overview.inTraining} in training · ${overview.onBench} on bench`}
+        />
+        <Stat
+          label="Booked"
+          value={overview.confirmedBookings}
+          hint={
+            overview.quota > 0
+              ? `${percent(overview.confirmedBookings, overview.quota)} of ${overview.quota} quota`
+              : `${overview.pendingBookings} pending review`
+          }
+        />
+        <Stat
+          label="Response"
+          value={response}
+          hint={
+            overview.conversations > 0
+              ? `${overview.withinStandard} of ${overview.conversations} conversations inside standard`
+              : 'No tracked conversations yet'
+          }
+        />
+        <Stat
+          label="EOD reports"
+          value={overview.eodReports}
+          hint={`${overview.certified} certified · ${overview.pendingBookings} bookings pending`}
         />
       </div>
 
-      <section className={`${ws.card} p-5`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 className={`${ws.heading} text-base font-semibold`}>DocuSeal pull</h2>
-            <p className="mt-1 text-sm text-[var(--ws-dim)]">
-              {lastSync
-                ? `Last run ${formatDateTime(lastSync.started_at)} · ${lastSync.templates_synced} templates, ${lastSync.submissions_synced} agreements, ${lastSync.values_captured} values captured.`
-                : 'No pull has run yet. Add the API key in Settings, then pull.'}
-            </p>
-            {lastSync?.error && (
-              <p className="mt-1 text-sm text-[var(--ws-error)]">{lastSync.error}</p>
-            )}
-          </div>
-          <Link href="/workspace/settings" className="text-sm text-[var(--ws-accent)] hover:underline">
-            Settings →
-          </Link>
-        </div>
-        {settings && !settings.auto_prefill && (
-          <p className="mt-3 text-sm text-[var(--ws-pending)]">
-            Auto pre-fill is off — agreements are sent with tokenized pages only.
-          </p>
-        )}
-      </section>
-
       <section>
-        <div className="mb-3.5 flex flex-wrap items-end justify-between gap-3">
-          <h2 className={`${ws.heading} text-lg font-semibold`}>Latest agreements</h2>
-          <Link href="/workspace/agreements" className="text-sm text-[var(--ws-accent)] hover:underline">
-            All agreements →
-          </Link>
-        </div>
-        {recent.length === 0 ? (
+        <h2 className={`${ws.heading} mb-3.5 text-lg font-semibold`}>VA performance</h2>
+        {overview.rows.length === 0 ? (
           <EmptyState
-            title="No agreements yet"
-            description="Pull from DocuSeal to bring existing agreements in, or send one from a recipient."
+            title="No active VAs"
+            description="Placed, training, certified, and bench VAs show here with this month's booking and tracking numbers."
           />
         ) : (
-          <DataTable headers={['Recipient', 'Template', 'Status', 'Pre-filled', 'Sent']}>
-            {recent.map((agreement) => (
-              <tr key={agreement.id} className="hover:bg-white/[0.02]">
-                <td className="px-4 py-3">
-                  <div className="font-medium text-white">{agreement.recipient_name}</div>
-                  <div className="text-xs text-[var(--ws-dim)]">
-                    {recipientTypeLabel(agreement.recipient_type)}
-                  </div>
-                </td>
-                <td className="px-4 py-3">{agreement.template_name}</td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={agreement.status} />
+          <DataTable headers={['VA', 'Client', 'Status', 'Booked', 'Quota', 'Response', 'EODs']}>
+            {overview.rows.map((row) => (
+              <tr key={row.operatorId} className="hover:bg-white/[0.02]">
+                <td className="px-4 py-3 font-medium text-white">{row.name}</td>
+                <td className="px-4 py-3 text-[var(--ws-dim)]">{row.clientName ?? '—'}</td>
+                <td className="px-4 py-3">{vaStatusLabel(row.status)}</td>
+                <td className="px-4 py-3 tabular-nums">
+                  {row.confirmedBookings}
+                  {row.pendingBookings > 0 && (
+                    <span className="ml-1 text-xs text-[var(--ws-pending)]">+{row.pendingBookings}</span>
+                  )}
                 </td>
                 <td className="px-4 py-3 tabular-nums text-[var(--ws-dim)]">
-                  {Object.keys(agreement.prefilled_values ?? {}).length}
+                  {row.quota > 0 ? row.quota : '—'}
                 </td>
-                <td className="px-4 py-3 text-[var(--ws-dim)]">{formatDate(agreement.sent_at)}</td>
+                <td className="px-4 py-3 tabular-nums">
+                  {row.responseRate == null ? '—' : `${Math.round(row.responseRate * 100)}%`}
+                </td>
+                <td className="px-4 py-3 tabular-nums">{row.eodReports}</td>
               </tr>
             ))}
           </DataTable>

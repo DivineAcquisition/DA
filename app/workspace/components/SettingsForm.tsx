@@ -25,15 +25,15 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
       }}
     >
       <Field
-        label="DocuSeal API key"
-        hint="Used to pull templates, agreements and submitted values, and to pre-fill forms. Falls back to DOCUSEAL_API_KEY on the deploy when left blank."
+        label="Signing API key"
+        hint="Used to pull templates, agreements, and submitted values, and to pre-fill forms. Falls back to the server environment when left blank."
       >
         <SecretInput name="docuseal_api_key" defaultValue={settings.docuseal_api_key} />
       </Field>
-      <Field label="DocuSeal account identifier">
+      <Field label="Signing account identifier">
         <Input name="docuseal_account_id" defaultValue={settings.docuseal_account_id} />
       </Field>
-      <Field label="DocuSeal webhook secret">
+      <Field label="Signing webhook secret">
         <SecretInput name="docuseal_webhook_secret" defaultValue={settings.docuseal_webhook_secret} />
       </Field>
       <Field label="Default booking URL">
@@ -61,7 +61,7 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
           Company countersign (VA / operator agreements)
         </p>
         <p className="text-sm text-[var(--ws-dim)]">
-          Prefills Authorized Rep / Company Signature fields the way Novara maps VA contractor docs.
+          Prefills the company signature fields on operator agreements.
         </p>
         <Field label="Company name">
           <Input
@@ -88,15 +88,15 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
 
       <div className="space-y-3 rounded-xl border border-white/10 bg-ink-950 p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">
-          Airtable destination
+          Lead list
         </p>
         <p className="text-sm text-neutral-500">
-          The workspace owns prospect records. This PAT is only used to send a copy to the DA
-          Pipeline Leads table. Booking and search work without it.
+          The workspace keeps prospect records. This token only sends a copy to the pipeline
+          list. Booking and search work without it.
         </p>
         <Field
-          label="Airtable personal access token"
-          hint="Stored in da_settings. Leave blank to keep the current token."
+          label="Lead list access token"
+          hint="Leave blank to keep the current token."
         >
           <SecretInput
             name="pipeline_airtable_pat"

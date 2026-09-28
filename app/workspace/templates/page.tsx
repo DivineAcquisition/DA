@@ -54,7 +54,7 @@ export default async function TemplatesPage() {
         {templateDetails.length === 0 ? (
           <EmptyState
             title="No agreement templates"
-            description="Create a template with a DocuSeal template identifier and optional attached pages."
+            description="Create a template with a template identifier and optional attached pages."
           />
         ) : (
           <DataTable headers={['Name', 'Type', 'Pages', 'Created', '']}>
