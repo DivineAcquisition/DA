@@ -41,6 +41,8 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
 
 export async function signOutAction(): Promise<void> {
   const supabase = await createClient();
+  // Signing out ends any impersonation or View As session first.
+  await controlRpc(supabase, 'end_impersonation', {});
   await supabase.auth.signOut();
   revalidateAd();
   redirect('/ad');
@@ -419,7 +421,8 @@ export async function startImpersonationAction(
   if (password) {
     const step = await controlRpc<{ ok: boolean; message?: string }[]>(supabase, 'verify_step_up', {
       p_password: password,
-      p_purpose: 'impersonate',
+      // The purpose start_impersonation consumes; anything else is never accepted.
+      p_purpose: 'start an impersonation session',
     });
     if (step.error) return { ok: false, error: readable(step.error) };
     const row = Array.isArray(step.data) ? step.data[0] : step.data;

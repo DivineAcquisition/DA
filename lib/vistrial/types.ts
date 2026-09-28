@@ -54,6 +54,8 @@ export type Operator = {
   joinedOn: string;
   preferredChannel: NotificationChannel;
   trainingAssignments: TrainingAssignment[];
+  /** Whether the operator has a sign-in, which View As needs. */
+  hasAccount?: boolean;
 };
 
 export type TrainingAssignment = {

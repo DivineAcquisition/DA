@@ -28,14 +28,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         },
         { href: '/vistrial/admin/payroll', label: 'Payroll' },
         { href: '/vistrial/admin/notifications', label: 'Notifications' },
+        { href: '/vistrial/team', label: 'Team & View As' },
+        { href: '/vistrial/inbox', label: 'Inbox' },
+        { href: '/vistrial/admin/view-as', label: 'View As log' },
       ]
-    : [
-        { href: '/vistrial/operator', label: 'My shift' },
-        { href: '/vistrial/operator/eod', label: 'End of day' },
-        { href: '/vistrial/operator/bookings', label: 'Bookings' },
-        { href: '/vistrial/operator/escalations', label: 'Escalations' },
-        { href: '/vistrial/operator/pay', label: 'Pay' },
-      ];
+    : [{ href: '/vistrial/operator', label: 'My portal' }];
 
   const isActive = (href: string) =>
     href === '/vistrial/admin' || href === '/vistrial/operator'

@@ -6,8 +6,9 @@ import UnifiedAdminChrome, {
 import { loadOpsData } from '@/lib/vistrial/load';
 import { OpsProvider } from '@/lib/vistrial/store';
 import type { Actor } from '@/lib/vistrial/types';
-import { createClient, getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import AppShell from './components/AppShell';
+import { ManagerShell, OperatorGate } from './components/Gates';
 import HubSignIn from './components/HubSignIn';
 
 export const metadata: Metadata = {
@@ -25,24 +26,20 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   const session = await getSessionContext();
   if (!session) return <HubSignIn />;
 
-  const supabase = await createClient();
+  // A Sales Operator, or staff viewing as one (View As or impersonation): the
+  // portal, and nothing else. It loads its own data through the portal functions.
+  if (session.role === 'operator') return <OperatorGate>{children}</OperatorGate>;
 
-  // An operator is identified by the operator row pointing at their profile. RLS
-  // then narrows every read below to what that person may see.
-  const { data: operator } = await supabase
-    .from('operator')
-    .select('id, name')
-    .eq('profile_id', session.userId)
-    .maybeSingle();
+  // Managers oversee the operators in their scope from the team page.
+  if (session.role === 'manager') {
+    return <ManagerShell name={session.fullName ?? session.email}>{children}</ManagerShell>;
+  }
 
-  if (!session.isAdmin && !operator) return <HubSignIn wrongAudience={session.email} />;
+  if (!session.isAdmin || session.role === 'contractor' || session.role === 'client') {
+    return <HubSignIn wrongAudience={session.email} />;
+  }
 
-  const actor: Actor =
-    session.isAdmin && !operator
-      ? { role: 'admin', id: session.userId, name: session.fullName ?? session.email }
-      : session.isAdmin
-        ? { role: 'admin', id: session.userId, name: session.fullName ?? session.email }
-        : { role: 'operator', id: operator!.id, name: operator!.name };
+  const actor: Actor = { role: 'admin', id: session.userId, name: session.fullName ?? session.email };
 
   const data = await loadOpsData();
   const unified = session.isAdmin && (await isUnifiedAdminRequest());

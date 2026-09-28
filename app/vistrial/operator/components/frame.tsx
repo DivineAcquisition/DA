@@ -1,0 +1,70 @@
+import Link from 'next/link';
+import { btnPrimary, btnSizeSm } from '@/app/components/ui';
+import type { PortalLoad } from '@/lib/portal/load';
+import PortalShell, { type TabKey } from './PortalShell';
+
+/**
+ * Wraps one tab in the portal shell. A tab that needs a placement says so, and
+ * one whose data was refused shows the refusal in plain words.
+ */
+export function renderPortal<T>(
+  load: PortalLoad<T>,
+  tab: TabKey,
+  render: (data: T, placementId: string | null) => React.ReactNode,
+  options: { needsPlacement?: boolean } = {},
+) {
+  if (load.kind === 'closed') return <PortalClosed message={load.message} />;
+
+  let body: React.ReactNode;
+  if (load.blocked) body = null;
+  else if (options.needsPlacement && !load.placementId) body = <NoPlacement />;
+  else if (load.error) body = <Refused message={load.error} />;
+  else if (load.data === null && options.needsPlacement) body = <NoPlacement />;
+  else body = render(load.data as T, load.placementId);
+
+  return (
+    <PortalShell context={load.context} placementId={load.placementId} tab={tab} blocked={load.blocked}>
+      {body}
+    </PortalShell>
+  );
+}
+
+function NoPlacement() {
+  return (
+    <section className="panel rounded-2xl px-6 py-12 text-center">
+      <p className="text-sm font-medium text-neutral-200">You are between placements</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">
+        When DA places you with a client, your shift, bookings and playbook appear here. Your pay, tasks and profile are
+        still available below.
+      </p>
+    </section>
+  );
+}
+
+function Refused({ message }: { message: string }) {
+  return (
+    <section className="panel rounded-2xl px-6 py-12 text-center">
+      <p className="text-sm font-medium text-neutral-200">Not available</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{message}</p>
+    </section>
+  );
+}
+
+function PortalClosed({ message }: { message: string }) {
+  const staff = /no Sales Operator portal/.test(message);
+  return (
+    <main className="flex min-h-screen items-center justify-center bg-ink-950 px-4 text-white">
+      <section className="panel max-w-md rounded-3xl p-7 text-center">
+        <h1 className="text-lg font-semibold">{staff ? 'There is no portal to show' : 'Your portal is closed'}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-neutral-400">
+          {staff
+            ? 'This page is the Sales Operator portal. If you were viewing as an operator, that session has ended.'
+            : message}
+        </p>
+        <Link href="/vistrial" className={`${btnPrimary} ${btnSizeSm} mt-6`}>
+          {staff ? 'Back to the hub' : 'Back'}
+        </Link>
+      </section>
+    </main>
+  );
+}

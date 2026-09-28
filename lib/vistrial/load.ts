@@ -146,6 +146,7 @@ export async function loadOpsData(): Promise<OpsData> {
         baseMonthly: Number(row.base_monthly),
         certifiedOn: row.certified_on,
         joinedOn: row.joined_on ?? row.created_at.slice(0, 10),
+        hasAccount: Boolean(row.profile_id),
         preferredChannel: hyphen(row.preferred_channel) as Operator['preferredChannel'],
         trainingAssignments: (
           (row.operator_training ?? []) as {

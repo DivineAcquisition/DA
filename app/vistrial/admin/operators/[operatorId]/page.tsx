@@ -11,6 +11,7 @@ import { CHANNEL_LABELS, SEVERITY_LABELS } from '@/lib/vistrial/rules/notificati
 import { useOps } from '@/lib/vistrial/store';
 import type { NotificationSeverity } from '@/lib/vistrial/types';
 import { AdminOnly } from '../../../components/AppShell';
+import { OperatorSessions, ViewAsButton } from '../../../components/ViewAs';
 import {
   Avatar,
   Badge,
@@ -87,6 +88,24 @@ function Profile() {
           )
         }
       />
+
+      <Panel className="p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-white">View As</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              See {operator.name}&apos;s portal exactly as they do, read-only, with the admin panel alongside.
+            </p>
+          </div>
+          <ViewAsButton operatorId={operator.id} name={operator.name.split(' ')[0]} hasAccount={operator.hasAccount !== false} />
+        </div>
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs text-neutral-400">Session history</summary>
+          <div className="mt-2">
+            <OperatorSessions operatorId={operator.id} />
+          </div>
+        </details>
+      </Panel>
 
       <Panel className="p-5">
         <div className="flex flex-wrap items-center gap-4">
