@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
 import NotConfigured from '@/app/da/components/NotConfigured';
 import UnifiedAdminChrome, {
   isUnifiedAdminRequest,
@@ -13,10 +14,10 @@ import HubSignIn from './components/HubSignIn';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Ops | Divine Acquisition',
-    template: '%s | Divine Acquisition Ops',
+    default: 'Divine Acquisition Team',
+    template: '%s | Divine Acquisition Team',
   },
-  description: 'Internal operations hub for the operators Divine Acquisition trains and places.',
+  description: 'Divine Acquisition Team.',
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -25,6 +26,10 @@ export default async function VistrialLayout({ children }: { children: React.Rea
 
   const session = await getSessionContext();
   if (!session) return <HubSignIn />;
+
+  // Opened from a password reset email: the new password comes before anything else.
+  const pathname = (await headers()).get('x-pathname') ?? '';
+  if (pathname === '/vistrial/reset-password') return <>{children}</>;
 
   // A Sales Operator, or staff viewing as one (View As or impersonation): the
   // portal, and nothing else. It loads its own data through the portal functions.

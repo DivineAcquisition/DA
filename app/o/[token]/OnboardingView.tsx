@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Logo from '@/app/components/Logo';
+import { teamUrl } from '@/lib/team/url';
 import type { FinishResult, OnboardingPageState, SaveResult } from '@/lib/workspace/onboarding';
 import {
   groupSteps,
@@ -96,6 +97,14 @@ function Completed({ page }: { page: Extract<OnboardingPageState, { state: 'comp
             </p>
           )}
         </div>
+        {page.recipientType !== 'client' && (
+          <a
+            href={teamUrl('/')}
+            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
+          >
+            Go to your team account
+          </a>
+        )}
         {page.contactEmail && (
           <p className="mt-5 text-sm text-[var(--ws-body)]">
             Questions? Email{' '}

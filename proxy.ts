@@ -17,7 +17,9 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   da.divineacquisition.io         -> /da   (legacy alias during cutover)
  *   ad.divineacquisition.io         -> /ad
  *   acct.divineacquisition.io       -> /acct
- *   ops.divineacquisition.io        -> /vistrial
+ *   team.divineacquisition.io       -> /vistrial (the staff app: VAs, managers, admins)
+ *   ops. and vistrial. hosts        -> redirect to team., path preserved
+ *   /vistrial on admin.             -> redirect to team., path preserved
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq
  *   calls.divineacquisition.io      -> /calls
@@ -34,6 +36,13 @@ const hosts = (value: string | undefined, fallback: string) =>
 const CONTROL_HOSTS = hosts(process.env.VISTRIAL_CONTROL_HOSTS, 'ad.divineacquisition.io');
 const ADMIN_HOSTS = hosts(process.env.VISTRIAL_ADMIN_HOSTS, 'da.divineacquisition.io');
 const ACCT_HOSTS = hosts(process.env.VISTRIAL_ACCT_HOSTS, 'acct.divineacquisition.io');
+// The staff app's permanent home. Login sessions stay private to it: the
+// Supabase cookies are host-only (no Domain attribute), so no other subdomain
+// can read them.
+const TEAM_HOSTS = hosts(process.env.TEAM_HOSTS, 'team.divineacquisition.io');
+const TEAM_ORIGIN =
+  process.env.TEAM_BASE_URL?.trim().replace(/\/+$/, '') || `https://${TEAM_HOSTS[0]}`;
+// Former addresses of the staff app. They redirect to TEAM_ORIGIN.
 const OPS_HOSTS = hosts(
   process.env.VISTRIAL_OPS_HOSTS,
   'ops.divineacquisition.io,vistrial.divineacquisition.io',
@@ -109,7 +118,7 @@ const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },
   { hosts: ADMIN_HOSTS, prefix: ADMIN_PREFIX },
   { hosts: ACCT_HOSTS, prefix: ACCT_PREFIX },
-  { hosts: OPS_HOSTS, prefix: OPS_PREFIX },
+  { hosts: TEAM_HOSTS, prefix: OPS_PREFIX },
   {
     hosts: CAREERS_HOSTS,
     prefix: HIRING_PREFIX,
@@ -245,6 +254,22 @@ export async function proxy(request: NextRequest) {
   const surface = surfaceForHost(host);
   const local = isLocalHost(host);
 
+  // The staff app moved to team.*: old addresses redirect with the path kept.
+  // The public agreement and onboarding pages are not part of it and stay put.
+  const legacyOpsHost = !local && OPS_HOSTS.includes(host);
+  const opsOnAdminHost =
+    !local &&
+    WORKSPACE_HOSTS.includes(host) &&
+    (pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`));
+  if (legacyOpsHost || opsOnAdminHost) {
+    const path = pathname.startsWith(`${OPS_PREFIX}/`)
+      ? pathname.slice(OPS_PREFIX.length)
+      : pathname === OPS_PREFIX
+        ? '/'
+        : pathname;
+    return NextResponse.redirect(`${TEAM_ORIGIN}${path}${request.nextUrl.search}`, 308);
+  }
+
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.
   // The workspace host is the exception — it is the unified admin portal.
   if (
@@ -341,6 +366,7 @@ export async function proxy(request: NextRequest) {
 
   const touchesAuth =
     prefix === ADMIN_PREFIX ||
+    prefix === OPS_PREFIX ||
     prefix === CONTROL_PREFIX ||
     prefix === ACCT_PREFIX ||
     prefix === ASSESSMENT_ADMIN_PREFIX ||

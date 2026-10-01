@@ -25,7 +25,8 @@ async function call<T>(fn: string, args: Record<string, unknown>, message?: stri
 
 export async function selectPlacementAction(placementId: string): Promise<void> {
   const jar = await cookies();
-  jar.set(PLACEMENT_COOKIE, placementId, { httpOnly: true, sameSite: 'lax', path: '/vistrial', maxAge: 60 * 60 * 24 * 90 });
+  // Path '/': on team.* the browser sees /operator, not /vistrial/operator.
+  jar.set(PLACEMENT_COOKIE, placementId, { httpOnly: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 90 });
   revalidatePath('/vistrial/operator', 'layout');
 }
 

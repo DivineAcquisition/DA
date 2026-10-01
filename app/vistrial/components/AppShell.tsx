@@ -143,7 +143,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <footer className="border-t border-white/[0.06] px-4 py-5 sm:px-6">
             <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3">
               <p className="text-xs text-neutral-600">
-                Vistrial VA Ops Hub · internal to Divine Acquisition
+                Divine Acquisition Team · internal
               </p>
               <p className="text-xs text-neutral-600">Signed in as {actor.name}</p>
             </div>

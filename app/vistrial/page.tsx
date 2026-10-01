@@ -16,7 +16,7 @@ export default function VistrialHome() {
   return (
     <div className="mx-auto max-w-2xl">
       <PageHeader
-        eyebrow="VA Ops Hub"
+        eyebrow="Divine Acquisition Team"
         title={gateway.isAdmin ? 'Where do I need to look today' : `Your shift, ${actor.name.split(' ')[0]}`}
         description={
           gateway.isAdmin
