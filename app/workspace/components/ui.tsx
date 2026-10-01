@@ -75,7 +75,7 @@ export function Field({
   );
 }
 
-/** Workspace card: Coss panel, Magic spotlight, and the hiring shine. */
+/** Workspace card: Coss panel and the hiring shine. */
 export function Card({
   children,
   className = '',

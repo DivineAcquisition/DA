@@ -8,7 +8,7 @@ import { ShineBorder } from '@/components/ui/shine-border';
 import { cn } from '@/lib/utils';
 
 /**
- * Hiring surface: Coss panel, Magic pointer spotlight, and the animated edge.
+ * Hiring surface: Coss panel and the animated edge.
  * Internal cards use this so the app and the careers pages share one material.
  */
 export function Surface({
