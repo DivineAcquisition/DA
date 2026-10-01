@@ -3,6 +3,7 @@ import { loadPortal } from '@/lib/portal/load';
 import type { BookingsData } from '@/lib/portal/types';
 import BookingsView from '../components/BookingsView';
 import { renderPortal } from '../components/frame';
+import RecordNav from '../components/RecordNav';
 
 export const metadata: Metadata = { title: 'Bookings' };
 export const dynamic = 'force-dynamic';
@@ -19,5 +20,10 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
       ? rpc<BookingsData>('portal_bookings', { p_placement_id: placementId, p_month: month, p_state: state })
       : Promise.resolve({ data: null, error: null }),
   );
-  return renderPortal(load, 'bookings', (data) => <BookingsView data={data} state={state} />, { needsPlacement: true });
+  return renderPortal(load, 'bookings', (data) => (
+    <>
+      <RecordNav current="bookings" />
+      <BookingsView data={data} state={state} />
+    </>
+  ), { needsPlacement: true });
 }

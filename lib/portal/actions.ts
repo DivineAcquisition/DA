@@ -5,7 +5,7 @@ import { cookies } from 'next/headers';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 import { PLACEMENT_COOKIE } from './load';
-import type { Prefill } from './types';
+import type { Prefill, StandardItems } from './types';
 
 /**
  * The VA's own actions. Each is one portal_* function; the database checks the
@@ -272,4 +272,87 @@ export async function verifyMfaEnrollAction(factorId: string, code: string): Pro
   if (error) return { ok: false, error: 'That code did not match. Use the newest code from your app.' };
   revalidatePath('/vistrial/operator', 'layout');
   return { ok: true, message: 'Two-factor sign-in is on.' };
+}
+
+// Prompt 8: shift reviews, standards, growth, availability ---------------------
+
+export type ReviewEntry = {
+  conversations_handled?: number | null;
+  appointments_booked?: number | null;
+  follow_ups_completed?: number | null;
+  escalations_raised?: number | null;
+  shift_start_actual?: string | null;
+  shift_end_actual?: string | null;
+};
+
+/** Confirm the draft, or correct it with a reason. Both values are kept. */
+export async function confirmShiftAction(input: {
+  placementId: string;
+  shiftDate: string;
+  entered: ReviewEntry;
+  reason: string;
+  blockers: { control: string; note: string }[];
+  wentWell: string;
+  differently: string;
+  inWay: string;
+}): Promise<Result<{ id: string; corrected: boolean }>> {
+  const entered = Object.fromEntries(Object.entries(input.entered).filter(([, value]) => value !== null && value !== undefined && value !== ''));
+  return call(
+    'portal_confirm_shift',
+    {
+      p_placement_id: input.placementId,
+      p_shift_date: input.shiftDate,
+      p_entered: entered,
+      p_variance_explanation: input.reason || null,
+      p_blockers: input.blockers.filter((b) => b.note.trim()),
+      p_went_well: input.wentWell || null,
+      p_differently: input.differently || null,
+      p_in_way: input.inWay || null,
+    },
+    'Confirmed. This is now your record for the shift.',
+  );
+}
+
+export async function raiseDisputeAction(input: {
+  standardKey: string;
+  itemId: string;
+  month: string;
+  explanation: string;
+}): Promise<Result<{ id: string }>> {
+  return call(
+    'portal_raise_dispute',
+    { p_key: input.standardKey, p_item_id: input.itemId, p_month: input.month, p_explanation: input.explanation },
+    'Sent to your manager. You will see their decision and reason here.',
+  );
+}
+
+export async function ackFeedbackAction(feedbackId: string, reply: string): Promise<Result> {
+  return call('portal_ack_feedback', { p_feedback_id: feedbackId, p_reply: reply || null }, reply ? 'Acknowledged, and your reply was sent.' : 'Acknowledged.');
+}
+
+export async function selfReviewAction(line: string): Promise<Result> {
+  return call('portal_submit_self_review', { p_focus_line: line }, 'Saved. Your manager reads this before writing your feedback.');
+}
+
+export async function setAvailabilityAction(windows: { iso_day: number; starts: string; ends: string }[], timeZone: string): Promise<Result> {
+  return call('portal_set_availability', { p_windows: windows, p_time_zone: timeZone }, 'Saved. DA sees this when placing people.');
+}
+
+export async function setEmailPrefsAction(optional: boolean): Promise<Result> {
+  return call('portal_set_email_prefs', { p_optional: optional }, optional ? 'Optional emails are on.' : 'Optional emails are off.');
+}
+
+export async function replyFormalNoticeAction(noticeId: string, reply: string): Promise<Result> {
+  return call('portal_reply_formal_notice', { p_notice_id: noticeId, p_reply: reply }, 'Your reply is on the record.');
+}
+
+/** The exact items behind one standard, for the VA to check the maths. Read-only. */
+export async function standardItemsAction(standardKey: string, month: string): Promise<Result<StandardItems>> {
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<StandardItems>(supabase, 'portal_standard_items', {
+    p_key: standardKey,
+    p_month: month,
+  });
+  if (error) return { ok: false, error: readable(error) };
+  return { ok: true, data: data ?? undefined };
 }

@@ -10,33 +10,27 @@ import { SEVERITY_LABEL, SEVERITY_TONE } from '@/lib/portal/labels';
 import { exitViewAsAction, extendViewAsAction } from '@/lib/portal/staffActions';
 import { formatDuration } from '@/lib/portal/time';
 import type { PortalContext } from '@/lib/portal/types';
+import { menuFor, zoneOf, zonesFor, type NavItem, type TabKey } from '@/lib/portal/zones';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import { Badge } from '../../components/ui';
 import AdminPanel from './AdminPanel';
 import { Feedback, PortalProvider, Sheet, useAction } from './portal';
 
-export type TabKey = 'today' | 'bookings' | 'escalations' | 'reports' | 'playbook' | 'pay' | 'tasks' | 'profile';
+export type { TabKey };
 
-const TABS: { key: TabKey; label: string; href: string }[] = [
-  { key: 'today', label: 'Today', href: '/vistrial/operator' },
-  { key: 'bookings', label: 'Bookings', href: '/vistrial/operator/bookings' },
-  { key: 'escalations', label: 'Escalations', href: '/vistrial/operator/escalations' },
-  { key: 'reports', label: 'Shift Reports', href: '/vistrial/operator/reports' },
-  { key: 'playbook', label: 'Playbook', href: '/vistrial/operator/playbook' },
-  { key: 'pay', label: 'Pay', href: '/vistrial/operator/pay' },
-  { key: 'tasks', label: 'Tasks & Training', href: '/vistrial/operator/tasks' },
-  { key: 'profile', label: 'Profile', href: '/vistrial/operator/profile' },
-];
-
-function badgeFor(key: TabKey, context: PortalContext): number {
+function badgeFor(key: string, context: PortalContext): number {
   const b = context.badges;
   switch (key) {
-    case 'escalations':
-      return b.answers_ready;
-    case 'tasks':
-      return b.open_tasks + b.unread_notifications;
+    case 'record':
+      return (b.reviews_open ?? 0) + b.answers_ready;
+    case 'growth':
+      return (b.feedback_unread ?? 0) + b.pay_answers;
     case 'pay':
       return b.pay_answers;
+    case 'tasks':
+      return b.open_tasks;
+    case 'inbox':
+      return b.unread_notifications;
     default:
       return 0;
   }
@@ -61,6 +55,10 @@ export default function PortalShell({
   const [peek, setPeek] = useState(false);
 
   const showGate = context.blocking_notices.length > 0 && (blocked || (viewAs && !peek));
+  const zones = zonesFor(context);
+  const menu = menuFor(context);
+  const zone = zoneOf(tab);
+  const menuCount = menu.reduce((sum, item) => sum + badgeFor(item.key, context), 0);
 
   return (
     <PortalProvider context={context} placementId={placementId}>
@@ -73,31 +71,38 @@ export default function PortalShell({
           <>
             <header className={`sticky z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl ${viewAs ? 'top-[52px]' : 'top-0'}`}>
               <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
-                <Link href="/vistrial/operator" className="flex min-w-0 items-center gap-2">
+                <Link href={zones[0]?.href ?? '/vistrial/operator'} className="flex min-w-0 items-center gap-2">
                   <Logo markOnly className="h-5 w-auto shrink-0" />
                   <span className="truncate text-sm font-semibold">{context.operator.name}</span>
                 </Link>
                 <div className="flex items-center gap-2">
                   <PlacementSwitcher context={context} placementId={placementId} />
-                  {viewAs ? null : (
-                    <form action={hubSignOutAction}>
-                      <button type="submit" className={`${btnSecondary} px-3 py-1.5 text-xs`}>
-                        Sign out
-                      </button>
-                    </form>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setMoreOpen(true)}
+                    aria-label="Menu"
+                    className={`${btnSecondary} relative px-3 py-1.5 text-xs`}
+                  >
+                    Menu
+                    {menuCount > 0 ? (
+                      <span className="absolute -right-1 -top-1 rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">
+                        {menuCount}
+                      </span>
+                    ) : null}
+                  </button>
                 </div>
               </div>
-              <nav className="mx-auto hidden max-w-5xl gap-1 overflow-x-auto px-3 pb-2 md:flex" aria-label="Portal">
-                {TABS.map((item) => {
+              <nav className="mx-auto hidden max-w-5xl gap-1 overflow-x-auto px-3 pb-2 md:flex" aria-label="Zones">
+                {zones.map((item) => {
                   const count = badgeFor(item.key, context);
+                  const current = item.key === zone;
                   return (
                     <Link
                       key={item.key}
                       href={item.href}
-                      aria-current={item.key === tab ? 'page' : undefined}
+                      aria-current={current ? 'page' : undefined}
                       className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
-                        item.key === tab
+                        current
                           ? 'bg-brand-500/[0.14] text-brand-100 ring-1 ring-inset ring-brand-500/25'
                           : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
                       }`}
@@ -114,10 +119,10 @@ export default function PortalShell({
 
             <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 md:pb-12">{children}</main>
 
-            <MobileBar tab={tab} context={context} onMore={() => setMoreOpen(true)} />
-            <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="More">
+            <MobileBar zones={zones} zone={zone} context={context} />
+            <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Menu">
               <div className="grid gap-2">
-                {TABS.slice(4).map((item) => {
+                {menu.map((item) => {
                   const count = badgeFor(item.key, context);
                   return (
                     <Link
@@ -151,44 +156,34 @@ export default function PortalShell({
   );
 }
 
-function MobileBar({ tab, context, onMore }: { tab: TabKey; context: PortalContext; onMore: () => void }) {
-  const moreCount = TABS.slice(4).reduce((sum, item) => sum + badgeFor(item.key, context), 0);
-  const inMore = TABS.slice(4).some((item) => item.key === tab);
+function MobileBar({ zones, zone, context }: { zones: NavItem[]; zone: string | null; context: PortalContext }) {
+  if (zones.length < 2) return null;
   return (
     <nav
-      aria-label="Portal"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-5 border-t border-white/[0.08] bg-ink-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
+      aria-label="Zones"
+      className="fixed inset-x-0 bottom-0 z-40 grid border-t border-white/[0.08] bg-ink-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
+      style={{ gridTemplateColumns: `repeat(${zones.length}, minmax(0, 1fr))` }}
     >
-      {TABS.slice(0, 4).map((item) => {
+      {zones.map((item) => {
         const count = badgeFor(item.key, context);
+        const current = item.key === zone;
         return (
           <Link
             key={item.key}
             href={item.href}
-            aria-current={item.key === tab ? 'page' : undefined}
+            aria-current={current ? 'page' : undefined}
             className={`relative flex flex-col items-center gap-0.5 px-1 py-2.5 text-[11px] font-medium ${
-              item.key === tab ? 'text-brand-200' : 'text-neutral-500'
+              current ? 'text-brand-200' : 'text-neutral-500'
             }`}
           >
-            <span className={`h-1 w-6 rounded-full ${item.key === tab ? 'bg-brand-500' : 'bg-transparent'}`} />
-            <span className="truncate">{item.key === 'reports' ? 'Reports' : item.label}</span>
+            <span className={`h-1 w-6 rounded-full ${current ? 'bg-brand-500' : 'bg-transparent'}`} />
+            <span className="max-w-full truncate">{item.short}</span>
             {count > 0 ? (
-              <span className="absolute right-3 top-1.5 rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">{count}</span>
+              <span className="absolute right-2 top-1.5 rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">{count}</span>
             ) : null}
           </Link>
         );
       })}
-      <button
-        type="button"
-        onClick={onMore}
-        className={`relative flex flex-col items-center gap-0.5 px-1 py-2.5 text-[11px] font-medium ${inMore ? 'text-brand-200' : 'text-neutral-500'}`}
-      >
-        <span className={`h-1 w-6 rounded-full ${inMore ? 'bg-brand-500' : 'bg-transparent'}`} />
-        More
-        {moreCount > 0 ? (
-          <span className="absolute right-3 top-1.5 rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">{moreCount}</span>
-        ) : null}
-      </button>
     </nav>
   );
 }

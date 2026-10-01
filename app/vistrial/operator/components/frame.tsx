@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
 import type { PortalLoad } from '@/lib/portal/load';
-import PortalShell, { type TabKey } from './PortalShell';
+import type { PortalContext } from '@/lib/portal/types';
+import { homeFor, tabAllowed, type TabKey } from '@/lib/portal/zones';
+import PortalShell from './PortalShell';
 
 /**
  * Wraps one tab in the portal shell. A tab that needs a placement says so, and
@@ -10,22 +12,44 @@ import PortalShell, { type TabKey } from './PortalShell';
 export function renderPortal<T>(
   load: PortalLoad<T>,
   tab: TabKey,
-  render: (data: T, placementId: string | null) => React.ReactNode,
-  options: { needsPlacement?: boolean } = {},
+  render: (data: T, placementId: string | null, context: PortalContext) => React.ReactNode,
+  options: { needsPlacement?: boolean; whenNoData?: (context: PortalContext) => React.ReactNode } = {},
 ) {
   if (load.kind === 'closed') return <PortalClosed message={load.message} />;
 
   let body: React.ReactNode;
   if (load.blocked) body = null;
+  else if (!tabAllowed(load.context.stage, tab, load.context.has_history)) body = <NotInStage stage={load.context.stage} />;
+  else if (options.whenNoData && (load.error || load.data === null)) body = options.whenNoData(load.context);
   else if (options.needsPlacement && !load.placementId) body = <NoPlacement />;
   else if (load.error) body = <Refused message={load.error} />;
   else if (load.data === null && options.needsPlacement) body = <NoPlacement />;
-  else body = render(load.data as T, load.placementId);
+  else body = render(load.data as T, load.placementId, load.context);
 
   return (
     <PortalShell context={load.context} placementId={load.placementId} tab={tab} blocked={load.blocked}>
       {body}
     </PortalShell>
+  );
+}
+
+const STAGE_REASON: Record<PortalContext['stage'], string> = {
+  applicant: 'This opens once your onboarding is finished.',
+  training: 'During training you work with sample data only, so live bookings, escalations, shift reviews and pay are not part of your account yet.',
+  waiting: 'This opens when you are placed with a client.',
+  placed: 'This is not part of your account.',
+  inactive: 'Your account is closed. Your pay statements and agreements stay available.',
+};
+
+function NotInStage({ stage }: { stage: PortalContext['stage'] }) {
+  return (
+    <section className="panel rounded-2xl px-6 py-12 text-center">
+      <p className="text-sm font-medium text-neutral-200">Not part of your account right now</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{STAGE_REASON[stage]}</p>
+      <Link href={homeFor(stage)} className={`${btnPrimary} ${btnSizeSm} mt-5`}>
+        Go to {stage === 'inactive' ? 'Pay' : 'your home screen'}
+      </Link>
+    </section>
   );
 }
 

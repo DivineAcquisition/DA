@@ -43,15 +43,18 @@ export default function TodayView({ data }: { data: TodayData | null }) {
       {data && data.missing_reports.length > 0 ? (
         <Card className="border border-flag-warning/40">
           <p className="text-sm font-semibold text-flag-warning">
-            Submit your report for {formatDate(data.missing_reports[0])}
+            Your shift review for {formatDate(data.missing_reports[0])} is waiting
           </p>
           <p className="mt-1 text-sm text-neutral-400">
             {data.missing_reports.length === 1
-              ? 'A shift with no report does not count as worked.'
-              : `${data.missing_reports.length} shifts have no report yet. Unlogged work does not count.`}
+              ? 'The system drafted it from your activity. Confirm it, or correct anything that is off.'
+              : `${data.missing_reports.length} shifts are waiting for your review. The recorded numbers stand until you confirm or correct them.`}
           </p>
-          <Link href={`/vistrial/operator/reports?date=${data.missing_reports[0]}`} className={`${btnPrimary} ${btnSizeSm} mt-3`}>
-            File the report
+          <Link
+            href={`/vistrial/operator/record?review=${data.missing_reports[0]}`}
+            className={`${btnPrimary} ${btnSizeSm} mt-3`}
+          >
+            Review my shift
           </Link>
         </Card>
       ) : null}

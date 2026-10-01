@@ -21,8 +21,25 @@ export type PortalPlacement = {
 
 export type Notice = { id: string; body: string; severity: Severity; created_at: string };
 
+/** Where the VA is: from their operator status plus whether a placement is live. */
+export type Stage = 'applicant' | 'training' | 'waiting' | 'placed' | 'inactive';
+
 export type PortalContext = {
-  operator: { id: string; name: string; first_name: string; time_zone: string; status: string };
+  operator: {
+    id: string;
+    name: string;
+    first_name: string;
+    time_zone: string;
+    status: string;
+    tier?: number | null;
+    certified_on?: string | null;
+    email_optional?: boolean;
+  };
+  stage: Stage;
+  has_history: boolean;
+  has_pay: boolean;
+  inactive_until: string | null;
+  focus: { text: string; week_start: string; author: string } | null;
   viewer: {
     view_as: boolean;
     kind: 'view_as' | 'impersonation' | null;
@@ -45,6 +62,10 @@ export type PortalContext = {
     unread_notifications: number;
     open_tasks: number;
     pay_answers: number;
+    reviews_open?: number;
+    reviews_unconfirmed?: number;
+    feedback_unread?: number;
+    formal_notices?: number;
   };
   onboarding: { status: string; protocol_name: string; link_token: string | null } | null;
 };
@@ -330,4 +351,212 @@ export type ProfileData = {
     completed_at: string | null;
     has_copy: boolean;
   }[];
+};
+
+// Prompt 8: the accountability system --------------------------------------------
+
+/** What the system recorded in a window. A null count means "not captured". */
+export type ActivityCounts = {
+  tracking: boolean;
+  conversations: number | null;
+  touches_outbound: number | null;
+  touches_inbound: number | null;
+  touches_by_channel: Record<string, number> | null;
+  follow_ups: number | null;
+  appointments_booked: number;
+  escalations_raised: number;
+  leads_in: number | null;
+  responded_in_standard: number | null;
+  median_response_minutes: number | null;
+  first_activity_at: string | null;
+  last_activity_at: string | null;
+  ambiguous: number;
+  response_standard_minutes: number;
+};
+
+export type LiveData = {
+  placement_id: string;
+  live: boolean;
+  on_shift?: boolean;
+  shift?: Window | null;
+  tracking?: boolean;
+  response_standard_minutes?: number;
+  clock?: { waiting: number; over_standard: number; oldest_minutes: number | null } | null;
+  so_far?: ActivityCounts | null;
+  reviews?: { shift_date: string; status: 'open' | 'unconfirmed'; confirm_by: string | null }[];
+};
+
+export type BlockerControl = 'mine' | 'client' | 'da' | 'outside';
+
+export type ShiftReview = {
+  id: string;
+  shift_date: string;
+  starts_at: string;
+  ends_at: string;
+  status: 'open' | 'confirmed' | 'unconfirmed';
+  confirm_by: string | null;
+  confirmed_at: string | null;
+  period_closed: boolean;
+  system: ActivityCounts;
+  captured_start: string | null;
+  captured_end: string | null;
+  report: {
+    id: string;
+    version: number;
+    conversations_handled: number;
+    appointments_booked: number;
+    follow_ups_completed: number;
+    escalations_raised: number;
+    shift_start_actual: string;
+    shift_end_actual: string;
+    variance_explanation: string | null;
+    correction_reason: string | null;
+    notes: string | null;
+    submitted_at: string;
+  } | null;
+  reflection: { went_well: string | null; differently: string | null; in_way: string | null };
+  blockers: { id: string; control: BlockerControl; note: string; resolved_at: string | null; resolution: string | null }[];
+};
+
+export type ReviewsData = { placement_id: string; time_zone: string; reviews: ShiftReview[] };
+
+export type StandardStatus = 'on_track' | 'at_risk' | 'below' | 'not_measured';
+
+export type StandardRow = {
+  key: string;
+  label: string;
+  unit: string;
+  direction: 'up_is_good' | 'down_is_good';
+  target: number | null;
+  value: number | null;
+  numerator: number | null;
+  denominator: number | null;
+  measured: boolean;
+  status: StandardStatus;
+  section: string | null;
+  how: string;
+  note: string | null;
+};
+
+export type Dispute = {
+  id: string;
+  standard_key: string;
+  item_kind: string;
+  item_id: string;
+  item_label: string | null;
+  explanation: string;
+  status: 'open' | 'approved' | 'declined';
+  raised_at: string;
+  decided_by: string | null;
+  decided_at: string | null;
+  decision_reason: string | null;
+};
+
+export type StandardsData =
+  | { preview: true; definitions: { key: string; label: string; unit: string; target: number | null; section: string | null; how: string }[] }
+  | {
+      preview: false;
+      month: string;
+      finished: boolean;
+      standards: StandardRow[];
+      trend: { month: string; rows: Record<string, { value: number | null; status: StandardStatus }> | null }[];
+      disputes: Dispute[];
+    };
+
+export type StandardItem = {
+  id: string;
+  placement_id?: string;
+  at?: string;
+  date?: string;
+  label?: string;
+  status?: string;
+  state?: string;
+  response_minutes?: number | null;
+  minutes?: number;
+  threshold?: number | null;
+  met: boolean;
+  counted: boolean;
+  excluded_reason?: string | null;
+  recorded_by?: string | null;
+  late_notice?: boolean;
+};
+
+export type StandardItems = { kind: 'lead' | 'shift' | 'booking' | 'finding' | 'week' | 'none'; items: StandardItem[] };
+
+export type Commitment = {
+  key: string;
+  label: string;
+  target: string;
+  target_value: number | null;
+  total: number;
+  on_time: number;
+  rate: number | null;
+  misses: { at: string; text: string; link: string; operator_name?: string }[];
+  detail: string | null;
+};
+
+export type CommitmentsData = { month: string; commitments: Commitment[] };
+
+export type Feedback = {
+  id: string;
+  week_start: string;
+  keep_doing: string;
+  improve: string;
+  focus: string;
+  author: string;
+  posted_at: string;
+  acknowledged_at: string | null;
+  reply: string | null;
+  replied_at: string | null;
+};
+
+export type GrowthData = {
+  tier: number | null;
+  certified_on: string | null;
+  progress: {
+    tier: number | null;
+    next_tier: number | null;
+    eligible: boolean;
+    criteria: { id: string; kind: string; label: string; threshold: number; current: number; met: boolean }[];
+  };
+  decisions: { from_tier: number | null; to_tier: number; decision: 'approved' | 'declined'; reason: string; decided_by: string | null; decided_at: string }[];
+  feedback: Feedback[];
+  week_start: string;
+  self_review: { week_start: string; focus_line: string; submitted_at: string } | null;
+  self_reviews: { week_start: string; focus_line: string }[];
+  week_summary: {
+    bookings: number;
+    shifts_worked: number;
+    reviews_confirmed: number;
+    reflections: { shift_date: string; went_well: string | null; differently: string | null; in_way: string | null }[];
+  };
+};
+
+export type AvailabilityWindow = { iso_day: number; starts: string; ends: string };
+
+export type AvailabilityData = { time_zone: string; windows: AvailabilityWindow[]; updated_at: string | null };
+
+export type InboxItem = {
+  id: string;
+  title: string;
+  body: string;
+  severity: Severity;
+  kind: string;
+  urgency: 'immediate' | 'normal';
+  link: string | null;
+  required: boolean;
+  created_at: string;
+  read_at: string | null;
+  sent_by: string | null;
+  emailed: boolean;
+};
+
+export type FormalNotice = {
+  id: string;
+  subject: string;
+  body: string;
+  sent_at: string;
+  sent_by: string | null;
+  reply: string | null;
+  replied_at: string | null;
 };
