@@ -78,7 +78,7 @@ export function HiringStatusPill({ children }: { children: ReactNode }) {
 }
 
 /**
- * Coss Panel surface + Magic pointer spotlight.
+ * Coss Panel surface.
  * Use for values, listings, mission, about, and step cards.
  */
 export function SurfaceCard({
