@@ -28,6 +28,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         },
         { href: '/vistrial/admin/payroll', label: 'Payroll' },
         { href: '/vistrial/admin/notifications', label: 'Notifications' },
+        { href: '/vistrial/team/board', label: 'Team board' },
+        { href: '/vistrial/team/queues', label: 'Queues' },
         { href: '/vistrial/team', label: 'Team & View As' },
         { href: '/vistrial/inbox', label: 'Inbox' },
         { href: '/vistrial/admin/view-as', label: 'View As log' },
@@ -35,7 +37,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     : [{ href: '/vistrial/operator', label: 'My portal' }];
 
   const isActive = (href: string) =>
-    href === '/vistrial/admin' || href === '/vistrial/operator'
+    href === '/vistrial/admin' || href === '/vistrial/operator' || href === '/vistrial/team'
       ? pathname === href
       : pathname.startsWith(href);
 

@@ -45,10 +45,7 @@ export default async function MyDayPage() {
         return <WaitingHome availability={data.availability} />;
       default:
         return (
-          <div className="space-y-4">
-            <TodayView data={data.today} />
-            <DayExtras live={data.live} focus={context.focus} />
-          </div>
+          <TodayView data={data.today} extras={<DayExtras live={data.live} focus={context.focus} />} />
         );
     }
   });

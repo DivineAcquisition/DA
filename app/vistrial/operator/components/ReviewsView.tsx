@@ -6,14 +6,8 @@ import { confirmShiftAction, type ReviewEntry } from '@/lib/portal/actions';
 import { formatDate, formatDateTime } from '@/lib/portal/time';
 import type { BlockerControl, ReviewsData, ShiftReview } from '@/lib/portal/types';
 import { Badge, inputClass, labelClass, selectClass } from '../../components/ui';
+import { CONTROL_LABEL } from '@/lib/portal/standards';
 import { Card, CardTitle, Empty, Feedback, Sheet, useAction, usePortal, VaButton, VaFieldset } from './portal';
-
-export const CONTROL_LABEL: Record<BlockerControl, string> = {
-  mine: 'Within my control',
-  client: 'Client side',
-  da: 'DA side',
-  outside: "Outside anyone's control",
-};
 
 const STATUS: Record<ShiftReview['status'], { label: string; tone: 'brand' | 'good' | 'neutral' }> = {
   open: { label: 'Ready to confirm', tone: 'brand' },

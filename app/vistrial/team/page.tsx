@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
+import TeamNav from './TeamNav';
 import TeamView, { type RosterRow } from './TeamView';
 
 export const metadata: Metadata = { title: 'Team' };
@@ -14,5 +15,10 @@ export const dynamic = 'force-dynamic';
 export default async function TeamPage() {
   const supabase = await createClient();
   const { data, error } = await controlRpc<RosterRow[]>(supabase, 'staff_operator_roster', {});
-  return <TeamView rows={data ?? []} error={error ? readable(error) : null} />;
+  return (
+    <>
+      <TeamNav />
+      <TeamView rows={data ?? []} error={error ? readable(error) : null} />
+    </>
+  );
 }

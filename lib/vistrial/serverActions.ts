@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
-import { deliver } from './rules/notifications';
 import type { EodCore, NotificationSeverity } from './types';
 
 /**
@@ -343,7 +342,7 @@ export async function sendNotificationAction(input: {
     .eq('id', sender?.id ?? '')
     .maybeSingle();
 
-  const { data: notification, error } = await supabase
+  const { error } = await supabase
     .from('operator_notification')
     .insert({
       operator_id: input.operatorId,
@@ -353,33 +352,21 @@ export async function sendNotificationAction(input: {
       // Whoever actually sent it. "Was I told, and by whom" is the question this
       // record exists to answer, so a placeholder name defeats the point.
       sent_by: senderProfile?.full_name || senderProfile?.email || 'Divine Acquisition',
-    })
+      kind: 'staff_message',
+      urgency: input.severity === 'urgent' ? 'immediate' : 'normal',
+      link_path: '/vistrial/operator/inbox',
+    } as never)
     .select('id')
     .single();
 
   if (error) return { ok: false, error: readable(error) };
 
-  // The real transports go here. Until they are wired, every attempt is recorded
-  // as delivered so the log shape is the one production will produce.
-  const attempts = deliver(
-    { severity: input.severity, title: input.title, body: input.body },
-    { preferredChannel: operator.preferred_channel.replace(/_/g, '-') as never },
-    () => ({ ok: true }),
-    new Date().toISOString(),
-  );
-
-  await supabase.from('notification_attempt').insert(
-    attempts.map((attempt) => ({
-      notification_id: notification.id,
-      channel: underscore(attempt.channel) as Database['public']['Enums']['notification_channel'],
-      status: attempt.status,
-      attempted_at: attempt.attemptedAt,
-      detail: attempt.detail,
-    })),
-  );
-
+  // In-app delivery is recorded by the database the moment the row exists.
+  // Email goes out from the dispatcher (/api/cron/notify-dispatch), which
+  // records its own attempt, success or failure. Urgent messages go at once;
+  // the rest wait for the VA's working hours and the daily digest.
   refresh();
-  return { ok: true, message: `Sent on ${attempts.filter((a) => a.status === 'delivered').length} channels.` };
+  return { ok: true, message: input.severity === 'urgent' ? 'Sent. It is in their portal now and emailed straight away.' : 'Sent. It is in their portal now and goes out in their next email digest.' };
 }
 
 export async function markNotificationReadAction(notificationId: string): Promise<HubResult> {

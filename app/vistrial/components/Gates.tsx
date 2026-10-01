@@ -30,7 +30,7 @@ export function ManagerShell({ name, children }: { name: string; children: React
   const router = useRouter();
   const allowed = MANAGER_PATHS.some((path) => pathname.startsWith(path));
   useEffect(() => {
-    if (!allowed) router.replace('/vistrial/team');
+    if (!allowed) router.replace('/vistrial/team/board');
   }, [allowed, router]);
   if (!allowed) return null;
 
@@ -38,13 +38,13 @@ export function ManagerShell({ name, children }: { name: string; children: React
     <div className="min-h-screen bg-ink-950 text-white antialiased">
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
-          <Link href="/vistrial/team" className="flex items-center gap-2">
+          <Link href="/vistrial/team/board" className="flex items-center gap-2">
             <Logo markOnly className="h-5 w-auto" />
             <span className="text-sm font-semibold">Team</span>
           </Link>
           <nav className="flex items-center gap-1 text-[13px]">
             {[
-              { href: '/vistrial/team', label: 'Operators' },
+              { href: '/vistrial/team', label: 'Team' },
               { href: '/vistrial/inbox', label: 'Inbox' },
             ].map((item) => (
               <Link

@@ -11,7 +11,7 @@ import { Badge, inputClass, labelClass, Meter } from '../../components/ui';
 import { Card, CardTitle, Feedback, Sheet, useAction, usePortal, VaButton } from './portal';
 
 /** Today: what am I doing right now, in one glance. */
-export default function TodayView({ data }: { data: TodayData | null }) {
+export default function TodayView({ data, extras }: { data: TodayData | null; extras?: React.ReactNode }) {
   const { context, operatorZone } = usePortal();
   const [now, setNow] = useState(() => Date.now());
 
@@ -40,7 +40,9 @@ export default function TodayView({ data }: { data: TodayData | null }) {
 
       {data ? <ShiftCard data={data} now={now} operatorZone={operatorZone} /> : null}
 
-      {data && data.missing_reports.length > 0 ? (
+      {extras}
+
+      {!extras && data && data.missing_reports.length > 0 ? (
         <Card className="border border-flag-warning/40">
           <p className="text-sm font-semibold text-flag-warning">
             Your shift review for {formatDate(data.missing_reports[0])} is waiting

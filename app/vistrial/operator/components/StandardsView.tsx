@@ -5,22 +5,10 @@ import { useEffect, useState } from 'react';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { raiseDisputeAction, standardItemsAction } from '@/lib/portal/actions';
 import { formatDate, formatDateTime, formatMonth } from '@/lib/portal/time';
-import type { Dispute, StandardItem, StandardItems, StandardRow, StandardsData, StandardStatus } from '@/lib/portal/types';
-import { Badge, inputClass, type Tone } from '../../components/ui';
+import type { Dispute, StandardItem, StandardItems, StandardRow, StandardsData } from '@/lib/portal/types';
+import { Badge, inputClass } from '../../components/ui';
+import { formatStandard, STATUS_LABEL } from '@/lib/portal/standards';
 import { Card, CardTitle, Empty, Feedback, Sheet, useAction, usePortal, VaButton } from './portal';
-
-export const STATUS_LABEL: Record<StandardStatus, { label: string; tone: Tone }> = {
-  on_track: { label: 'On track', tone: 'good' },
-  at_risk: { label: 'At risk', tone: 'brand' },
-  below: { label: 'Below', tone: 'neutral' },
-  not_measured: { label: 'Not yet measured', tone: 'neutral' },
-};
-
-export function formatStandard(value: number | null, unit: string): string {
-  if (value === null || value === undefined) return '–';
-  if (unit === 'percent') return `${Number(value).toFixed(Number(value) % 1 === 0 ? 0 : 1)}%`;
-  return `${value} ${unit}`;
-}
 
 function targetText(row: { target: number | null; unit: string; direction?: string; key: string }): string {
   if (row.key === 'va_escalation_discipline') return 'Required matters escalated, never improvised';
