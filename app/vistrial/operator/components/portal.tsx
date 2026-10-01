@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Surface } from '@/components/ui/surface';
 import type { PortalContext } from '@/lib/portal/types';
 import type { Result } from '@/lib/portal/actions';
 
@@ -166,7 +165,7 @@ export function Sheet({
 }
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <Surface as="section" className={`p-4 sm:p-5 ${className}`}>{children}</Surface>;
+  return <section className={`panel rounded-2xl p-4 sm:p-5 ${className}`}>{children}</section>;
 }
 
 export function CardTitle({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {

@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { signInAction } from '@/lib/workspace/actions';
-import { AuthPanel } from '@/components/ui/surface';
 import { Button, Field, Input, ws } from './ui';
 
 export default function LoginForm() {
@@ -14,7 +13,7 @@ export default function LoginForm() {
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-ink-950 px-5 py-12 text-white antialiased">
       <Backdrop />
-      <AuthPanel className="animate-rise p-7 sm:p-8">
+      <div className={`${ws.card} relative z-10 w-full max-w-md animate-rise p-7 sm:p-8`}>
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo className="h-8 w-auto" />
           <h1 className={`${ws.heading} mt-6 text-2xl font-semibold`}>Administrator sign in</h1>
@@ -46,7 +45,7 @@ export default function LoginForm() {
             {pending ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
-      </AuthPanel>
+      </div>
     </div>
   );
 }

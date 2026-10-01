@@ -2,12 +2,10 @@
 
 import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { BorderBeam } from '@/components/ui/border-beam';
 import { Input as CossInput } from '@/components/ui/input';
-import { MagicCard } from '@/components/ui/magic-card';
 import { NativeSelect } from '@/components/ui/select';
 import { ShineBorder } from '@/components/ui/shine-border';
-import { Surface } from '@/components/ui/surface';
 import { Textarea as CossTextarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { ws } from './tokens';
@@ -25,14 +23,11 @@ export function Button({
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
   size?: 'sm' | 'md';
 }) {
-  const sizeClass = size === 'sm' ? 'hiring-button-sm' : 'hiring-button-md';
-  if (variant === 'primary') {
-    return <button className={cn('hiring-button', sizeClass, className)} {...props} />;
-  }
-  if (variant === 'secondary') {
-    return <button className={cn('hiring-button-secondary', sizeClass, className)} {...props} />;
-  }
   const variants = {
+    primary:
+      'bg-brand-500 text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)] hover:bg-brand-400 hover:shadow-[0_16px_40px_-14px_rgba(154,136,252,1)] active:bg-brand-600 active:text-white',
+    secondary:
+      'border border-white/[0.12] bg-white/[0.03] text-white hover:border-white/25 hover:bg-white/[0.07]',
     ghost: 'text-neutral-300 hover:text-white',
     danger: 'border border-flag-critical/40 bg-flag-critical/10 text-flag-critical hover:bg-flag-critical/20',
   };
@@ -75,24 +70,24 @@ export function Field({
   );
 }
 
-/** Workspace card: Coss panel and the hiring shine. */
+/** Workspace card: Vistrial panel surface with Magic shine on the border. */
 export function Card({
   children,
   className = '',
   shine = true,
   beam = false,
-  as = 'div',
 }: {
   children: ReactNode;
   className?: string;
   shine?: boolean;
   beam?: boolean;
-  as?: 'div' | 'section' | 'article' | 'li';
 }) {
   return (
-    <Surface as={as} className={className} shine={shine} beam={beam}>
-      {children}
-    </Surface>
+    <div className={cn(ws.card, className)}>
+      {shine ? <ShineBorder borderWidth={1} duration={14} /> : null}
+      {beam ? <BorderBeam borderWidth={1} colorFrom="#9A88FC" colorTo="#C3B6FE" /> : null}
+      <div className="relative z-[1]">{children}</div>
+    </div>
   );
 }
 
@@ -232,7 +227,6 @@ export function Dialog({
         className={`${ws.card} relative z-10 max-h-[min(90vh,52rem)] w-full max-w-lg overflow-y-auto animate-rise p-5 shadow-2xl sm:p-6`}
       >
         <ShineBorder borderWidth={1} duration={14} />
-        <MagicCard className="relative rounded-[inherit]">
         <div className="mb-5 flex items-start justify-between gap-3">
           <h2 id={titleId} className={`${ws.heading} text-lg font-semibold`}>
             {title}
@@ -246,7 +240,6 @@ export function Dialog({
           </button>
         </div>
         {children}
-        </MagicCard>
       </div>
     </div>,
     document.body,
@@ -324,7 +317,6 @@ export function DataTable({
   return (
     <div className={`${ws.card} overflow-hidden`}>
       <ShineBorder borderWidth={1} duration={18} />
-      <MagicCard className="relative rounded-[inherit]">
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead className={ws.panelHeader}>
@@ -332,11 +324,9 @@ export function DataTable({
               {headers.map((h) => (
                 <th
                   key={h}
-                  className="px-4 py-3"
+                  className="px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300"
                 >
-                  <AnimatedShinyText className="mx-0 max-w-none text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">
-                    {h}
-                  </AnimatedShinyText>
+                  {h}
                 </th>
               ))}
             </tr>
@@ -344,7 +334,6 @@ export function DataTable({
           <tbody className="divide-y divide-white/[0.06]">{children}</tbody>
         </table>
       </div>
-      </MagicCard>
     </div>
   );
 }

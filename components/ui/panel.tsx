@@ -6,16 +6,10 @@ export function Panel({
   children,
   className = '',
   as: Component = 'div',
-  id,
 }: {
   children: ReactNode;
   className?: string;
   as?: 'div' | 'section' | 'article' | 'li';
-  id?: string;
 }) {
-  return (
-    <Component id={id} className={cn('panel rounded-2xl', className)}>
-      {children}
-    </Component>
-  );
+  return <Component className={cn('panel rounded-2xl', className)}>{children}</Component>;
 }

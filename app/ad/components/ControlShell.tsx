@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Avatar, Badge } from '@/app/vistrial/components/ui';
@@ -24,9 +23,7 @@ export default function ControlShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
-      <div className="relative z-10">
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
       {session.impersonation && (
         <div className="border-b border-flag-warning/30 bg-flag-warning/[0.12] px-5 py-2.5 text-sm text-flag-warning">
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3">
@@ -107,7 +104,6 @@ export default function ControlShell({
           Postgres; every refusal names the layer that said no.
         </p>
       </footer>
-      </div>
     </div>
   );
 }

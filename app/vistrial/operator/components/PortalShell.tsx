@@ -3,9 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
-import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
-import { Surface } from '@/components/ui/surface';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { acknowledgeNoticeAction, selectPlacementAction } from '@/lib/portal/actions';
 import { SEVERITY_LABEL, SEVERITY_TONE } from '@/lib/portal/labels';
@@ -64,9 +62,7 @@ export default function PortalShell({
 
   return (
     <PortalProvider context={context} placementId={placementId}>
-      <div className={`relative min-h-screen bg-ink-950 text-white antialiased ${viewAs ? 'pt-[52px]' : ''}`}>
-        <Backdrop />
-        <div className="relative z-10">
+      <div className={`min-h-screen bg-ink-950 text-white antialiased ${viewAs ? 'pt-[52px]' : ''}`}>
         {viewAs ? <ViewAsBanner context={context} onPanel={() => setPanelOpen(true)} /> : null}
 
         {showGate ? (
@@ -155,7 +151,6 @@ export default function PortalShell({
         )}
 
         {viewAs ? <AdminPanel context={context} open={panelOpen} onClose={() => setPanelOpen(false)} /> : null}
-        </div>
       </div>
     </PortalProvider>
   );
@@ -319,7 +314,7 @@ function BlockingNotices({ context, onPeek }: { context: PortalContext; onPeek?:
   const readOnly = context.viewer.read_only;
   return (
     <main className="mx-auto flex min-h-[80vh] max-w-xl flex-col justify-center px-4 py-10">
-      <Surface beam className="rounded-3xl p-6">
+      <div className="panel rounded-3xl p-6">
         <div className="mb-4 flex items-center gap-2">
           <Badge tone={SEVERITY_TONE[notice.severity] ?? 'warning'}>{SEVERITY_LABEL[notice.severity] ?? 'Notice'}</Badge>
           {context.blocking_notices.length > 1 ? (
@@ -351,7 +346,7 @@ function BlockingNotices({ context, onPeek }: { context: PortalContext; onPeek?:
             Look at the portal behind the notice
           </button>
         ) : null}
-      </Surface>
+      </div>
     </main>
   );
 }

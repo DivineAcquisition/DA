@@ -4,7 +4,6 @@ import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
-import { AuthPanel } from '@/components/ui/surface';
 import { Badge, inputClass, labelClass } from './ui';
 import { hubResetRequestAction, hubSignInAction, hubSignOutAction } from '@/lib/vistrial/authActions';
 
@@ -21,7 +20,7 @@ export default function HubSignIn({ wrongAudience }: { wrongAudience?: string })
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 py-12 text-white antialiased">
       <Backdrop />
 
-      <AuthPanel>
+      <div className="panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8">
         <Logo className="h-6 w-auto" />
 
         {wrongAudience ? (
@@ -119,7 +118,7 @@ export default function HubSignIn({ wrongAudience }: { wrongAudience?: string })
             </button>
           </>
         )}
-      </AuthPanel>
+      </div>
     </div>
   );
 }

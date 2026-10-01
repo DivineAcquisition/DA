@@ -1,6 +1,6 @@
 import SettingsForm from '../components/SettingsForm';
 import SyncDocuSealButton from '../components/SyncControls';
-import { Badge, Card, EmptyState, PageHeader } from '../components/ui';
+import { Badge, EmptyState, PageHeader } from '../components/ui';
 import { ws } from '../components/tokens';
 import { formatDateTime } from '@/lib/workspace/format';
 import { getDocuSealConnection, getLatestSyncRun, getSettings } from '@/lib/workspace/queries';
@@ -22,7 +22,7 @@ export default async function SettingsPage() {
         actions={<SyncDocuSealButton variant="secondary" />}
       />
 
-      <Card as="section" className="p-5">
+      <section className={`${ws.card} p-5`}>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
@@ -48,7 +48,7 @@ export default async function SettingsPage() {
             {lastSync?.error && <p className="mt-1 text-sm text-[var(--ws-error)]">{lastSync.error}</p>}
           </div>
         </div>
-      </Card>
+      </section>
 
       {!settings ? (
         <EmptyState

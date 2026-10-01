@@ -6,19 +6,18 @@ import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { formatDate } from '@/lib/portal/time';
 import { decideDisputeAction, decideTierAction, resolveBlockerAction } from '@/lib/team/actions';
 import type { Queues } from '@/lib/team/types';
-import { Surface } from '@/components/ui/surface';
 import { inputClass } from '../components/ui';
 import { CONTROL_LABEL } from '@/lib/portal/standards';
 import { Feedback, useAction } from '../operator/components/portal';
 
 function Section({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
   return (
-    <Surface as="section" className="p-4">
+    <section className="panel rounded-2xl p-4">
       <h2 className="mb-3 text-sm font-semibold text-white">
         {title} <span className="text-neutral-500">({count})</span>
       </h2>
       {count === 0 ? <p className="text-sm text-neutral-500">Nothing waiting.</p> : children}
-    </Surface>
+    </section>
   );
 }
 
