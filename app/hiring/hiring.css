@@ -41,32 +41,22 @@
   background: linear-gradient(
     105deg,
     transparent 35%,
-    rgba(255, 255, 255, 0.28) 48%,
+    rgba(255, 255, 255, 0.38) 48%,
     transparent 62%
   );
   transform: translateX(-120%);
+  animation: hiring-button-shine 2.8s ease-in-out infinite;
   pointer-events: none;
 }
 
-.hiring-button:hover::after,
-.hiring-button:focus-visible::after {
-  animation: hiring-button-shine 0.85s ease;
-}
-
 .hiring-button:hover {
-  transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.42);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.34);
   background-image: linear-gradient(180deg, #d9d1fe 0%, #ae9dfd 46%, #7e67f2 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.48),
-    0 14px 28px -14px rgba(102, 80, 216, 0.95);
+    0 18px 36px -12px rgba(102, 80, 216, 1);
   color: var(--color-ink-950);
-}
-
-.hiring-button:focus-visible,
-.hiring-button-secondary:focus-visible {
-  outline: 2px solid #c3b6fe;
-  outline-offset: 3px;
 }
 
 .hiring-button:active {
@@ -76,18 +66,17 @@
 }
 
 .hiring-button-secondary {
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.03);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
   color: #fff;
 }
 
 .hiring-button-secondary:hover {
-  transform: translateY(-1px);
-  border-color: rgba(195, 182, 254, 0.7);
-  background: rgba(154, 136, 252, 0.12);
+  transform: translateY(-2px);
+  border-color: rgba(154, 136, 252, 0.45);
+  background: rgba(154, 136, 252, 0.1);
   color: #fff;
-  box-shadow: 0 0 0 3px rgba(154, 136, 252, 0.18);
+  box-shadow: 0 14px 30px -16px rgba(102, 80, 216, 0.7);
 }
 
 .hiring-button:hover svg,

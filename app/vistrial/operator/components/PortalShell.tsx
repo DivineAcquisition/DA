@@ -213,7 +213,7 @@ function PlacementSwitcher({ context, placementId }: { context: PortalContext; p
             router.refresh();
           });
         }}
-        className="field-control max-w-44 cursor-pointer truncate rounded-full px-3 py-1.5 text-xs text-white"
+        className="max-w-44 cursor-pointer truncate rounded-full border border-white/10 bg-ink-900 px-3 py-1.5 text-xs text-white"
       >
         {context.placements.map((placement) => (
           <option key={placement.id} value={placement.id}>
@@ -296,7 +296,7 @@ function ViewAsBanner({ context, onPanel }: { context: PortalContext; onPanel: (
           value={reason}
           onChange={(event) => setReason(event.target.value)}
           rows={3}
-          className="field-control mt-3 w-full rounded-xl px-3.5 py-2.5 text-sm"
+          className="mt-3 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm"
           placeholder="Still reviewing the disputed bookings from last week"
         />
         <button

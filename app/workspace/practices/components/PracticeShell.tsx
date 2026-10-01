@@ -183,7 +183,7 @@ export default function PracticeShell({
         <input
           value={typedName}
           onChange={(e) => setTypedName(e.target.value)}
-          className="field-control mt-4 w-full rounded-xl px-3.5 py-2.5 text-sm text-white"
+          className="mt-4 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white outline-none focus:border-brand-500/60"
         />
         <div className="mt-5 flex justify-end gap-2">
           <Button type="button" variant="secondary" onClick={() => setDeleteOpen(false)}>

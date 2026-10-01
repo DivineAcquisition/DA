@@ -34,8 +34,7 @@ export function Button({
   }
   const variants = {
     ghost: 'text-neutral-300 hover:text-white',
-    danger:
-      'rounded-xl border border-flag-critical/70 bg-flag-critical/10 text-flag-critical shadow-[inset_0_0_0_1px_rgba(248,113,113,0.18)] hover:bg-flag-critical/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-flag-critical',
+    danger: 'border border-flag-critical/40 bg-flag-critical/10 text-flag-critical hover:bg-flag-critical/20',
   };
   const sizes = { sm: 'px-4 py-2 text-[13px]', md: 'px-5 py-2.5 text-sm' };
   return (
