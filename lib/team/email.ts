@@ -73,7 +73,7 @@ export function buildTeamEmail(message: MailMessage, baseUrl: string): { subject
     };
   }
 
-  const subject = `${message.items.length} updates from Divine Acquisition Team`;
+  const subject = `${message.items.length} updates from DivineACQ Team`;
   const greeting = `<h1 style="margin:0 0 16px;font-family:Arial,Helvetica,sans-serif;font-size:22px;line-height:1.3;color:#ffffff;">Hi ${escapeHtml(message.first_name || 'there')}, here is today's update</h1>`;
   const blocks = message.items
     .map((item) => {

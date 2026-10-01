@@ -34,7 +34,7 @@ describe('team email', () => {
     expect(mail.subject).toBe('Your shift review for Tue, Oct 6 is ready');
     expect(mail.text).toContain('Open the record: https://team.divineacquisition.io/operator/record?review=2026-10-06');
     expect(mail.html).toContain('href="https://team.divineacquisition.io/operator/record?review=2026-10-06"');
-    expect(mail.html).toContain('Divine Acquisition Team');
+    expect(mail.html).toContain('DivineACQ Team');
   });
 
   it('batches a digest and drops each item greeting', () => {
@@ -44,7 +44,7 @@ describe('team email', () => {
       items: [single.items[0], { ...single.items[0], id: 'n2', title: 'Your pay statement is ready', link: '/vistrial/operator/pay' }],
     };
     const mail = buildTeamEmail(digest, base);
-    expect(mail.subject).toBe('2 updates from Divine Acquisition Team');
+    expect(mail.subject).toBe('2 updates from DivineACQ Team');
     expect(mail.text.match(/Hi Ana/g)?.length).toBe(1);
     expect(mail.text).toContain('https://team.divineacquisition.io/operator/pay');
   });
