@@ -22,7 +22,7 @@ export function OperatorGate({ children }: { children: React.ReactNode }) {
   return inside ? <>{children}</> : null;
 }
 
-const MANAGER_PATHS = ['/vistrial/team', '/vistrial/inbox'];
+const MANAGER_PATHS = ['/vistrial/team', '/vistrial/inbox', '/vistrial/ops'];
 
 /** Managers work from their team page: the operators in their scope, and View As. */
 export function ManagerShell({ name, children }: { name: string; children: React.ReactNode }) {
@@ -40,10 +40,11 @@ export function ManagerShell({ name, children }: { name: string; children: React
         <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
           <Link href="/vistrial/team/board" className="flex items-center gap-2">
             <Logo markOnly className="h-5 w-auto" />
-            <span className="text-sm font-semibold">Team</span>
+            <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
           </Link>
           <nav className="flex items-center gap-1 text-[13px]">
             {[
+              { href: '/vistrial/ops', label: 'Overview' },
               { href: '/vistrial/team', label: 'Team' },
               { href: '/vistrial/inbox', label: 'Inbox' },
             ].map((item) => (

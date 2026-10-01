@@ -117,7 +117,7 @@ export default function QueuesView({ queues }: { queues: Queues }) {
           {queues.tier_eligible.map((t) => (
             <Decide
               key={t.operator_id}
-              title={`${t.operator_name}: Tier ${t.tier ?? 1} to Tier ${t.to_tier}`}
+              title={`${t.operator_name}: ${t.tier != null ? `Tier ${t.tier}` : 'No tier'} to Tier ${t.to_tier}`}
               detail={`Meets every criterion since ${formatDate(t.eligible_at.slice(0, 10))}. The tier does not change until you decide.`}
               placeholder="Your reason (the VA sees it)"
             >

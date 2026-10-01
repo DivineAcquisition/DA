@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { saveCommitmentAction, saveTeamSettingAction, saveTemplateAction, saveTierCriterionAction } from '@/lib/team/actions';
+import { saveCommitmentAction, saveTeamSettingAction, setLdAmountAction, saveTemplateAction, saveTierCriterionAction } from '@/lib/team/actions';
 import type { AccountabilitySettings } from '@/lib/team/types';
 import { inputClass, labelClass, selectClass } from '../components/ui';
 import { Feedback, useAction } from '../operator/components/portal';
@@ -74,6 +74,7 @@ function TeamPanel({ data, edit }: { data: AccountabilitySettings; edit: boolean
   const [replyTo, setReplyTo] = useState(data.team.reply_to ?? '');
   const [fromName, setFromName] = useState(data.team.from_name);
   const [months, setMonths] = useState(String(data.team.inactive_access_months));
+  const [ld, setLd] = useState(String(data.team.abandonment_ld_amount ?? ''));
   const action = useAction();
   return (
     <Panel title="Sending and access">
@@ -87,17 +88,27 @@ function TeamPanel({ data, edit }: { data: AccountabilitySettings; edit: boolean
         </label>
         <label>
           <span className={labelClass}>Reply-to (monitored)</span>
-          <input value={replyTo} onChange={(e) => setReplyTo(e.target.value)} disabled={!edit} className={inputClass} placeholder="team@divineacquisition.io" />
+          <input value={replyTo} onChange={(e) => setReplyTo(e.target.value)} disabled={!edit} className={inputClass} />
         </label>
         <label>
           <span className={labelClass}>Months inactive VAs keep pay and agreements</span>
           <input value={months} onChange={(e) => setMonths(e.target.value)} disabled={!edit} inputMode="numeric" className={inputClass} />
         </label>
+        <label>
+          <span className={labelClass}>Abandoned-shift liquidated damages ($, Section 6.3)</span>
+          <input value={ld} onChange={(e) => setLd(e.target.value)} disabled={!edit} inputMode="decimal" className={inputClass} />
+        </label>
       </div>
       {edit ? (
         <button
           type="button"
-          onClick={() => action.run(() => saveTeamSettingAction({ replyTo, fromName, inactiveMonths: months ? Number(months) : null }))}
+          onClick={() =>
+            action.run(async () => {
+              const saved = await saveTeamSettingAction({ replyTo, fromName, inactiveMonths: months ? Number(months) : null });
+              if (!saved.ok || ld === '' || Number(ld) === data.team.abandonment_ld_amount) return saved;
+              return setLdAmountAction(Number(ld));
+            })
+          }
           className={`${btnPrimary} ${btnSizeSm} mt-3`}
         >
           Save

@@ -319,7 +319,7 @@ function Attendance({ panel, reload }: { panel: Panel; reload: () => Promise<voi
           <label className={`${labelClass} mt-2`}>Why</label>
           <textarea value={reason} onChange={(e) => setReason(e.target.value)} rows={2} className={inputClass} />
           {status === 'abandoned' ? (
-            <p className="mt-1 text-xs text-neutral-500">This proposes $250 under Section 6.3. Nothing is deducted until an admin approves it.</p>
+            <p className="mt-1 text-xs text-neutral-500">This proposes the liquidated damages set in Team settings (Section 6.3). Nothing is deducted until an admin approves it.</p>
           ) : null}
           <div className="mt-2 flex gap-2">
             <button

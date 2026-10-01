@@ -15,7 +15,7 @@ export default function GrowthView({ data }: { data: GrowthData }) {
   return (
     <div className="space-y-4">
       <Card>
-        <CardTitle aside={<Badge tone="brand">Tier {data.tier ?? 1}</Badge>}>Your tier</CardTitle>
+        <CardTitle aside={<Badge tone="brand">{data.tier != null ? `Tier ${data.tier}` : 'Tier not set'}</Badge>}>Your tier</CardTitle>
         {p.next_tier ? (
           <>
             <p className="text-sm text-neutral-300">

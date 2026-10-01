@@ -8,10 +8,21 @@ import { Badge, inputClass, labelClass } from './ui';
 import { hubResetRequestAction, hubSignInAction, hubSignOutAction } from '@/lib/vistrial/authActions';
 
 /**
- * The front door of team.divineacquisition.io. It says what this is and
- * nothing else: no clients, no pricing.
+ * The front door of each app. It says what this is and nothing else: no
+ * clients, no pricing. The team app is for VAs and SDRs; the admin app for
+ * owners, admins and managers.
  */
-export default function HubSignIn({ wrongAudience }: { wrongAudience?: string }) {
+export default function HubSignIn({
+  app = 'team',
+  wrongAudience,
+  wrongApp,
+}: {
+  app?: 'team' | 'admin';
+  wrongAudience?: string;
+  /** A VA signed into the admin app: their account uses the team app. */
+  wrongApp?: { email: string; url: string };
+}) {
+  const title = app === 'admin' ? 'Divine Acquisition Admin' : 'Divine Acquisition Team';
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'sign_in' | 'forgot' | 'sent'>('sign_in');
   const [pending, startTransition] = useTransition();
@@ -21,17 +32,35 @@ export default function HubSignIn({ wrongAudience }: { wrongAudience?: string })
       <Backdrop />
 
       <div className="panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8">
-        <Logo className="h-6 w-auto" />
+        <div className="flex items-center gap-2">
+          <Logo className="h-6 w-auto" />
+          {app === 'admin' ? (
+            <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
+          ) : null}
+        </div>
 
-        {wrongAudience ? (
+        {wrongApp ? (
+          <>
+            <Badge tone="warning" className="mt-6">
+              Wrong app
+            </Badge>
+            <h1 className="mt-4 text-xl font-semibold">Your account uses the team app</h1>
+            <p className="mt-3 text-sm leading-relaxed text-neutral-400">
+              {wrongApp.email} is a team account. The admin app is for owners, admins and managers. Sign in to the team app instead.
+            </p>
+            <a href="/vistrial/auth/leave?to=team" className={`${btnPrimary} ${btnSizeMd} mt-6`}>
+              Go to the team app
+            </a>
+            <p className="mt-3 text-xs text-neutral-500">{wrongApp.url}</p>
+          </>
+        ) : wrongAudience ? (
           <>
             <Badge tone="warning" className="mt-6">
               No team account
             </Badge>
-            <h1 className="mt-4 text-xl font-semibold">Divine Acquisition Team</h1>
+            <h1 className="mt-4 text-xl font-semibold">{title}</h1>
             <p className="mt-3 text-sm leading-relaxed text-neutral-400">
-              {wrongAudience} is signed in, but it is not a Divine Acquisition Team account. Team accounts are created by
-              invitation.
+              {wrongAudience} is signed in, but it has no account in this app. Accounts are created by invitation.
             </p>
             <form action={hubSignOutAction} className="mt-6">
               <button type="submit" className={`${btnSecondary} ${btnSizeSm}`}>
@@ -51,11 +80,11 @@ export default function HubSignIn({ wrongAudience }: { wrongAudience?: string })
           </>
         ) : (
           <>
-            <h1 className="mt-6 text-xl font-semibold">Divine Acquisition Team</h1>
+            <h1 className="mt-6 text-xl font-semibold">{title}</h1>
             <p className="mt-2 text-sm leading-relaxed text-neutral-400">
               {mode === 'forgot'
                 ? 'Enter the email you sign in with and we will send a link to set a new password.'
-                : 'Sign in to your team account.'}
+                : app === 'admin' ? 'Sign in to the admin app.' : 'Sign in to your team account.'}
             </p>
 
             <form

@@ -34,6 +34,15 @@ type NavIcon =
  */
 const NAV: { heading: string; items: NavItem[] }[] = [
   {
+    heading: 'Operations',
+    items: [
+      { href: '/vistrial/ops', label: 'Operations overview', icon: 'home' },
+      { href: '/vistrial/team/board', label: 'Team', icon: 'people', aliases: ['/vistrial/team'] },
+      { href: '/vistrial/admin/clients', label: 'Clients', icon: 'company', aliases: ['/vistrial/admin'] },
+      { href: '/vistrial/team/ghl', label: 'GHL', icon: 'ops' },
+    ],
+  },
+  {
     heading: 'Workspace',
     items: [
       { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
@@ -120,7 +129,7 @@ function SidebarContent({
         className="flex items-center gap-2.5 px-5 py-6 transition-opacity hover:opacity-80"
       >
         <Logo className="h-[26px] w-auto" />
-        <span className="text-sm font-semibold tracking-tight text-white">Admin</span>
+        <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
       </Link>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">

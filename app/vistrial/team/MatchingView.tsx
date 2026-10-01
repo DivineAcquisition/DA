@@ -21,7 +21,7 @@ export default function MatchingView({ rows }: { rows: AvailabilityRow[] }) {
                 {row.name}
               </Link>
               <span className="text-xs text-neutral-500">
-                Tier {row.tier ?? 1}
+                {row.tier != null ? `Tier ${row.tier}` : 'Tier not set'}
                 {row.certified_on ? ` · certified ${formatDate(row.certified_on, true)}` : ''} · {row.time_zone}
               </span>
             </div>

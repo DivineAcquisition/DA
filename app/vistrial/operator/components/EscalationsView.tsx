@@ -145,7 +145,7 @@ function RaiseForm({ data, onSent }: { data: EscalationsData; onSent: (line: str
   return (
     <VaFieldset>
       <p className="text-sm text-neutral-400">
-        DA answers within {data.escalation_response_hours ?? 4} hours. You get a line to hold the customer with.
+        {data.escalation_response_hours != null ? `DA answers within ${data.escalation_response_hours} hours.` : 'DA answers within the time set on your placement.'} You get a line to hold the customer with.
       </p>
       <fieldset className="mt-4 space-y-2">
         <legend className={labelClass}>What kind of question</legend>

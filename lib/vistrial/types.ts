@@ -467,6 +467,6 @@ export type OpsData = {
   payPeriods: PayPeriod[];
   payStatements: PayStatement[];
   responseDays: ResponseDay[];
-  /** Fixed "today" so the seeded exception queue is deterministic. */
+  /** "Now" when the data was loaded: every derived date counts from it. */
   now: string;
 };

@@ -105,7 +105,7 @@ export type AvailabilityRow = {
 
 export type AccountabilitySettings = {
   can_edit: boolean;
-  team: { from_name: string; from_address: string; reply_to: string | null; base_url: string; inactive_access_months: number; updated_by: string | null; updated_at: string };
+  team: { from_name: string; from_address: string; reply_to: string | null; base_url: string; inactive_access_months: number; abandonment_ld_amount: number; updated_by: string | null; updated_at: string };
   commitments: { key: string; label: string; target_label: string; target_value: number | null; sort_order: number }[];
   tier_criteria: { id: string; tier: number; kind: string; threshold: number; label: string; sort_order: number }[];
   templates: { key: string; label: string; subject: string; body: string; urgency: string; required: boolean; sender: string; formal: boolean; updated_by: string | null; updated_at: string }[];

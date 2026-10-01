@@ -37,7 +37,7 @@ const ZONE: Record<ZoneKey, NavItem> = {
   standards: { key: 'standards', label: 'My Standards', short: 'Standards', href: `${BASE}/standards` },
   commitments: { key: 'commitments', label: "DA's Commitments", short: 'Commitments', href: `${BASE}/commitments` },
   growth: { key: 'growth', label: 'Pay & Growth', short: 'Pay & Growth', href: `${BASE}/growth` },
-  playbook: { key: 'playbook', label: 'Sample Playbook', short: 'Playbook', href: `${BASE}/playbook` },
+  playbook: { key: 'playbook', label: 'Training Playbook', short: 'Playbook', href: `${BASE}/playbook` },
   pay: { key: 'pay', label: 'Pay', short: 'Pay', href: `${BASE}/pay` },
   agreements: { key: 'agreements', label: 'Agreements', short: 'Agreements', href: `${BASE}/agreements` },
 };

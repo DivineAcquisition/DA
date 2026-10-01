@@ -5,6 +5,7 @@ import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
+import RequireAdminMfa from '@/app/components/RequireAdminMfa';
 
 export const metadata: Metadata = {
   title: {
@@ -57,8 +58,10 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (isLogin) redirect('/workspace/overview');
 
   return (
-    <div className="da-workspace">
-      <Shell email={session.email}>{children}</Shell>
-    </div>
+    <RequireAdminMfa email={session.email}>
+      <div className="da-workspace">
+        <Shell email={session.email}>{children}</Shell>
+      </div>
+    </RequireAdminMfa>
   );
 }

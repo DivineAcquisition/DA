@@ -35,7 +35,7 @@ export function renderPortal<T>(
 
 const STAGE_REASON: Record<PortalContext['stage'], string> = {
   applicant: 'This opens once your onboarding is finished.',
-  training: 'During training you work with sample data only, so live bookings, escalations, shift reviews and pay are not part of your account yet.',
+  training: 'During training you work with training simulations only, so live bookings, escalations, shift reviews and pay are not part of your account yet.',
   waiting: 'This opens when you are placed with a client.',
   placed: 'This is not part of your account.',
   inactive: 'Your account is closed. Your pay statements and agreements stay available.',

@@ -142,3 +142,7 @@ export async function saveTierCriterionAction(input: {
 export async function saveTemplateAction(key: string, subject: string, body: string) {
   return call('staff_save_template', { p_key: key, p_subject: subject, p_body: body }, 'Saved.');
 }
+
+export async function setLdAmountAction(amount: number) {
+  return call('staff_set_ld_amount', { p_amount: amount }, 'Saved. New abandonment proposals use this amount.');
+}

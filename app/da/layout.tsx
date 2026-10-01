@@ -6,6 +6,7 @@ import UnifiedAdminChrome, {
 import AdminShell from './components/AdminShell';
 import NotConfigured from './components/NotConfigured';
 import SignIn from './components/SignIn';
+import RequireAdminMfa from '@/app/components/RequireAdminMfa';
 
 export const metadata: Metadata = {
   title: {
@@ -25,8 +26,16 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session.isAdmin) return <SignIn refusedFor={session.email} />;
 
   if (await isUnifiedAdminRequest()) {
-    return <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>;
+    return (
+      <RequireAdminMfa email={session.email}>
+        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
+      </RequireAdminMfa>
+    );
   }
 
-  return <AdminShell session={session}>{children}</AdminShell>;
+  return (
+    <RequireAdminMfa email={session.email}>
+      <AdminShell session={session}>{children}</AdminShell>
+    </RequireAdminMfa>
+  );
 }

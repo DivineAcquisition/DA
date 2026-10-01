@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { isVaPortalPath } from './lib/team/url';
+import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './lib/apps';
 
 /**
  * Strict host-based routing plus Supabase session refresh.
@@ -44,12 +44,10 @@ const ACCT_HOSTS = hosts(process.env.VISTRIAL_ACCT_HOSTS, 'acct.divineacquisitio
 // The staff app's permanent home. Login sessions stay private to it: the
 // Supabase cookies are host-only (no Domain attribute), so no other subdomain
 // can read them.
-const TEAM_HOSTS = hosts(process.env.TEAM_HOSTS, 'team.divineacquisition.io');
-const TEAM_ORIGIN =
-  process.env.TEAM_BASE_URL?.trim().replace(/\/+$/, '') || `https://${TEAM_HOSTS[0]}`;
+const TEAM_HOSTS = appHosts('team');
+const TEAM_ORIGIN = appUrl('team');
 // Staff screens live on the admin portal; the team host is for VAs and SDRs.
-const ADMIN_PORTAL_ORIGIN =
-  process.env.ADMIN_BASE_URL?.trim().replace(/\/+$/, '') || `https://${(process.env.DA_WORKSPACE_HOSTS ?? 'admin.divineacquisition.io').split(',')[0].trim().toLowerCase()}`;
+const ADMIN_PORTAL_ORIGIN = appUrl('admin');
 // Former addresses of the staff app. They redirect to TEAM_ORIGIN or the admin portal.
 const OPS_HOSTS = hosts(
   process.env.VISTRIAL_OPS_HOSTS,
@@ -61,10 +59,8 @@ const CAREERS_HOSTS = hosts(
 );
 const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
-const WORKSPACE_HOSTS = hosts(
-  process.env.DA_WORKSPACE_HOSTS,
-  'admin.divineacquisition.io',
-);
+// The admin app: ADMIN_APP_URL (lib/apps), plus any DA_WORKSPACE_HOSTS.
+const WORKSPACE_HOSTS = appHosts('admin');
 const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
@@ -262,20 +258,29 @@ export async function proxy(request: NextRequest) {
   const surface = surfaceForHost(host);
   const local = isLocalHost(host);
 
-  // team.* is the VA and SDR portal only. Staff paths there, and the former
-  // ops./vistrial. addresses, redirect with the path kept: VA paths to team.,
-  // staff paths to the admin portal's /vistrial.
+  // The team app serves its own screens and nothing else: an admin screen asked
+  // for there is "not found", so the team app does not even reveal that admin
+  // pages exist. Former single-address hosts (ops., vistrial.) redirect with the
+  // path kept: team screens to the team app, everything else to the admin app.
   const legacyOpsHost = !local && OPS_HOSTS.includes(host);
   const onTeamHost = !local && TEAM_HOSTS.includes(host);
-  if (legacyOpsHost || onTeamHost) {
+  const isServicePath = pathname.startsWith('/_next') || pathname.startsWith('/api/');
+  if ((legacyOpsHost || onTeamHost) && !isServicePath) {
     const internal = pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`) ? pathname : `${OPS_PREFIX}${pathname === '/' ? '' : pathname}`;
-    if (!isVaPortalPath(internal)) {
-      return NextResponse.redirect(`${ADMIN_PORTAL_ORIGIN}${internal}${request.nextUrl.search}`, 308);
-    }
     if (legacyOpsHost) {
-      const path = internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length);
-      return NextResponse.redirect(`${TEAM_ORIGIN}${path}${request.nextUrl.search}`, 308);
+      const target = isTeamAppPath(internal)
+        ? `${TEAM_ORIGIN}${internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length)}`
+        : `${ADMIN_PORTAL_ORIGIN}${internal}`;
+      return NextResponse.redirect(`${target}${request.nextUrl.search}`, 308);
     }
+    if (!isTeamAppPath(internal)) {
+      return new NextResponse('Not found', { status: 404, headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
+    }
+  }
+
+  // The admin app's home is the operations overview.
+  if (!local && WORKSPACE_HOSTS.includes(host) && pathname === '/') {
+    return NextResponse.redirect(new URL('/vistrial/ops', request.url), 307);
   }
 
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.
@@ -408,7 +413,35 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    // Per-app session rules: an idle timeout and a maximum session length,
+    // stricter on the admin app. Cookies are host-only, like the auth cookies.
+    const app: AppKey | null = local ? null : TEAM_HOSTS.includes(host) ? 'team' : WORKSPACE_HOSTS.includes(host) ? 'admin' : null;
+    if (!user && app && (request.cookies.has('da_seen') || request.cookies.has('da_started'))) {
+      // Signed out: the timers belong to the session that ended.
+      response.cookies.set('da_seen', '', { path: '/', maxAge: 0 });
+      response.cookies.set('da_started', '', { path: '/', maxAge: 0 });
+    }
+    if (user && app) {
+      const rules = sessionRules(app);
+      const now = Math.floor(Date.now() / 1000);
+      const seen = Number(request.cookies.get('da_seen')?.value ?? 0);
+      const started = Number(request.cookies.get('da_started')?.value ?? 0);
+      const expired = (seen && now - seen > rules.idle * 60) || (started && now - started > rules.absolute * 60);
+      const cookie = { httpOnly: true, secure: true, sameSite: 'lax' as const, path: '/' };
+      if (expired) {
+        await supabase.auth.signOut({ scope: 'local' });
+        response.cookies.set('da_seen', '', { ...cookie, maxAge: 0 });
+        response.cookies.set('da_started', '', { ...cookie, maxAge: 0 });
+        response.headers.set('x-da-session-expired', '1');
+      } else {
+        if (!seen || now - seen > 60) response.cookies.set('da_seen', String(now), { ...cookie, maxAge: rules.absolute * 60 });
+        if (!started) response.cookies.set('da_started', String(now), { ...cookie, maxAge: rules.absolute * 60 });
+      }
+    }
   }
 
   // Acquisition landing is a public ad destination and must remain indexable.

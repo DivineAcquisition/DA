@@ -7,6 +7,7 @@ import UnifiedAdminChrome, {
 import ControlShell from './components/ControlShell';
 import NotConfigured from './components/NotConfigured';
 import SignIn from './components/SignIn';
+import RequireAdminMfa from '@/app/components/RequireAdminMfa';
 
 export const metadata: Metadata = {
   title: {
@@ -57,8 +58,16 @@ export default async function ControlLayout({ children }: { children: React.Reac
 
   // Unified portal is admin-only; managers keep the dedicated control host chrome.
   if (session.isAdmin && (await isUnifiedAdminRequest())) {
-    return <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>;
+    return (
+      <RequireAdminMfa email={session.email}>
+        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
+      </RequireAdminMfa>
+    );
   }
 
-  return <ControlShell session={session}>{children}</ControlShell>;
+  return (
+    <RequireAdminMfa email={session.email}>
+      <ControlShell session={session}>{children}</ControlShell>
+    </RequireAdminMfa>
+  );
 }

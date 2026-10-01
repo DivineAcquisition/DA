@@ -84,13 +84,13 @@ export function TrainingHome({ tasks }: { tasks: TasksData | null }) {
         </Link>
       </Card>
       <Card>
-        <p className="text-sm font-semibold text-white">Sample data only</p>
+        <p className="text-sm font-semibold text-white">Training simulations only</p>
         <p className="mt-1 text-sm text-neutral-400">
-          Training involves no live customers and no commercial work. Everything you practise on here is labelled sample data.
+          Training involves no live customers and no commercial work. Everything you practise on here is a labelled training simulation.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link href="/vistrial/operator/playbook" className={`${btnSecondary} ${btnSizeSm}`}>
-            Sample playbook
+            Training playbook
           </Link>
           <Link href="/vistrial/operator/standards" className={`${btnSecondary} ${btnSizeSm}`}>
             The standards you will be held to

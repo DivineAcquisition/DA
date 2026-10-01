@@ -1,3 +1,12 @@
+-- Refuses to run anywhere but the throwaway verify database. Production holds
+-- live data only (Prompt 8B); a seed must never reach it.
+do $$
+begin
+  if current_database() not like '%verify%' then
+    raise exception 'refusing to seed %: fixtures run only in the local verify database', current_database();
+  end if;
+end $$;
+
 \set ON_ERROR_STOP on
 set search_path = public;
 

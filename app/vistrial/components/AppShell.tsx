@@ -17,6 +17,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   const nav: NavItem[] = gateway.isAdmin
     ? [
+        { href: '/vistrial/ops', label: 'Overview' },
         { href: '/vistrial/admin', label: 'Today', badge: gateway.exceptions().length },
         { href: '/vistrial/admin/clients', label: 'Case files' },
         { href: '/vistrial/admin/operators', label: 'Operators' },
@@ -30,6 +31,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { href: '/vistrial/admin/notifications', label: 'Notifications' },
         { href: '/vistrial/team/board', label: 'Team board' },
         { href: '/vistrial/team/queues', label: 'Queues' },
+        { href: '/vistrial/team/ghl', label: 'GHL' },
         { href: '/vistrial/team', label: 'Team & View As' },
         { href: '/vistrial/inbox', label: 'Inbox' },
         { href: '/vistrial/admin/view-as', label: 'View As log' },
@@ -50,9 +52,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="flex h-16 items-center border-b border-white/[0.06] px-5">
             <Link href="/vistrial" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
               <Logo markOnly className="h-6 w-auto" />
-              <span className="text-sm font-semibold tracking-tight text-white">
-                Vistrial<span className="ml-1.5 font-normal text-neutral-500">Ops</span>
-              </span>
+              <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
             </Link>
           </div>
 
@@ -96,7 +96,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <div className="flex min-w-0 items-center gap-3">
                 <Link href="/vistrial" className="flex items-center gap-2 lg:hidden">
                   <Logo markOnly className="h-5 w-auto" />
-                  <span className="text-sm font-semibold text-white">Vistrial</span>
+                  <span className="text-sm font-semibold text-white">Admin</span>
                 </Link>
                 <p className="hidden text-sm text-neutral-500 lg:block">
                   {formatDayLong(gateway.today)}
