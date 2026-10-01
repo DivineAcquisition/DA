@@ -70,14 +70,14 @@ export async function getSettings(): Promise<DaSettings | null> {
 
 export type DocuSealConnection =
   | { state: 'missing' }
-  | { state: 'connected'; templates: number; source: 'settings' | 'environment' }
-  | { state: 'error'; error: string; source: 'settings' | 'environment' };
+  | { state: 'connected'; templates: number; source: 'database' | 'environment' }
+  | { state: 'error'; error: string; source: 'database' | 'environment' };
 
 /** Settings shows whether the stored key actually opens the account. */
 export async function getDocuSealConnection(settings: DaSettings | null): Promise<DocuSealConnection> {
   const key = docusealApiKey(settings);
   if (!key) return { state: 'missing' };
-  const source = (settings?.docuseal_api_key ?? '').trim() ? 'settings' : 'environment';
+  const source = (settings?.docuseal_api_key ?? '').trim() ? 'database' : 'environment';
   const result = await pingDocuSeal(key);
   if (!result.ok) return { state: 'error', error: result.error, source };
   return { state: 'connected', templates: result.data.templates, source };
