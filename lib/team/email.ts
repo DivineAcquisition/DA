@@ -48,7 +48,7 @@ function shell(subject: string, inner: string, footer: string): string {
 <body style="margin:0;padding:0;background-color:#07070b;color:#ffffff;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#07070b;"><tr><td align="center" style="padding:32px 16px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;background-color:#0b0a11;border:1px solid rgba(255,255,255,0.08);">
-<tr><td style="padding:32px 32px 8px;"><p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#c3b6fe;">Divine Acquisition Team</p></td></tr>
+<tr><td style="padding:32px 32px 8px;"><p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#c3b6fe;">DivineACQ Team</p></td></tr>
 <tr><td style="padding:8px 32px 24px;">${inner}</td></tr>
 <tr><td style="padding:16px 32px 28px;border-top:1px solid rgba(255,255,255,0.06);"><p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.6;color:#737373;">${footer}</p></td></tr>
 </table></td></tr></table></body></html>`;
@@ -69,7 +69,7 @@ export function buildTeamEmail(message: MailMessage, baseUrl: string): { subject
     return {
       subject: item.subject,
       html: shell(item.subject, `${heading}${paragraphs(item.body)}${button(url, ACTION_LABEL(item), item.formal)}`, footerText),
-      text: [item.body, '', `${ACTION_LABEL(item)}: ${url}`, '', '— Divine Acquisition Team', footerText].join('\n'),
+      text: [item.body, '', `${ACTION_LABEL(item)}: ${url}`, '', '— DivineACQ Team', footerText].join('\n'),
     };
   }
 
@@ -92,7 +92,7 @@ export function buildTeamEmail(message: MailMessage, baseUrl: string): { subject
       `${ACTION_LABEL(item)}: ${recordUrl(baseUrl, item.link)}`,
       '',
     ]),
-    '— Divine Acquisition Team',
+    '— DivineACQ Team',
     footerText,
   ].join('\n');
   return { subject, html: shell(subject, `${greeting}${blocks}`, footerText), text };
