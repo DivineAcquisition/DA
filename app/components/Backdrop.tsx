@@ -1,3 +1,5 @@
+import { Particles } from '@/components/ui/particles';
+
 /**
  * Ambient page background: a fine grid that fades out, a brand-tinted
  * spotlight behind the hero, and two low-opacity orbs. Purely decorative.
@@ -5,6 +7,7 @@
 export default function Backdrop() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+      <Particles className="absolute inset-0" quantity={48} color="#9A88FC" ease={70} size={0.45} />
       <div
         className="absolute inset-0 opacity-[0.055]"
         style={{

@@ -1,4 +1,6 @@
-import { DataTable, EmptyState, PageHeader } from '../components/ui';
+import { NumberTicker } from '@/components/ui/number-ticker';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { Card, DataTable, EmptyState, PageHeader } from '../components/ui';
 import { ws } from '../components/tokens';
 import { loadVaOverview, vaStatusLabel } from '@/lib/workspace/va-performance';
 
@@ -6,11 +8,19 @@ export const dynamic = 'force-dynamic';
 
 function Stat({ label, value, hint }: { label: string; value: string | number; hint?: string }) {
   return (
-    <div className={`${ws.card} p-5`}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">{label}</p>
-      <p className={`${ws.heading} mt-2 text-3xl font-semibold tabular-nums`}>{value}</p>
+    <Card className="p-5">
+      <AnimatedShinyText className="mx-0 max-w-none text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
+        {label}
+      </AnimatedShinyText>
+      <p className={`${ws.heading} mt-2 text-3xl font-semibold tabular-nums`}>
+        {typeof value === 'number' ? (
+          <NumberTicker value={value} className="text-3xl font-semibold tracking-normal text-white" />
+        ) : (
+          value
+        )}
+      </p>
       {hint && <p className="mt-1 text-xs text-[var(--ws-dim)]">{hint}</p>}
-    </div>
+    </Card>
   );
 }
 

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Avatar, Badge } from '@/app/vistrial/components/ui';
@@ -19,7 +20,9 @@ export default function Shell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
+    <div className="relative min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+      <div className="relative z-10">
       <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5 sm:px-6">
           <Link href="/calls" className="flex shrink-0 items-center gap-2.5 transition-opacity hover:opacity-80">
@@ -73,6 +76,7 @@ export default function Shell({
           Airtable stays the source of truth.
         </p>
       </footer>
+      </div>
     </div>
   );
 }

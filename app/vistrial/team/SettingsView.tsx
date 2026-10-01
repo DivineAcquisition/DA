@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { saveCommitmentAction, saveTeamSettingAction, saveTemplateAction, saveTierCriterionAction } from '@/lib/team/actions';
 import type { AccountabilitySettings } from '@/lib/team/types';
+import { Surface } from '@/components/ui/surface';
 import { inputClass, labelClass, selectClass } from '../components/ui';
 import { Feedback, useAction } from '../operator/components/portal';
 
@@ -16,10 +17,10 @@ const KINDS: Record<string, string> = {
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="panel rounded-2xl p-4 sm:p-5">
+    <Surface as="section" className="p-4 sm:p-5">
       <h2 className="mb-3 text-sm font-semibold text-white">{title}</h2>
       {children}
-    </section>
+    </Surface>
   );
 }
 

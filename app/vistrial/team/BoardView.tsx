@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { BoardRow } from '@/lib/team/types';
+import { Surface } from '@/components/ui/surface';
 import { Badge } from '../components/ui';
 import { CONTROL_LABEL, formatStandard, STATUS_LABEL } from '@/lib/portal/standards';
 
@@ -24,7 +25,7 @@ export default function BoardView({ rows }: { rows: BoardRow[] }) {
       {placed.length === 0 ? <p className="text-sm text-neutral-500">No placed VAs in your scope.</p> : null}
       <ul className="space-y-3">
         {placed.map((row) => (
-          <li key={row.id} className="panel rounded-2xl p-4">
+          <Surface as="li" key={row.id} className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <Link href={`/vistrial/team/operator/${row.id}`} className="text-sm font-semibold text-white hover:underline">
@@ -62,7 +63,7 @@ export default function BoardView({ rows }: { rows: BoardRow[] }) {
                   .join(' · ')}
               </p>
             ) : null}
-          </li>
+          </Surface>
         ))}
       </ul>
       {others.length > 0 ? (

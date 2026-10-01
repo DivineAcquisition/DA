@@ -18,15 +18,16 @@ import {
   setProductiveTimeAction,
 } from '@/lib/team/actions';
 import type { FeedbackContext, StaffNotice, StaffReview, StaffStandards } from '@/lib/team/types';
+import { Surface } from '@/components/ui/surface';
 import { Badge, inputClass, labelClass, selectClass } from '../components/ui';
 import { Feedback, useAction } from '../operator/components/portal';
 
 function Panel({ id, title, children }: { id?: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="panel rounded-2xl p-4 sm:p-5">
+    <Surface as="section" id={id} className="p-4 sm:p-5">
       <h2 className="mb-3 text-sm font-semibold text-white">{title}</h2>
       {children}
-    </section>
+    </Surface>
   );
 }
 

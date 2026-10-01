@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthPanel } from '@/components/ui/surface';
 import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
@@ -15,7 +16,7 @@ export default function SetPassword() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 py-12 text-white antialiased">
       <Backdrop />
-      <div className="panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8">
+      <AuthPanel>
         <Logo className="h-6 w-auto" />
         <h1 className="mt-6 text-xl font-semibold">Set a new password</h1>
         <p className="mt-2 text-sm text-neutral-400">At least 12 characters.</p>
@@ -46,7 +47,7 @@ export default function SetPassword() {
             {pending ? 'Saving…' : 'Save and continue'}
           </button>
         </form>
-      </div>
+      </AuthPanel>
     </div>
   );
 }

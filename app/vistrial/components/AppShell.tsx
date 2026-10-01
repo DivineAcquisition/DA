@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
@@ -43,8 +44,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
 
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <div className="flex min-h-screen">
+    <div className="relative min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+      <div className="relative z-10 flex min-h-screen">
         {/* Sidebar */}
         <aside className="hidden w-60 shrink-0 border-r border-white/[0.06] bg-ink-900/40 lg:flex lg:flex-col">
           <div className="flex h-16 items-center border-b border-white/[0.06] px-5">

@@ -1,6 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { MagicCard } from '@/components/ui/magic-card';
+import { ShineBorder } from '@/components/ui/shine-border';
+import { Surface } from '@/components/ui/surface';
 import { formatPercent, initials } from '@/lib/vistrial/format';
 
 /**
@@ -63,7 +67,9 @@ export function PageHeader({
     <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
         {eyebrow && (
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">{eyebrow}</p>
+          <AnimatedShinyText className="mx-0 max-w-none text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-300">
+            {eyebrow}
+          </AnimatedShinyText>
         )}
         <h1 className="mt-2 text-2xl font-semibold text-white sm:text-[28px]">{title}</h1>
         {description && <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{description}</p>}
@@ -85,7 +91,11 @@ export function SectionHeader({
   return (
     <div className="mb-3.5 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h2 className="text-[13px] font-semibold uppercase tracking-[0.14em] text-neutral-400">{title}</h2>
+        <h2>
+          <AnimatedShinyText className="mx-0 max-w-none text-[13px] font-semibold uppercase tracking-[0.14em] text-brand-300">
+            {title}
+          </AnimatedShinyText>
+        </h2>
         {hint && <p className="mt-1 text-xs text-neutral-500">{hint}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
@@ -96,13 +106,23 @@ export function SectionHeader({
 export function Panel({
   children,
   className = '',
-  as: Component = 'div',
+  as = 'div',
+  shine = true,
+  beam = false,
+  hover = false,
 }: {
   children: React.ReactNode;
   className?: string;
   as?: 'div' | 'section' | 'article' | 'li';
+  shine?: boolean;
+  beam?: boolean;
+  hover?: boolean;
 }) {
-  return <Component className={`panel rounded-2xl ${className}`}>{children}</Component>;
+  return (
+    <Surface as={as} className={className} shine={shine} beam={beam} hover={hover}>
+      {children}
+    </Surface>
+  );
 }
 
 export function StatTile({
@@ -227,9 +247,10 @@ export function RowLink({
   return (
     <Link
       href={href}
-      className={`panel panel-hover block rounded-2xl px-5 py-4 focus-visible:outline-none ${className}`}
+      className={`panel panel-hover relative block overflow-hidden rounded-2xl px-5 py-4 focus-visible:outline-none ${className}`}
     >
-      {children}
+      <ShineBorder borderWidth={1} duration={14} shineColor={['#9A88FC', '#C3B6FE']} />
+      <MagicCard className="relative rounded-[inherit]">{children}</MagicCard>
     </Link>
   );
 }

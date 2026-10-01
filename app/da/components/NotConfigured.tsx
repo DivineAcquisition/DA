@@ -1,12 +1,13 @@
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
+import { AuthPanel } from '@/components/ui/surface';
 
 /** Shown when the Supabase environment variables are absent. */
 export default function NotConfigured() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-5 text-white antialiased">
       <Backdrop />
-      <div className="panel relative z-10 w-full max-w-lg rounded-3xl p-8">
+      <AuthPanel className="max-w-lg p-8">
         <Logo className="h-6 w-auto" />
         <h1 className="mt-6 text-xl font-semibold">Database not connected</h1>
         <p className="mt-3 text-sm leading-relaxed text-neutral-400">
@@ -22,7 +23,7 @@ export default function NotConfigured() {
           never the secret one — anything prefixed <code className="text-neutral-400">NEXT_PUBLIC_</code> is
           sent to the browser.
         </p>
-      </div>
+      </AuthPanel>
     </div>
   );
 }

@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import Backdrop from '@/app/components/Backdrop';
+import { AuthPanel } from '@/components/ui/surface';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
@@ -19,13 +21,14 @@ export const dynamic = 'force-dynamic';
 
 function NotConfigured() {
   return (
-    <div className="da-workspace flex min-h-screen items-center justify-center bg-ink-950 px-5">
-      <div className="panel max-w-md rounded-2xl p-8 text-center">
+    <div className="da-workspace relative flex min-h-screen items-center justify-center bg-ink-950 px-5">
+      <Backdrop />
+      <AuthPanel className="text-center">
         <h1 className="text-xl font-semibold tracking-tight text-white">Database not configured</h1>
         <p className="mt-3 text-sm text-neutral-400">
           This deploy is missing its database connection.
         </p>
-      </div>
+      </AuthPanel>
     </div>
   );
 }

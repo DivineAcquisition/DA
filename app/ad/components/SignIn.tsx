@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthPanel } from '@/components/ui/surface';
 import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
@@ -21,7 +22,7 @@ export default function SignIn({
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-5 py-12 text-white antialiased">
       <Backdrop />
 
-      <div className="panel relative z-10 w-full max-w-md rounded-3xl p-8">
+      <AuthPanel>
         <Logo className="h-6 w-auto" />
 
         {blockedReason ? (
@@ -105,7 +106,7 @@ export default function SignIn({
             </form>
           </>
         )}
-      </div>
+      </AuthPanel>
     </div>
   );
 }

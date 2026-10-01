@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Surface } from '@/components/ui/surface';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
 import type { PortalLoad } from '@/lib/portal/load';
 import type { PortalContext } from '@/lib/portal/types';
@@ -43,34 +44,34 @@ const STAGE_REASON: Record<PortalContext['stage'], string> = {
 
 function NotInStage({ stage }: { stage: PortalContext['stage'] }) {
   return (
-    <section className="panel rounded-2xl px-6 py-12 text-center">
+    <Surface as="section" className="px-6 py-12 text-center">
       <p className="text-sm font-medium text-neutral-200">Not part of your account right now</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{STAGE_REASON[stage]}</p>
       <Link href={homeFor(stage)} className={`${btnPrimary} ${btnSizeSm} mt-5`}>
         Go to {stage === 'inactive' ? 'Pay' : 'your home screen'}
       </Link>
-    </section>
+    </Surface>
   );
 }
 
 function NoPlacement() {
   return (
-    <section className="panel rounded-2xl px-6 py-12 text-center">
+    <Surface as="section" className="px-6 py-12 text-center">
       <p className="text-sm font-medium text-neutral-200">You are between placements</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">
         When DA places you with a client, your shift, bookings and playbook appear here. Your pay, tasks and profile are
         still available below.
       </p>
-    </section>
+    </Surface>
   );
 }
 
 function Refused({ message }: { message: string }) {
   return (
-    <section className="panel rounded-2xl px-6 py-12 text-center">
+    <Surface as="section" className="px-6 py-12 text-center">
       <p className="text-sm font-medium text-neutral-200">Not available</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{message}</p>
-    </section>
+    </Surface>
   );
 }
 
@@ -78,7 +79,7 @@ function PortalClosed({ message }: { message: string }) {
   const staff = /no Sales Operator portal/.test(message);
   return (
     <main className="flex min-h-screen items-center justify-center bg-ink-950 px-4 text-white">
-      <section className="panel max-w-md rounded-3xl p-7 text-center">
+      <Surface as="section" beam className="max-w-md rounded-3xl p-7 text-center">
         <h1 className="text-lg font-semibold">{staff ? 'There is no portal to show' : 'Your portal is closed'}</h1>
         <p className="mt-3 text-sm leading-relaxed text-neutral-400">
           {staff
@@ -88,7 +89,7 @@ function PortalClosed({ message }: { message: string }) {
         <Link href="/vistrial" className={`${btnPrimary} ${btnSizeSm} mt-6`}>
           {staff ? 'Back to the hub' : 'Back'}
         </Link>
-      </section>
+      </Surface>
     </main>
   );
 }

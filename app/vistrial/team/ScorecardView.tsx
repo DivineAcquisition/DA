@@ -1,5 +1,6 @@
 import { formatMonth } from '@/lib/portal/time';
 import type { Scorecard } from '@/lib/team/types';
+import { Surface } from '@/components/ui/surface';
 import { Badge } from '../components/ui';
 
 /** DA's own commitments across every VA in scope. The firm sees its misses first. */
@@ -11,7 +12,7 @@ export default function ScorecardView({ data }: { data: Scorecard }) {
         <p className="mt-1 text-sm text-neutral-400">{formatMonth(data.month)}: what DA promised its VAs, and whether DA delivered.</p>
       </div>
       {data.commitments.map((c) => (
-        <section key={c.key} className="panel rounded-2xl p-4">
+        <Surface as="section" key={c.key} className="p-4">
           <div className="flex items-start justify-between gap-3">
             <div>
               <h2 className="text-sm font-semibold text-white">{c.label}</h2>
@@ -30,7 +31,7 @@ export default function ScorecardView({ data }: { data: Scorecard }) {
               ))}
             </ul>
           ) : null}
-        </section>
+        </Surface>
       ))}
     </div>
   );

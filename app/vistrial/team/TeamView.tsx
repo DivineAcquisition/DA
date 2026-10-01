@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import PlaybookEditor from '../operator/components/PlaybookEditor';
 import { OperatorSessions, ViewAsButton } from '../components/ViewAs';
+import { Surface } from '@/components/ui/surface';
 import { OPERATOR_STATUS } from '@/lib/portal/labels';
 
 export type RosterRow = {
@@ -33,7 +34,7 @@ export default function TeamView({ rows, error }: { rows: RosterRow[]; error: st
       {rows.length === 0 && !error ? <p className="text-sm text-neutral-500">No operators in your scope.</p> : null}
       <ul className="space-y-3">
         {rows.map((row) => (
-          <li key={row.id} className="panel rounded-2xl p-4">
+          <Surface as="li" key={row.id} className="p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-white">{row.name}</p>
@@ -68,7 +69,7 @@ export default function TeamView({ rows, error }: { rows: RosterRow[]; error: st
                 <OperatorSessions operatorId={row.id} />
               </div>
             </details>
-          </li>
+          </Surface>
         ))}
       </ul>
       {playbook ? <PlaybookEditor placementId={playbook} onClose={() => setPlaybook(null)} /> : null}

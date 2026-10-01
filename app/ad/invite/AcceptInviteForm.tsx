@@ -1,5 +1,6 @@
 'use client';
 
+import { AuthPanel } from '@/components/ui/surface';
 import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
@@ -14,7 +15,7 @@ export function AcceptInviteForm({ initialToken }: { initialToken: string }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-5 py-12 text-white antialiased">
       <Backdrop />
-      <div className="panel relative z-10 w-full max-w-md rounded-3xl p-8">
+      <AuthPanel>
         <Logo className="h-6 w-auto" />
         <h1 className="mt-6 text-xl font-semibold">Accept invitation</h1>
         <p className="mt-2 text-sm text-neutral-400">
@@ -70,7 +71,7 @@ export function AcceptInviteForm({ initialToken }: { initialToken: string }) {
             {pending ? 'Activating…' : 'Activate account'}
           </button>
         </form>
-      </div>
+      </AuthPanel>
     </div>
   );
 }
