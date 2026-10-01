@@ -1,6 +1,7 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { Resend } from 'resend';
+import { RESEND_CC, RESEND_REPLY_TO } from '@/lib/assessment/config';
 import { buildTeamEmail, type MailMessage } from '@/lib/team/email';
 
 export const dynamic = 'force-dynamic';
@@ -43,9 +44,16 @@ export async function GET(request: NextRequest) {
 
   const supabase = createSupabaseClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
-  // Replies must reach a person. Until an admin sets the reply-to, nothing is claimed.
+  // Replies must reach a person, never a no-reply address. Order: the address an
+  // admin set in Team settings, then TEAM_REPLY_TO, then the monitored address the
+  // other Resend senders already use (RESEND_REPLY_TO, then the first RESEND_CC).
   const { data: setting } = await supabase.from('team_setting').select('reply_to').eq('id', 1).maybeSingle();
-  const replyTo = (setting?.reply_to as string | null) || process.env.TEAM_REPLY_TO?.trim() || '';
+  const replyTo =
+    (setting?.reply_to as string | null) ||
+    process.env.TEAM_REPLY_TO?.trim() ||
+    RESEND_REPLY_TO ||
+    RESEND_CC[0] ||
+    '';
   if (!replyTo) {
     return NextResponse.json({ ok: false, error: 'No monitored reply-to address is set; nothing claimed' }, { status: 503 });
   }
