@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { isVaPortalPath } from './lib/team/url';
 
 /**
  * Strict host-based routing plus Supabase session refresh.
@@ -17,9 +18,13 @@ import { NextResponse, type NextRequest } from 'next/server';
  *   da.divineacquisition.io         -> /da   (legacy alias during cutover)
  *   ad.divineacquisition.io         -> /ad
  *   acct.divineacquisition.io       -> /acct
- *   team.divineacquisition.io       -> /vistrial (the staff app: VAs, managers, admins)
- *   ops. and vistrial. hosts        -> redirect to team., path preserved
- *   /vistrial on admin.             -> redirect to team., path preserved
+ *   team.divineacquisition.io       -> /vistrial, VA and SDR pages only (the portal,
+ *                                       sign-in, password reset). Any staff path
+ *                                       redirects to admin., path preserved.
+ *   admin.divineacquisition.io/vistrial -> the staff side of /vistrial (team board,
+ *                                       queues, GHL, admin views). The VA portal is
+ *                                       reachable there too, for staff View As.
+ *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq
  *   calls.divineacquisition.io      -> /calls
@@ -42,7 +47,10 @@ const ACCT_HOSTS = hosts(process.env.VISTRIAL_ACCT_HOSTS, 'acct.divineacquisitio
 const TEAM_HOSTS = hosts(process.env.TEAM_HOSTS, 'team.divineacquisition.io');
 const TEAM_ORIGIN =
   process.env.TEAM_BASE_URL?.trim().replace(/\/+$/, '') || `https://${TEAM_HOSTS[0]}`;
-// Former addresses of the staff app. They redirect to TEAM_ORIGIN.
+// Staff screens live on the admin portal; the team host is for VAs and SDRs.
+const ADMIN_PORTAL_ORIGIN =
+  process.env.ADMIN_BASE_URL?.trim().replace(/\/+$/, '') || `https://${(process.env.DA_WORKSPACE_HOSTS ?? 'admin.divineacquisition.io').split(',')[0].trim().toLowerCase()}`;
+// Former addresses of the staff app. They redirect to TEAM_ORIGIN or the admin portal.
 const OPS_HOSTS = hosts(
   process.env.VISTRIAL_OPS_HOSTS,
   'ops.divineacquisition.io,vistrial.divineacquisition.io',
@@ -254,20 +262,20 @@ export async function proxy(request: NextRequest) {
   const surface = surfaceForHost(host);
   const local = isLocalHost(host);
 
-  // The staff app moved to team.*: old addresses redirect with the path kept.
-  // The public agreement and onboarding pages are not part of it and stay put.
+  // team.* is the VA and SDR portal only. Staff paths there, and the former
+  // ops./vistrial. addresses, redirect with the path kept: VA paths to team.,
+  // staff paths to the admin portal's /vistrial.
   const legacyOpsHost = !local && OPS_HOSTS.includes(host);
-  const opsOnAdminHost =
-    !local &&
-    WORKSPACE_HOSTS.includes(host) &&
-    (pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`));
-  if (legacyOpsHost || opsOnAdminHost) {
-    const path = pathname.startsWith(`${OPS_PREFIX}/`)
-      ? pathname.slice(OPS_PREFIX.length)
-      : pathname === OPS_PREFIX
-        ? '/'
-        : pathname;
-    return NextResponse.redirect(`${TEAM_ORIGIN}${path}${request.nextUrl.search}`, 308);
+  const onTeamHost = !local && TEAM_HOSTS.includes(host);
+  if (legacyOpsHost || onTeamHost) {
+    const internal = pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`) ? pathname : `${OPS_PREFIX}${pathname === '/' ? '' : pathname}`;
+    if (!isVaPortalPath(internal)) {
+      return NextResponse.redirect(`${ADMIN_PORTAL_ORIGIN}${internal}${request.nextUrl.search}`, 308);
+    }
+    if (legacyOpsHost) {
+      const path = internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length);
+      return NextResponse.redirect(`${TEAM_ORIGIN}${path}${request.nextUrl.search}`, 308);
+    }
   }
 
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.

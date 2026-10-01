@@ -1,9 +1,11 @@
 /**
- * The staff app's permanent address: team.divineacquisition.io.
+ * team.divineacquisition.io is the VA and SDR portal, nothing else.
  *
  * On that host, bare paths are rewritten into /vistrial by the proxy, so
- * team.divineacquisition.io/operator serves /vistrial/operator. Old addresses
- * (ops., vistrial., and /vistrial on admin.) redirect here with the path preserved.
+ * team.divineacquisition.io/operator serves /vistrial/operator. Staff screens
+ * (team board, queues, GHL, the admin views) live on the admin portal at
+ * admin.divineacquisition.io/vistrial; a staff path asked for on the team host
+ * redirects there with the path preserved.
  */
 
 const FALLBACK_HOST = 'team.divineacquisition.io';
@@ -32,4 +34,13 @@ export function teamPath(pathname: string): string {
 /** An absolute link into the staff app, for emails and other surfaces. */
 export function teamUrl(pathname = '/', search = ''): string {
   return `${teamOrigin()}${teamPath(pathname)}${search}`;
+}
+
+/**
+ * What the team host serves: the VA portal, its sign-in and password reset.
+ * Everything else under /vistrial is a staff screen and lives on the admin portal.
+ */
+export function isVaPortalPath(internalPath: string): boolean {
+  const vaPrefixes = ['/vistrial/operator', '/vistrial/auth', '/vistrial/reset-password', '/vistrial/login'];
+  return internalPath === TEAM_PREFIX || vaPrefixes.some((p) => internalPath === p || internalPath.startsWith(`${p}/`));
 }

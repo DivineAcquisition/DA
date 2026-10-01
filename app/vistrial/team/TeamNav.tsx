@@ -9,6 +9,7 @@ const ITEMS = [
   { href: '/vistrial/team/scorecard', label: "DA's scorecard" },
   { href: '/vistrial/team/matching', label: 'Availability' },
   { href: '/vistrial/team', label: 'Operators & View As', exact: true },
+  { href: '/vistrial/team/ghl', label: 'GHL' },
   { href: '/vistrial/team/settings', label: 'Settings' },
 ];
 

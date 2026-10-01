@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { teamOrigin, teamPath, teamUrl } from './url';
+import { isVaPortalPath, teamOrigin, teamPath, teamUrl } from './url';
 
 describe('team url', () => {
   afterEach(() => {
@@ -25,4 +25,17 @@ describe('team url', () => {
     process.env.TEAM_BASE_URL = 'https://team.example.test/';
     expect(teamUrl('/vistrial')).toBe('https://team.example.test/');
   });
+
+  it('keeps only VA and SDR pages on the team host', () => {
+    expect(isVaPortalPath('/vistrial')).toBe(true);
+    expect(isVaPortalPath('/vistrial/operator/record')).toBe(true);
+    expect(isVaPortalPath('/vistrial/auth/callback')).toBe(true);
+    expect(isVaPortalPath('/vistrial/reset-password')).toBe(true);
+    expect(isVaPortalPath('/vistrial/team/board')).toBe(false);
+    expect(isVaPortalPath('/vistrial/team/ghl')).toBe(false);
+    expect(isVaPortalPath('/vistrial/admin')).toBe(false);
+    expect(isVaPortalPath('/vistrial/inbox')).toBe(false);
+    expect(isVaPortalPath('/vistrial/operators')).toBe(false);
+  });
 });
+

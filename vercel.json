@@ -19,6 +19,10 @@
     {
       "path": "/api/cron/notify-dispatch",
       "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/ghl",
+      "schedule": "* * * * *"
     }
   ]
 }
