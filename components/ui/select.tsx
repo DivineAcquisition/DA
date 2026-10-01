@@ -16,7 +16,7 @@ export function NativeSelect({
     <span className="relative block w-full" data-slot="select-control">
       <select
         className={cn(
-          'w-full cursor-pointer appearance-none rounded-xl border border-white/10 bg-ink-900 px-3.5 py-2.5 pr-9 text-sm text-white outline-none transition-colors [color-scheme:dark] focus:border-brand-500/60 focus:bg-white/[0.05] disabled:opacity-50',
+          'field-control w-full cursor-pointer appearance-none rounded-xl px-3.5 py-2.5 pr-9 text-sm text-white [color-scheme:dark] disabled:opacity-50',
           className,
         )}
         data-slot="select"

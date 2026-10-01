@@ -200,9 +200,39 @@ a {
 }
 
 *:focus-visible {
-  outline: 2px solid rgba(var(--brand-rgb), 0.7);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 2px solid rgba(var(--brand-rgb), 0.9);
+  outline-offset: 3px;
+}
+
+/* Shared field outline. Resting edge is visible; focus draws a brand ring. */
+.field-control,
+[data-slot='input-control'],
+[data-slot='textarea-control'] {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background-color: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.field-control:focus,
+.field-control:focus-visible,
+.field-control:focus-within,
+[data-slot='input-control']:has(:focus-visible),
+[data-slot='textarea-control']:has(:focus-visible) {
+  outline: none;
+  border-color: #c3b6fe;
+  background-color: rgba(154, 136, 252, 0.07);
+  box-shadow: 0 0 0 3px rgba(154, 136, 252, 0.32);
+}
+
+.field-control input:focus,
+.field-control input:focus-visible,
+.field-control textarea:focus,
+.field-control textarea:focus-visible,
+[data-slot='input-control'] input:focus,
+[data-slot='input-control'] input:focus-visible,
+[data-slot='textarea-control'] textarea:focus,
+[data-slot='textarea-control'] textarea:focus-visible {
+  outline: none;
 }
 
 ::-webkit-scrollbar {

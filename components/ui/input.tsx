@@ -38,7 +38,7 @@ export function Input({
       className={
         cn(
           !unstyled &&
-            'relative inline-flex w-full rounded-xl border border-white/10 bg-white/[0.03] text-sm transition-colors has-focus-visible:border-brand-500/60 has-focus-visible:bg-white/[0.05] has-disabled:opacity-50 has-aria-invalid:border-flag-critical/40',
+            'field-control relative inline-flex w-full rounded-xl text-sm has-disabled:opacity-50 has-aria-invalid:border-flag-critical',
           className,
         ) || undefined
       }

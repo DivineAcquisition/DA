@@ -71,7 +71,7 @@ export default function AccountsList({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Account, contact, or niche"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-brand-500/60"
+              className="field-control w-full rounded-xl px-3.5 py-2.5 text-sm text-white placeholder:text-neutral-600"
             />
           </label>
           <div className="flex flex-wrap gap-1.5">

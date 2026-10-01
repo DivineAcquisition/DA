@@ -56,7 +56,7 @@ function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: string; jobTitle: s
   const [pending, startTransition] = useTransition();
 
   const field =
-    'w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white placeholder-neutral-600 transition-colors focus:border-brand-500/60 focus:bg-white/[0.05] focus:outline-none';
+    'field-control w-full rounded-xl px-4 py-3 text-sm text-white placeholder-neutral-600';
   const label = 'mb-2 block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500';
 
   // Only shown once the application is actually on record. It used to be shown
