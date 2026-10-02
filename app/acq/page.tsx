@@ -21,6 +21,7 @@ import {
   PILL_BANNER,
   SUBHEADLINE,
 } from '@/lib/acq/copy';
+import { FounderProfile } from './components/PracticesFounder';
 import HeroVideo from './components/HeroVideo';
 import {
   BookCta,
@@ -78,6 +79,12 @@ export default async function AcqLandingPage({
 
           <div className="animate-rise delay-4 mx-auto mt-9 flex max-w-[900px] flex-col items-center">
             <BookCta href={bookHref} />
+          </div>
+        </section>
+
+        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-16 sm:px-6 sm:py-20">
+          <div className="mx-auto max-w-5xl">
+            <FounderProfile />
           </div>
         </section>
 
