@@ -135,8 +135,11 @@
 
 .hiring-hero-fade {
   position: absolute;
-  inset-x: 0;
+  /* Plain CSS: inset-x is not a property, so the fade used to collapse to zero width. */
+  left: 0;
+  right: 0;
   bottom: 0;
+  z-index: 1;
   height: 8.5rem;
   background: linear-gradient(180deg, rgba(7, 7, 11, 0) 0%, #07070b 88%);
   pointer-events: none;
