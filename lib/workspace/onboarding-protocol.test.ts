@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { onboardingProtocolForTemplate } from './onboarding-protocol';
+import { VA_SALES_OPERATOR_AGREEMENT, onboardingProtocolForTemplate } from './onboarding-protocol';
 
 describe('onboardingProtocolForTemplate', () => {
   it('selects VA sales operator protocol for operator agreements', () => {
     expect(
       onboardingProtocolForTemplate({
         recipientType: 'operator',
-        templateName: 'DA | Sales Operator (Placement Role)',
+        templateName: VA_SALES_OPERATOR_AGREEMENT.name,
       }),
     ).toBe('va_sales_operator');
   });
