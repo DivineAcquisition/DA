@@ -18,7 +18,7 @@ export default async function SettingsPage() {
     <div className="animate-rise space-y-6">
       <PageHeader
         title="Settings"
-        description="Signing credentials, lead-list destination, field mapping, and the public URL. Values are stored in the database."
+        description="Booking links, company countersign, and the public URL. The signing key is read from the database or the server environment, not from this form."
         actions={<SyncDocuSealButton variant="secondary" />}
       />
 
@@ -34,11 +34,11 @@ export default async function SettingsPage() {
             <p className="mt-1.5 text-sm text-[var(--ws-dim)]">
               {connection.state === 'connected' &&
                 `${connection.templates} template${connection.templates === 1 ? '' : 's'} visible · key from ${
-                  connection.source === 'settings' ? 'Settings' : 'the server environment'
+                  connection.source === 'database' ? 'the database' : 'the server environment'
                 }.`}
               {connection.state === 'error' && connection.error}
               {connection.state === 'missing' &&
-                'Add a signing key below, then refresh.'}
+                'No signing key in the database or the server environment.'}
             </p>
             <p className="mt-1 text-sm text-[var(--ws-dim)]">
               {lastSync
@@ -56,7 +56,7 @@ export default async function SettingsPage() {
           description="Could not load settings. Confirm the database migration has been applied."
         />
       ) : (
-        <SettingsForm settings={settings} />
+        <SettingsForm settings={{ ...settings, docuseal_api_key: '' }} />
       )}
     </div>
   );

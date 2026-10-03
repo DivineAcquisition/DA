@@ -58,4 +58,4 @@ via `/ad` after first sign-in, or through the control-plane RPCs.
 - `public_base_url` = `https://admin.divineacquisition.io`  
 - `auto_prefill` = true  
 
-Set `docuseal_api_key` in Admin → Settings (or `DOCUSEAL_API_KEY` on the deploy).
+Set `docuseal_api_key` on the `da_settings` row, or `DOCUSEAL_API_KEY` in the Vercel environment. Admin settings does not store the key.

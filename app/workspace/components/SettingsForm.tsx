@@ -24,12 +24,6 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
         });
       }}
     >
-      <Field
-        label="Signing API key"
-        hint="Used to pull templates, agreements, and submitted values, and to pre-fill forms. Falls back to the server environment when left blank."
-      >
-        <SecretInput name="docuseal_api_key" defaultValue={settings.docuseal_api_key} />
-      </Field>
       <Field label="Signing account identifier">
         <Input name="docuseal_account_id" defaultValue={settings.docuseal_account_id} />
       </Field>

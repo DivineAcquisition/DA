@@ -73,8 +73,9 @@ type Paginated<T> = { data?: T[]; pagination?: { count?: number; next?: number |
 export type DocuSealResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
 /**
- * The key may live in the database (Settings) or in the environment. The
- * database wins so an administrator can rotate it without a deploy.
+ * The key lives in Supabase (`da_settings.docuseal_api_key`) or in the Vercel
+ * environment (`DOCUSEAL_API_KEY`). It is not written from Admin settings.
+ * The database value wins when both are set.
  */
 export function docusealApiKey(settings: Pick<DaSettings, 'docuseal_api_key'> | null): string {
   return (settings?.docuseal_api_key ?? '').trim() || (process.env.DOCUSEAL_API_KEY ?? '').trim();
