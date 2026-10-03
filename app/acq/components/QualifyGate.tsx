@@ -13,7 +13,6 @@ import {
 } from 'react';
 import { CTA_LABEL, FORM_LABELS, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
-  AD_SPEND_OPTIONS,
   FOLLOW_UP_OPTIONS,
   PROGRAM_PRICE_OPTIONS,
   type QualificationInput,
@@ -127,11 +126,10 @@ function QualifyDialog({
     const input: QualificationInput = {
       fullName: String(form.get('fullName') ?? ''),
       email: String(form.get('email') ?? ''),
-      phone: String(form.get('phone') ?? ''),
-      companyName: String(form.get('companyName') ?? ''),
-      adSpend: String(form.get('adSpend') ?? ''),
-      followUp: String(form.get('followUp') ?? ''),
+      offer: String(form.get('offer') ?? ''),
       programPrice: String(form.get('programPrice') ?? ''),
+      inquiriesPerMonth: String(form.get('inquiriesPerMonth') ?? ''),
+      followUp: String(form.get('followUp') ?? ''),
       website: String(form.get('website') ?? ''),
       tracking,
     };
@@ -172,7 +170,7 @@ function QualifyDialog({
       <div className="flex items-start justify-between gap-2">
         <div>
           <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
-            Founding install
+            Free audit
           </p>
           <h2 id={titleId} className="acq-headline mt-1 text-[1.2rem] font-semibold leading-[1.15] tracking-tight text-white">
             {QUALIFY_DIALOG.title}
@@ -217,63 +215,53 @@ function QualifyDialog({
             />
           </Field>
         </div>
+        <Field label={FORM_LABELS.offer}>
+          <input
+            name="offer"
+            type="text"
+            required
+            minLength={2}
+            maxLength={200}
+            placeholder="A 12-week coaching program"
+            className="acq-field-control"
+          />
+        </Field>
         <div className="grid gap-2.5 sm:grid-cols-2">
-          <Field label={FORM_LABELS.phone}>
-            <input
-              name="phone"
-              type="tel"
-              autoComplete="tel"
-              required
-              inputMode="tel"
-              placeholder="(555) 201-8890"
-              className="acq-field-control"
-            />
+          <Field label={FORM_LABELS.programPrice}>
+            <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
+              <option value="" disabled>
+                Select one
+              </option>
+              {PROGRAM_PRICE_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <SelectChevron />
           </Field>
-          <Field label={FORM_LABELS.companyName}>
+          <Field label={FORM_LABELS.inquiries}>
             <input
-              name="companyName"
-              type="text"
-              autoComplete="organization"
+              name="inquiriesPerMonth"
+              type="number"
+              inputMode="numeric"
               required
-              placeholder="Your company"
+              min={0}
+              max={100000}
+              step={1}
+              placeholder="12"
               className="acq-field-control"
             />
           </Field>
         </div>
-        <Field label={FORM_LABELS.adSpend}>
-          <select name="adSpend" required defaultValue="" className="acq-field-control acq-field-select">
-            <option value="" disabled>
-              Select one
-            </option>
-            {AD_SPEND_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-          <SelectChevron />
-        </Field>
         <Field label={FORM_LABELS.followUp}>
           <select name="followUp" required defaultValue="" className="acq-field-control acq-field-select">
             <option value="" disabled>
               Select one
             </option>
             {FOLLOW_UP_OPTIONS.map((option) => (
-              <option key={option.value} value={option.label}>
+              <option key={option.value} value={option.value}>
                 {option.label}
-              </option>
-            ))}
-          </select>
-          <SelectChevron />
-        </Field>
-        <Field label={FORM_LABELS.programPrice}>
-          <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
-            <option value="" disabled>
-              Select one
-            </option>
-            {PROGRAM_PRICE_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option}
               </option>
             ))}
           </select>

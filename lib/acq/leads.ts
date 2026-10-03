@@ -130,6 +130,9 @@ export function leadWriteFromQualification(
     monthly_ad_spend: payload.monthlyAdSpend,
     follow_up_owner: payload.followUpOwner,
     program_price: payload.programPrice,
+    ...(payload.inquiriesPerMonth != null && !extras.existing?.notes
+      ? { notes: `Inquiries per month: ${payload.inquiriesPerMonth}` }
+      : {}),
     ghl_contact_id:
       extras.ghlContactId?.trim() || extras.existing?.ghl_contact_id?.trim() || '',
     payload: {
@@ -137,6 +140,8 @@ export function leadWriteFromQualification(
       tracking: payload.tracking,
       source: payload.source,
       tags: payload.tags,
+      offer: payload.coachingNiche,
+      inquiriesPerMonth: payload.inquiriesPerMonth,
     },
   };
 }

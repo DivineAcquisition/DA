@@ -77,6 +77,31 @@ describe('parseQualification', () => {
     expect(() => parseQualification({ ...valid, phone: '12' })).toThrow(QualificationError);
     expect(() => parseQualification({ ...valid, adSpend: 'a lot' })).toThrow(QualificationError);
   });
+
+  it('accepts the coach audit form without phone, company, or ad spend', () => {
+    const payload = parseQualification({
+      fullName: 'Jordan Blake',
+      email: 'jordan@example.com',
+      offer: 'A 12-week coaching program',
+      programPrice: '$5k+',
+      inquiriesPerMonth: '20',
+      followUp: 'Founder',
+    });
+
+    expect(payload.phone).toBe('');
+    expect(payload.companyName).toBe('A 12-week coaching program');
+    expect(payload.coachingNiche).toBe('A 12-week coaching program');
+    expect(payload.monthlyAdSpend).toBe('');
+    expect(payload.inquiriesPerMonth).toBe(20);
+    expect(payload.programPrice).toBe('$5k+');
+    expect(payload.followUpOwner).toBe('Founder');
+
+    const fields = airtableFieldsFromPayload(payload);
+    expect(fields.Phone).toBeUndefined();
+    expect(fields['Monthly Ad Spend']).toBeUndefined();
+    expect(fields['Coaching Niche']).toBe('A 12-week coaching program');
+    expect(ghlWebhookBody(payload).inquiries_per_month).toBe(20);
+  });
 });
 
 describe('ghlWebhookBody', () => {
@@ -242,17 +267,31 @@ describe('founding landing media', () => {
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
-    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
-    expect(copy.HEADLINE).toContain('To Increase Show Rate');
-    expect(copy.INCLUDED).toHaveLength(7);
-    expect(copy.INCLUDED[0].title).toBe('Lead intake and scoring');
-    expect(copy.FOUNDING_OFFER.lead).toBe('Three founding seats.');
+    expect(copy.HEADLINE_ACCENT).toBe('They have a follow-up problem.');
+    expect(copy.HEADLINE.toLowerCase()).not.toContain('med spa');
+    expect(copy.PROBLEM.body).toContain("don't have a lead problem");
+    expect(copy.PROBLEM.body.toLowerCase()).not.toContain('med spa');
+    expect(copy.QUESTIONS.items).toHaveLength(3);
+    expect(copy.BUILD.items).toHaveLength(4);
+    expect(copy.BUILD.items[0].title).toBe('Fast response');
+    expect(copy.HOW_IT_WORKS.steps).toHaveLength(3);
+    expect(copy.WHY_US.items).toHaveLength(4);
+    expect(copy.WHY_US.lead.toLowerCase()).not.toContain('testimonial wall');
+    expect(copy.FAQ.items).toHaveLength(3);
+    expect(copy.FAQ.items[1].answer).toBe('No. We fix what happens after they arrive.');
+    expect(copy.CLOSING.title).toBe('Find out where your leads are leaking.');
+    expect(copy.CLOSING.cta).toBe('Book your free audit');
+    expect(copy.AUDIENCE.notFit.toLowerCase()).toContain('get-rich-quick');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
     expect(copy.PILL_BANNER).toBe('Sales operations for coaching & consulting');
-    expect(copy.CTA_LABEL).toBe('Book a free audit');
+    expect(copy.CTA_LABEL).toBe('Book your free audit');
+    expect(copy.FORM_LABELS.offer).toBe('What you sell');
+    expect(copy.FORM_LABELS.inquiries).toBe('Inquiries per month');
+    expect(copy.FORM_LABELS.programPrice).toBe('Price of your main offer');
+    expect(copy.FORM_LABELS.followUp).toBe('Who handles follow-up');
     expect(copy.THANK_YOU.title).toBe("Thanks. You're in. Grab a time below.");
     expect(copy.THANK_YOU.title).not.toMatch(/[—–]/);
-    expect(copy.BOOK_PAGE.title).toBe('Book your free sales audit');
+    expect(copy.BOOK_PAGE.title).toBe('Book your free audit');
     expect(copy.BOOK_PAGE.title).toBe(
       `${copy.BOOK_PAGE.titleBefore}${copy.BOOK_PAGE.titleAccent}`,
     );

@@ -3,6 +3,7 @@ import { adSpendPoints, followUpPoints, programPricePoints } from '@/lib/calls/m
 import {
   MANUAL_REVIEW_MIN_SCORE,
   QUALIFIED_MIN_SCORE,
+  inquiryPoints,
   qualificationFromScore,
   readinessScoreFromInputs,
   scoreQualification,
@@ -30,6 +31,21 @@ describe('workspace readiness score', () => {
       programPrice: '$5k+',
     });
     expect(score.readinessScore).toBe(85);
+    expect(score.qualificationResult).toBe('Qualified');
+  });
+
+  it('uses inquiry volume in place of ad spend on the coach audit form', () => {
+    expect(inquiryPoints(4)).toBe(0);
+    expect(inquiryPoints(8)).toBe(10);
+    expect(inquiryPoints(20)).toBe(25);
+    expect(inquiryPoints(40)).toBe(35);
+    const score = scoreQualification({
+      monthlyAdSpend: '',
+      followUpOwner: 'Founder',
+      programPrice: '$5k+',
+      inquiriesPerMonth: 20,
+    });
+    expect(score.readinessScore).toBe(65);
     expect(score.qualificationResult).toBe('Qualified');
   });
 

@@ -1,67 +1,123 @@
-/** Landing + qualification copy for the founding-install acq surface. */
+/** Landing + qualification copy for the coach and consultant acq surface. */
 
 export const PILL_BANNER = 'Sales operations for coaching & consulting';
 
-export const HEADLINE_BEFORE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
+export const HEADLINE_BEFORE = "Most coaches and consultants don't have a lead problem. ";
 
-export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+export const HEADLINE_ACCENT = 'They have a follow-up problem.';
 
-export const HEADLINE_AFTER = ' To Increase Show Rate';
+export const HEADLINE_AFTER = '';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'Intake, scoring, follow-up, booking, and reporting, installed in the stack you already use. Three founding seats at launch pricing.';
+  "You're good at what you do. But referrals come and go, your calendar isn't predictable, and when it's empty you start doubting yourself.";
 
-export const CTA_LABEL = 'Book a free audit';
-export const SUBMIT_LABEL = 'Submit Application';
+export const CTA_LABEL = 'Book your free audit';
+export const SUBMIT_LABEL = 'Book your free audit';
 
-export const INCLUDED_HEADLINE = 'Product';
-export const INCLUDED = [
-  {
-    title: 'Lead intake and scoring',
-    body: 'Every inquiry is captured, scored, and routed so only ready leads hit the calendar.',
-  },
-  {
-    title: 'Dual follow-up sequences',
-    body: 'Nurture tracks for leads that need time. Fast-close cadence for leads that are ready now.',
-  },
-  {
-    title: 'Activity tracking',
-    body: 'Every call, text, and message is logged to the deal so nothing drops.',
-  },
-  {
-    title: 'Show-rate protection',
-    body: 'Reminders, reschedules, and no-show recovery so booked calls actually happen.',
-  },
-  {
-    title: 'Pipeline reactivation',
-    body: 'Dormant inquiries get a structured second pass instead of sitting idle.',
-  },
-  {
-    title: 'Revenue attribution',
-    body: 'See which source produced the booked call and the closed deal.',
-  },
-  {
-    title: 'Ops dashboard',
-    body: 'One view of pipeline health, plus a monthly report your team can run on.',
-  },
-] as const;
-export const INCLUDED_FOOTNOTE = 'Live in 14 days. Keep your CRM, calendar, and processor.';
+export const PROBLEM = {
+  eyebrow: 'The problem',
+  body: 'You\'re good at what you do. But referrals come and go, your calendar isn\'t predictable, and when it\'s empty you start doubting yourself. Most coaches and consultants don\'t have a lead problem. They have a follow-up problem: slow replies, no-shows, and "not yet" prospects who never hear from you again.',
+} as const;
 
-export const FOUNDING_OFFER = {
-  eyebrow: 'Launch pricing',
-  lead: 'Three founding seats.',
-  body: 'Full system live in 14 days, at founding rate. When these seats fill, pricing moves to standard.',
+export const QUESTIONS = {
+  eyebrow: "Three questions we'll answer for you",
+  items: [
+    'How fast does a new inquiry get a reply?',
+    'How many booked calls actually show up?',
+    'What happens to the people who say "I need to think about it"?',
+  ],
+} as const;
+
+export const BUILD = {
+  eyebrow: 'What we build',
+  items: [
+    {
+      title: 'Fast response',
+      body: 'Instant replies and a clear booking path.',
+    },
+    {
+      title: 'Show-up system',
+      body: 'Confirmations and reminders that protect your calendar.',
+    },
+    {
+      title: 'Follow-up for "not yet"',
+      body: "A nurture path that doesn't pressure anyone.",
+    },
+    {
+      title: 'Visibility',
+      body: 'A simple dashboard showing leads, calls, shows, and closes.',
+    },
+  ],
+} as const;
+
+export const HOW_IT_WORKS = {
+  eyebrow: 'How it works',
+  steps: [
+    {
+      label: 'Free audit (30 minutes)',
+      body: 'We review your current process and show you where leads drop.',
+    },
+    {
+      label: 'Install',
+      body: 'We set up the system and write scripts you can adapt to sound like you.',
+    },
+    {
+      label: 'Review',
+      body: 'We track the numbers with you and refine.',
+    },
+  ],
+} as const;
+
+export const WHY_US = {
+  eyebrow: "Why work with us, since we're new to this",
+  lead: "We don't have a wall of testimonials yet, so we lower your risk instead.",
+  items: [
+    'The audit is free and you keep the findings.',
+    'You own everything we build.',
+    'You see the real numbers every week, including the weak ones.',
+    'We start with a limited pilot, not a long contract.',
+  ],
+} as const;
+
+export const AUDIENCE = {
+  eyebrow: "Who it's for",
+  fit: 'Coaches and consultants who already sell a real program or retainer, get inbound inquiries, and want fewer leaks between inquiry and close.',
+  notFit:
+    'Not for get-rich-quick offers or anyone without a real offer or the willingness to close.',
+} as const;
+
+export const FAQ = {
+  eyebrow: 'FAQ',
+  items: [
+    {
+      question: 'Will this sound like a script?',
+      answer: 'No. You approve everything, and we write in your voice.',
+    },
+    {
+      question: 'Do you generate my leads?',
+      answer: 'No. We fix what happens after they arrive.',
+    },
+    {
+      question: 'What does it cost?',
+      answer: 'The audit is free. Install pricing is shared after we see your numbers.',
+    },
+  ],
+} as const;
+
+export const CLOSING = {
+  title: 'Find out where your leads are leaking.',
+  cta: CTA_LABEL,
+  note: 'The audit is free. Next, you pick a 30-minute time.',
 } as const;
 
 export const BOOK_PAGE = {
-  eyebrow: 'Free sales audit',
-  title: 'Book your free sales audit',
+  eyebrow: 'Free audit',
+  title: 'Book your free audit',
   titleBefore: 'Book your ',
-  titleAccent: 'free sales audit',
-  body: "Pick a time. We'll walk your pipeline, show you where demand is leaking, and confirm whether the 14-day founding install is a fit. The audit is free.",
+  titleAccent: 'free audit',
+  body: "Pick a time. We'll review your current process and show you where leads drop. The audit is free.",
 } as const;
 
 export const THANK_YOU = {
@@ -99,19 +155,21 @@ export const PRECALL = {
 } as const;
 
 export const QUALIFY_DIALOG = {
-  title: 'See if you qualify',
-  description: 'A few questions so we can review fit.',
+  title: 'Book your free audit',
+  description: 'A few details so the audit is about your pipeline.',
   submit: SUBMIT_LABEL,
 } as const;
 
 export const FORM_LABELS = {
-  fullName: 'Full Name',
+  fullName: 'Name',
   email: 'Email',
   phone: 'Phone',
   companyName: 'Company Name',
+  offer: 'What you sell',
   adSpend: 'Roughly how much do you spend on ads per month?',
-  followUp: "Who handles follow-up on leads that don't book right away?",
-  programPrice: "What's your program priced at?",
+  inquiries: 'Inquiries per month',
+  followUp: 'Who handles follow-up',
+  programPrice: 'Price of your main offer',
 } as const;
 
 export const FACEBOOK_DISCLAIMER =

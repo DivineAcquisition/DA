@@ -3,10 +3,16 @@
 import { Check } from 'lucide-react';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Panel } from '@/components/ui/panel';
-import { CTA_LABEL } from '@/lib/acq/copy';
+import { CTA_LABEL, FAQ } from '@/lib/acq/copy';
 import { cn } from '@/lib/utils';
 
 export function StatusPill({
@@ -93,6 +99,21 @@ export function StepCards({
         ))}
       </ol>
     </div>
+  );
+}
+
+export function FaqList() {
+  return (
+    <Accordion multiple className="mt-8 rounded-3xl border border-white/10 bg-white/[0.02] px-5 sm:px-6">
+      {FAQ.items.map((item) => (
+        <AccordionItem key={item.question} value={item.question} className="border-white/10">
+          <AccordionTrigger className="acq-headline py-5 text-base font-semibold text-white hover:no-underline">
+            {item.question}
+          </AccordionTrigger>
+          <AccordionPanel className="text-sm leading-relaxed text-neutral-400">{item.answer}</AccordionPanel>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }
 

@@ -19,19 +19,19 @@ const interDisplay = Inter({
 
 export const metadata: Metadata = {
   title: {
-    absolute: 'Founding Install | Divine Acquisition',
-    default: 'Founding Install | Divine Acquisition',
+    absolute: 'Free audit for coaches | Divine Acquisition',
+    default: 'Free audit for coaches | Divine Acquisition',
     template: '%s | Divine Acquisition',
   },
   description:
-    "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
+    "Most coaches and consultants don't have a lead problem. They have a follow-up problem. Book a free audit and see where inquiries leak.",
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
-    title: 'Divine Acquisition | Founding Install',
+    title: 'Divine Acquisition | Free audit for coaches',
     description:
-      "We'll build and run your sales operation systems to turn demand into booked calls. Completely done for you in 14 days to increase show rate.",
+      "Most coaches and consultants don't have a lead problem. They have a follow-up problem. Book a free audit and see where inquiries leak.",
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Divine Acquisition | Founding Install',
+    title: 'Divine Acquisition | Free audit for coaches',
     description:
-      "We'll build and run your sales operation systems to turn demand into booked calls. Completely done for you in 14 days to increase show rate.",
+      "Most coaches and consultants don't have a lead problem. They have a follow-up problem. Book a free audit and see where inquiries leak.",
   },
   robots: {
     index: true,

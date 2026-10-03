@@ -18,9 +18,13 @@ export type FollowUpValue = (typeof FOLLOW_UP_OPTIONS)[number]['value'];
 export type QualificationInput = {
   fullName: string;
   email: string;
-  phone: string;
-  companyName: string;
-  adSpend: string;
+  phone?: string;
+  companyName?: string;
+  /** What the coach sells. Stored as the coaching niche. */
+  offer?: string;
+  adSpend?: string;
+  /** Whole number of inbound inquiries per month. */
+  inquiriesPerMonth?: string;
   followUp: string;
   programPrice: string;
   /** Honeypot. Bots that fill it are accepted locally and dropped. */
@@ -36,7 +40,9 @@ export type QualificationPayload = {
   phone: string;
   companyName: string;
   coachingNiche: string;
-  monthlyAdSpend: AdSpend;
+  /** Blank when the audit form collected inquiries instead of ad spend. */
+  monthlyAdSpend: AdSpend | '';
+  inquiriesPerMonth: number | null;
   followUpOwner: FollowUpValue;
   followUpOwnerLabel: string;
   programPrice: ProgramPrice;
@@ -64,7 +70,9 @@ export type QualifyErrorField =
   | 'email'
   | 'phone'
   | 'companyName'
+  | 'offer'
   | 'adSpend'
+  | 'inquiriesPerMonth'
   | 'followUp'
   | 'programPrice';
 
@@ -125,20 +133,47 @@ export function parseQualification(input: QualificationInput): QualificationPayl
     throw new QualificationError('Enter a valid email.', 'email');
   }
 
-  const phone = input.phone.trim();
-  const digits = phone.match(PHONE_DIGITS_RE)?.length ?? 0;
-  if (digits < 7) {
-    throw new QualificationError('Enter a valid phone number.', 'phone');
+  const phone = (input.phone ?? '').trim();
+  if (phone) {
+    const digits = phone.match(PHONE_DIGITS_RE)?.length ?? 0;
+    if (digits < 7) {
+      throw new QualificationError('Enter a valid phone number.', 'phone');
+    }
   }
 
-  const companyName = input.companyName.trim();
-  if (companyName.length < 2) {
-    throw new QualificationError('Enter your company name.', 'companyName');
+  const offer = (input.offer ?? '').trim();
+  const companyInput = (input.companyName ?? '').trim();
+  const whatYouSell = offer || companyInput;
+  const identityField: QualifyErrorField = input.offer != null ? 'offer' : 'companyName';
+  if (whatYouSell.length < 2) {
+    throw new QualificationError(
+      input.offer != null ? 'Tell us what you sell.' : 'Enter your company name.',
+      identityField,
+    );
+  }
+  if (whatYouSell.length > 200) {
+    throw new QualificationError('Keep that under 200 characters.', identityField);
   }
 
-  const monthlyAdSpend = AD_SPEND_OPTIONS.find((option) => option === input.adSpend);
-  if (!monthlyAdSpend) {
-    throw new QualificationError('Select monthly ad spend.', 'adSpend');
+  const adSpendRaw = (input.adSpend ?? '').trim();
+  let monthlyAdSpend: AdSpend | '' = '';
+  if (adSpendRaw) {
+    const match = AD_SPEND_OPTIONS.find((option) => option === adSpendRaw);
+    if (!match) {
+      throw new QualificationError('Select monthly ad spend.', 'adSpend');
+    }
+    monthlyAdSpend = match;
+  }
+
+  const inquiriesRaw = (input.inquiriesPerMonth ?? '').trim();
+  let inquiriesPerMonth: number | null = null;
+  if (inquiriesRaw) {
+    if (!/^\d{1,6}$/.test(inquiriesRaw)) {
+      throw new QualificationError('Enter inquiries per month as a whole number.', 'inquiriesPerMonth');
+    }
+    inquiriesPerMonth = Number(inquiriesRaw);
+  } else if (!monthlyAdSpend) {
+    throw new QualificationError('Enter how many inquiries you get per month.', 'inquiriesPerMonth');
   }
 
   const followUpOwner = followUpValueFromInput(input.followUp);
@@ -152,6 +187,8 @@ export function parseQualification(input: QualificationInput): QualificationPayl
   }
 
   const { firstName, lastName } = splitName(fullName);
+  const companyName = companyInput || offer;
+  const coachingNiche = offer || companyInput;
 
   return {
     fullName,
@@ -160,8 +197,9 @@ export function parseQualification(input: QualificationInput): QualificationPayl
     email,
     phone,
     companyName,
-    coachingNiche: companyName,
+    coachingNiche,
     monthlyAdSpend,
+    inquiriesPerMonth,
     followUpOwner,
     followUpOwnerLabel: followUpLabelFromValue(followUpOwner),
     programPrice,
@@ -215,10 +253,8 @@ export function airtableFieldsFromPayload(
   const fields: Record<string, string> = {
     'Lead Name': payload.fullName,
     Email: payload.email,
-    Phone: payload.phone,
     'Company Name': payload.companyName,
     'Coaching Niche': payload.coachingNiche,
-    'Monthly Ad Spend': payload.monthlyAdSpend,
     'Follow-Up Owner': payload.followUpOwner,
     'Program Price': payload.programPrice,
     'Lead Source': payload.leadSource,
@@ -228,6 +264,8 @@ export function airtableFieldsFromPayload(
     Campaign: payload.tracking.utm_campaign || 'Landing Page',
   };
 
+  if (payload.phone) fields.Phone = payload.phone;
+  if (payload.monthlyAdSpend) fields['Monthly Ad Spend'] = payload.monthlyAdSpend;
   if (payload.tracking.utm_content) fields['Ad Set'] = payload.tracking.utm_content;
   if (extras.ghlContactId) fields['GHL Contact ID'] = extras.ghlContactId;
 
@@ -248,8 +286,11 @@ export function ghlWebhookBody(payload: QualificationPayload): Record<string, un
     companyName: payload.companyName,
     company_name: payload.companyName,
     coachingNiche: payload.coachingNiche,
+    offer: payload.coachingNiche,
     monthlyAdSpend: payload.monthlyAdSpend,
     monthly_ad_spend: payload.monthlyAdSpend,
+    inquiriesPerMonth: payload.inquiriesPerMonth,
+    inquiries_per_month: payload.inquiriesPerMonth,
     followUpOwner: payload.followUpOwner,
     follow_up_owner: payload.followUpOwner,
     followUpOwnerLabel: payload.followUpOwnerLabel,
@@ -269,9 +310,13 @@ export function ghlWebhookBody(payload: QualificationPayload): Record<string, un
 export function ghlContactNote(payload: QualificationPayload): string {
   return [
     'Founding install qualification',
+    `What they sell: ${payload.coachingNiche}`,
     `Company: ${payload.companyName}`,
-    `Monthly ad spend: ${payload.monthlyAdSpend}`,
+    payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
+    payload.inquiriesPerMonth != null ? `Inquiries per month: ${payload.inquiriesPerMonth}` : null,
     `Follow-up: ${payload.followUpOwnerLabel} (${payload.followUpOwner})`,
     `Program price: ${payload.programPrice}`,
-  ].join('\n');
+  ]
+    .filter((line): line is string => Boolean(line))
+    .join('\n');
 }

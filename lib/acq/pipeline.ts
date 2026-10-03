@@ -274,10 +274,10 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
     firstName: payload.firstName,
     lastName: payload.lastName || undefined,
     name: payload.fullName,
-    phone: payload.phone,
     companyName: payload.companyName,
     source: payload.source,
   };
+  if (payload.phone) body.phone = payload.phone;
   if (customFields.length) body.customFields = customFields;
 
   const existingId = await searchGhlContact(payload.email);

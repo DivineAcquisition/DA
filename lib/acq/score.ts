@@ -1,7 +1,9 @@
 import type { QualificationPayload, QualificationResult } from './qualify';
 
 /**
- * Readiness points. Same table as `lib/calls/map.ts` (Call Intelligence).
+ * Readiness points. Same table as `lib/calls/map.ts` (Call Intelligence) when
+ * monthly ad spend is present. Inquiry volume uses those weights only when
+ * ad spend was not collected.
  * Duplicated here so the acquisition pipeline does not import the calls mapper
  * (that module pulls Airtable URL helpers and would cycle through prospects).
  *
@@ -16,6 +18,19 @@ export function adSpendPoints(value: string): number {
   if (value === '$5k+') return 35;
   if (value === '$2-5k') return 25;
   if (value === 'Under $2k') return 10;
+  return 0;
+}
+
+/**
+ * Same 0 / 10 / 25 / 35 weights as ad spend. Used only when the audit form
+ * collected monthly inquiries and left ad spend blank, so a real inbound
+ * volume can still reach Qualified.
+ */
+export function inquiryPoints(count: number | null | undefined): number {
+  if (count == null || !Number.isFinite(count)) return 0;
+  if (count >= 40) return 35;
+  if (count >= 15) return 25;
+  if (count >= 5) return 10;
   return 0;
 }
 
@@ -37,12 +52,12 @@ export function readinessScoreFromInputs(input: {
   monthlyAdSpend: string;
   followUpOwner: string;
   programPrice: string;
+  inquiriesPerMonth?: number | null;
 }): number {
-  return (
-    adSpendPoints(input.monthlyAdSpend) +
-    followUpPoints(input.followUpOwner) +
-    programPricePoints(input.programPrice)
-  );
+  const volume = input.monthlyAdSpend
+    ? adSpendPoints(input.monthlyAdSpend)
+    : inquiryPoints(input.inquiriesPerMonth);
+  return volume + followUpPoints(input.followUpOwner) + programPricePoints(input.programPrice);
 }
 
 export function qualificationFromScore(score: number): QualificationResult {
@@ -57,12 +72,15 @@ export type WorkspaceScore = {
 };
 
 export function scoreQualification(
-  payload: Pick<QualificationPayload, 'monthlyAdSpend' | 'followUpOwner' | 'programPrice'>,
+  payload: Pick<QualificationPayload, 'monthlyAdSpend' | 'followUpOwner' | 'programPrice'> & {
+    inquiriesPerMonth?: number | null;
+  },
 ): WorkspaceScore {
   const readinessScore = readinessScoreFromInputs({
     monthlyAdSpend: payload.monthlyAdSpend,
     followUpOwner: payload.followUpOwner,
     programPrice: payload.programPrice,
+    inquiriesPerMonth: payload.inquiriesPerMonth,
   });
   return {
     readinessScore,
