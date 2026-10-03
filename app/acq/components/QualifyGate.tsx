@@ -31,7 +31,7 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="acq-headline text-[12px] font-semibold tracking-tight text-white">{label}</span>
+      <span className="acq-headline text-[13px] font-semibold tracking-tight text-white">{label}</span>
       <span className="acq-field mt-1.5 block">{children}</span>
     </label>
   );
@@ -59,15 +59,35 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
   );
 }
 
-export function QualifyButton({ className = '' }: { className?: string }) {
+export function QualifyButton({
+  className = '',
+  children,
+  variant = 'solid',
+}: {
+  className?: string;
+  children?: ReactNode;
+  variant?: 'solid' | 'nav';
+}) {
   const ctx = useContext(QualifyContext);
   if (!ctx) {
     throw new Error('QualifyButton must be used inside QualifyProvider');
   }
 
+  if (variant === 'nav') {
+    return (
+      <button
+        type="button"
+        onClick={ctx.open}
+        className={`text-sm font-semibold text-brand-200 transition hover:text-white ${className}`}
+      >
+        {children ?? CTA_LABEL}
+      </button>
+    );
+  }
+
   return (
-    <button type="button" onClick={ctx.open} className={`acq-button ${className}`}>
-      {CTA_LABEL}
+    <button type="button" onClick={ctx.open} className={`acq-button acq-button-full max-w-sm ${className}`}>
+      {children ?? CTA_LABEL}
       <ArrowIcon />
     </button>
   );
@@ -191,8 +211,8 @@ function QualifyDialog({
         </button>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-4 grid gap-2.5" noValidate>
-        <div className="grid gap-2.5 sm:grid-cols-2">
+      <form onSubmit={onSubmit} className="mt-5 grid gap-3.5" noValidate>
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <Field label={FORM_LABELS.fullName}>
             <input
               ref={firstFieldRef}
@@ -226,7 +246,7 @@ function QualifyDialog({
             className="acq-field-control"
           />
         </Field>
-        <div className="grid gap-2.5 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           <Field label={FORM_LABELS.programPrice}>
             <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
               <option value="" disabled>

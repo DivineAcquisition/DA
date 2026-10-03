@@ -2,16 +2,17 @@
 
 export const PILL_BANNER = 'Sales operations for coaching & consulting';
 
-export const HEADLINE_BEFORE = "Most coaches and consultants don't have a lead problem. ";
+export const HEADLINE_BEFORE =
+  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
 
-export const HEADLINE_ACCENT = 'They have a follow-up problem.';
+export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
 
-export const HEADLINE_AFTER = '';
+export const HEADLINE_AFTER = ' To Increase Show Rate';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  "You're good at what you do. But referrals come and go, your calendar isn't predictable, and when it's empty you start doubting yourself.";
+  'Intake, scoring, follow-up, booking, and reporting, installed in the stack you already use. Three founding seats at launch pricing.';
 
 export const CTA_LABEL = 'Book your free audit';
 export const SUBMIT_LABEL = 'Book your free audit';

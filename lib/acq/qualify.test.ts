@@ -267,7 +267,9 @@ describe('founding landing media', () => {
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
-    expect(copy.HEADLINE_ACCENT).toBe('They have a follow-up problem.');
+    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
+    expect(copy.HEADLINE).toContain('To Increase Show Rate');
+    expect(copy.SUBHEADLINE).toContain('Three founding seats at launch pricing.');
     expect(copy.HEADLINE.toLowerCase()).not.toContain('med spa');
     expect(copy.PROBLEM.body).toContain("don't have a lead problem");
     expect(copy.PROBLEM.body.toLowerCase()).not.toContain('med spa');
