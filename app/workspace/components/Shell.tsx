@@ -13,7 +13,6 @@ import {
   Menu as MenuIcon,
   PanelLeftClose,
   PanelLeftOpen,
-  Radar,
   Search,
   Settings2,
   X,
@@ -428,13 +427,9 @@ function UserMenu({
         <MenuSeparator />
         {label === 'Admin' ? (
           <>
-            <MenuLinkItem render={<Link href="/vistrial/team/ghl/activity" prefetch />}>
-              <Radar strokeWidth={1.9} aria-hidden />
-              Live activity
-            </MenuLinkItem>
             <MenuLinkItem render={<Link href="/workspace/settings" prefetch />}>
               <Settings2 strokeWidth={1.9} aria-hidden />
-              Settings
+              Workspace settings
             </MenuLinkItem>
             <MenuSeparator />
           </>
@@ -821,20 +816,6 @@ export default function Shell({
                 Jump to
                 <Kbd className="bg-white/[0.07] text-neutral-400">⌘K</Kbd>
               </button>
-              {!holdsOnly ? (
-                <Link
-                  href="/vistrial/team/ghl/activity"
-                  prefetch
-                  onClick={() => handleNavigate('/vistrial/team/ghl/activity')}
-                  className="hidden h-8 items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/[0.06] px-3 text-xs font-medium text-emerald-200 transition-colors hover:border-emerald-300/40 hover:bg-emerald-400/10 sm:flex"
-                >
-                  <span className="relative flex size-2" aria-hidden>
-                    <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
-                  </span>
-                  Live activity
-                </Link>
-              ) : null}
               <div className="lg:hidden">
                 <UserMenu email={email} label={label} variant="header" onSignOut={signOut} />
               </div>

@@ -23,9 +23,8 @@ describe('normalizePath', () => {
 });
 
 describe('findActive', () => {
-  it('picks one entry: GHL pages no longer also light up the team roster', () => {
-    expect(activeLabels('/vistrial/team/ghl/routing')).toEqual(['Team', 'GoHighLevel', 'Routing log']);
-    expect(activeLabels('/vistrial/team/ghl')).toEqual(['Team', 'GoHighLevel']);
+  it('picks one entry: team sub-pages no longer also light up the roster', () => {
+    expect(activeLabels('/vistrial/team/queues')).toEqual(['Team', 'Team board', 'Queues']);
     expect(activeLabels('/vistrial/team')).toEqual(['Team', 'Team board', 'Roster & View As']);
   });
 
@@ -39,12 +38,40 @@ describe('findActive', () => {
     expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Sales', 'Calls']);
     expect(activeLabels('/workspace/ops/payroll')).toEqual(['Operations', 'Operators', 'Payroll']);
     expect(activeLabels('/da/margin')).toEqual(['Growth', 'Growth', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['Control', 'Control plane', 'Invites']);
+    expect(activeLabels('/ad/invite')).toEqual(['Team', 'Invites']);
     expect(activeLabels('/accounts/123')).toEqual(['Sales', 'Accounts']);
   });
 
   it('returns nothing for pages outside the nav', () => {
     expect(activeLabels('/workspace/login')).toBeNull();
+  });
+
+  it('keeps configuration screens out of the nav', () => {
+    const hrefs = full.flatMap((section) =>
+      section.items.flatMap((item) => [item, ...(item.children ?? [])].flatMap((leaf) => [leaf.href, ...(leaf.aliases ?? [])])),
+    );
+    for (const hidden of [
+      '/workspace/settings',
+      '/workspace/mapping',
+      '/workspace/templates',
+      '/workspace/control',
+      '/workspace/control/credentials',
+      '/workspace/control/lockdown',
+      '/workspace/control/audit',
+      '/workspace/control/alerts',
+      '/workspace/growth/ingestion',
+      '/vistrial/admin/notifications',
+      '/vistrial/team/settings',
+      '/vistrial/team/ghl',
+      '/workspace/academy/import',
+      '/workspace/academy/practice',
+      '/workspace/academy/calibration',
+      '/ad',
+    ]) {
+      expect(hrefs).not.toContain(hidden);
+    }
+    expect(activeLabels('/vistrial/team/ghl/access')).toBeNull();
+    expect(activeLabels('/workspace/control/credentials')).toBeNull();
   });
 
   it('hides Academy entries the viewer cannot use', () => {
@@ -58,8 +85,8 @@ describe('findActive', () => {
 describe('searchNav', () => {
   it('finds sub-pages by their parent or section name', () => {
     expect(searchNav(full, 'payroll').map((hit) => hit.leaf.label)).toEqual(['Payroll']);
-    expect(searchNav(full, 'ghl').map((hit) => hit.leaf.label)).toContain('GoHighLevel');
-    expect(searchNav(full, 'gohighlevel').map((hit) => hit.leaf.label)).toContain('Routing log');
+    expect(searchNav(full, 'operations').map((hit) => hit.leaf.label)).toContain('View as');
+    expect(searchNav(full, 'credentials')).toEqual([]);
     expect(searchNav(full, '  ')).toEqual([]);
   });
 });

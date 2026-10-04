@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 import {
   BadgeDollarSign,
-  BellRing,
   BookOpenCheck,
   Building2,
   CalendarCheck2,
@@ -11,30 +10,19 @@ import {
   ClipboardList,
   Contact,
   Eye,
-  FileInput,
   FilePenLine,
   FileSignature,
   Gauge,
   GraduationCap,
   HandCoins,
   Inbox,
-  KeyRound,
-  LayoutTemplate,
-  ListChecks,
-  Lock,
   MessageSquareText,
   NotebookPen,
   Percent,
   PhoneCall,
-  Plug,
-  Radar,
   ReceiptText,
-  Route,
   ScrollText,
-  Settings2,
-  ShieldAlert,
   ShieldCheck,
-  SlidersHorizontal,
   Sparkles,
   Stethoscope,
   Swords,
@@ -45,8 +33,6 @@ import {
   UserPlus,
   UsersRound,
   Wallet,
-  Waypoints,
-  Workflow,
 } from 'lucide-react';
 
 export type NavIcon = ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>;
@@ -57,6 +43,8 @@ export type NavLeaf = {
   icon: NavIcon;
   /** Other paths that open this same screen (legacy or mirrored routes). */
   aliases?: string[];
+  /** Match the href itself only, not the pages beneath it. */
+  exact?: boolean;
 };
 
 export type NavItem = NavLeaf & { children?: NavLeaf[] };
@@ -66,6 +54,12 @@ export type NavTone = 'violet' | 'sky' | 'emerald' | 'amber' | 'rose' | 'fuchsia
 
 export type NavSection = { id: string; heading: string; tone: NavTone; items: NavItem[] };
 
+/*
+ * Integration plumbing (GoHighLevel, ingestion, notification routing),
+ * credentials, lockdown, audit, field mapping, signing templates and other
+ * configuration screens are deliberately left out. They still open by URL for
+ * the people who maintain them; Settings sits in the account menu.
+ */
 const OPERATIONS: NavSection = {
   id: 'operations',
   heading: 'Operations',
@@ -80,7 +74,6 @@ const OPERATIONS: NavSection = {
       children: [
         { href: '/vistrial/admin/escalations', label: 'Escalations', icon: TriangleAlert, aliases: ['/workspace/ops/escalations'] },
         { href: '/vistrial/admin/bookings', label: 'Client bookings', icon: CalendarCheck2, aliases: ['/workspace/ops/bookings'] },
-        { href: '/vistrial/admin/notifications', label: 'Notifications', icon: BellRing, aliases: ['/workspace/ops/notifications'] },
       ],
     },
     {
@@ -109,22 +102,10 @@ const TEAM: NavSection = {
         { href: '/vistrial/team/queues', label: 'Queues', icon: Inbox },
         { href: '/vistrial/team/scorecard', label: "DA's scorecard", icon: Trophy },
         { href: '/vistrial/team/matching', label: 'Availability', icon: CalendarRange },
-        { href: '/vistrial/team', label: 'Roster & View As', icon: Contact },
-        { href: '/vistrial/team/settings', label: 'Team settings', icon: SlidersHorizontal },
+        { href: '/vistrial/team', label: 'Roster & View As', icon: Contact, exact: true },
       ],
     },
-    {
-      href: '/vistrial/team/ghl',
-      label: 'GoHighLevel',
-      icon: Workflow,
-      children: [
-        { href: '/vistrial/team/ghl/activity', label: 'Activity health', icon: Radar },
-        { href: '/vistrial/team/ghl/routing', label: 'Routing log', icon: Route },
-        { href: '/vistrial/team/ghl/access', label: 'Access', icon: KeyRound },
-        { href: '/vistrial/team/ghl/standard', label: 'Standard', icon: ListChecks },
-        { href: '/vistrial/team/ghl/unattributed', label: 'Unattributed', icon: ShieldAlert },
-      ],
-    },
+    { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
   ],
 };
 
@@ -148,8 +129,6 @@ const AGREEMENTS: NavSection = {
   items: [
     { href: '/workspace/recipients', label: 'Recipients', icon: Contact },
     { href: '/workspace/agreements', label: 'Agreements', icon: FileSignature },
-    { href: '/workspace/templates', label: 'Templates', icon: LayoutTemplate },
-    { href: '/workspace/mapping', label: 'Field mapping', icon: Waypoints },
   ],
 };
 
@@ -169,7 +148,6 @@ const GROWTH: NavSection = {
         { href: '/workspace/growth/payouts', label: 'Payouts', icon: HandCoins, aliases: ['/da/payouts'] },
         { href: '/workspace/growth/margin', label: 'Margin', icon: Percent, aliases: ['/da/margin'] },
         { href: '/workspace/growth/messages', label: 'Messages', icon: MessageSquareText, aliases: ['/da/messages'] },
-        { href: '/workspace/growth/ingestion', label: 'Ingestion', icon: Plug, aliases: ['/da/ingestion'] },
       ],
     },
     { href: '/admin', label: 'Assessments', icon: ClipboardCheck },
@@ -188,9 +166,6 @@ const ACADEMY_ITEM: NavItem = {
     { href: '/workspace/academy/offers', label: 'Offer packs', icon: BadgeDollarSign },
     { href: '/workspace/academy/practicals', label: 'Practicals', icon: FilePenLine },
     { href: '/workspace/academy/reflections', label: 'Reflections', icon: NotebookPen },
-    { href: '/workspace/academy/calibration', label: 'Calibration', icon: Target },
-    { href: '/workspace/academy/practice', label: 'Practice settings', icon: SlidersHorizontal },
-    { href: '/workspace/academy/import', label: 'Import lessons', icon: FileInput },
   ],
 };
 
@@ -202,28 +177,6 @@ const HOLDS_ITEM: NavItem = {
     { href: '/workspace/academy/holds/grading', label: 'Grading', icon: ClipboardCheck },
     { href: '/workspace/academy/holds/practicals', label: 'Practicals', icon: FilePenLine },
     { href: '/workspace/academy/holds/summary', label: 'Summary', icon: ChartNoAxesCombined },
-  ],
-};
-
-const CONTROL: NavSection = {
-  id: 'control',
-  heading: 'Control',
-  tone: 'slate',
-  items: [
-    {
-      href: '/workspace/control',
-      label: 'Control plane',
-      icon: Lock,
-      aliases: ['/ad'],
-      children: [
-        { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
-        { href: '/workspace/control/credentials', label: 'Credentials', icon: KeyRound, aliases: ['/ad/credentials'] },
-        { href: '/workspace/control/alerts', label: 'Alerts', icon: BellRing, aliases: ['/ad/alerts'] },
-        { href: '/workspace/control/audit', label: 'Audit log', icon: ScrollText, aliases: ['/ad/audit'] },
-        { href: '/workspace/control/lockdown', label: 'Lockdown', icon: ShieldAlert, aliases: ['/ad/lockdown'] },
-      ],
-    },
-    { href: '/workspace/settings', label: 'Settings', icon: Settings2 },
   ],
 };
 
@@ -245,7 +198,6 @@ export function buildNav({
     AGREEMENTS,
     GROWTH,
     ...(academyItems.length ? [{ id: 'academy', heading: 'Academy', tone: 'rose' as const, items: academyItems }] : []),
-    CONTROL,
   ];
 }
 
@@ -262,8 +214,8 @@ export function normalizePath(pathname: string): string {
   return `/workspace${path}`;
 }
 
-function matches(pathname: string, href: string) {
-  return pathname === href || pathname.startsWith(`${href}/`);
+function matches(pathname: string, href: string, exact = false) {
+  return pathname === href || (!exact && pathname.startsWith(`${href}/`));
 }
 
 export type ActiveMatch = {
@@ -275,7 +227,7 @@ export type ActiveMatch = {
 
 /**
  * The single most specific entry for a path. Longest href wins, so
- * /vistrial/team/ghl/routing lights up "Routing log" and not "Roster" too.
+ * /vistrial/team/queues lights up "Queues" and not "Roster" too.
  */
 export function findActive(nav: NavSection[], pathname: string): ActiveMatch | null {
   const path = normalizePath(pathname);
@@ -285,7 +237,7 @@ export function findActive(nav: NavSection[], pathname: string): ActiveMatch | n
     for (const item of section.items) {
       for (const leaf of [item, ...(item.children ?? [])]) {
         for (const href of [leaf.href, ...(leaf.aliases ?? [])]) {
-          if (matches(path, href) && href.length > bestLength) {
+          if (matches(path, href, leaf.exact) && href.length > bestLength) {
             best = leaf === item ? { section, item } : { section, item, child: leaf };
             bestLength = href.length;
           }
