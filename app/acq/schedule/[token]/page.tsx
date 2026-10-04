@@ -1,5 +1,4 @@
 import Logo from '@/app/components/Logo';
-import Backdrop from '@/app/components/Backdrop';
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { loadAcqSchedule } from '@/lib/acq/schedule';
 import { AcqScheduler } from '../Scheduler';
@@ -21,8 +20,7 @@ export default async function AcqSchedulePage({
   const firstName = schedule?.fullName.trim().split(/\s+/)[0] || 'there';
 
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
+    <div className="min-h-screen bg-black text-white antialiased">
       <div className="relative z-10">
         <header className="px-5 pt-6 sm:px-6 sm:pt-8">
           <div className="mx-auto flex max-w-3xl justify-center">

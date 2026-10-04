@@ -26,7 +26,7 @@ import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
 const fieldLabel = 'mb-1.5 text-sm font-medium normal-case tracking-normal text-white';
-const fieldControl = 'min-h-12 text-base';
+const fieldControl = 'min-h-12 bg-black text-base';
 
 type QualifyContextValue = {
   open: () => void;
@@ -246,7 +246,7 @@ function QualifyDialog({
           <div className="grid gap-4 md:grid-cols-2">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
-              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
+              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 bg-black px-4 py-3 text-base">
                 <option value="" disabled>
                   Select one
                 </option>
@@ -276,7 +276,7 @@ function QualifyDialog({
           </div>
           <CossField>
             <FieldLabel className={fieldLabel}>{FORM_LABELS.followUp}</FieldLabel>
-            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
+            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 bg-black px-4 py-3 text-base">
               <option value="" disabled>
                 Select one
               </option>

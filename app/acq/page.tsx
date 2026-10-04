@@ -1,6 +1,5 @@
 import Logo from '@/app/components/Logo';
 import { BlurFade } from '@/components/ui/blur-fade';
-import { DotPattern } from '@/components/ui/dot-pattern';
 import { Panel } from '@/components/ui/panel';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
 import {
@@ -46,30 +45,14 @@ export default async function AcqLandingPage({
 
   return (
     <QualifyProvider tracking={tracking}>
-      <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <div className="min-h-screen bg-black text-white antialiased">
         <div className="relative z-10">
           <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-5 pt-6 sm:px-6 sm:pt-8">
             <Logo className="h-5 w-auto sm:h-6" title="Divine Acquisition" />
             <QualifyButton variant="nav" />
           </header>
 
-          <section className="relative overflow-hidden px-5 pb-8 pt-10 sm:px-6 sm:pt-14">
-            <DotPattern
-              width={22}
-              height={22}
-              cr={1}
-              className="text-brand-300/30 [mask-image:radial-gradient(ellipse_at_center,black_15%,transparent_72%)]"
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[760px] -translate-x-1/2"
-              style={{
-                background:
-                  'radial-gradient(ellipse at center, rgba(154,136,252,0.28) 0%, rgba(102,80,216,0.08) 42%, transparent 72%)',
-                filter: 'blur(40px)',
-              }}
-            />
-
+          <section className="relative px-5 pb-8 pt-10 sm:px-6 sm:pt-14">
             <div className="relative z-10 mx-auto max-w-[920px] text-center">
               <StatusPill>{PILL_BANNER}</StatusPill>
               <h1 className="acq-headline mt-6 text-[1.45rem] font-semibold leading-[1.16] tracking-tight text-white sm:text-[2.05rem] md:text-[2.4rem] md:leading-[1.12]">

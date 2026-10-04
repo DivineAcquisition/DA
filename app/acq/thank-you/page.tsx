@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation';
 import Logo from '@/app/components/Logo';
-import Backdrop from '@/app/components/Backdrop';
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { qualificationSchedulePath } from '@/lib/acq/config';
 import { headers } from 'next/headers';
@@ -22,8 +21,7 @@ export default async function AcqThankYouPage({
   }
 
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
+    <div className="min-h-screen bg-black text-white antialiased">
       <div className="relative z-10">
         <header className="px-5 pt-6 sm:px-6 sm:pt-8">
           <div className="mx-auto flex max-w-3xl justify-center">
