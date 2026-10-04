@@ -114,11 +114,14 @@ a.acq-button:active {
 }
 
 .acq-dialog {
-  width: min(100vw - 1.5rem, 34rem);
-  max-height: min(92dvh, 44rem);
+  box-sizing: border-box;
+  width: min(calc(100vw - 4.5rem), 20rem);
+  max-width: 20rem;
+  max-height: min(92dvh, 46rem);
+  height: fit-content;
   margin: auto;
-  padding: 1.05rem 1.1rem 1.15rem;
-  overflow: hidden;
+  padding: 0.95rem 0.9rem 1rem;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   color: #fff;
@@ -218,17 +221,13 @@ a.acq-button:active {
 
 @media (max-width: 767px) {
   .acq-dialog {
-    width: 100%;
-    max-width: 100%;
-    max-height: calc(100dvh - env(safe-area-inset-top));
-    height: auto;
-    margin-top: auto;
-    margin-bottom: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-left-radius: 1.25rem;
-    border-top-right-radius: 1.25rem;
-    padding: 1rem 1rem calc(0.85rem + env(safe-area-inset-bottom));
+    width: min(calc(100vw - 4.5rem), 18.5rem);
+    max-width: min(calc(100vw - 4.5rem), 18.5rem);
+    max-height: calc(100dvh - 2.5rem - env(safe-area-inset-top));
+    height: fit-content;
+    margin: auto;
+    border-radius: 1.1rem;
+    padding: 0.8rem 0.75rem calc(0.7rem + env(safe-area-inset-bottom));
   }
 
   .acq-dialog input,

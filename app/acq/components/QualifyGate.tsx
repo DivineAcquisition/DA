@@ -198,7 +198,7 @@ function QualifyDialog({
         </div>
 
         <form onSubmit={onSubmit} className="acq-dialog-body mt-4 grid gap-3.5" noValidate>
-          <div className="grid gap-3.5 md:grid-cols-2">
+          <div className="grid gap-3">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.fullName}</FieldLabel>
               <Input
@@ -209,7 +209,7 @@ function QualifyDialog({
                 autoComplete="name"
                 required
                 placeholder="Jordan Blake"
-                size="lg"
+                size="default"
                 className={fieldControl}
               />
             </CossField>
@@ -222,7 +222,7 @@ function QualifyDialog({
                 autoComplete="email"
                 required
                 placeholder="you@company.com"
-                size="lg"
+                size="default"
                 inputMode="email"
                 className={fieldControl}
               />
@@ -238,14 +238,14 @@ function QualifyDialog({
               minLength={2}
               maxLength={200}
               placeholder="A 12-week coaching program"
-              size="lg"
+              size="default"
               className={fieldControl}
             />
           </CossField>
-          <div className="grid gap-3.5 md:grid-cols-2">
+          <div className="grid gap-3">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
-              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 text-base">
+              <NativeSelect name="programPrice" required defaultValue="" className="min-h-11 py-2 text-base">
                 <option value="" disabled>
                   Select one
                 </option>
@@ -268,14 +268,14 @@ function QualifyDialog({
                 max={100000}
                 step={1}
                 placeholder="12"
-                size="lg"
+                size="default"
                 className={fieldControl}
               />
             </CossField>
           </div>
           <CossField>
             <FieldLabel className={fieldLabel}>{FORM_LABELS.followUp}</FieldLabel>
-            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 text-base">
+            <NativeSelect name="followUp" required defaultValue="" className="min-h-11 py-2 text-base">
               <option value="" disabled>
                 Select one
               </option>
@@ -300,7 +300,7 @@ function QualifyDialog({
             </p>
           ) : null}
 
-          <button type="submit" disabled={pending} className="acq-button acq-button-full sticky bottom-0 mt-1">
+          <button type="submit" disabled={pending} className="acq-button acq-button-full mt-1 shrink-0">
             {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
           </button>
         </form>

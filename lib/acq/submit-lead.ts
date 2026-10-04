@@ -73,9 +73,11 @@ async function postForm(payload: QualificationPayload): Promise<void> {
 }
 
 /**
- * Qualification pipeline. Step 1 (GHL contact) is required. The workspace
- * stores the lead next. Airtable is a send destination — missing PAT does
- * not block thank-you. Score is computed in-app, not read from Airtable.
+ * Qualification pipeline. A GoHighLevel contact is created when the location
+ * and PIT token are available. A missing contact does not pause the
+ * application. The workspace stores the lead next. Airtable is a send
+ * destination — missing PAT does not block scheduling. Score is computed
+ * in-app, not read from Airtable.
  */
 export async function submitLead(input: QualificationInput, host?: string): Promise<QualifyResult> {
   if (isHoneypot(input)) {
@@ -92,24 +94,16 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     return { ok: false, error: 'Check the form and try again.' };
   }
 
-  if (!ghlConfigured()) {
-    console.error('ACQ qualification pipeline is not configured');
-    return {
-      ok: false,
-      error: 'Applications are paused for a moment. Try again shortly.',
-    };
-  }
-
-  let contactId: string;
-  try {
-    const contact = await upsertGhlContact(payload);
-    contactId = contact.contactId;
-  } catch (error) {
-    await logPipelineFailure('ghl-contact', payload.email, error);
-    return {
-      ok: false,
-      error: 'We could not submit that just now. Try again in a moment.',
-    };
+  let contactId = '';
+  if (ghlConfigured()) {
+    try {
+      const contact = await upsertGhlContact(payload);
+      contactId = contact.contactId;
+    } catch (error) {
+      await logPipelineFailure('ghl-contact', payload.email, error);
+    }
+  } else {
+    console.error('ACQ GHL contact step skipped: location or PIT token is not configured');
   }
 
   void postWebhook(payload).catch((error) => {
@@ -133,14 +127,16 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     await logPipelineFailure('workspace-lead', payload.email, error);
   }
 
-  try {
-    await writeScoreToGhl(contactId, {
-      recordId: leadId || contactId,
-      readinessScore: score.readinessScore,
-      qualificationResult: score.qualificationResult,
-    });
-  } catch (error) {
-    await logPipelineFailure('ghl-score', payload.email, error);
+  if (contactId) {
+    try {
+      await writeScoreToGhl(contactId, {
+        recordId: leadId || contactId,
+        readinessScore: score.readinessScore,
+        qualificationResult: score.qualificationResult,
+      });
+    } catch (error) {
+      await logPipelineFailure('ghl-score', payload.email, error);
+    }
   }
 
   try {

@@ -36,11 +36,14 @@ export const ACQ_GHL_WEBHOOK_URL = process.env.ACQ_GHL_WEBHOOK_URL?.trim() || ''
 export const ACQ_GHL_FORM_ID = process.env.ACQ_GHL_FORM_ID?.trim() || '';
 
 /**
- * Client-acquisition GHL location only. Never fall back to GHL_LOCATION_ID —
- * that env is the talent Assessment Interview subaccount.
+ * Location for the Free Sales Ops Audit calendar (widget v0e24e3kxYEGCTUkSP4A).
+ * That calendar is on the same subaccount as the talent booking widget.
  */
 export const ACQ_GHL_LOCATION_ID =
-  process.env.ACQ_GHL_LOCATION_ID?.trim() || process.env.GHL_ACQ_LOCATION_ID?.trim() || '';
+  process.env.ACQ_GHL_LOCATION_ID?.trim() ||
+  process.env.GHL_ACQ_LOCATION_ID?.trim() ||
+  process.env.GHL_LOCATION_ID?.trim() ||
+  'pNbNaLXpftikGN2jOFKG';
 
 /** Private Integration Token. GHL_PIT_KEY is accepted as an alias. */
 export const GHL_PIT_TOKEN =
