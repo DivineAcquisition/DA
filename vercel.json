@@ -9,6 +9,10 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/acq-reminders",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/docuseal-sync",
       "schedule": "0 * * * *"
     },

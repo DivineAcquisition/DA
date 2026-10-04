@@ -73,6 +73,15 @@ export const AIRTABLE_ENTRY_POINT = process.env.AIRTABLE_ENTRY_POINT?.trim() || 
 export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 
 export const ACQ_THANK_YOU_PATH = '/thank-you';
+export const ACQ_SCHEDULE_PATH = '/schedule';
+
+/** GoHighLevel calendar for audit appointments. Defaults to the issued booking widget. */
+export const ACQ_GHL_CALENDAR_ID =
+  process.env.ACQ_GHL_CALENDAR_ID?.trim() ||
+  process.env.GHL_ACQ_CALENDAR_ID?.trim() ||
+  'v0e24e3kxYEGCTUkSP4A';
+
+export const ACQ_AUDIT_CC = 'malik@divineacquisition.io';
 export const ACQ_BOOK_PATH = '/book';
 export const ACQ_PRECALL_PATH = '/precall';
 export const ACQ_PRACTICES_PATH = '/practices';
@@ -191,6 +200,10 @@ export function acqPublicPath(pathname: string, host?: string | null): string {
 
 export function qualificationThankYouPath(host?: string): string {
   return acqPublicPath(ACQ_THANK_YOU_PATH, host);
+}
+
+export function qualificationSchedulePath(host: string | undefined, token: string): string {
+  return acqPublicPath(`${ACQ_SCHEDULE_PATH}/${token}`, host);
 }
 
 export function withTrackingQuery(

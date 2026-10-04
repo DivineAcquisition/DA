@@ -191,6 +191,8 @@ const SURFACES: Surface[] = [
       pathname === '/privacy' ||
       pathname === '/thank-you' ||
       pathname.startsWith('/thank-you') ||
+      pathname === '/schedule' ||
+      pathname.startsWith('/schedule/') ||
       pathname === '/book' ||
       pathname.startsWith('/book') ||
       pathname === '/precall' ||

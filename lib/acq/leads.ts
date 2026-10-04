@@ -1,3 +1,4 @@
+import { createToken } from '@/lib/workspace/tokens';
 import { serviceClient, workspaceClient } from '@/lib/workspace/db';
 import { supabaseConfigured } from '@/lib/supabase/server';
 import { closedStagesPostgrestIn, isClosedStage } from './stages';
@@ -28,6 +29,7 @@ export type LeadRow = {
   notes: string;
   meet_url: string;
   calendar_event_id: string;
+  schedule_token: string;
   payload: Record<string, unknown>;
   airtable_record_id: string | null;
   airtable_synced_at: string | null;
@@ -74,6 +76,7 @@ export function mapStoredLead(raw: unknown): LeadRow {
     notes: text(row, 'notes'),
     meet_url: text(row, 'meet_url'),
     calendar_event_id: text(row, 'calendar_event_id'),
+    schedule_token: text(row, 'schedule_token'),
     payload: asRecord(row.payload),
     airtable_record_id: text(row, 'airtable_record_id') || null,
     airtable_synced_at: text(row, 'airtable_synced_at') || null,
@@ -231,6 +234,9 @@ export async function upsertLeadFromQualification(
     .maybeSingle();
   const existing = existingRaw ? mapStoredLead(existingRaw) : null;
   const write = leadWriteFromQualification(payload, { ghlContactId, score, existing });
+  if (!existing?.schedule_token) {
+    write.schedule_token = createToken();
+  }
 
   const { data, error } = existing
     ? await supabase.from('da_leads').update(write).eq('id', existing.id).select('*').single()

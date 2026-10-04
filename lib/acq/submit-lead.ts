@@ -3,6 +3,7 @@ import {
   ACQ_GHL_LOCATION_ID,
   ACQ_GHL_WEBHOOK_URL,
   GHL_PIT_TOKEN,
+  qualificationSchedulePath,
   qualificationThankYouPath,
 } from './config';
 import { markLeadAirtable, upsertLeadFromQualification } from './leads';
@@ -121,10 +122,12 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
   const score = scoreQualification(payload);
 
   let leadId = '';
+  let scheduleToken = '';
   let airtableRecordId: string | null = null;
   try {
     const lead = await upsertLeadFromQualification(payload, contactId);
     leadId = lead.id;
+    scheduleToken = lead.schedule_token;
     airtableRecordId = lead.airtable_record_id;
   } catch (error) {
     await logPipelineFailure('workspace-lead', payload.email, error);
@@ -156,5 +159,8 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     }
   }
 
-  return { ok: true, redirectTo: redirectTo(host) };
+  return {
+    ok: true,
+    redirectTo: scheduleToken ? qualificationSchedulePath(host, scheduleToken) : redirectTo(host),
+  };
 }

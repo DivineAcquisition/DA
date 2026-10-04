@@ -17,6 +17,7 @@ import {
   acqCalendarEmbedSrc,
   acqPracticesUrl,
   acqPublicPath,
+  qualificationSchedulePath,
   qualificationThankYouPath,
   trackingFromSearchParams,
   withTrackingParams,
@@ -121,6 +122,13 @@ describe('isHoneypot', () => {
     expect(isHoneypot({ website: 'https://spam.test' })).toBe(true);
     expect(isHoneypot({ website: '   ' })).toBe(false);
     expect(isHoneypot({})).toBe(false);
+  });
+});
+
+describe('qualificationSchedulePath', () => {
+  it('uses a bare schedule path on the acq host and a prefixed path elsewhere', () => {
+    expect(qualificationSchedulePath('acq.divineacquisition.io', 'tok_123')).toBe('/schedule/tok_123');
+    expect(qualificationSchedulePath('localhost', 'tok_123')).toBe('/acq/schedule/tok_123');
   });
 });
 
