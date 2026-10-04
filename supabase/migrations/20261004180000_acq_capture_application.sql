@@ -11,7 +11,7 @@ set search_path = ''
 as $$
 declare
   v_email text := lower(btrim(coalesce(p_lead->>'email', '')));
-  v_name text := btrim(coalesce(p_lead->>'fullName', '')));
+  v_name text := btrim(coalesce(p_lead->>'fullName', ''));
   v_phone text := btrim(coalesce(p_lead->>'phone', ''));
   v_company text := btrim(coalesce(p_lead->>'companyName', ''));
   v_niche text := btrim(coalesce(p_lead->>'coachingNiche', ''));
