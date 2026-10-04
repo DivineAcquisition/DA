@@ -66,7 +66,7 @@ export default async function SimulationPage({
         {data.time_limit_seconds ? ` Time limit ${Math.round(data.time_limit_seconds / 60)} minutes.` : ''} Pass score {data.pass_score}.
         Attempts used {data.attempts_used} of {data.attempts_allowed}. Sessions today {data.sessions_today ?? 0} of {data.daily_limit}.
       </p>
-      {data.locked ? (
+      {data.locked && data.lockout_until ? (
         <p className="text-sm text-neutral-300">Next attempt opens {new Date(data.lockout_until).toLocaleString()}.</p>
       ) : null}
       {(data.reopen_lessons ?? []).length > 0 && session?.passed !== true ? (

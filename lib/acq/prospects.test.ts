@@ -125,6 +125,7 @@ describe('mapProspectToCallSetup', () => {
         airtable_record_id: null,
         airtable_synced_at: null,
         airtable_sync_error: null,
+        schedule_token: '',
       }),
     );
     expect(setup.description).toContain('pat@example.com');
