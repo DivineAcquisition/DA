@@ -32,7 +32,7 @@ export function AcqScheduler({
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black p-4 sm:p-5">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
         <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
         <CossField className="relative z-[1]">
           <FieldLabel className="mb-1.5 text-[13px] font-semibold normal-case tracking-tight text-white">
@@ -49,7 +49,7 @@ export function AcqScheduler({
             required
             placeholder="(555) 201-8890"
             size="lg"
-            className="bg-black text-base"
+            className="text-base"
           />
         </CossField>
       </div>

@@ -1,4 +1,6 @@
 import Logo from '@/app/components/Logo';
+import Backdrop from '@/app/components/Backdrop';
+import { Particles } from '@/components/ui/particles';
 import { ACQ_PRECALL_WISTIA_MEDIA_ID } from '@/lib/acq/config';
 import { FACEBOOK_DISCLAIMER, PRECALL } from '@/lib/acq/copy';
 import HeroVideo from '../components/HeroVideo';
@@ -15,9 +17,18 @@ export const metadata = {
 
 export default function AcqPrecallPage() {
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+
       <div className="relative z-10">
         <div className="relative overflow-hidden">
+          <Particles
+            className="absolute inset-0 z-0"
+            quantity={48}
+            color="#9A88FC"
+            ease={80}
+            size={0.5}
+          />
           <header className="relative z-10 px-5 pt-6 sm:px-6 sm:pt-8">
             <div className="mx-auto flex max-w-5xl flex-col items-center">
               <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />

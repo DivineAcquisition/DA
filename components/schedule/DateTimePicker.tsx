@@ -56,7 +56,7 @@ export function DateTimePicker({
 
   if (booking) {
     return (
-      <div className="rounded-3xl border border-white/10 bg-black p-6 sm:p-8">
+      <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">Confirmed</p>
         <h2 className="mt-3 text-2xl font-semibold text-white">Your call is on the calendar.</h2>
         <p className="mt-3 text-base text-neutral-300">{formatSlotWhen(booking.startsAt, booking.timeZone)}</p>
@@ -76,7 +76,7 @@ export function DateTimePicker({
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-black p-4 sm:p-6">
+    <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-6">
       <label className="block text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
         Time zone
         <select
@@ -86,7 +86,7 @@ export function DateTimePicker({
             setSelectedDate(null);
             setSelectedSlot(null);
           }}
-          className="mt-2 w-full rounded-xl border border-white/10 bg-black px-3 py-2.5 text-sm text-white"
+          className="mt-2 w-full rounded-xl border border-white/10 bg-ink-950 px-3 py-2.5 text-sm text-white"
         >
           {SCHEDULE_TIME_ZONES.map((zone) => (
             <option key={zone} value={zone}>

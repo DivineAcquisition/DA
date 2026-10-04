@@ -1,4 +1,5 @@
 import Logo from '@/app/components/Logo';
+import Backdrop from '@/app/components/Backdrop';
 import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import IclosedEmbed from '../components/IclosedEmbed';
 
@@ -13,7 +14,9 @@ export const metadata = {
 /** iClosed booking calendar for the landing CTA. */
 export default function AcqBookPage() {
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
+
       <div className="relative z-10">
         <header className="px-5 pt-6 sm:px-6 sm:pt-8">
           <div className="mx-auto flex max-w-5xl justify-center">

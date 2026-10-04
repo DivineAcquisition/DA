@@ -1,4 +1,5 @@
 import Logo from '@/app/components/Logo';
+import Backdrop from '@/app/components/Backdrop';
 
 export default function LegalShell({
   title,
@@ -8,7 +9,8 @@ export default function LegalShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-black text-white antialiased">
+    <div className="min-h-screen bg-ink-950 text-white antialiased">
+      <Backdrop />
       <div className="relative z-10">
         <header className="border-b border-white/[0.06]">
           <div className="mx-auto flex h-16 max-w-3xl items-center px-5 sm:h-[72px] sm:px-6">

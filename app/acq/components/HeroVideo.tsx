@@ -84,7 +84,15 @@ export default function HeroVideo({
         </>
       ) : null}
 
-      <div className="panel relative overflow-hidden rounded-3xl bg-black p-1.5 sm:p-2">
+      <div
+        aria-hidden
+        className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
+        style={{
+          background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)',
+        }}
+      />
+
+      <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
         <BorderBeam size={80} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
         <div className="w-full overflow-hidden rounded-[1.25rem] bg-black">
           {mediaId ? (
