@@ -17,7 +17,7 @@ export default function LoginForm() {
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo className="h-8 w-auto" />
           <h1 className={`${ws.heading} mt-6 text-2xl font-semibold`}>Administrator sign in</h1>
-          <p className="mt-2 text-sm text-neutral-400">Divine Acquisition admin workspace</p>
+          <p className="mt-2 text-sm text-neutral-400">Divine Acquisition admin workspace. Academy reviewers open the hold queue from here.</p>
         </div>
 
         <form

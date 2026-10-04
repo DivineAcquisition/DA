@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { controlRpc } from '@/lib/ad/rpc';
+import { createClient, getSessionContext } from '@/lib/supabase/server';
 import {
   cancelDocuSealSubmission,
   createDocuSealSubmission,
@@ -109,13 +111,18 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { ok: false, error: 'Invalid email or password' };
 
-  const session = await requireAdmin();
-  if (!session) {
-    await supabase.auth.signOut();
-    return { ok: false, error: 'Invalid email or password' };
+  const session = await getSessionContext();
+  if (session?.isAdmin) redirect('/workspace/overview');
+  if (session) {
+    const gate = await createClient();
+    const [review, manage] = await Promise.all([
+      controlRpc<boolean>(gate, 'academy_can_review'),
+      controlRpc<boolean>(gate, 'academy_can_manage'),
+    ]);
+    if (review.data === true || manage.data === true) redirect('/workspace/academy/holds');
   }
-
-  redirect('/workspace/overview');
+  await supabase.auth.signOut();
+  return { ok: false, error: 'Invalid email or password' };
 }
 
 export async function signOutAction() {
