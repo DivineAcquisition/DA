@@ -198,7 +198,7 @@ function QualifyDialog({
         </div>
 
         <form onSubmit={onSubmit} className="acq-dialog-body mt-4 grid gap-3.5" noValidate>
-          <div className="grid gap-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.fullName}</FieldLabel>
               <Input
@@ -242,7 +242,7 @@ function QualifyDialog({
               className={fieldControl}
             />
           </CossField>
-          <div className="grid gap-3">
+          <div className="grid gap-3 md:grid-cols-2">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
               <NativeSelect name="programPrice" required defaultValue="" className="min-h-11 py-2 text-base">

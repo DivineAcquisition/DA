@@ -115,12 +115,14 @@ a.acq-button:active {
 
 .acq-dialog {
   box-sizing: border-box;
-  width: min(calc(100vw - 4.5rem), 20rem);
-  max-width: 20rem;
+  /* Track the viewport: about a third of the screen, with a floor and a ceiling. */
+  width: min(36vw, 42rem);
+  min-width: min(28rem, calc(100vw - 3.5rem));
+  max-width: calc(100vw - 3.5rem);
   max-height: min(92dvh, 46rem);
   height: fit-content;
   margin: auto;
-  padding: 0.95rem 0.9rem 1rem;
+  padding: 1.15rem 1.25rem 1.2rem;
   overflow: auto;
   display: flex;
   flex-direction: column;
@@ -222,6 +224,7 @@ a.acq-button:active {
 @media (max-width: 767px) {
   .acq-dialog {
     width: min(calc(100vw - 4.5rem), 18.5rem);
+    min-width: 0;
     max-width: min(calc(100vw - 4.5rem), 18.5rem);
     max-height: calc(100dvh - 2.5rem - env(safe-area-inset-top));
     height: fit-content;
