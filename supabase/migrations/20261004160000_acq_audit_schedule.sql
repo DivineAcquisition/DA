@@ -44,7 +44,10 @@ begin
     return null;
   end if;
 
-  select * into v from public.da_leads where schedule_token = v_token;
+  select * into v
+  from public.da_leads
+  where schedule_token = v_token
+     or payload->>'scheduleToken' = v_token;
   if not found then
     return null;
   end if;
@@ -122,7 +125,11 @@ begin
     raise exception 'slot: pick one of the listed times' using errcode = '22023';
   end if;
 
-  select * into v from public.da_leads where schedule_token = v_token for update;
+  select * into v
+  from public.da_leads
+  where schedule_token = v_token
+     or payload->>'scheduleToken' = v_token
+  for update;
   if not found then
     raise exception 'invalid_link: this booking link is not valid' using errcode = '22023';
   end if;
@@ -211,7 +218,8 @@ begin
          calendar_event_id = coalesce(nullif(btrim(coalesce(p_calendar_event_id, '')), ''), calendar_event_id),
          ghl_appointment_id = coalesce(nullif(btrim(coalesce(p_ghl_appointment_id, '')), ''), ghl_appointment_id),
          confirmation_email_id = coalesce(nullif(btrim(coalesce(p_confirmation_email_id, '')), ''), confirmation_email_id)
-   where schedule_token = v_token;
+   where schedule_token = v_token
+      or payload->>'scheduleToken' = v_token;
 
   if not found then
     raise exception 'invalid_link: this booking link is not valid' using errcode = '22023';
@@ -245,7 +253,7 @@ begin
          meet_url = '',
          calendar_event_id = '',
          ghl_appointment_id = ''
-   where schedule_token = v_token
+   where (schedule_token = v_token or payload->>'scheduleToken' = v_token)
      and scheduled_for = p_starts_at;
 end;
 $$;

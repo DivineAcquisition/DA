@@ -76,7 +76,7 @@ export function mapStoredLead(raw: unknown): LeadRow {
     notes: text(row, 'notes'),
     meet_url: text(row, 'meet_url'),
     calendar_event_id: text(row, 'calendar_event_id'),
-    schedule_token: text(row, 'schedule_token'),
+    schedule_token: text(row, 'schedule_token') || text(asRecord(row.payload), 'scheduleToken'),
     payload: asRecord(row.payload),
     airtable_record_id: text(row, 'airtable_record_id') || null,
     airtable_synced_at: text(row, 'airtable_synced_at') || null,
@@ -234,18 +234,41 @@ export async function upsertLeadFromQualification(
     .maybeSingle();
   const existing = existingRaw ? mapStoredLead(existingRaw) : null;
   const write = leadWriteFromQualification(payload, { ghlContactId, score, existing });
+  const scheduleToken = existing?.schedule_token || createToken();
   if (!existing?.schedule_token) {
-    write.schedule_token = createToken();
+    write.schedule_token = scheduleToken;
+  }
+  write.payload = {
+    ...(write.payload as Record<string, unknown>),
+    scheduleToken,
+  };
+
+  const saved = await saveLeadRow(supabase, existing?.id, write);
+  return mapStoredLead(saved);
+}
+
+async function saveLeadRow(
+  supabase: NonNullable<Awaited<ReturnType<typeof writeClient>>>,
+  existingId: string | undefined,
+  write: Record<string, unknown>,
+) {
+  const run = (row: Record<string, unknown>) =>
+    existingId
+      ? supabase.from('da_leads').update(row).eq('id', existingId).select('*').single()
+      : supabase.from('da_leads').insert(row).select('*').single();
+
+  const first = await run(write);
+  if (!first.error && first.data) return first.data;
+
+  const message = first.error?.message || '';
+  if (write.schedule_token && /schedule_token/i.test(message)) {
+    const { schedule_token: _ignored, ...withoutColumn } = write;
+    const second = await run(withoutColumn);
+    if (!second.error && second.data) return second.data;
+    throw new Error(second.error?.message || 'Could not save the lead in the workspace.');
   }
 
-  const { data, error } = existing
-    ? await supabase.from('da_leads').update(write).eq('id', existing.id).select('*').single()
-    : await supabase.from('da_leads').insert(write).select('*').single();
-
-  if (error || !data) {
-    throw new Error(error?.message || 'Could not save the lead in the workspace.');
-  }
-  return mapStoredLead(data);
+  throw new Error(message || 'Could not save the lead in the workspace.');
 }
 
 export async function applyBookingToLead(input: {
