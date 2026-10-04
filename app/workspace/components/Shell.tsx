@@ -114,11 +114,13 @@ function SidebarContent({
   email,
   pendingHref,
   onNavigate,
+  showAcademy = false,
 }: {
   pathname: string;
   email: string;
   pendingHref?: string | null;
   onNavigate?: (href: string) => void;
+  showAcademy?: boolean;
 }) {
   return (
     <div className="flex h-full flex-col">
@@ -139,7 +141,7 @@ function SidebarContent({
               {group.heading}
             </p>
             <ul className="space-y-1">
-              {group.items.map((item) => {
+              {[...group.items, ...(showAcademy && group.heading === 'Workspace' ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : [])].map((item) => {
                 const active = pendingHref
                   ? pathMatches(pendingHref, item.href) || (item.aliases ?? []).some((href) => pathMatches(pendingHref, href))
                   : isActive(pathname, item);
@@ -184,18 +186,24 @@ function SidebarContent({
 export default function Shell({
   email,
   children,
+  showAcademy = false,
 }: {
   email: string;
   children: React.ReactNode;
+  showAcademy?: boolean;
 }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const pendingItem = NAV.flatMap((group) => group.items).find((item) => item.href === pendingHref);
+  const navItems = [
+    ...NAV.flatMap((group) => group.items),
+    ...(showAcademy ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : []),
+  ];
+  const pendingItem = navItems.find((item) => item.href === pendingHref);
   const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
 
   const currentLabel =
-    NAV.flatMap((group) => group.items).find((item) =>
+    navItems.find((item) =>
       navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item),
     )?.label ?? 'Admin';
 
@@ -209,6 +217,7 @@ export default function Shell({
           email={email}
           pendingHref={navigating ? pendingHref : null}
           onNavigate={setPendingHref}
+          showAcademy={showAcademy}
         />
       </aside>
 
@@ -229,6 +238,7 @@ export default function Shell({
                 setPendingHref(href);
                 setDrawerOpen(false);
               }}
+              showAcademy={showAcademy}
             />
           </div>
         </div>

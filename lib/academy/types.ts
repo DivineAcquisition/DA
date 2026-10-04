@@ -12,7 +12,13 @@ export const ACADEMY_STATES = [
 
 export type AcademyState = (typeof ACADEMY_STATES)[number];
 
-export type AcademyModuleDisplay = 'locked' | 'available' | 'in_progress' | 'complete' | 'unpublished';
+export type AcademyModuleDisplay =
+  | 'locked'
+  | 'available'
+  | 'in_progress'
+  | 'complete'
+  | 'unpublished'
+  | 'lessons_complete';
 
 export type AcademyModule = {
   id: string;
@@ -43,7 +49,7 @@ export type AcademyShell = {
     grantedAt: string | null;
     recertifyOn: string | null;
   } | null;
-  progress: { completed: number; total: number; percent: number };
+  progress: { completed: number; total: number; percent: number; unit: 'lessons' | 'modules' };
   currentModule: { id: string; order: number; title: string } | null;
   nextAction: { title: string; detail: string; href: string | null } | null;
   banner: string | null;

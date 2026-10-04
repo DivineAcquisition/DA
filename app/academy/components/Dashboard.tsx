@@ -25,7 +25,8 @@ export default function Dashboard({ shell }: { shell: AcademyShell }) {
       <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Progress</h2>
         <p className="mt-2 text-lg font-semibold">
-          {shell.progress.completed} of {shell.progress.total} modules complete
+          {shell.progress.completed} of {shell.progress.total}{' '}
+          {shell.progress.unit === 'lessons' ? 'lessons' : 'modules'} complete
         </p>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10" role="presentation">
           <div className="h-full rounded-full bg-[#6A00FF]" style={{ width: `${Math.min(100, Math.max(0, shell.progress.percent))}%` }} />
