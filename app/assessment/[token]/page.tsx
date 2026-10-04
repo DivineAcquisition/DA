@@ -2,9 +2,7 @@ import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { eyebrow, sectionLabel } from '@/app/components/ui';
 import { validateAssessmentToken } from '@/lib/assessment/actions';
-import BookingCalendar from '../components/BookingCalendar';
-import { PersistAssessmentToken } from '../components/TokenBridge';
-import { thankYouUrl } from '@/lib/assessment/config';
+import { AssessmentScheduler } from '@/components/schedule/Schedulers';
 
 export const dynamic = 'force-dynamic';
 
@@ -76,11 +74,28 @@ export default async function AssessmentBookingPage({
         <div className="mx-auto max-w-4xl">
           <div className="mb-6">
             <p className={sectionLabel}>Choose a time</p>
-            <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick a slot that works</h2>
+            <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">Pick a date and time</h2>
+            <p className="mt-2 text-sm text-neutral-400">Weekdays, 9:00 to 4:30. Each call is 30 minutes.</p>
           </div>
-          <PersistAssessmentToken token={token} />
           <div className="animate-rise delay-3">
-            <BookingCalendar thankYouHref={thankYouUrl(token)} />
+            {invite.used_at && !invite.scheduled_for ? (
+              <p className="rounded-3xl border border-white/10 bg-white/[0.03] px-6 py-10 text-center text-sm text-neutral-300">
+                This link was already used to schedule a call.
+              </p>
+            ) : (
+              <AssessmentScheduler
+                token={token}
+                initialBooking={
+                  invite.scheduled_for
+                    ? {
+                        startsAt: invite.scheduled_for,
+                        timeZone: invite.time_zone || 'America/New_York',
+                        meetUrl: invite.meet_url,
+                      }
+                    : null
+                }
+              />
+            )}
           </div>
         </div>
       </section>
