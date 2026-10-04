@@ -9,6 +9,29 @@
   letter-spacing: -0.02em;
 }
 
+.lesson-body :is(h1, h2, h3) {
+  margin-top: 1.25rem;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+.lesson-body :is(ul, ol) {
+  padding-left: 1.25rem;
+}
+
+.lesson-body ul {
+  list-style: disc;
+}
+
+.lesson-body ol {
+  list-style: decimal;
+}
+
+.lesson-body a {
+  color: #937dff;
+  text-decoration: underline;
+}
+
 .academy a:focus-visible,
 .academy button:focus-visible,
 .academy input:focus-visible {

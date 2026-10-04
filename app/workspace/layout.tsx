@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
+import { academyAdminSession } from '@/lib/academy/access';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
@@ -57,10 +58,14 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (isLogin) redirect('/workspace/overview');
 
+  const academy = await academyAdminSession();
+
   return (
     <RequireAdminMfa email={session.email}>
       <div className="da-workspace">
-        <Shell email={session.email}>{children}</Shell>
+        <Shell email={session.email} showAcademy={Boolean(academy)}>
+          {children}
+        </Shell>
       </div>
     </RequireAdminMfa>
   );

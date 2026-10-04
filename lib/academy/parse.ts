@@ -23,7 +23,7 @@ export type RawAcademyShell = {
     granted_at?: string | null;
     recertify_on?: string | null;
   } | null;
-  progress?: { completed?: number; total?: number; percent?: number };
+  progress?: { completed?: number; total?: number; percent?: number; unit?: string };
   current_module?: { id?: string; order?: number; title?: string } | null;
   next_action?: { title?: string; detail?: string; href?: string | null } | null;
   banner?: string | null;
@@ -40,7 +40,14 @@ export type RawAcademyShell = {
   }[];
 };
 
-const DISPLAYS: AcademyModuleDisplay[] = ['locked', 'available', 'in_progress', 'complete', 'unpublished'];
+const DISPLAYS: AcademyModuleDisplay[] = [
+  'locked',
+  'available',
+  'in_progress',
+  'complete',
+  'unpublished',
+  'lessons_complete',
+];
 
 function asState(value: string | undefined): AcademyState | null {
   return ACADEMY_STATES.find((state) => state === value) ?? null;
@@ -107,6 +114,7 @@ export function parseAcademyShell(raw: RawAcademyShell | null): AcademyShell | n
       completed: raw.progress?.completed ?? 0,
       total: raw.progress?.total ?? 0,
       percent: raw.progress?.percent ?? 0,
+      unit: raw.progress?.unit === 'lessons' ? 'lessons' : 'modules',
     },
     currentModule:
       raw.current_module?.id && raw.current_module.title
