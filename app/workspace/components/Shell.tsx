@@ -22,7 +22,7 @@ import Logo from '@/app/components/Logo';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
-import { Menu, MenuGroupLabel, MenuItem, MenuLinkItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
+import { Menu, MenuGroup, MenuGroupLabel, MenuItem, MenuLinkItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipPopup, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { signOutAction } from '@/lib/workspace/actions';
@@ -295,24 +295,26 @@ function CollapsedItem({
           <IconTile icon={item.icon} tone={section.tone} active={containsActive} size="lg" />
         </MenuTrigger>
         <MenuPopup side="right" align="start" sideOffset={10} className="w-56">
-          <MenuGroupLabel className="flex items-center gap-1.5">
-            <span className={cn('size-1.5 rounded-full', TONES[section.tone].dot)} aria-hidden />
-            {section.heading}
-          </MenuGroupLabel>
-          {[item, ...children].map((leaf) => {
-            const Glyph = leaf.icon;
-            const current = leaf === item ? containsActive && !active?.child : active?.child === leaf;
-            return (
-              <MenuLinkItem
-                key={leaf.href}
-                render={<Link href={leaf.href} prefetch onClick={() => onNavigate(leaf.href)} />}
-                className={cn(current && 'bg-accent text-accent-foreground')}
-              >
-                <Glyph className={cn(current && TONES[section.tone].text)} strokeWidth={1.9} aria-hidden />
-                {leaf.label}
-              </MenuLinkItem>
-            );
-          })}
+          <MenuGroup>
+            <MenuGroupLabel className="flex items-center gap-1.5">
+              <span className={cn('size-1.5 rounded-full', TONES[section.tone].dot)} aria-hidden />
+              {section.heading}
+            </MenuGroupLabel>
+            {[item, ...children].map((leaf) => {
+              const Glyph = leaf.icon;
+              const current = leaf === item ? containsActive && !active?.child : active?.child === leaf;
+              return (
+                <MenuLinkItem
+                  key={leaf.href}
+                  render={<Link href={leaf.href} prefetch onClick={() => onNavigate(leaf.href)} />}
+                  className={cn(current && 'bg-accent text-accent-foreground')}
+                >
+                  <Glyph className={cn(current && TONES[section.tone].text)} strokeWidth={1.9} aria-hidden />
+                  {leaf.label}
+                </MenuLinkItem>
+              );
+            })}
+          </MenuGroup>
         </MenuPopup>
       </Menu>
     </li>
@@ -359,7 +361,7 @@ function SearchResults({
                 <span className="block truncate text-[13.5px] font-medium text-neutral-100">{leaf.label}</span>
                 <span className="block truncate text-[11px] text-neutral-500">
                   {section.heading}
-                  {leaf !== item ? ` · ${item.label}` : ''}
+                  {leaf !== item && item.label !== section.heading ? ` · ${item.label}` : ''}
                 </span>
               </span>
               {index === 0 ? <CornerDownLeft className="size-3.5 text-neutral-500" strokeWidth={2} aria-hidden /> : null}
@@ -714,7 +716,9 @@ export default function Shell({
 
   const signOut = () => signOutForm.current?.requestSubmit();
   const crumbs = active
-    ? [active.section.heading, active.item.label, ...(active.child ? [active.child.label] : [])]
+    ? [active.section.heading, active.item.label, ...(active.child ? [active.child.label] : [])].filter(
+        (crumb, index, all) => crumb !== all[index - 1],
+      )
     : [label];
 
   return (
@@ -786,19 +790,16 @@ export default function Shell({
             </button>
 
             <nav aria-label="Breadcrumb" className="da-display flex min-w-0 items-center gap-2 text-sm">
-              {active ? (
-                <span className="hidden items-center gap-2 text-neutral-500 sm:flex">
-                  <span className={cn('size-1.5 rounded-full', TONES[active.section.tone].dot)} aria-hidden />
-                  {active.section.heading}
-                </span>
-              ) : null}
-              {crumbs.slice(1).map((crumb, index, rest) => (
-                <span key={`${crumb}-${index}`} className="flex min-w-0 items-center gap-2">
-                  <ChevronRight className={cn('size-3.5 shrink-0 text-neutral-600', index === 0 && 'hidden sm:block')} aria-hidden />
-                  <span className={cn('truncate', index === rest.length - 1 ? 'font-medium text-white' : 'hidden text-neutral-400 sm:inline')}>{crumb}</span>
-                </span>
-              ))}
-              {!active ? <span className="font-medium text-white">{label}</span> : null}
+              {active ? <span className={cn('size-1.5 shrink-0 rounded-full', TONES[active.section.tone].dot)} aria-hidden /> : null}
+              {crumbs.map((crumb, index) => {
+                const last = index === crumbs.length - 1;
+                return (
+                  <span key={`${crumb}-${index}`} className={cn('min-w-0 items-center gap-2', last ? 'flex' : 'hidden sm:flex')}>
+                    {index > 0 ? <ChevronRight className={cn('size-3.5 shrink-0 text-neutral-600', last && 'hidden sm:block')} aria-hidden /> : null}
+                    <span className={cn('truncate', last ? 'font-medium text-white' : 'text-neutral-500')}>{crumb}</span>
+                  </span>
+                );
+              })}
               {navigating ? <span className="ml-1 size-1.5 animate-pulse rounded-full bg-brand-300" aria-label="Loading" /> : null}
             </nav>
 
