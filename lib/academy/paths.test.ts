@@ -8,6 +8,7 @@ describe('academy paths', () => {
     expect(academyPathKind('/academy/modules')).toBe('modules');
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f')).toBe('module');
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/lessons/m1')).toBe('lesson');
+    expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/quiz')).toBe('quiz');
     expect(academyPathKind('/academy/not-found')).toBe('missing');
     expect(academyPathKind('/vistrial/ops')).toBe('missing');
     expect(academyPathKind('/workspace/agreements')).toBe('missing');
@@ -21,6 +22,7 @@ describe('academy paths', () => {
     expect(moduleStatusLabel('complete')).toBe('Complete');
     expect(moduleStatusLabel('available')).toBe('Available');
     expect(moduleStatusLabel('lessons_complete')).toBe('Lessons complete, quiz not yet available');
+    expect(moduleStatusLabel('quiz_passed_pending')).toBe('Quiz passed, additional requirement pending');
   });
 
   it('formats a calendar date without moving the day', () => {

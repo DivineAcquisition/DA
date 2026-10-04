@@ -7,6 +7,7 @@ import type { AcademyShell } from './types';
 export const loadAcademyShell = cache(
   async (): Promise<{ ok: true; shell: AcademyShell } | { ok: false; message: string }> => {
     const supabase = await createClient();
+    await controlRpc(supabase, 'academy_prepare');
     const { data, error } = await controlRpc<RawAcademyShell>(supabase, 'academy_shell');
     if (error) return { ok: false, message: readable(error) };
     const shell = parseAcademyShell(data);

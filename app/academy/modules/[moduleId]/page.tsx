@@ -56,6 +56,27 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
           {current.order}. {current.title}
         </h1>
       </div>
+      {current.quiz && current.quiz.status !== 'not_available' ? (
+        <Link href={`/academy/modules/${moduleId}/quiz`} className="block rounded-3xl border border-[#937DFF]/40 bg-[#6A00FF]/10 p-4">
+          <p className="text-base font-semibold">{current.quiz.kind === 'final' ? 'Final Quiz' : 'Module quiz'}</p>
+          <p className="mt-1 text-sm text-neutral-300">
+            {current.quiz.status === 'passed'
+              ? 'Review your passed attempt.'
+              : current.quiz.status === 'in_progress'
+                ? 'Continue the open attempt.'
+                : current.quiz.status === 'locked'
+                  ? 'The next attempt is locked.'
+                  : `${current.quiz.attemptsRemaining} attempts remaining.`}
+          </p>
+        </Link>
+      ) : null}
+      {current.gates
+        .filter((gate) => gate.status === 'pending' && gate.key !== 'quiz' && gate.key !== 'agreement')
+        .map((gate) => (
+          <p key={gate.id} className="text-sm text-neutral-300">
+            {gate.label}: Pending
+          </p>
+        ))}
       <ol className="space-y-3">
         {lessons.map((lesson) => {
           const state = lesson.complete ? 'Complete' : lesson.open ? 'Available' : 'Locked';

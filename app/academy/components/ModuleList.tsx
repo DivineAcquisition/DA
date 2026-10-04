@@ -1,6 +1,25 @@
 import Link from 'next/link';
-import { moduleStatusLabel } from '@/lib/academy/paths';
+import { formatAcademyDate, moduleStatusLabel } from '@/lib/academy/paths';
 import type { AcademyModule } from '@/lib/academy/types';
+
+function quizLine(module: AcademyModule): string | null {
+  const quiz = module.quiz;
+  if (!quiz || quiz.status === 'not_available') return null;
+  if (quiz.status === 'passed') {
+    const when = formatAcademyDate(quiz.passedAt);
+    const score =
+      quiz.passMarkUnit === 'percent'
+        ? `${Math.round(((quiz.highestScore ?? 0) / Math.max(quiz.questionCount, 1)) * 100)}%`
+        : `${quiz.highestScore ?? 0} of ${quiz.questionCount}`;
+    return `Passed ${score}${when ? ` on ${when}` : ''}`;
+  }
+  if (quiz.status === 'locked' && quiz.lockoutUntil) {
+    return `Locked until ${new Date(quiz.lockoutUntil).toLocaleString()}`;
+  }
+  if (quiz.status === 'locked') return 'Locked until the lesson is reopened';
+  if (quiz.status === 'in_progress') return 'Attempt in progress';
+  return `${quiz.attemptsRemaining} attempts remaining`;
+}
 
 function gateLabel(module: AcademyModule): string {
   const base =
@@ -46,6 +65,14 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
               </div>
               {module.description ? <p className="mt-2 text-sm leading-relaxed text-neutral-300">{module.description}</p> : null}
               <p className="mt-2 text-xs text-neutral-500">{gateLabel(module)}</p>
+              {quizLine(module) ? <p className="mt-1 text-xs text-neutral-300">{quizLine(module)}</p> : null}
+              {module.gates
+                .filter((gate) => gate.status === 'pending' && gate.key !== 'quiz' && gate.key !== 'agreement')
+                .map((gate) => (
+                  <p key={gate.id} className="mt-1 text-xs text-neutral-400">
+                    {gate.label}: Pending
+                  </p>
+                ))}
             </>
           );
           const className = `block rounded-3xl border border-white/10 bg-white/[0.03] p-4 ${module.display === 'locked' ? 'opacity-70' : ''}`;

@@ -1,7 +1,10 @@
 import {
   ACADEMY_STATES,
+  type AcademyGateCard,
   type AcademyModule,
   type AcademyModuleDisplay,
+  type AcademyQuizCard,
+  type AcademyQuizStatus,
   type AcademyShell,
   type AcademyState,
 } from './types';
@@ -37,6 +40,21 @@ export type RawAcademyShell = {
     gate_detail?: string | null;
     display?: string;
     openable?: boolean;
+    quiz?: {
+      quiz_id?: string;
+      kind?: string;
+      status?: string;
+      attempts_used?: number;
+      attempts_allowed?: number;
+      attempts_remaining?: number;
+      lockout_until?: string | null;
+      highest_score?: number | null;
+      question_count?: number;
+      pass_mark?: number;
+      pass_mark_unit?: string;
+      passed_at?: string | null;
+    } | null;
+    gates?: { id?: string; key?: string; label?: string; status?: string }[];
   }[];
 };
 
@@ -47,7 +65,37 @@ const DISPLAYS: AcademyModuleDisplay[] = [
   'complete',
   'unpublished',
   'lessons_complete',
+  'quiz_available',
+  'quiz_passed_pending',
 ];
+
+const QUIZ_STATUSES: AcademyQuizStatus[] = ['not_available', 'available', 'in_progress', 'locked', 'passed', 'on_hold'];
+
+function asQuiz(raw: NonNullable<NonNullable<RawAcademyShell['modules']>[number]['quiz']> | null | undefined): AcademyQuizCard | null {
+  if (!raw?.quiz_id || !QUIZ_STATUSES.includes(raw.status as AcademyQuizStatus)) return null;
+  return {
+    quizId: raw.quiz_id,
+    kind: raw.kind ?? 'module',
+    status: raw.status as AcademyQuizStatus,
+    attemptsUsed: raw.attempts_used ?? 0,
+    attemptsAllowed: raw.attempts_allowed ?? 0,
+    attemptsRemaining: raw.attempts_remaining ?? 0,
+    lockoutUntil: raw.lockout_until ?? null,
+    highestScore: raw.highest_score ?? null,
+    questionCount: raw.question_count ?? 0,
+    passMark: raw.pass_mark ?? 0,
+    passMarkUnit: raw.pass_mark_unit ?? 'correct',
+    passedAt: raw.passed_at ?? null,
+  };
+}
+
+function asGates(raw: { id?: string; key?: string; label?: string; status?: string }[] | undefined): AcademyGateCard[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((gate) => {
+    if (!gate.id || !gate.label) return [];
+    return [{ id: gate.id, key: gate.key ?? '', label: gate.label, status: gate.status === 'satisfied' ? 'satisfied' as const : 'pending' as const }];
+  });
+}
 
 function asState(value: string | undefined): AcademyState | null {
   return ACADEMY_STATES.find((state) => state === value) ?? null;
@@ -74,6 +122,8 @@ export function parseAcademyShell(raw: RawAcademyShell | null): AcademyShell | n
             gateDetail: module.gate_detail ?? null,
             display: asDisplay(module.display),
             openable: Boolean(module.openable),
+            quiz: asQuiz(module.quiz),
+            gates: asGates(module.gates),
           },
         ];
       })
