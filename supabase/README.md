@@ -229,6 +229,16 @@ remain as cutover aliases while DNS moves off `*.vistrial.io`.
 | `VISTRIAL_CAREERS_HOSTS` | `divineacquisition.io`, … | `/hiring` |
 | `VISTRIAL_TALENT_HOSTS` | `talent.divineacquisition.io` | `/assessment` |
 | `VISTRIAL_ACQ_HOSTS` | `acq.divineacquisition.io` | `/acq` |
+| `TRAINING_APP_URL` / `TRAINING_HOSTS` | `training.divineacquisition.io` | `/academy` |
+
+`training.divineacquisition.io` serves the DA Operator Academy and nothing else.
+Sign-in uses the same Supabase project. Add these to Authentication → URL
+configuration → Redirect URLs before password reset will return to the training
+host:
+
+- `https://training.divineacquisition.io`
+- `https://training.divineacquisition.io/**`
+- `https://training.divineacquisition.io/academy/auth/callback`
 
 Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
 every deploy.

@@ -30,6 +30,7 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
  *   careers / apex                  -> /hiring (and /)
+ *   training.divineacquisition.io   -> /academy (trainee shell only)
  */
 
 const hosts = (value: string | undefined, fallback: string) =>
@@ -64,6 +65,7 @@ const WORKSPACE_HOSTS = appHosts('admin');
 const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
+const TRAINING_HOSTS = appHosts('training');
 
 const CONTROL_PREFIX = '/ad';
 const ADMIN_PREFIX = '/da';
@@ -76,6 +78,7 @@ const WORKSPACE_PREFIX = '/workspace';
 const ACQ_PREFIX = '/acq';
 const CALLS_PREFIX = '/calls';
 const ONBOARD_PREFIX = '/onboard';
+const ACADEMY_PREFIX = '/academy';
 
 const SURFACE_PREFIXES = [
   CONTROL_PREFIX,
@@ -89,6 +92,7 @@ const SURFACE_PREFIXES = [
   ACQ_PREFIX,
   CALLS_PREFIX,
   ONBOARD_PREFIX,
+  ACADEMY_PREFIX,
 ];
 
 /** Surfaces co-hosted on admin.divineacquisition.io under one sidebar. */
@@ -211,6 +215,11 @@ const SURFACES: Surface[] = [
     prefix: ONBOARD_PREFIX,
     allow: (pathname) => pathname === '/' || pathname.startsWith('/onboard'),
   },
+  {
+    hosts: TRAINING_HOSTS,
+    prefix: ACADEMY_PREFIX,
+    allow: (pathname) => pathname === '/' || pathname.startsWith('/academy'),
+  },
 ];
 
 const isLocalHost = (host: string) =>
@@ -238,6 +247,19 @@ function isForeignSurfacePath(pathname: string, ownPrefix: string): boolean {
 
 const MACHINE_DOOR_PREFIX = '/api/webhooks/';
 const CRON_PREFIX = '/api/cron/';
+
+/** Branded Academy 404. Other hosts keep the plain response they already had. */
+function rewriteAcademyNotFound(request: NextRequest, host: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = '/academy/not-found';
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-pathname', '/academy/not-found');
+  requestHeaders.set('x-vistrial-host', host);
+  requestHeaders.set('x-vistrial-surface', ACADEMY_PREFIX);
+  const response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+  response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  return response;
+}
 
 export async function proxy(request: NextRequest) {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
@@ -296,6 +318,7 @@ export async function proxy(request: NextRequest) {
     ) &&
     !isOnboardOnLiveHost(surface.prefix, pathname)
   ) {
+    if (surface.prefix === ACADEMY_PREFIX) return rewriteAcademyNotFound(request, host);
     return new NextResponse('Not found', {
       status: 404,
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
@@ -340,6 +363,7 @@ export async function proxy(request: NextRequest) {
       WORKSPACE_PREFIX,
       CALLS_PREFIX,
       ONBOARD_PREFIX,
+      ACADEMY_PREFIX,
     ].some((candidate) => pathname.startsWith(candidate)) ||
     isPublicTokenPath(pathname);
 
@@ -350,6 +374,9 @@ export async function proxy(request: NextRequest) {
   }
   requestHeaders.set('x-pathname', stampedPath);
   requestHeaders.set('x-vistrial-host', host);
+  if (request.nextUrl.searchParams.get('link') === 'expired') {
+    requestHeaders.set('x-academy-link', 'expired');
+  }
   if (prefix) requestHeaders.set('x-vistrial-surface', prefix);
   if (prefix === WORKSPACE_PREFIX || (local && isUnifiedAdminPath(pathname))) {
     requestHeaders.set('x-da-unified-admin', '1');
@@ -385,13 +412,15 @@ export async function proxy(request: NextRequest) {
     prefix === ASSESSMENT_ADMIN_PREFIX ||
     prefix === WORKSPACE_PREFIX ||
     prefix === CALLS_PREFIX ||
+    prefix === ACADEMY_PREFIX ||
     pathname.startsWith(ADMIN_PREFIX) ||
     pathname.startsWith(CONTROL_PREFIX) ||
     pathname.startsWith(ACCT_PREFIX) ||
     pathname.startsWith(OPS_PREFIX) ||
     pathname.startsWith(ASSESSMENT_ADMIN_PREFIX) ||
     pathname.startsWith(WORKSPACE_PREFIX) ||
-    pathname.startsWith(CALLS_PREFIX);
+    pathname.startsWith(CALLS_PREFIX) ||
+    pathname.startsWith(ACADEMY_PREFIX);
 
   if (touchesAuth && supabaseUrl && supabaseKey) {
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
@@ -419,7 +448,15 @@ export async function proxy(request: NextRequest) {
 
     // Per-app session rules: an idle timeout and a maximum session length,
     // stricter on the admin app. Cookies are host-only, like the auth cookies.
-    const app: AppKey | null = local ? null : TEAM_HOSTS.includes(host) ? 'team' : WORKSPACE_HOSTS.includes(host) ? 'admin' : null;
+    const app: AppKey | null = local
+      ? null
+      : TEAM_HOSTS.includes(host)
+        ? 'team'
+        : WORKSPACE_HOSTS.includes(host)
+          ? 'admin'
+          : TRAINING_HOSTS.includes(host)
+            ? 'training'
+            : null;
     if (!user && app && (request.cookies.has('da_seen') || request.cookies.has('da_started'))) {
       // Signed out: the timers belong to the session that ended.
       response.cookies.set('da_seen', '', { path: '/', maxAge: 0 });
