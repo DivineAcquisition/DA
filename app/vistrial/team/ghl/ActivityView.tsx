@@ -45,7 +45,7 @@ export default function ActivityView({ rows }: { rows: ActivityHealth }) {
               <div>Processed: <span className="text-neutral-200">{r.status_24h.processed ?? 0}</span></div>
               <div>Waiting: <span className={r.waiting ? 'text-amber-300' : 'text-neutral-200'}>{r.waiting}</span></div>
               <div>Failed: <span className={r.failed_24h ? 'text-flag-critical' : 'text-neutral-200'}>{r.failed_24h}</span></div>
-              <div>Unattributed: <span className="text-neutral-200">{r.status_24h.unattributed ?? 0}</span></div>
+              <div>Unattributed: <span className={r.unattributed_24h ? 'text-amber-300' : 'text-neutral-200'}>{r.unattributed_24h}</span></div>
               <div>Unknown type: <span className={r.unknown_24h ? 'text-amber-300' : 'text-neutral-200'}>{r.unknown_24h}</span></div>
               <div>Refused deliveries: <span className={r.auth_failures_24h ? 'text-flag-critical' : 'text-neutral-200'}>{r.auth_failures_24h}</span></div>
               <div>Estimated attributions: <span className="text-neutral-200">{r.estimated_24h}</span></div>
@@ -63,7 +63,7 @@ export default function ActivityView({ rows }: { rows: ActivityHealth }) {
             ) : null}
             {r.unrecognised_users.length ? (
               <p className="mt-2 text-xs text-amber-300">
-                Unknown GHL users sent messages: {r.unrecognised_users.join(', ')}. Mark them on the client&apos;s page; they are never guessed.
+                Unknown GHL users sent messages: {r.unrecognised_users.join(', ')}. Resolve them on the Unattributed page; they are never guessed.
               </p>
             ) : null}
             {r.recent_failures.length ? (

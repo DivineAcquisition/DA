@@ -9,6 +9,7 @@ const ITEMS = [
   { href: '/vistrial/team/ghl', label: 'Connections', exact: true },
   { href: '/vistrial/team/ghl/access', label: 'Access' },
   { href: '/vistrial/team/ghl/activity', label: 'Activity health' },
+  { href: '/vistrial/team/ghl/unattributed', label: 'Unattributed' },
   { href: '/vistrial/team/ghl/routing', label: 'Routing log' },
   { href: '/vistrial/team/ghl/standard', label: 'Standard' },
 ];

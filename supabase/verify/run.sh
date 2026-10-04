@@ -6,6 +6,7 @@
 # Usage:  supabase/verify/run.sh [--port 5433] [--keep] [--schema-only]
 #
 #   --keep         leave the database in place afterwards
+#   --only FILE    run just that suite (a file name in suites/), after the chain
 #   --schema-only  apply the chain and stop, without running the suites. This is
 #                  what http.sh wants: a pristine database its own seed can build
 #                  on, rather than one the suites have already put fixtures in.
@@ -17,10 +18,12 @@ set -euo pipefail
 PORT=5433
 KEEP=0
 SUITES=1
+ONLY=''
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --port) PORT="$2"; shift 2 ;;
     --keep) KEEP=1; shift ;;
+    --only) ONLY="$2"; shift 2 ;;
     --schema-only) SUITES=0; KEEP=1; shift ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
@@ -73,9 +76,15 @@ for file in "$MIGRATIONS"/*.sql; do
   fi
 done
 
+# The GHL readiness guard stops a placement starting on a sub-account that is not
+# ready, which is right in production. The suites build placements against bare
+# fixtures with no sub-account, so the guard is switched off in this throwaway
+# database only; 90_ghl_activity.sql asserts the guard itself with it back on.
+psql_run -d "$DB" -c "alter table public.placement disable trigger placement_ghl_ready"
+
 if [[ $SUITES -eq 1 ]]; then
   echo
-  for suite in "$HERE"/suites/*.sql; do
+  for suite in "$HERE"/suites/${ONLY:-*}.sql; do
     echo "== $(basename "$suite")"
     if ! psql_run -d "$DB" -f "$suite"; then
       echo "suite failed: $(basename "$suite")" >&2

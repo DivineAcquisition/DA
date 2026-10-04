@@ -240,6 +240,21 @@ export async function markKnownUserAction(ghlUserId: string, kind: 'client_staff
   return call('ghl_mark_known_user', { p_ghl_user_id: ghlUserId, p_kind: kind, p_case_file_id: caseFileId }, kind ? 'Marked. Reconciliation leaves them alone.' : 'Unmarked.');
 }
 
+export async function resolveUserAction(
+  ghlUserId: string,
+  resolution: 'person' | 'client_staff' | 'agency_staff',
+  profileId: string | null,
+  caseFileId: string | null,
+): Promise<GhlResult<{ touches: number; leads: number }>> {
+  const result = await call<{ touches: number; leads: number }>(
+    'ghl_resolve_user',
+    { p_ghl_user_id: ghlUserId, p_resolution: resolution, p_profile_id: profileId, p_case_file_id: caseFileId },
+  );
+  if (!result.ok) return result;
+  const { touches = 0, leads = 0 } = result.data ?? {};
+  return { ...result, message: `Resolved. ${touches} past ${touches === 1 ? 'touch' : 'touches'} re-attributed on ${leads} ${leads === 1 ? 'lead' : 'leads'}, response times recalculated.` };
+}
+
 export async function setAdminAccessAction(profileId: string, enabled: boolean, password: string | null): Promise<GhlResult> {
   if (!enabled) {
     const refused = await stepUp(password ?? '', 'remove GHL access');

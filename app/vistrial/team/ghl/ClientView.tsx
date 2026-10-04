@@ -175,8 +175,19 @@ function EndpointPanel({ detail, origin }: { detail: CaseDetail; origin: string 
           <p>Header: <span className="font-mono">{shown.header}</span></p>
           <p>Value: <span className="select-all font-mono">{shown.secret}</span></p>
           <p className="mt-2 text-neutral-400">
-            Body (Custom Webhook, JSON): {'{'}&quot;type&quot;: &quot;ContactCreate&quot; | &quot;PipelineStageChanged&quot; | &quot;AppointmentStatus&quot;, &quot;locationId&quot;:
-            &quot;{'{{location.id}}'}&quot;, &quot;contactId&quot;: &quot;{'{{contact.id}}'}&quot;, &quot;dateAdded&quot;: &quot;{'{{right_now}}'}&quot;{'}'}
+            Send as JSON from each snapshot workflow&apos;s Custom Webhook action. Always include{' '}
+            <span className="font-mono">&quot;locationId&quot;: &quot;{'{{location.id}}'}&quot;</span> and{' '}
+            <span className="font-mono">&quot;contactId&quot;: &quot;{'{{contact.id}}'}&quot;</span>, plus the <span className="font-mono">type</span> for that workflow:
+          </p>
+          <ul className="mt-1 list-disc space-y-0.5 pl-5 text-neutral-400">
+            <li>Contact Created: <span className="font-mono">&quot;type&quot;: &quot;ContactCreate&quot;</span>, with <span className="font-mono">&quot;dateAdded&quot;: &quot;{'{{contact.date_created}}'}&quot;</span> and the contact&apos;s source</li>
+            <li>Customer Replied: <span className="font-mono">&quot;type&quot;: &quot;InboundMessage&quot;</span>, with <span className="font-mono">&quot;dateAdded&quot;: &quot;{'{{right_now.date}}'}&quot;</span></li>
+            <li>Pipeline Stage Changed: <span className="font-mono">&quot;type&quot;: &quot;OpportunityStageUpdate&quot;</span>, with <span className="font-mono">&quot;pipelineStage&quot;: &quot;{'{{opportunity.pipeline_stage_name}}'}&quot;</span></li>
+            <li>Appointment booked: <span className="font-mono">&quot;type&quot;: &quot;AppointmentCreate&quot;</span> (or <span className="font-mono">AppointmentUpdate</span> when it moves), with <span className="font-mono">&quot;appointmentId&quot;</span> and <span className="font-mono">&quot;startTime&quot;: &quot;{'{{appointment.start_time}}'}&quot;</span></li>
+          </ul>
+          <p className="mt-1 text-neutral-500">
+            Outbound messages, calls and who sent them are never sent from a workflow: a workflow cannot see the sending user. They are read from the Conversations API.
+            Any other <span className="font-mono">type</span> is logged and shown as an unknown type in Activity health, never dropped.
           </p>
         </div>
       ) : null}

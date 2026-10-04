@@ -145,6 +145,7 @@ export type ActivityHealth = {
   auth_failures_24h: number;
   touches_24h: Record<string, number>;
   estimated_24h: number;
+  unattributed_24h: number;
   unrecognised_users: string[];
   silence_alerted_at: string | null;
   on_shift_now: boolean;
@@ -184,4 +185,22 @@ export type Standard = {
 export type PortalGhl = {
   clients: { case_file_id: string; client: string; location_id: string | null; state: 'ready' | 'pending' | 'removing' | 'none' | 'not_connected'; connection_ok: boolean }[];
   leads: { lead_id: string; name: string | null; client: string; assigned_at: string; minutes_waiting: number; reminded: boolean; contact_id: string; location_id: string | null; standard_minutes: number }[];
+};
+
+export type Unattributed = {
+  can_manage: boolean;
+  users: {
+    ghl_user_id: string;
+    case_file_id: string;
+    client: string;
+    touches: number;
+    first_seen: string;
+    last_seen: string;
+    name: string | null;
+    email: string | null;
+    ghl_role: string | null;
+    known_in_ghl: boolean;
+  }[];
+  no_user: { case_file_id: string; client: string; touches: number; last_seen: string }[];
+  people: { profile_id: string; name: string; role: string; ghl_user_id: string | null }[];
 };
