@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import { acknowledgePlan } from '@/lib/academy/holdActions';
 import { formatAcademyDate } from '@/lib/academy/paths';
 import type { AcademyShell } from '@/lib/academy/types';
 
-export default function Dashboard({ shell }: { shell: AcademyShell }) {
+export default function Dashboard({ shell, error }: { shell: AcademyShell; error?: string }) {
   const started = formatAcademyDate(shell.enrollment?.startDate);
   const target = formatAcademyDate(shell.enrollment?.targetDate);
   const granted = formatAcademyDate(shell.certification?.grantedAt);
@@ -20,6 +21,52 @@ export default function Dashboard({ shell }: { shell: AcademyShell }) {
         <p className="rounded-2xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm leading-relaxed text-white">
           {shell.banner}
         </p>
+      ) : null}
+
+      {shell.remediation ? (
+        <section className="space-y-3 rounded-3xl border border-[#937DFF]/40 bg-[#6A00FF]/15 p-5">
+          <h2 className="text-sm font-semibold text-[#937DFF]">
+            {shell.remediation.outcome === 'extend' ? 'Your re-test plan' : 'Your plan'}
+          </h2>
+          <p className="text-sm leading-relaxed text-white">{shell.remediation.plan}</p>
+          <p className="text-sm text-neutral-200">Attempts granted: {shell.remediation.attemptsGranted}.</p>
+          {shell.remediation.retestOn ? (
+            <p className="text-sm text-neutral-200">Re-test date: {shell.remediation.retestOn}.</p>
+          ) : null}
+          {shell.remediation.lessons.length > 0 ? (
+            <ul className="space-y-1 text-sm text-neutral-200">
+              {shell.remediation.lessons.map((lesson) => (
+                <li key={lesson.id}>
+                  <Link className="text-[#937DFF]" href={`/academy/modules/${lesson.moduleId}/lessons/${lesson.id}`}>
+                    {lesson.code} {lesson.title}
+                  </Link>
+                  {lesson.reopened ? ' · reopened' : ' · reopen this lesson'}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {shell.remediation.modules.length > 0 ? (
+            <ul className="space-y-1 text-sm text-neutral-200">
+              {shell.remediation.modules.map((module) => (
+                <li key={module.id}>
+                  Module {module.order}. {module.title}
+                  {module.reopened ? ' · reopened' : ' · reopen its lessons'}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {error ? <p className="text-sm text-white">{error}</p> : null}
+          {shell.remediation.acknowledgedAt ? (
+            <p className="text-sm text-neutral-200">You confirmed this plan.</p>
+          ) : (
+            <form action={acknowledgePlan}>
+              <input type="hidden" name="hold" value={shell.remediation.holdId} />
+              <button type="submit" className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white">
+                I have read the plan
+              </button>
+            </form>
+          )}
+        </section>
       ) : null}
 
       <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">

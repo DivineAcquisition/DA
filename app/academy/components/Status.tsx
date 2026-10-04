@@ -25,16 +25,31 @@ export function AgreementPending({ shell }: { shell: AcademyShell }) {
 }
 
 export function OnHold({ shell }: { shell: AcademyShell }) {
-  const program = shell.program?.name;
+  const program = shell.program?.name ?? 'Your program';
+  const manager = shell.hold?.managerName ?? 'your manager';
+  const opened = shell.hold?.openedAt ? new Date(shell.hold.openedAt).toLocaleDateString() : null;
+  const started = shell.hold?.reviewStartedAt ? new Date(shell.hold.reviewStartedAt).toLocaleDateString() : null;
   return (
-    <Card
-      title="Your progress is under review."
-      body={
-        program
-          ? `${program} is with your manager. Nothing else is open until that review is finished.`
-          : 'Your progress is with your manager. Nothing else is open until that review is finished.'
-      }
-    />
+    <section className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+      <h1 className="text-2xl font-semibold">Your progress is under review.</h1>
+      <p className="text-sm leading-relaxed text-neutral-300">
+        This is a check that the material is landing. It is not a judgment about you.
+      </p>
+      <p className="text-sm leading-relaxed text-neutral-300">
+        {program} is with {manager}.
+      </p>
+      <p className="text-sm leading-relaxed text-neutral-300">
+        {started
+          ? `The review started ${started}.`
+          : opened
+            ? `The review opened ${opened}. It has not started.`
+            : 'The review has not started.'}
+      </p>
+      <p className="text-sm leading-relaxed text-neutral-300">
+        What happens next: {manager} finishes the review. You then continue with a plan, or your Academy access closes.
+        Nothing else is open until then.
+      </p>
+    </section>
   );
 }
 

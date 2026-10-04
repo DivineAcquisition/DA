@@ -30,6 +30,22 @@ export type RawAcademyShell = {
   current_module?: { id?: string; order?: number; title?: string } | null;
   next_action?: { title?: string; detail?: string; href?: string | null } | null;
   banner?: string | null;
+  hold?: {
+    manager_name?: string;
+    opened_at?: string;
+    review_started_at?: string | null;
+    status?: string;
+  } | null;
+  remediation?: {
+    hold_id?: string;
+    outcome?: string;
+    plan?: string;
+    attempts_granted?: number;
+    retest_on?: string | null;
+    acknowledged_at?: string | null;
+    lessons?: { id?: string; title?: string; code?: string; module_id?: string; reopened?: boolean }[];
+    modules?: { id?: string; order?: number; title?: string; reopened?: boolean }[];
+  } | null;
   modules?: {
     id?: string;
     order?: number;
@@ -48,6 +64,8 @@ export type RawAcademyShell = {
       attempts_allowed?: number;
       attempts_remaining?: number;
       lockout_until?: string | null;
+      retry_block?: string | null;
+      retest_on?: string | null;
       highest_score?: number | null;
       question_count?: number;
       pass_mark?: number;
@@ -86,6 +104,8 @@ function asQuiz(raw: NonNullable<NonNullable<RawAcademyShell['modules']>[number]
     passMark: raw.pass_mark ?? 0,
     passMarkUnit: raw.pass_mark_unit ?? 'correct',
     passedAt: raw.passed_at ?? null,
+    retryBlock: raw.retry_block === 'acknowledge' || raw.retry_block === 'retest' || raw.retry_block === 'lessons' ? raw.retry_block : null,
+    retestOn: raw.retest_on ?? null,
   };
 }
 
@@ -175,5 +195,39 @@ export function parseAcademyShell(raw: RawAcademyShell | null): AcademyShell | n
       : null,
     banner: raw.banner ?? null,
     modules,
+    hold:
+      raw.hold?.manager_name && raw.hold.opened_at
+        ? {
+            managerName: raw.hold.manager_name,
+            openedAt: raw.hold.opened_at,
+            reviewStartedAt: raw.hold.review_started_at ?? null,
+            status: raw.hold.status ?? 'open',
+          }
+        : null,
+    remediation:
+      raw.remediation?.hold_id && (raw.remediation.outcome === 'reset' || raw.remediation.outcome === 'extend')
+        ? {
+            holdId: raw.remediation.hold_id,
+            outcome: raw.remediation.outcome,
+            plan: raw.remediation.plan ?? '',
+            attemptsGranted: raw.remediation.attempts_granted ?? 0,
+            retestOn: raw.remediation.retest_on ?? null,
+            acknowledgedAt: raw.remediation.acknowledged_at ?? null,
+            lessons: Array.isArray(raw.remediation.lessons)
+              ? raw.remediation.lessons.flatMap((lesson) =>
+                  lesson.id && lesson.title
+                    ? [{ id: lesson.id, title: lesson.title, code: lesson.code ?? '', moduleId: lesson.module_id ?? '', reopened: Boolean(lesson.reopened) }]
+                    : [],
+                )
+              : [],
+            modules: Array.isArray(raw.remediation.modules)
+              ? raw.remediation.modules.flatMap((module) =>
+                  module.id && module.title
+                    ? [{ id: module.id, order: module.order ?? 0, title: module.title, reopened: Boolean(module.reopened) }]
+                    : [],
+                )
+              : [],
+          }
+        : null,
   };
 }
