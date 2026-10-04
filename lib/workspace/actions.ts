@@ -581,13 +581,29 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     protocolKey && onboardingToken ? publicOnboardingUrl(publicBase, onboardingToken) : null;
 
   if (protocolKey && onboardingToken && onboardingUrl) {
-    const { error: onboardingError } = await supabase.from('da_onboarding_submission').insert({
-      protocol_key: protocolKey,
-      recipient_id: recipientId,
-      agreement_id: agreement.id,
-      access_token: onboardingToken,
-      status: 'pending',
-    });
+    // Only one pending run per recipient and protocol is allowed. A resend moves
+    // the open run, with any answers already saved, onto the new agreement.
+    const { data: pending, error: pendingError } = await supabase
+      .from('da_onboarding_submission')
+      .select('id')
+      .eq('recipient_id', recipientId)
+      .eq('protocol_key', protocolKey)
+      .eq('status', 'pending')
+      .maybeSingle();
+    const { error: onboardingError } = pendingError
+      ? { error: pendingError }
+      : pending
+        ? await supabase
+            .from('da_onboarding_submission')
+            .update({ agreement_id: agreement.id, access_token: onboardingToken })
+            .eq('id', pending.id)
+        : await supabase.from('da_onboarding_submission').insert({
+            protocol_key: protocolKey,
+            recipient_id: recipientId,
+            agreement_id: agreement.id,
+            access_token: onboardingToken,
+            status: 'pending',
+          });
     if (onboardingError) {
       return { ok: false, error: `Agreement created but onboarding failed: ${onboardingError.message}` };
     }
