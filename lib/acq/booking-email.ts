@@ -1,24 +1,10 @@
 import { Resend } from 'resend';
+import { greetingName, renderEmailHtml, textFooter } from '@/lib/email/layout';
 import {
   WORKSPACE_AGREEMENT_CC,
   WORKSPACE_RESEND_FROM,
   WORKSPACE_RESEND_REPLY_TO,
 } from '../workspace/email';
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function greetingName(fullName: string): string {
-  const trimmed = fullName.trim();
-  if (!trimmed) return 'there';
-  const first = trimmed.split(/\s+/)[0] ?? '';
-  return first.length >= 2 ? first : trimmed;
-}
 
 function formatWhen(startsAt: string, timeZone: string): string {
   return new Date(startsAt).toLocaleString('en-US', {
@@ -50,59 +36,52 @@ export function buildProspectCallEmail(input: {
   const subject = company
     ? `Confirmed: Lead Leak Audit with ${company} — ${when}`
     : `Confirmed: your Lead Leak Audit — ${when}`;
+  const intro = `Your ${input.durationMinutes}-minute Lead Leak Audit is confirmed.`;
+  const agenda =
+    'On the call we look at how fast a new inquiry gets a reply, how many booked calls actually show up, and what happens to the people who say they need to think about it.';
+  const footer = {
+    reason: 'You received this email because you booked a Lead Leak Audit with Divine Acquisition.',
+  };
 
   const text = [
     `Hi ${firstName},`,
     '',
-    `Your ${input.durationMinutes}-minute Lead Leak Audit is confirmed.`,
+    intro,
     '',
     `When: ${when}`,
     meetLine,
     ...(calLine ? [calLine] : []),
-    '',
     company ? `Company: ${company}` : null,
+    '',
+    agenda,
+    '',
     '— Divine Acquisition',
+    '',
+    ...textFooter(footer),
   ]
     .filter((line): line is string => line !== null)
     .join('\n');
 
-  const cta = input.meetUrl
-    ? `<a href="${escapeHtml(input.meetUrl)}" style="display:inline-block;background-color:#9a88fc;color:#07070b;font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding-top:14px;padding-bottom:14px;padding-left:28px;padding-right:28px;border-radius:999px;">Join Google Meet</a>`
-    : '';
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${escapeHtml(subject)}</title></head>
-<body style="margin:0;padding:0;background-color:#07070b;color:#ffffff;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color:#07070b;">
-    <tr><td align="center" style="padding-top:40px;padding-bottom:40px;padding-left:16px;padding-right:16px;">
-      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;background-color:#0b0a11;border:1px solid rgba(255,255,255,0.08);">
-        <tr><td style="padding-top:36px;padding-bottom:12px;padding-left:36px;padding-right:36px;">
-          <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#c3b6fe;">Divine Acquisition</p>
-        </td></tr>
-        <tr><td style="padding-top:8px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
-          <h1 style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:26px;line-height:1.25;font-weight:700;color:#ffffff;">Your Lead Leak Audit is confirmed</h1>
-        </td></tr>
-        <tr><td style="padding-top:12px;padding-bottom:8px;padding-left:36px;padding-right:36px;">
-          <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a3a3a3;">Hi ${escapeHtml(firstName)},</p>
-          <p style="margin-top:14px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a3a3a3;">Your ${input.durationMinutes}-minute Lead Leak Audit is confirmed.</p>
-          <p style="margin-top:14px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#ffffff;"><strong>When:</strong> ${escapeHtml(when)}</p>
-          ${
-            input.meetUrl
-              ? `<p style="margin-top:10px;margin-bottom:0;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.65;color:#a3a3a3;"><strong style="color:#ffffff;">Meet:</strong> ${escapeHtml(input.meetUrl)}</p>`
-              : ''
-          }
-        </td></tr>
-        ${
-          cta
-            ? `<tr><td align="center" style="padding-top:28px;padding-bottom:28px;padding-left:36px;padding-right:36px;">${cta}</td></tr>`
-            : '<tr><td style="padding-bottom:28px;"></td></tr>'
-        }
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>`;
+  const html = renderEmailHtml({
+    subject,
+    preheader: `${when}. ${input.durationMinutes} minutes${input.meetUrl ? ' on Google Meet' : ''}.`,
+    eyebrow: 'Lead Leak Audit',
+    title: 'Your Lead Leak Audit is confirmed',
+    greeting: firstName,
+    paragraphs: [intro],
+    details: [
+      { label: 'When', value: when },
+      { label: 'Length', value: `${input.durationMinutes} minutes` },
+      ...(company ? [{ label: 'Company', value: company }] : []),
+      input.meetUrl
+        ? { label: 'Google Meet', value: input.meetUrl, href: input.meetUrl }
+        : { label: 'Meeting link', value: 'Follows shortly by email' },
+      ...(input.calendarUrl ? [{ label: 'Calendar', value: 'Add to your calendar', href: input.calendarUrl }] : []),
+    ],
+    cta: input.meetUrl ? { href: input.meetUrl, label: 'Join Google Meet' } : null,
+    note: agenda,
+    footer,
+  });
 
   return { subject, html, text };
 }
