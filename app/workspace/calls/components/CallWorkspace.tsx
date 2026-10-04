@@ -419,6 +419,12 @@ export default function CallWorkspace({
 
           <div className={`${ws.card} p-4`}>
             <p className={headingClass('text-base font-semibold')}>Book the audit</p>
+            {call.scheduled_for ? (
+              <p className="mt-3 text-sm text-white">
+                Applicant booked {formatDateTime(call.scheduled_for)}
+                {call.scheduled_time_zone ? ` (${call.scheduled_time_zone})` : ''}
+              </p>
+            ) : null}
             {sentAt ? (
               <p className="mt-3 text-sm font-semibold" style={{ color: SUCCESS }}>
                 Link sent

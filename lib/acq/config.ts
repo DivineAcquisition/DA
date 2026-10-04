@@ -36,11 +36,14 @@ export const ACQ_GHL_WEBHOOK_URL = process.env.ACQ_GHL_WEBHOOK_URL?.trim() || ''
 export const ACQ_GHL_FORM_ID = process.env.ACQ_GHL_FORM_ID?.trim() || '';
 
 /**
- * Client-acquisition GHL location only. Never fall back to GHL_LOCATION_ID —
- * that env is the talent Assessment Interview subaccount.
+ * Location for the Free Sales Ops Audit calendar (widget v0e24e3kxYEGCTUkSP4A).
+ * That calendar is on the same subaccount as the talent booking widget.
  */
 export const ACQ_GHL_LOCATION_ID =
-  process.env.ACQ_GHL_LOCATION_ID?.trim() || process.env.GHL_ACQ_LOCATION_ID?.trim() || '';
+  process.env.ACQ_GHL_LOCATION_ID?.trim() ||
+  process.env.GHL_ACQ_LOCATION_ID?.trim() ||
+  process.env.GHL_LOCATION_ID?.trim() ||
+  'pNbNaLXpftikGN2jOFKG';
 
 /** Private Integration Token. GHL_PIT_KEY is accepted as an alias. */
 export const GHL_PIT_TOKEN =
@@ -73,6 +76,15 @@ export const AIRTABLE_ENTRY_POINT = process.env.AIRTABLE_ENTRY_POINT?.trim() || 
 export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 
 export const ACQ_THANK_YOU_PATH = '/thank-you';
+export const ACQ_SCHEDULE_PATH = '/schedule';
+
+/** GoHighLevel calendar for audit appointments. Defaults to the issued booking widget. */
+export const ACQ_GHL_CALENDAR_ID =
+  process.env.ACQ_GHL_CALENDAR_ID?.trim() ||
+  process.env.GHL_ACQ_CALENDAR_ID?.trim() ||
+  'v0e24e3kxYEGCTUkSP4A';
+
+export const ACQ_AUDIT_CC = 'malik@divineacquisition.io';
 export const ACQ_BOOK_PATH = '/book';
 export const ACQ_PRECALL_PATH = '/precall';
 export const ACQ_PRACTICES_PATH = '/practices';
@@ -191,6 +203,10 @@ export function acqPublicPath(pathname: string, host?: string | null): string {
 
 export function qualificationThankYouPath(host?: string): string {
   return acqPublicPath(ACQ_THANK_YOU_PATH, host);
+}
+
+export function qualificationSchedulePath(host: string | undefined, token: string): string {
+  return acqPublicPath(`${ACQ_SCHEDULE_PATH}/${token}`, host);
 }
 
 export function withTrackingQuery(

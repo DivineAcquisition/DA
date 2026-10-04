@@ -6,6 +6,11 @@ const PRIVATE_LINK_HEADERS = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '25mb',
+    },
+  },
   async headers() {
     return [
       {

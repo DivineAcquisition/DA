@@ -36,6 +36,9 @@ function asCall(row: Record<string, unknown>): HsCallRecord {
     audit_booked_at: (row.audit_booked_at as string | null) ?? null,
     calendar_token: (row.calendar_token as string | null) ?? null,
     calendar_sent_at: (row.calendar_sent_at as string | null) ?? null,
+    scheduled_for: (row.scheduled_for as string | null) ?? null,
+    scheduled_time_zone: (row.scheduled_time_zone as string | null) ?? null,
+    meet_url: (row.meet_url as string | null) ?? null,
   };
 }
 

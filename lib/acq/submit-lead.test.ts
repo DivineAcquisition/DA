@@ -25,11 +25,13 @@ describe('submitLead', () => {
     }
   });
 
-  it('blocks when the GHL acquisition location is not configured', async () => {
+  it('still opens scheduling when the GHL contact step is not configured', async () => {
     const result = await submitLead(valid, 'localhost');
-    expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.error).toMatch(/paused/i);
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.redirectTo === '/acq/thank-you' || result.redirectTo.startsWith('/acq/schedule/')).toBe(
+        true,
+      );
     }
   });
 });

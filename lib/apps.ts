@@ -1,29 +1,32 @@
 /**
- * DivineACQ is two apps on one codebase and one database:
+ * DivineACQ is one codebase and one database, served on separate hosts:
  *
- *   team app    VAs and SDRs (operator role). Only what they need to execute.
- *   admin app   owners, admins, managers. Where everything runs.
+ *   team app      VAs and SDRs (operator role). Only what they need to execute.
+ *   admin app     owners, admins, managers. Where everything runs.
+ *   training app  DA Operator Academy. Trainees only. No admin or client screens.
  *
  * Each app's address comes from configuration and nowhere else:
  *
- *   TEAM_APP_URL    e.g. https://team.divineacquisition.io
- *   ADMIN_APP_URL   e.g. https://admin.divineacquisition.io
+ *   TEAM_APP_URL       e.g. https://team.divineacquisition.io
+ *   ADMIN_APP_URL      e.g. https://admin.divineacquisition.io
+ *   TRAINING_APP_URL   e.g. https://training.divineacquisition.io
  *
- * Changing either is a configuration change (plus DNS and the auth redirect
- * allow-list); no code names a domain. The older TEAM_BASE_URL / TEAM_HOSTS and
- * ADMIN_BASE_URL / DA_WORKSPACE_HOSTS variables are still read, so an existing
- * deploy keeps working while it moves to the two new names.
+ * Changing one is a configuration change (plus DNS and the auth redirect
+ * allow-list). The older TEAM_BASE_URL / TEAM_HOSTS and ADMIN_BASE_URL /
+ * DA_WORKSPACE_HOSTS variables are still read, so an existing deploy keeps
+ * working. TRAINING_HOSTS adds extra training hosts the same way.
  *
  * Pure: safe to import from the proxy, server code and client code alike
  * (only NEXT_PUBLIC_ values are visible in the browser, so client code passes
  * URLs down from the server instead of reading these).
  */
 
-export type AppKey = 'team' | 'admin';
+export type AppKey = 'team' | 'admin' | 'training';
 
 const DEFAULTS: Record<AppKey, string> = {
   team: 'https://team.divineacquisition.io',
   admin: 'https://admin.divineacquisition.io',
+  training: 'https://training.divineacquisition.io',
 };
 
 function clean(url: string | undefined): string | null {
@@ -51,6 +54,9 @@ export function appUrl(app: AppKey, env: Record<string, string | undefined> = pr
   if (app === 'team') {
     return clean(env.TEAM_APP_URL) ?? clean(env.TEAM_BASE_URL) ?? (list(env.TEAM_HOSTS)[0] ? `https://${list(env.TEAM_HOSTS)[0]}` : DEFAULTS.team);
   }
+  if (app === 'training') {
+    return clean(env.TRAINING_APP_URL) ?? (list(env.TRAINING_HOSTS)[0] ? `https://${list(env.TRAINING_HOSTS)[0]}` : DEFAULTS.training);
+  }
   return (
     clean(env.ADMIN_APP_URL) ??
     clean(env.ADMIN_BASE_URL) ??
@@ -60,7 +66,8 @@ export function appUrl(app: AppKey, env: Record<string, string | undefined> = pr
 
 /** Every host that serves an app: its address, plus any extra configured hosts. */
 export function appHosts(app: AppKey, env: Record<string, string | undefined> = process.env): string[] {
-  const extra = app === 'team' ? list(env.TEAM_HOSTS) : list(env.DA_WORKSPACE_HOSTS);
+  const extra =
+    app === 'team' ? list(env.TEAM_HOSTS) : app === 'training' ? list(env.TRAINING_HOSTS) : list(env.DA_WORKSPACE_HOSTS);
   return [...new Set([hostOf(appUrl(app, env)), ...extra].filter(Boolean))];
 }
 
@@ -68,6 +75,7 @@ export function appForHost(host: string, env: Record<string, string | undefined>
   const h = host.toLowerCase().split(':')[0];
   if (appHosts('team', env).includes(h)) return 'team';
   if (appHosts('admin', env).includes(h)) return 'admin';
+  if (appHosts('training', env).includes(h)) return 'training';
   return null;
 }
 
@@ -100,7 +108,11 @@ export function sessionRules(app: AppKey, env: Record<string, string | undefined
     const n = Number(value);
     return Number.isFinite(n) && n > 0 ? n : fallback;
   };
-  return app === 'admin'
-    ? { idle: num(env.ADMIN_IDLE_MINUTES, 30), absolute: num(env.ADMIN_SESSION_MAX_MINUTES, 12 * 60) }
-    : { idle: num(env.TEAM_IDLE_MINUTES, 8 * 60), absolute: num(env.TEAM_SESSION_MAX_MINUTES, 7 * 24 * 60) };
+  if (app === 'admin') {
+    return { idle: num(env.ADMIN_IDLE_MINUTES, 30), absolute: num(env.ADMIN_SESSION_MAX_MINUTES, 12 * 60) };
+  }
+  if (app === 'training') {
+    return { idle: num(env.TRAINING_IDLE_MINUTES, 8 * 60), absolute: num(env.TRAINING_SESSION_MAX_MINUTES, 7 * 24 * 60) };
+  }
+  return { idle: num(env.TEAM_IDLE_MINUTES, 8 * 60), absolute: num(env.TEAM_SESSION_MAX_MINUTES, 7 * 24 * 60) };
 }

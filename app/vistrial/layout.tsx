@@ -31,6 +31,9 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   if (!supabaseConfigured) return <NotConfigured />;
 
   const app = await currentApp();
+  // The training host never renders this layout. A request that still lands
+  // here is not a team or admin screen.
+  if (app === 'training') notFound();
   const pathname = (await headers()).get('x-pathname') ?? '';
   const operatorPath = pathname === '/vistrial/operator' || pathname.startsWith('/vistrial/operator/');
   const session = await getSessionContext();

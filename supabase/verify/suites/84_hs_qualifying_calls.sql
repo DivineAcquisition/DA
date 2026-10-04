@@ -59,8 +59,20 @@ begin
   update public.hs_calls set calendar_token = v_token where id = v_id;
 
   resolved := public.da_resolve_calendar_token(v_token);
-  assert resolved->>'destination_url' = 'https://cal.example.test/audit',
-    'hs_call tokens reuse da_resolve_calendar_token and default_booking_url';
+  assert resolved->>'kind' = 'hs_call',
+    'hs_call tokens open the in-app scheduler';
+  assert resolved->>'contact_name' = 'Alex Rivera';
+  assert resolved->>'destination_url' is null,
+    'hs_call tokens do not depend on default_booking_url';
+
+  perform set_config('TimeZone', 'America/New_York', true);
+  perform public.da_book_calendar_slot(
+    v_token,
+    (date_trunc('week', now() + interval '21 days') + interval '10 hours'),
+    'America/New_York'
+  );
+  assert (select status from public.hs_calls where id = v_id) = 'booked';
+  assert (select scheduled_for from public.hs_calls where id = v_id) is not null;
 end $$;
 
 \echo '== an operator cannot read or write hs_calls =='

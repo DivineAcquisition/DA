@@ -43,6 +43,9 @@ export type HsCallRecord = {
   audit_booked_at: string | null;
   calendar_token: string | null;
   calendar_sent_at: string | null;
+  scheduled_for: string | null;
+  scheduled_time_zone: string | null;
+  meet_url: string | null;
 };
 
 export type HsCallAnswer = {

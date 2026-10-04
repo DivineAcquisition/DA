@@ -7,7 +7,9 @@ import {
   Activity,
   Building2,
   CalendarDays,
+  CheckSquare,
   ChevronRight,
+  GraduationCap,
   LayoutDashboard,
   Link2,
   LogOut,
@@ -27,13 +29,14 @@ import { signOutAction } from '@/lib/workspace/actions';
 
 type Icon = ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>;
 type NavItem = { href: string; label: string; icon: Icon; aliases?: string[] };
+type NavGroup = { heading: string; items: NavItem[] };
 
 /**
  * The admin portal's navigation. Three groups: how the business is running
- * today, who and what is being sold, and the settings behind it. Growth,
- * control and billing stay reachable by URL.
+ * today, who and what is being sold, and the settings behind it. Academy and
+ * Holds are conditional: they appear only when the viewer has the role for them.
  */
-const NAV: { heading: string; items: NavItem[] }[] = [
+const BASE_NAV: NavGroup[] = [
   {
     heading: 'Operations',
     items: [
@@ -59,7 +62,20 @@ const NAV: { heading: string; items: NavItem[] }[] = [
   },
 ];
 
-const ALL_ITEMS = NAV.flatMap((group) => group.items.map((item) => ({ ...item, group: group.heading })));
+function buildNav({ showAcademy, showHolds, holdsOnly }: { showAcademy: boolean; showHolds: boolean; holdsOnly: boolean }): NavGroup[] {
+  if (holdsOnly) {
+    return [{ heading: 'Academy', items: [{ href: '/workspace/academy/holds', label: 'Holds', icon: CheckSquare }] }];
+  }
+  if (!showAcademy && !showHolds) return BASE_NAV;
+  return BASE_NAV.map((group) => {
+    if (group.heading !== 'Workspace') return group;
+    const extras: NavItem[] = [];
+    if (showAcademy) extras.push({ href: '/workspace/academy', label: 'Academy', icon: GraduationCap });
+    if (showHolds) extras.push({ href: '/workspace/academy/holds', label: 'Holds', icon: CheckSquare });
+    return { ...group, items: [...group.items, ...extras] };
+  });
+}
+
 const COLLAPSE_KEY = 'da-admin-sidebar-collapsed';
 const COLLAPSE_EVENT = 'da-admin-sidebar-toggle';
 
@@ -97,11 +113,17 @@ function initials(email: string) {
 
 function SidebarContent({
   pathname,
+  nav,
+  home,
+  label,
   collapsed,
   pendingHref,
   onNavigate,
 }: {
   pathname: string;
+  nav: NavGroup[];
+  home: string;
+  label: string;
   collapsed: boolean;
   pendingHref?: string | null;
   onNavigate?: (href: string) => void;
@@ -109,9 +131,9 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <Link
-        href="/vistrial/ops"
+        href={home}
         prefetch
-        onClick={() => onNavigate?.('/vistrial/ops')}
+        onClick={() => onNavigate?.(home)}
         className={`flex h-14 shrink-0 items-center gap-2.5 border-b border-white/[0.06] transition-opacity hover:opacity-80 ${collapsed ? 'justify-center px-0' : 'px-5'}`}
       >
         {collapsed ? (
@@ -119,13 +141,13 @@ function SidebarContent({
         ) : (
           <>
             <Logo className="h-[22px] w-auto" />
-            <span className="rounded-md border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">Admin</span>
+            <span className="rounded-md border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">{label}</span>
           </>
         )}
       </Link>
 
       <nav aria-label="Admin" className="flex-1 space-y-5 overflow-y-auto px-2.5 py-4">
-        {NAV.map((group) => (
+        {nav.map((group) => (
           <div key={group.heading}>
             {collapsed ? (
               <div className="mx-2 mb-2 border-t border-white/[0.06]" aria-hidden="true" />
@@ -187,7 +209,19 @@ function UserMenu({ email }: { email: string }) {
   );
 }
 
-export default function Shell({ email, children }: { email: string; children: React.ReactNode }) {
+export default function Shell({
+  email,
+  children,
+  showAcademy = false,
+  showHolds = false,
+  holdsOnly = false,
+}: {
+  email: string;
+  children: React.ReactNode;
+  showAcademy?: boolean;
+  showHolds?: boolean;
+  holdsOnly?: boolean;
+}) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);
@@ -202,16 +236,29 @@ export default function Shell({ email, children }: { email: string; children: Re
     window.dispatchEvent(new Event(COLLAPSE_EVENT));
   }
 
-  const pendingItem = ALL_ITEMS.find((item) => item.href === pendingHref);
+  const nav = buildNav({ showAcademy, showHolds, holdsOnly });
+  const home = holdsOnly ? '/workspace/academy/holds' : '/vistrial/ops';
+  const label = holdsOnly ? 'Review' : 'Admin';
+  const allItems = nav.flatMap((group) => group.items.map((item) => ({ ...item, group: group.heading })));
+
+  const pendingItem = allItems.find((item) => item.href === pendingHref);
   const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
-  const current = ALL_ITEMS.find((item) => (navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item)));
+  const current = allItems.find((item) => (navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item)));
 
   return (
     <div className="relative flex min-h-screen bg-ink-950 text-white antialiased">
       <aside
         className={`fixed inset-y-0 left-0 z-40 hidden border-r border-white/[0.06] bg-ink-900 transition-[width] duration-200 lg:block ${collapsed ? 'w-[76px]' : 'w-64'}`}
       >
-        <SidebarContent pathname={pathname} collapsed={collapsed} pendingHref={navigating ? pendingHref : null} onNavigate={setPendingHref} />
+        <SidebarContent
+          pathname={pathname}
+          nav={nav}
+          home={home}
+          label={label}
+          collapsed={collapsed}
+          pendingHref={navigating ? pendingHref : null}
+          onNavigate={setPendingHref}
+        />
       </aside>
 
       {drawerOpen && (
@@ -228,6 +275,9 @@ export default function Shell({ email, children }: { email: string; children: Re
             </button>
             <SidebarContent
               pathname={pathname}
+              nav={nav}
+              home={home}
+              label={label}
               collapsed={false}
               pendingHref={navigating ? pendingHref : null}
               onNavigate={(href) => {
@@ -259,19 +309,21 @@ export default function Shell({ email, children }: { email: string; children: Re
           </button>
 
           <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-sm">
-            <span className="hidden text-neutral-500 sm:inline">{current?.group ?? 'Admin'}</span>
+            <span className="hidden text-neutral-500 sm:inline">{current?.group ?? label}</span>
             {current ? <ChevronRight className="hidden h-3.5 w-3.5 text-neutral-600 sm:block" aria-hidden /> : null}
-            <span className="truncate font-medium text-white">{current?.label ?? 'Admin'}</span>
+            <span className="truncate font-medium text-white">{current?.label ?? label}</span>
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            <Link
-              href="/vistrial/team/ghl/activity"
-              className="hidden items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:border-white/20 hover:text-white md:flex"
-            >
-              <Link2 className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden />
-              Live activity
-            </Link>
+            {!holdsOnly ? (
+              <Link
+                href="/vistrial/team/ghl/activity"
+                className="hidden items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:border-white/20 hover:text-white md:flex"
+              >
+                <Link2 className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden />
+                Live activity
+              </Link>
+            ) : null}
             <UserMenu email={email} />
           </div>
         </header>

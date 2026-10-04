@@ -171,4 +171,21 @@ export async function createGoogleMeetEvent(
   };
 }
 
+export async function deleteGoogleCalendarEvent(eventId: string): Promise<void> {
+  const config = readCalendarConfig();
+  if (!config || !eventId) return;
+  const token = await getAccessToken(config);
+  const url = new URL(
+    `${CALENDAR_API}/calendars/${encodeURIComponent(config.calendarId)}/events/${encodeURIComponent(eventId)}`,
+  );
+  url.searchParams.set('sendUpdates', 'all');
+  const response = await fetch(url, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!response.ok && response.status !== 404 && response.status !== 410) {
+    console.error('[calendar] delete failed', response.status, await response.text());
+  }
+}
+
 export const createAssessmentCalendarEvent = createGoogleMeetEvent;

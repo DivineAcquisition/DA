@@ -365,6 +365,9 @@ export type ValidatedInvite = {
   company_name: string | null;
   expires_at: string;
   used_at: string | null;
+  scheduled_for?: string | null;
+  time_zone?: string | null;
+  meet_url?: string | null;
 };
 
 export async function validateAssessmentToken(
