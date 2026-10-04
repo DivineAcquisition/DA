@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { acknowledgePlan } from '@/lib/academy/holdActions';
 import { formatAcademyDate } from '@/lib/academy/paths';
 import type { AcademyShell } from '@/lib/academy/types';
+import Panel from './Panel';
 
 export default function Dashboard({ shell, error }: { shell: AcademyShell; error?: string }) {
   const started = formatAcademyDate(shell.enrollment?.startDate);
@@ -24,7 +25,7 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
       ) : null}
 
       {shell.remediation ? (
-        <section className="space-y-3 rounded-3xl border border-[#937DFF]/40 bg-[#6A00FF]/15 p-5">
+        <Panel beam className="space-y-3 bg-[#6A00FF]/15 p-5">
           <h2 className="text-sm font-semibold text-[#937DFF]">
             {shell.remediation.outcome === 'extend' ? 'Your re-test plan' : 'Your plan'}
           </h2>
@@ -66,10 +67,10 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
               </button>
             </form>
           )}
-        </section>
+        </Panel>
       ) : null}
 
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+      <Panel className="p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Progress</h2>
         <p className="mt-2 text-lg font-semibold">
           {shell.progress.completed} of {shell.progress.total}{' '}
@@ -79,9 +80,9 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
           <div className="h-full rounded-full bg-[#6A00FF]" style={{ width: `${Math.min(100, Math.max(0, shell.progress.percent))}%` }} />
         </div>
         <p className="mt-2 text-sm text-neutral-400">{shell.progress.percent}%</p>
-      </section>
+      </Panel>
 
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+      <Panel className="p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Current module</h2>
         <p className="mt-2 text-lg font-semibold">{shell.currentModule?.title ?? 'None open'}</p>
         {shell.currentModule ? (
@@ -98,18 +99,18 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
             })()}
           </p>
         ) : null}
-      </section>
+      </Panel>
 
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+      <Panel className="p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Certification</h2>
         <p className="mt-2 text-lg font-semibold">{shell.certification?.label ?? 'No certification yet'}</p>
         {shell.certification?.vertical ? <p className="mt-1 text-sm text-neutral-400">{shell.certification.vertical}</p> : null}
         {granted ? <p className="mt-1 text-sm text-neutral-400">Granted {granted}</p> : null}
         {recert ? <p className="mt-1 text-sm text-neutral-400">Recertify by {recert}</p> : null}
-      </section>
+      </Panel>
 
       {shell.nextAction ? (
-        <section className="rounded-3xl border border-[#937DFF]/30 bg-[#6A00FF]/10 p-5">
+        <Panel beam className="bg-[#6A00FF]/10 p-5">
           <h2 className="text-sm font-semibold text-[#937DFF]">Next</h2>
           <p className="mt-2 text-lg font-semibold">{shell.nextAction.title}</p>
           {shell.nextAction.detail ? <p className="mt-1 text-sm leading-relaxed text-neutral-300">{shell.nextAction.detail}</p> : null}
@@ -121,7 +122,7 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
               Open
             </Link>
           ) : null}
-        </section>
+        </Panel>
       ) : null}
 
       {started || target ? (

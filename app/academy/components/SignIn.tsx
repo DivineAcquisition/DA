@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import Logo from '@/app/components/Logo';
 import { academyResetAction, academySignInAction } from '@/lib/academy/actions';
+import Panel from './Panel';
 
 export default function SignIn({ linkExpired = false }: { linkExpired?: boolean }) {
   const [error, setError] = useState<string | null>(null);
@@ -11,7 +12,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
 
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8">
+      <Panel beam className="w-full max-w-md p-6 sm:p-8">
         <Logo className="h-6 w-auto" />
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#937DFF]">
           Devotion. Value. Exclusivity.
@@ -113,7 +114,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
             </button>
           </>
         )}
-      </div>
+      </Panel>
     </div>
   );
 }

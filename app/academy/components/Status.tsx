@@ -1,12 +1,13 @@
 import Link from 'next/link';
 import type { AcademyShell } from '@/lib/academy/types';
+import Panel from './Panel';
 
 function Card({ title, body }: { title: string; body: string }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-      <h1 className="text-2xl font-semibold">{title}</h1>
+    <Panel className="p-6">
+      <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
       <p className="mt-3 text-sm leading-relaxed text-neutral-300">{body}</p>
-    </section>
+    </Panel>
   );
 }
 
@@ -30,7 +31,7 @@ export function OnHold({ shell }: { shell: AcademyShell }) {
   const opened = shell.hold?.openedAt ? new Date(shell.hold.openedAt).toLocaleDateString() : null;
   const started = shell.hold?.reviewStartedAt ? new Date(shell.hold.reviewStartedAt).toLocaleDateString() : null;
   return (
-    <section className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+    <Panel className="space-y-4 p-6">
       <h1 className="text-2xl font-semibold">Your progress is under review.</h1>
       <p className="text-sm leading-relaxed text-neutral-300">
         This is a check that the material is landing. It is not a judgment about you.
@@ -49,7 +50,7 @@ export function OnHold({ shell }: { shell: AcademyShell }) {
         What happens next: {manager} finishes the review. You then continue with a plan, or your Academy access closes.
         Nothing else is open until then.
       </p>
-    </section>
+    </Panel>
   );
 }
 
@@ -81,19 +82,17 @@ export function Invited({ shell }: { shell: AcademyShell }) {
   );
 }
 
-export function LoadError() {
-  return (
-    <Card
-      title="The Academy could not be loaded."
-      body="Refresh the page. If it keeps happening, contact your manager."
-    />
-  );
+export function LoadError({ message }: { message?: string }) {
+  const detail = message && message !== 'The Academy could not be loaded.'
+    ? message
+    : 'Refresh the page. If it keeps happening, contact your manager.';
+  return <Card title="The Academy could not be loaded." body={detail} />;
 }
 
 export function NotFoundScreen({ signedIn }: { signedIn: boolean }) {
   return (
-    <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-      <h1 className="text-2xl font-semibold">This page is not in the Academy.</h1>
+    <Panel className="p-6">
+      <h1 className="text-2xl font-semibold tracking-tight">This page is not in the Academy.</h1>
       <p className="mt-3 text-sm leading-relaxed text-neutral-300">The address does not match a screen.</p>
       <Link
         href="/academy"
@@ -101,6 +100,6 @@ export function NotFoundScreen({ signedIn }: { signedIn: boolean }) {
       >
         {signedIn ? 'Back to the dashboard' : 'Back to sign in'}
       </Link>
-    </section>
+    </Panel>
   );
 }

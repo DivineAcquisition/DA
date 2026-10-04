@@ -48,7 +48,7 @@ export default async function AcademyLayout({ children }: { children: React.Reac
       if (!loaded.ok) {
         body = (
           <Chrome signedIn>
-            <LoadError />
+            <LoadError message={loaded.message} />
           </Chrome>
         );
       } else if (!academyContentOpen(loaded.shell.state)) {
