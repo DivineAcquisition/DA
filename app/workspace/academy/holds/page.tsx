@@ -62,13 +62,21 @@ export default async function HoldsPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-white">Holds</h1>
-          <p className="mt-1 text-sm text-neutral-400">Reviews opened when a trainee uses the last quiz attempt.</p>
+          <p className="mt-1 text-sm text-neutral-400">Reviews opened when a trainee uses the last allowed attempt.</p>
         </div>
-        {session.manage ? (
-          <Link href="/workspace/academy/holds/summary" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Summary
+        <div className="flex flex-wrap gap-2">
+          <Link href="/workspace/academy/holds/practicals" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
+            Practicals
           </Link>
-        ) : null}
+          <Link href="/workspace/academy/holds/grading" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
+            Manual grading
+          </Link>
+          {session.manage ? (
+            <Link href="/workspace/academy/holds/summary" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
+              Summary
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       {params.error ? <p className="text-sm text-flag-critical">{params.error}</p> : null}

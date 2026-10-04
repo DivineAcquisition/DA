@@ -39,6 +39,9 @@ export default async function AcademyAdminPage() {
           <p className="mt-1 text-sm text-neutral-400">Load videos, documents, and written lessons by lesson ID.</p>
         </div>
         <div className="flex gap-2">
+          <Link href="/workspace/academy/simulations" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
+            Simulations
+          </Link>
           <Link href="/workspace/academy/quizzes" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
             Quizzes
           </Link>

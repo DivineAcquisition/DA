@@ -11,6 +11,7 @@ import {
   resolveHold,
   saveHoldChecklist,
 } from '@/lib/academy/holdActions';
+import { overrideScore } from '@/lib/academy/practiceAdmin';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select, Textarea } from '../../../components/ui';
 
@@ -93,6 +94,47 @@ type Detail = {
   reviewers: { id: string; name: string }[];
 };
 
+async function PracticeReview({ holdId }: { holdId: string }) {
+  const supabase = await createClient();
+  const { data } = await controlRpc<{ sessions?: { id: string; score: number | null; passed: boolean | null; fail_reason: string | null; criteria?: { key: string; ai: number | null; human: number | null }[]; transcript?: { role: string; body: string }[] }[] }>(
+    supabase,
+    'academy_hold_practice',
+    { p_hold: holdId },
+  );
+  const sessions = data?.sessions ?? [];
+  if (sessions.length === 0) return null;
+  return (
+    <section className="space-y-3">
+      <h2 className="text-lg font-semibold text-white">Simulation attempts</h2>
+      {sessions.map((session) => (
+        <div key={session.id} className="space-y-2 rounded-2xl border border-white/10 p-4 text-sm text-neutral-300">
+          <p>Score {session.score ?? '—'} · {session.passed ? 'Passed' : session.fail_reason ?? 'Not passed'}</p>
+          <ul className="space-y-2">
+            {(session.criteria ?? []).map((criterion) => (
+              <li key={criterion.key}>
+                <p>{criterion.key}: AI {criterion.ai ?? '—'}{criterion.human !== null && criterion.human !== undefined ? ` · reviewer ${criterion.human}` : ''}</p>
+                <form action={overrideScore} className="mt-1 flex flex-wrap items-end gap-2">
+                  <input type="hidden" name="session" value={session.id} />
+                  <input type="hidden" name="key" value={criterion.key} />
+                  <input type="hidden" name="back" value={`/workspace/academy/holds/${holdId}`} />
+                  <Input name="score" type="number" min={0} max={5} required className="w-20" />
+                  <Input name="note" required placeholder="Why this score changed" />
+                  <Button type="submit" size="sm">Override</Button>
+                </form>
+              </li>
+            ))}
+          </ul>
+          <ul className="space-y-1">
+            {(session.transcript ?? []).map((line, index) => (
+              <li key={`${session.id}-${index}`}><span className="text-white">{line.role}:</span> {line.body}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  );
+}
+
 function minutes(seconds: number) {
   if (seconds < 60) return `${seconds}s`;
   return `${Math.round(seconds / 60)} min`;
@@ -158,6 +200,7 @@ export default async function HoldReviewPage({
         ) : null}
       </div>
 
+      <PracticeReview holdId={data.id} />
       {query.error ? <p className="text-sm text-flag-critical">{query.error}</p> : null}
       {data.self ? <p className="text-sm text-neutral-200">You cannot resolve a hold on your own enrollment.</p> : null}
 

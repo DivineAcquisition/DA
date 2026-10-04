@@ -6,6 +6,29 @@ import { academyContentOpen } from '@/lib/academy/types';
 import { createClient } from '@/lib/supabase/server';
 
 type LessonRow = { id: string; code: string; title: string; position: number; open: boolean; complete: boolean };
+type Practice = { simulations?: { id: string; title: string }[]; drill?: boolean; reflection?: string | null; practical?: string | null };
+
+async function PracticeLinks({ moduleId }: { moduleId: string }) {
+  const supabase = await createClient();
+  const { data } = await controlRpc<Practice>(supabase, 'academy_module_practice', { p_module: moduleId });
+  if (!data) return null;
+  const links = [
+    ...(data.simulations ?? []).map((item) => ({ href: `/academy/modules/${moduleId}/simulations/${item.id}`, label: item.title })),
+    ...(data.drill ? [{ href: `/academy/modules/${moduleId}/drill`, label: 'Signal Reading' }] : []),
+    ...(data.reflection ? [{ href: `/academy/modules/${moduleId}/reflection`, label: 'Written reflection' }] : []),
+    ...(data.practical ? [{ href: `/academy/modules/${moduleId}/practical`, label: 'Practical' }] : []),
+  ];
+  if (links.length === 0) return null;
+  return (
+    <div className="space-y-2">
+      {links.map((link) => (
+        <Link key={link.href} href={link.href} className="block rounded-3xl border border-white/10 bg-white/[0.03] p-4 text-sm font-semibold">
+          {link.label}
+        </Link>
+      ))}
+    </div>
+  );
+}
 
 export default async function AcademyModulePage({ params }: { params: Promise<{ moduleId: string }> }) {
   const { moduleId } = await params;
@@ -70,11 +93,15 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
           </p>
         </Link>
       ) : null}
+      <PracticeLinks moduleId={moduleId} />
       {current.gates
-        .filter((gate) => gate.status === 'pending' && gate.key !== 'quiz' && gate.key !== 'agreement')
+        .filter((gate) => gate.key !== 'quiz' && gate.key !== 'agreement')
         .map((gate) => (
           <p key={gate.id} className="text-sm text-neutral-300">
-            {gate.label}: Pending
+            {gate.key === 'sign_off' && gate.status === 'pending'
+              ? 'Supervisor sign-off is pending'
+              : `${gate.label}: ${gate.status === 'satisfied' ? 'Complete' : 'Pending'}`}
+            {gate.bestScore !== null ? ` · best ${gate.bestScore}` : ''}
           </p>
         ))}
       <ol className="space-y-3">
