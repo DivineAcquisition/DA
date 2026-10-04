@@ -1,100 +1,84 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useSyncExternalStore, type ComponentType } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  Activity,
+  Building2,
+  CalendarDays,
+  ChevronRight,
+  LayoutDashboard,
+  Link2,
+  LogOut,
+  Menu,
+  Network,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Phone,
+  Settings,
+  Stethoscope,
+  UserRoundCheck,
+  Users,
+  X,
+} from 'lucide-react';
 import Logo from '@/app/components/Logo';
-import Backdrop from '@/app/components/Backdrop';
 import { signOutAction } from '@/lib/workspace/actions';
-import { Button } from './ui';
 
-type NavItem = { href: string; label: string; icon: NavIcon; match?: string; aliases?: string[] };
-type NavIcon =
-  | 'grid'
-  | 'people'
-  | 'document'
-  | 'stack'
-  | 'link'
-  | 'map'
-  | 'gear'
-  | 'growth'
-  | 'billing'
-  | 'control'
-  | 'audit'
-  | 'talent'
-  | 'ops'
-  | 'bookings'
-  | 'phone'
-  | 'clinic'
-  | 'home'
-  | 'company';
+type Icon = ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>;
+type NavItem = { href: string; label: string; icon: Icon; aliases?: string[] };
 
 /**
- * Daily admin nav. Growth, control, and ops stay reachable by URL.
+ * The admin portal's navigation. Three groups: how the business is running
+ * today, who and what is being sold, and the settings behind it. Growth,
+ * control and billing stay reachable by URL.
  */
 const NAV: { heading: string; items: NavItem[] }[] = [
   {
     heading: 'Operations',
     items: [
-      { href: '/vistrial/ops', label: 'Operations overview', icon: 'home' },
-      { href: '/vistrial/team/board', label: 'Team', icon: 'people', aliases: ['/vistrial/team'] },
-      { href: '/vistrial/admin/clients', label: 'Clients', icon: 'company', aliases: ['/vistrial/admin'] },
-      { href: '/vistrial/team/ghl', label: 'GHL', icon: 'ops' },
+      { href: '/vistrial/ops', label: 'Overview', icon: LayoutDashboard },
+      { href: '/vistrial/team/board', label: 'Team', icon: Users, aliases: ['/vistrial/team'] },
+      { href: '/vistrial/admin/clients', label: 'Clients', icon: Building2, aliases: ['/vistrial/admin'] },
+      { href: '/vistrial/team/ghl', label: 'GoHighLevel', icon: Network },
+    ],
+  },
+  {
+    heading: 'Sales and talent',
+    items: [
+      { href: '/workspace/overview', label: 'VA performance', icon: Activity },
+      { href: '/workspace/calls', label: 'Calls', icon: Phone, aliases: ['/workspace/hs/calls'] },
+      { href: '/workspace/accounts', label: 'Accounts', icon: Stethoscope, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
+      { href: '/workspace/recipients', label: 'Recipients', icon: UserRoundCheck },
+      { href: '/workspace/calendar-links', label: 'Calendar links', icon: CalendarDays },
     ],
   },
   {
     heading: 'Workspace',
-    items: [
-      { href: '/workspace/overview', label: 'Overview', icon: 'grid' },
-      { href: '/workspace/recipients', label: 'Recipients', icon: 'people' },
-      { href: '/workspace/calendar-links', label: 'Calendar links', icon: 'link' },
-      { href: '/workspace/calls', label: 'Calls', icon: 'phone', aliases: ['/workspace/hs/calls'] },
-      { href: '/workspace/accounts', label: 'Accounts', icon: 'clinic', aliases: ['/workspace/practices', '/workspace/hs/companies'] },
-      { href: '/workspace/settings', label: 'Settings', icon: 'gear' },
-    ],
+    items: [{ href: '/workspace/settings', label: 'Settings', icon: Settings }],
   },
 ];
 
-const ICON_PATHS: Record<NavIcon, string> = {
-  grid: 'M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z',
-  people:
-    'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm0 2c-3 0-6 1.6-6 3.9V20h12v-3.1c0-2.3-3-3.9-6-3.9Zm8.5-2a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm0 2c-.7 0-1.4.1-2 .3 1.2.9 2 2.1 2 3.6V20H23v-2.8c0-2-2.6-3.2-5.5-3.2Z',
-  document: 'M7 3h7l5 5v13H7V3Zm6 1.5V9h4.5M10 13h7M10 17h7',
-  stack: 'M12 3 3 7.5 12 12l9-4.5L12 3ZM3 12l9 4.5L21 12M3 16.5 12 21l9-4.5',
-  link: 'M10 13a4 4 0 0 0 5.7 0l2.6-2.6a4 4 0 0 0-5.7-5.7L11.2 6M14 11a4 4 0 0 0-5.7 0l-2.6 2.6a4 4 0 1 0 5.7 5.7L12.8 18',
-  map: 'M4 6h6M4 12h6M4 18h6M14 6h6M14 12h6M14 18h6M10 6l4 6M10 12l4-6M10 18l4-6',
-  gear:
-    'M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm8.4-2.1.1-1.4-.1-1.4 1.8-1.3-1.7-3-2.1.7a7.6 7.6 0 0 0-2.4-1.4L15.6 3H8.4l-.4 2.6a7.6 7.6 0 0 0-2.4 1.4l-2.1-.7-1.7 3 1.8 1.3-.1 1.4.1 1.4-1.8 1.3 1.7 3 2.1-.7c.7.6 1.5 1.1 2.4 1.4l.4 2.6h7.2l.4-2.6c.9-.3 1.7-.8 2.4-1.4l2.1.7 1.7-3-1.8-1.3Z',
-  growth: 'M4 18 10 12l4 4 6-8M14 8h6v6',
-  billing: 'M4 6h16v12H4V6Zm0 4h16M8 14h4',
-  control: 'M12 3 4 7v5c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V7l-8-4Z',
-  audit: 'M8 4h8v16H8V4Zm3 4h2M9 12h6M9 16h6',
-  talent: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm-7 9a7 7 0 0 1 14 0',
-  ops: 'M4 8h16M4 12h16M4 16h10',
-  bookings: 'M7 3v3M17 3v3M4 8h16v12H4V8Zm4 5h3v3H8v-3Z',
-  phone:
-    'M6.7 10.8c1.4 2.7 3.8 5.1 6.5 6.5l2.2-2.2c.3-.3.7-.4 1.1-.3 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1l-2.1 2.1Z',
-  clinic: 'M3 21V8l9-5 9 5v13H3Zm6-8h2v2h2v2h-2v2H9v-2H7v-2h2v-2Z',
-  home: 'M3 11.5 12 3l9 8.5V21H3v-9.5ZM9 21v-7h6v7',
-  company: 'M4 21V7l8-4 8 4v14H4Zm5-8h6M9 17h6M12 7v14',
-};
+const ALL_ITEMS = NAV.flatMap((group) => group.items.map((item) => ({ ...item, group: group.heading })));
+const COLLAPSE_KEY = 'da-admin-sidebar-collapsed';
+const COLLAPSE_EVENT = 'da-admin-sidebar-toggle';
 
-function NavIconGlyph({ icon }: { icon: NavIcon }) {
-  const filled = icon === 'grid' || icon === 'people' || icon === 'talent';
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-      className="h-[18px] w-[18px] shrink-0"
-      fill={filled ? 'currentColor' : 'none'}
-      stroke={filled ? 'none' : 'currentColor'}
-      strokeWidth={1.6}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d={ICON_PATHS[icon]} />
-    </svg>
-  );
+// A per-person convenience only: the page renders correctly without it.
+function subscribeCollapsed(onChange: () => void) {
+  window.addEventListener(COLLAPSE_EVENT, onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(COLLAPSE_EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(COLLAPSE_KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 function pathMatches(pathname: string, href: string) {
@@ -102,62 +86,73 @@ function pathMatches(pathname: string, href: string) {
 }
 
 function isActive(pathname: string, item: NavItem) {
-  const candidates = [item.href, ...(item.aliases ?? [])];
-  if (item.match && item.href === item.match) {
-    return candidates.some((href) => pathname === href || pathname === `${href}/`);
-  }
-  return candidates.some((href) => pathMatches(pathname, href));
+  return [item.href, ...(item.aliases ?? [])].some((href) => pathMatches(pathname, href));
+}
+
+function initials(email: string) {
+  const name = email.split('@')[0] ?? '';
+  const parts = name.split(/[._-]+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')).toUpperCase();
 }
 
 function SidebarContent({
   pathname,
-  email,
+  collapsed,
   pendingHref,
   onNavigate,
 }: {
   pathname: string;
-  email: string;
+  collapsed: boolean;
   pendingHref?: string | null;
   onNavigate?: (href: string) => void;
 }) {
   return (
     <div className="flex h-full flex-col">
       <Link
-        href="/workspace/overview"
+        href="/vistrial/ops"
         prefetch
-        onClick={() => onNavigate?.('/workspace/overview')}
-        className="flex items-center gap-2.5 px-5 py-6 transition-opacity hover:opacity-80"
+        onClick={() => onNavigate?.('/vistrial/ops')}
+        className={`flex h-14 shrink-0 items-center gap-2.5 border-b border-white/[0.06] transition-opacity hover:opacity-80 ${collapsed ? 'justify-center px-0' : 'px-5'}`}
       >
-        <Logo className="h-[26px] w-auto" />
-        <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
+        {collapsed ? (
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500/15 text-sm font-bold text-brand-200">D</span>
+        ) : (
+          <>
+            <Logo className="h-[22px] w-auto" />
+            <span className="rounded-md border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">Admin</span>
+          </>
+        )}
       </Link>
 
-      <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
+      <nav aria-label="Admin" className="flex-1 space-y-5 overflow-y-auto px-2.5 py-4">
         {NAV.map((group) => (
           <div key={group.heading}>
-            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
-              {group.heading}
-            </p>
-            <ul className="space-y-1">
+            {collapsed ? (
+              <div className="mx-2 mb-2 border-t border-white/[0.06]" aria-hidden="true" />
+            ) : (
+              <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">{group.heading}</p>
+            )}
+            <ul className="space-y-0.5">
               {group.items.map((item) => {
                 const active = pendingHref
                   ? pathMatches(pendingHref, item.href) || (item.aliases ?? []).some((href) => pathMatches(pendingHref, href))
                   : isActive(pathname, item);
+                const Glyph = item.icon;
                 return (
                   <li key={item.href}>
                     <Link
                       href={item.href}
                       prefetch
+                      title={collapsed ? item.label : undefined}
                       onClick={() => onNavigate?.(item.href)}
                       aria-current={active ? 'page' : undefined}
-                      className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-brand-500/[0.12] text-brand-100 ring-1 ring-inset ring-brand-500/25'
-                          : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
-                      }`}
+                      className={`group relative flex items-center rounded-lg text-[13.5px] font-medium transition-colors ${
+                        collapsed ? 'h-10 justify-center' : 'gap-3 px-3 py-2'
+                      } ${active ? 'bg-brand-500/[0.12] text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'}`}
                     >
-                      <NavIconGlyph icon={item.icon} />
-                      {item.label}
+                      {active ? <span className="absolute inset-y-1.5 left-0 w-[3px] rounded-full bg-brand-400" aria-hidden="true" /> : null}
+                      <Glyph className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-brand-300' : ''}`} strokeWidth={1.7} aria-hidden />
+                      {collapsed ? <span className="sr-only">{item.label}</span> : item.label}
                     </Link>
                   </li>
                 );
@@ -166,64 +161,74 @@ function SidebarContent({
           </div>
         ))}
       </nav>
-
-      <div className="border-t border-white/[0.06] px-5 py-4">
-        <p className="truncate text-[13px] text-neutral-400" title={email}>
-          {email}
-        </p>
-        <form action={signOutAction} className="mt-3">
-          <Button type="submit" variant="secondary" size="sm" className="w-full">
-            Sign out
-          </Button>
-        </form>
-      </div>
     </div>
   );
 }
 
-export default function Shell({
-  email,
-  children,
-}: {
-  email: string;
-  children: React.ReactNode;
-}) {
+function UserMenu({ email }: { email: string }) {
+  return (
+    <details className="group relative">
+      <summary className="flex cursor-pointer list-none items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3 text-sm text-neutral-300 transition-colors hover:border-white/20 hover:text-white [&::-webkit-details-marker]:hidden">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500/20 text-[11px] font-semibold text-brand-100">{initials(email)}</span>
+        <span className="hidden max-w-[180px] truncate sm:block">{email}</span>
+      </summary>
+      <div className="absolute right-0 z-50 mt-2 w-64 rounded-xl border border-white/10 bg-ink-900 p-2 shadow-2xl">
+        <p className="truncate px-3 py-2 text-xs text-neutral-500" title={email}>
+          Signed in as <span className="text-neutral-300">{email}</span>
+        </p>
+        <form action={signOutAction}>
+          <button type="submit" className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-neutral-300 hover:bg-white/[0.05] hover:text-white">
+            <LogOut className="h-4 w-4" strokeWidth={1.7} aria-hidden />
+            Sign out
+          </button>
+        </form>
+      </div>
+    </details>
+  );
+}
+
+export default function Shell({ email, children }: { email: string; children: React.ReactNode }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const pendingItem = NAV.flatMap((group) => group.items).find((item) => item.href === pendingHref);
-  const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
 
-  const currentLabel =
-    NAV.flatMap((group) => group.items).find((item) =>
-      navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item),
-    )?.label ?? 'Admin';
+  function toggleCollapsed() {
+    try {
+      window.localStorage.setItem(COLLAPSE_KEY, collapsed ? '0' : '1');
+    } catch {
+      /* storage can be blocked: the sidebar then simply does not remember */
+    }
+    window.dispatchEvent(new Event(COLLAPSE_EVENT));
+  }
+
+  const pendingItem = ALL_ITEMS.find((item) => item.href === pendingHref);
+  const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
+  const current = ALL_ITEMS.find((item) => (navigating && pendingHref ? pathMatches(pendingHref, item.href) : isActive(pathname, item)));
 
   return (
     <div className="relative flex min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
-
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 border-r border-white/[0.06] bg-ink-900 lg:block">
-        <SidebarContent
-          pathname={pathname}
-          email={email}
-          pendingHref={navigating ? pendingHref : null}
-          onNavigate={setPendingHref}
-        />
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 hidden border-r border-white/[0.06] bg-ink-900 transition-[width] duration-200 lg:block ${collapsed ? 'w-[76px]' : 'w-64'}`}
+      >
+        <SidebarContent pathname={pathname} collapsed={collapsed} pendingHref={navigating ? pendingHref : null} onNavigate={setPendingHref} />
       </aside>
 
       {drawerOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            aria-label="Close menu"
-            className="absolute inset-0 bg-black/80"
-            onClick={() => setDrawerOpen(false)}
-          />
+          <button type="button" aria-label="Close menu" className="absolute inset-0 bg-black/80" onClick={() => setDrawerOpen(false)} />
           <div className="absolute inset-y-0 left-0 w-72 border-r border-white/[0.06] bg-ink-900 shadow-2xl">
+            <button
+              type="button"
+              aria-label="Close menu"
+              onClick={() => setDrawerOpen(false)}
+              className="absolute right-3 top-3 z-10 rounded-lg p-1.5 text-neutral-400 hover:text-white"
+            >
+              <X className="h-5 w-5" strokeWidth={1.7} aria-hidden />
+            </button>
             <SidebarContent
               pathname={pathname}
-              email={email}
+              collapsed={false}
               pendingHref={navigating ? pendingHref : null}
               onNavigate={(href) => {
                 setPendingHref(href);
@@ -234,22 +239,44 @@ export default function Shell({
         </div>
       )}
 
-      <div className="relative z-10 flex min-w-0 flex-1 flex-col lg:pl-64">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.06] bg-ink-950 px-4 lg:hidden">
+      <div className={`relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ${collapsed ? 'lg:pl-[76px]' : 'lg:pl-64'}`}>
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-white/[0.06] bg-ink-950/90 px-4 backdrop-blur sm:px-6">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
             aria-label="Open menu"
-            className="rounded-xl border border-white/10 p-2 text-brand-300"
+            className="rounded-lg p-2 text-neutral-400 hover:bg-white/[0.05] hover:text-white lg:hidden"
           >
-            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round">
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
+            <Menu className="h-5 w-5" strokeWidth={1.7} aria-hidden />
           </button>
-          <span className="text-sm font-semibold text-white">{currentLabel}</span>
+          <button
+            type="button"
+            onClick={toggleCollapsed}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="hidden rounded-lg p-2 text-neutral-400 hover:bg-white/[0.05] hover:text-white lg:block"
+          >
+            {collapsed ? <PanelLeftOpen className="h-[18px] w-[18px]" strokeWidth={1.7} aria-hidden /> : <PanelLeftClose className="h-[18px] w-[18px]" strokeWidth={1.7} aria-hidden />}
+          </button>
+
+          <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-sm">
+            <span className="hidden text-neutral-500 sm:inline">{current?.group ?? 'Admin'}</span>
+            {current ? <ChevronRight className="hidden h-3.5 w-3.5 text-neutral-600 sm:block" aria-hidden /> : null}
+            <span className="truncate font-medium text-white">{current?.label ?? 'Admin'}</span>
+          </nav>
+
+          <div className="ml-auto flex items-center gap-2">
+            <Link
+              href="/vistrial/team/ghl/activity"
+              className="hidden items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-neutral-400 transition-colors hover:border-white/20 hover:text-white md:flex"
+            >
+              <Link2 className="h-3.5 w-3.5" strokeWidth={1.7} aria-hidden />
+              Live activity
+            </Link>
+            <UserMenu email={email} />
+          </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 sm:py-10">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
       </div>
     </div>
   );

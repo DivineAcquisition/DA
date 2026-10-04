@@ -48,9 +48,10 @@ export function companyInfoFromSettings(settings: {
 }): CompanyInfo {
   return {
     name: (settings.company_name ?? '').trim() || 'Divine Acquisition',
-    rep: (settings.company_rep ?? '').trim() || 'Malik Sannie',
-    email: (settings.company_email ?? '').trim() || 'malik@divineacquisition.io',
-    title: (settings.company_title ?? '').trim() || 'Owner',
+    // No person is assumed: the representative comes from Settings or stays empty.
+    rep: (settings.company_rep ?? '').trim(),
+    email: (settings.company_email ?? '').trim(),
+    title: (settings.company_title ?? '').trim(),
   };
 }
 

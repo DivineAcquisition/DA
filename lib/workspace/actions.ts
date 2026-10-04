@@ -463,6 +463,15 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
     .maybeSingle();
   if (!template) return { ok: false, error: 'Template not found.' };
 
+  // The countersigning party is never assumed: an operator agreement needs the
+  // representative DA set in Settings.
+  if (template.recipient_type === 'operator' || recipient.recipient_type === 'operator') {
+    const signer = companyInfoFromSettings(settings);
+    if (!signer.rep || !signer.email) {
+      return { ok: false, error: 'Set the company representative name and email in Settings before sending an operator agreement.' };
+    }
+  }
+
   // Create local agreement first so tokens can reference it; DocuSeal comes after tokens.
   const { data: agreement, error: agreementError } = await supabase
     .from('da_agreement')

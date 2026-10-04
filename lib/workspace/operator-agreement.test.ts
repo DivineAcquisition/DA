@@ -20,6 +20,12 @@ const company = companyInfoFromSettings({
   company_title: 'Owner',
 });
 
+describe('company signer', () => {
+  it('assumes no person when settings are empty', () => {
+    expect(companyInfoFromSettings({})).toMatchObject({ rep: '', email: '', title: '' });
+  });
+});
+
 describe('operator agreement variant', () => {
   it('detects the hourly VA template by name', () => {
     expect(inferOperatorVariant('VA Independent Contractor Agreement')).toBe('standard');

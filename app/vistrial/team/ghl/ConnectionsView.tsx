@@ -151,7 +151,7 @@ export function AddConnectionForm({ level, caseFileId }: { level: 'agency' | 'lo
       {level === 'location' ? (
         <label className="flex items-center gap-2 text-sm text-neutral-300 sm:col-span-2">
           <input type="checkbox" checked={isTest} onChange={(e) => setIsTest(e.target.checked)} />
-          This is the test sub-account (Novara Cleaning or a sandbox), never a paying client
+          This is a test or sandbox sub-account, never a paying client
         </label>
       ) : null}
       <StepUpField value={password} onChange={setPassword} />

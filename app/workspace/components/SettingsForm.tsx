@@ -71,14 +71,14 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
           />
         </Field>
         <Field label="Representative name">
-          <Input name="company_rep" defaultValue={settings.company_rep} placeholder="Malik Sannie" />
+          <Input name="company_rep" defaultValue={settings.company_rep} placeholder="Full name" />
         </Field>
         <Field label="Representative email">
           <Input
             name="company_email"
             type="email"
             defaultValue={settings.company_email}
-            placeholder="malik@divineacquisition.io"
+            placeholder="name@yourcompany.com"
           />
         </Field>
         <Field label="Title">

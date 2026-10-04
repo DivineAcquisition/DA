@@ -91,7 +91,7 @@ export default function AuditForm({
             </select>
           </Field>
           <Field label="Owner">
-            <select name="owner" defaultValue={debrief?.owner || 'Malik'} className={inputClass}>
+            <select name="owner" defaultValue={debrief?.owner || ''} className={inputClass}>
               <option value="">Select…</option>
               {DEBRIEF_OWNERS.map((owner) => (
                 <option key={owner} value={owner}>
