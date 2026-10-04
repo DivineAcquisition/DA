@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Field as CossField, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { ShineBorder } from '@/components/ui/shine-border';
 import { DateTimePicker } from '@/components/schedule/DateTimePicker';
 import { bookAcqAuditAction } from '@/lib/acq/schedule';
 
@@ -29,13 +32,15 @@ export function AcqScheduler({
 
   return (
     <div className="space-y-4">
-      <label className="block">
-        <span className="acq-headline text-[13px] font-semibold text-white">Mobile number</span>
-        <span className="mt-1 block text-sm text-neutral-500">
-          Used for a text 15 minutes before the call.
-        </span>
-        <span className="acq-field mt-2 block">
-          <input
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
+        <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
+        <CossField className="relative z-[1]">
+          <FieldLabel className="mb-1.5 text-[13px] font-semibold normal-case tracking-tight text-white">
+            Mobile number
+          </FieldLabel>
+          <p className="mb-2 text-sm text-neutral-500">Used for a text 15 minutes before the call.</p>
+          <Input
+            nativeInput
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
             type="tel"
@@ -43,10 +48,11 @@ export function AcqScheduler({
             autoComplete="tel"
             required
             placeholder="(555) 201-8890"
-            className="acq-field-control"
+            size="lg"
+            className="text-base"
           />
-        </span>
-      </label>
+        </CossField>
+      </div>
       <DateTimePicker
         onBook={async (input) => {
           const digits = phone.replace(/\D/g, '');

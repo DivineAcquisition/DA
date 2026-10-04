@@ -11,6 +11,11 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { Field as CossField, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/select';
+import { ShineBorder } from '@/components/ui/shine-border';
 import { CTA_LABEL, FORM_LABELS, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
   FOLLOW_UP_OPTIONS,
@@ -20,30 +25,8 @@ import {
 import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
-function Field({
-  label,
-  children,
-  className = '',
-}: {
-  label: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <label className={`block ${className}`}>
-      <span className="acq-headline text-[13px] font-semibold tracking-tight text-white">{label}</span>
-      <span className="acq-field mt-1.5 block">{children}</span>
-    </label>
-  );
-}
-
-function SelectChevron() {
-  return (
-    <svg className="acq-field-chevron" viewBox="0 0 16 16" fill="none" aria-hidden>
-      <path d="M4 6.2 8 10l4-3.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
+const fieldLabel = 'mb-1.5 text-[13px] font-semibold normal-case tracking-tight text-white';
+const fieldControl = 'text-base sm:text-[15px]';
 
 type QualifyContextValue = {
   open: () => void;
@@ -179,7 +162,7 @@ function QualifyDialog({
       ref={dialogRef}
       aria-labelledby={titleId}
       aria-describedby={descId}
-      className="acq-dialog"
+      className="acq-dialog relative overflow-hidden"
       onCancel={(event) => {
         if (pending) event.preventDefault();
       }}
@@ -187,124 +170,141 @@ function QualifyDialog({
         if (!pending) setError(null);
       }}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
-            Free audit
-          </p>
-          <h2 id={titleId} className="acq-headline mt-1 text-[1.2rem] font-semibold leading-[1.15] tracking-tight text-white">
-            {QUALIFY_DIALOG.title}
-          </h2>
-          <p id={descId} className="mt-1 text-[13px] leading-snug text-neutral-400">
-            {QUALIFY_DIALOG.description}
-          </p>
+      <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
+      <BorderBeam size={72} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+      <div className="relative z-[1] flex min-h-0 flex-col">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
+              Free audit
+            </p>
+            <h2 id={titleId} className="acq-headline mt-1 text-[1.25rem] font-semibold leading-[1.15] tracking-tight text-white sm:text-[1.35rem]">
+              {QUALIFY_DIALOG.title}
+            </h2>
+            <p id={descId} className="mt-1 text-sm leading-snug text-neutral-400">
+              {QUALIFY_DIALOG.description}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={close}
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl text-neutral-400 transition hover:bg-white/[0.06] hover:text-white"
+            aria-label="Close"
+          >
+            <span aria-hidden className="text-2xl leading-none">
+              ×
+            </span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={close}
-          className="min-h-9 min-w-9 rounded-lg text-neutral-500 transition hover:bg-white/[0.05] hover:text-white"
-          aria-label="Close"
-        >
-          <span aria-hidden className="text-lg leading-none">
-            ×
-          </span>
-        </button>
-      </div>
 
-      <form onSubmit={onSubmit} className="mt-5 grid gap-3.5" noValidate>
-        <div className="grid gap-3.5 sm:grid-cols-2">
-          <Field label={FORM_LABELS.fullName}>
-            <input
-              ref={firstFieldRef}
-              name="fullName"
+        <form onSubmit={onSubmit} className="acq-dialog-body mt-4 grid gap-3.5" noValidate>
+          <div className="grid gap-3.5 md:grid-cols-2">
+            <CossField>
+              <FieldLabel className={fieldLabel}>{FORM_LABELS.fullName}</FieldLabel>
+              <Input
+                nativeInput
+                ref={firstFieldRef}
+                name="fullName"
+                type="text"
+                autoComplete="name"
+                required
+                placeholder="Jordan Blake"
+                size="lg"
+                className={fieldControl}
+              />
+            </CossField>
+            <CossField>
+              <FieldLabel className={fieldLabel}>{FORM_LABELS.email}</FieldLabel>
+              <Input
+                nativeInput
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="you@company.com"
+                size="lg"
+                inputMode="email"
+                className={fieldControl}
+              />
+            </CossField>
+          </div>
+          <CossField>
+            <FieldLabel className={fieldLabel}>{FORM_LABELS.offer}</FieldLabel>
+            <Input
+              nativeInput
+              name="offer"
               type="text"
-              autoComplete="name"
               required
-              placeholder="Jordan Blake"
-              className="acq-field-control"
+              minLength={2}
+              maxLength={200}
+              placeholder="A 12-week coaching program"
+              size="lg"
+              className={fieldControl}
             />
-          </Field>
-          <Field label={FORM_LABELS.email}>
-            <input
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@company.com"
-              className="acq-field-control"
-            />
-          </Field>
-        </div>
-        <Field label={FORM_LABELS.offer}>
-          <input
-            name="offer"
-            type="text"
-            required
-            minLength={2}
-            maxLength={200}
-            placeholder="A 12-week coaching program"
-            className="acq-field-control"
-          />
-        </Field>
-        <div className="grid gap-3.5 sm:grid-cols-2">
-          <Field label={FORM_LABELS.programPrice}>
-            <select name="programPrice" required defaultValue="" className="acq-field-control acq-field-select">
+          </CossField>
+          <div className="grid gap-3.5 md:grid-cols-2">
+            <CossField>
+              <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
+              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 text-base">
+                <option value="" disabled>
+                  Select one
+                </option>
+                {PROGRAM_PRICE_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </NativeSelect>
+            </CossField>
+            <CossField>
+              <FieldLabel className={fieldLabel}>{FORM_LABELS.inquiries}</FieldLabel>
+              <Input
+                nativeInput
+                name="inquiriesPerMonth"
+                type="number"
+                inputMode="numeric"
+                required
+                min={0}
+                max={100000}
+                step={1}
+                placeholder="12"
+                size="lg"
+                className={fieldControl}
+              />
+            </CossField>
+          </div>
+          <CossField>
+            <FieldLabel className={fieldLabel}>{FORM_LABELS.followUp}</FieldLabel>
+            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 text-base">
               <option value="" disabled>
                 Select one
               </option>
-              {PROGRAM_PRICE_OPTIONS.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+              {FOLLOW_UP_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
                 </option>
               ))}
-            </select>
-            <SelectChevron />
-          </Field>
-          <Field label={FORM_LABELS.inquiries}>
-            <input
-              name="inquiriesPerMonth"
-              type="number"
-              inputMode="numeric"
-              required
-              min={0}
-              max={100000}
-              step={1}
-              placeholder="12"
-              className="acq-field-control"
-            />
-          </Field>
-        </div>
-        <Field label={FORM_LABELS.followUp}>
-          <select name="followUp" required defaultValue="" className="acq-field-control acq-field-select">
-            <option value="" disabled>
-              Select one
-            </option>
-            {FOLLOW_UP_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <SelectChevron />
-        </Field>
+            </NativeSelect>
+          </CossField>
 
-        <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-          <label>
-            Website
-            <input name="website" type="text" tabIndex={-1} autoComplete="off" />
-          </label>
-        </div>
+          <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+            <label>
+              Website
+              <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+            </label>
+          </div>
 
-        {error ? (
-          <p className="text-[13px] text-flag-critical" role="alert">
-            {error}
-          </p>
-        ) : null}
+          {error ? (
+            <p className="text-sm text-flag-critical" role="alert">
+              {error}
+            </p>
+          ) : null}
 
-        <button type="submit" disabled={pending} className="acq-button acq-button-full mt-0.5">
-          {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
-        </button>
-      </form>
+          <button type="submit" disabled={pending} className="acq-button acq-button-full sticky bottom-0 mt-1">
+            {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
+          </button>
+        </form>
+      </div>
     </dialog>
   );
 }
