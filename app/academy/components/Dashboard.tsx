@@ -38,7 +38,18 @@ export default function Dashboard({ shell }: { shell: AcademyShell }) {
         <h2 className="text-sm font-semibold text-neutral-300">Current module</h2>
         <p className="mt-2 text-lg font-semibold">{shell.currentModule?.title ?? 'None open'}</p>
         {shell.currentModule ? (
-          <p className="mt-1 text-sm text-neutral-400">Module {shell.currentModule.order}</p>
+          <p className="mt-1 text-sm text-neutral-400">
+            Module {shell.currentModule.order}
+            {(() => {
+              const quiz = shell.modules.find((item) => item.id === shell.currentModule?.id)?.quiz;
+              if (!quiz || quiz.highestScore === null || quiz.status !== 'passed') return null;
+              const score =
+                quiz.passMarkUnit === 'percent'
+                  ? `${Math.round((quiz.highestScore / Math.max(quiz.questionCount, 1)) * 100)}%`
+                  : `${quiz.highestScore} of ${quiz.questionCount}`;
+              return ` · Highest quiz score ${score}`;
+            })()}
+          </p>
         ) : null}
       </section>
 

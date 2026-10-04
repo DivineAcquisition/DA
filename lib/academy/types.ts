@@ -18,7 +18,33 @@ export type AcademyModuleDisplay =
   | 'in_progress'
   | 'complete'
   | 'unpublished'
-  | 'lessons_complete';
+  | 'lessons_complete'
+  | 'quiz_available'
+  | 'quiz_passed_pending';
+
+export type AcademyQuizStatus = 'not_available' | 'available' | 'in_progress' | 'locked' | 'passed' | 'on_hold';
+
+export type AcademyQuizCard = {
+  quizId: string;
+  kind: string;
+  status: AcademyQuizStatus;
+  attemptsUsed: number;
+  attemptsAllowed: number;
+  attemptsRemaining: number;
+  lockoutUntil: string | null;
+  highestScore: number | null;
+  questionCount: number;
+  passMark: number;
+  passMarkUnit: string;
+  passedAt: string | null;
+};
+
+export type AcademyGateCard = {
+  id: string;
+  key: string;
+  label: string;
+  status: 'satisfied' | 'pending';
+};
 
 export type AcademyModule = {
   id: string;
@@ -30,6 +56,8 @@ export type AcademyModule = {
   gateDetail: string | null;
   display: AcademyModuleDisplay;
   openable: boolean;
+  quiz: AcademyQuizCard | null;
+  gates: AcademyGateCard[];
 };
 
 export type AcademyShell = {

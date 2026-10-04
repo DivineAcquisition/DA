@@ -25,5 +25,6 @@ export default async function AcademyLessonPage({ params }: { params: Promise<{ 
   }
   const lesson = lessonView(data);
   if (!lesson) return null;
+  await controlRpc(supabase, 'academy_record_lesson_open', { p_lesson_id: lessonId });
   return <LessonPlayer lesson={lesson} />;
 }

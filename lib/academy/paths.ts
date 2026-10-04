@@ -1,4 +1,4 @@
-export type AcademyPathKind = 'home' | 'modules' | 'module' | 'lesson' | 'missing';
+export type AcademyPathKind = 'home' | 'modules' | 'module' | 'lesson' | 'quiz' | 'missing';
 
 /** Which trainee screen a path is. Anything else is a not-found, including other apps. */
 export function academyPathKind(pathname: string): AcademyPathKind {
@@ -6,6 +6,7 @@ export function academyPathKind(pathname: string): AcademyPathKind {
   if (path === '/academy') return 'home';
   if (path === '/academy/modules') return 'modules';
   if (/^\/academy\/modules\/[^/]+\/lessons\/[^/]+$/.test(path)) return 'lesson';
+  if (/^\/academy\/modules\/[^/]+\/quiz$/.test(path)) return 'quiz';
   if (/^\/academy\/modules\/[^/]+$/.test(path)) return 'module';
   return 'missing';
 }
@@ -24,6 +25,10 @@ export function moduleStatusLabel(display: string): string {
       return 'Not yet published';
     case 'lessons_complete':
       return 'Lessons complete, quiz not yet available';
+    case 'quiz_available':
+      return 'Quiz available';
+    case 'quiz_passed_pending':
+      return 'Quiz passed, additional requirement pending';
     default:
       return 'Unavailable';
   }
