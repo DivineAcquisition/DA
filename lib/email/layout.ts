@@ -1,6 +1,6 @@
 /**
- * One look for every email DA sends: brand bar, a single card, and the growth
- * consulting footer. Table layout with inline styles only, because Gmail and
+ * One look for every email DA sends: brand bar, a single card, and the brand
+ * footer. Table layout with inline styles only, because Gmail and
  * Outlook drop <style> blocks and flexbox.
  */
 
@@ -9,8 +9,6 @@ const ACQ_ORIGIN = (process.env.NEXT_PUBLIC_ACQ_HOST ?? 'https://acq.divineacqui
 
 export const EMAIL_BRAND = {
   name: 'Divine Acquisition',
-  practice: 'Growth Consulting',
-  positioning: 'Sales operations systems that turn the demand you already have into booked calls.',
   motto: 'Devotion. Value. Exclusivity.',
   siteUrl: SITE_URL,
   siteLabel: 'divineacquisition.io',
@@ -151,10 +149,8 @@ function footerHtml(footer: EmailFooter): string {
 <td valign="middle" style="padding-right:12px;"><img src="${escapeHtml(EMAIL_BRAND.markUrl)}" width="21" height="28" alt="" style="display:block;border:0;outline:none;" /></td>
 <td valign="middle">
 <p style="margin:0;font-family:${SANS};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.heading};">${escapeHtml(EMAIL_BRAND.name)}</p>
-<p style="margin:3px 0 0;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${C.accent};">${escapeHtml(EMAIL_BRAND.practice)}</p>
 </td></tr></table>
-<p style="margin:16px 0 0;font-family:${SANS};font-size:13px;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.positioning)}</p>
-<p style="margin:6px 0 0;font-family:${SERIF};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
+<p style="margin:16px 0 0;font-family:${SERIF};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
 <p style="margin:16px 0 0;font-family:${SANS};font-size:12px;line-height:1.8;">${links}</p>
 ${small(escapeHtml(footer.reason), 16)}
 ${footer.disclaimer ? small(escapeHtml(footer.disclaimer)) : ''}
@@ -212,7 +208,6 @@ ${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${SANS};font-size
 <td valign="middle"><p style="margin:0;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:${C.heading};">${escapeHtml(EMAIL_BRAND.name)}</p></td>
 </tr></table>
 </td>
-<td align="right" valign="middle"><p style="margin:0;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:${C.muted};">${escapeHtml(EMAIL_BRAND.practice)}</p></td>
 </tr></table>
 </td></tr>
 <tr><td bgcolor="${C.card}" style="background-color:${C.card};border:1px solid ${C.cardBorder};border-radius:20px;">
@@ -239,8 +234,7 @@ ${footerHtml(content.footer)}
 export function textFooter(footer: EmailFooter): string[] {
   return [
     '--',
-    `${EMAIL_BRAND.name} | ${EMAIL_BRAND.practice}`,
-    EMAIL_BRAND.positioning,
+    EMAIL_BRAND.name,
     EMAIL_BRAND.siteUrl,
     ...(footer.showAuditLink ? [`Book a free audit: ${EMAIL_BRAND.auditUrl}`] : []),
     `Privacy policy: ${EMAIL_BRAND.privacyUrl}`,

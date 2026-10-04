@@ -12,10 +12,10 @@ const base = {
 };
 
 describe('email layout', () => {
-  it('carries the growth consulting footer and legal links', () => {
+  it('carries the brand footer and legal links, without practice or positioning lines', () => {
     const html = renderEmailHtml(base);
-    expect(html).toContain('Growth Consulting');
-    expect(html).toContain(EMAIL_BRAND.positioning);
+    expect(html).toContain(EMAIL_BRAND.motto);
+    expect(html).not.toMatch(/growth consulting|sales operation/i);
     expect(html).toContain(EMAIL_BRAND.privacyUrl);
     expect(html).toContain(EMAIL_BRAND.termsUrl);
     expect(html).toContain('You booked a call.');
@@ -36,7 +36,8 @@ describe('email layout', () => {
 
   it('mirrors the footer in plain text', () => {
     const text = textFooter({ reason: 'You booked a call.' }).join('\n');
-    expect(text).toContain('Divine Acquisition | Growth Consulting');
+    expect(text).toContain('Divine Acquisition');
+    expect(text).not.toMatch(/growth consulting|sales operation/i);
     expect(text).toContain(EMAIL_BRAND.siteUrl);
     expect(text).toContain('You booked a call.');
   });
