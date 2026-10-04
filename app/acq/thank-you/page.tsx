@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
-import { FACEBOOK_DISCLAIMER, THANK_YOU } from '@/lib/acq/copy';
+import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { qualificationSchedulePath } from '@/lib/acq/config';
 import { headers } from 'next/headers';
 
@@ -32,8 +32,14 @@ export default async function AcqThankYouPage({
         </header>
         <section className="px-5 pb-20 pt-12 sm:px-6 sm:pt-16">
           <div className="mx-auto max-w-3xl">
-            <h1 className="acq-headline text-3xl font-semibold tracking-tight sm:text-4xl">{THANK_YOU.title}</h1>
+            <h1 className="acq-headline text-3xl font-semibold tracking-tight sm:text-4xl">
+              Application received
+            </h1>
             <div className="mt-5 space-y-4 text-sm leading-relaxed text-neutral-300 sm:text-[15px]">
+              <p>
+                The date and time picker opens as soon as the application is saved. Submit it once
+                more if you landed here without a calendar.
+              </p>
               <p>
                 I put real time into the system roadmaps and blueprints for this call. That work only
                 pays off if you show up. Please book a time you will keep.

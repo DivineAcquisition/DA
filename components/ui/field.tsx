@@ -4,6 +4,19 @@ import { Field as FieldPrimitive } from '@base-ui/react/field';
 import type React from 'react';
 import { cn } from '@/lib/utils';
 
+export function FieldGroup({
+  className,
+  ...props
+}: React.ComponentProps<'div'>): React.ReactElement {
+  return (
+    <div
+      className={cn('flex w-full flex-col gap-4', className)}
+      data-slot="field-group"
+      {...props}
+    />
+  );
+}
+
 export function Field({
   className,
   ...props

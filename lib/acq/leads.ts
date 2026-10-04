@@ -1,6 +1,7 @@
 import { createToken } from '@/lib/workspace/tokens';
 import { serviceClient, workspaceClient } from '@/lib/workspace/db';
 import { supabaseConfigured } from '@/lib/supabase/server';
+import { acqPublicClients } from './public-db';
 import { closedStagesPostgrestIn, isClosedStage } from './stages';
 import type { QualificationPayload } from './qualify';
 import { scoreQualification, type WorkspaceScore } from './score';
@@ -216,7 +217,105 @@ export async function searchLeadRows(input: {
   return filtered.slice(0, limit);
 }
 
+function capturedLead(
+  payload: QualificationPayload,
+  id: string,
+  scheduleToken: string,
+  ghlContactId: string,
+): LeadRow {
+  return {
+    id,
+    created_at: '',
+    updated_at: '',
+    full_name: payload.fullName,
+    email: payload.email,
+    phone: payload.phone,
+    company_name: payload.companyName,
+    coaching_niche: payload.coachingNiche,
+    stage: payload.stage,
+    qualification_result: null,
+    readiness_score: null,
+    monthly_ad_spend: payload.monthlyAdSpend,
+    follow_up_owner: payload.followUpOwner,
+    program_price: payload.programPrice,
+    next_action: '',
+    ghl_contact_id: ghlContactId,
+    audit_booked_date: '',
+    notes: '',
+    meet_url: '',
+    calendar_event_id: '',
+    schedule_token: scheduleToken,
+    payload: { scheduleToken },
+    airtable_record_id: null,
+    airtable_synced_at: null,
+    airtable_sync_error: null,
+  };
+}
+
+/**
+ * Writes through the public capture function. Direct table inserts are blocked
+ * by admin-only RLS when the service role is not on the deploy.
+ */
+async function captureApplication(
+  payload: QualificationPayload,
+  ghlContactId: string,
+): Promise<LeadRow | null> {
+  const clients = acqPublicClients();
+  if (!clients.length) return null;
+
+  const score = scoreQualification(payload);
+  const scheduleToken = createToken();
+  const lead = {
+    fullName: payload.fullName,
+    email: payload.email,
+    phone: payload.phone,
+    companyName: payload.companyName,
+    coachingNiche: payload.coachingNiche,
+    monthlyAdSpend: payload.monthlyAdSpend,
+    followUpOwner: payload.followUpOwner,
+    programPrice: payload.programPrice,
+    stage: payload.stage,
+    qualificationResult: score.qualificationResult,
+    readinessScore: score.readinessScore,
+    ghlContactId,
+    inquiriesPerMonth: payload.inquiriesPerMonth,
+    source: payload.source,
+    tracking: payload.tracking,
+    tags: payload.tags,
+    scheduleToken,
+  };
+
+  for (const client of clients) {
+    const { data, error } = await client.rpc('acq_capture_application', { p_lead: lead });
+    const row = (Array.isArray(data) ? data[0] : data) as { id?: string; schedule_token?: string } | null;
+    if (!error && row?.id && row.schedule_token) {
+      return capturedLead(payload, row.id, row.schedule_token, ghlContactId);
+    }
+  }
+  return null;
+}
+
 export async function upsertLeadFromQualification(
+  payload: QualificationPayload,
+  ghlContactId: string,
+  preferService = true,
+): Promise<LeadRow> {
+  const captured = await captureApplication(payload, ghlContactId);
+  try {
+    const saved = await upsertLeadTable(payload, ghlContactId, preferService);
+    if (!captured) return saved;
+    return {
+      ...saved,
+      id: captured.id || saved.id,
+      schedule_token: captured.schedule_token || saved.schedule_token,
+    };
+  } catch (error) {
+    if (captured) return captured;
+    throw error;
+  }
+}
+
+async function upsertLeadTable(
   payload: QualificationPayload,
   ghlContactId: string,
   preferService = true,

@@ -223,14 +223,14 @@ a.acq-button:active {
 
 @media (max-width: 767px) {
   .acq-dialog {
-    width: min(calc(100vw - 4.5rem), 18.5rem);
+    width: calc(100vw - 1.5rem);
     min-width: 0;
-    max-width: min(calc(100vw - 4.5rem), 18.5rem);
-    max-height: calc(100dvh - 2.5rem - env(safe-area-inset-top));
+    max-width: calc(100vw - 1.5rem);
+    max-height: calc(100dvh - 1.25rem - env(safe-area-inset-top));
     height: fit-content;
     margin: auto;
-    border-radius: 1.1rem;
-    padding: 0.8rem 0.75rem calc(0.7rem + env(safe-area-inset-bottom));
+    border-radius: 1.15rem;
+    padding: 1.05rem 1rem calc(0.95rem + env(safe-area-inset-bottom));
   }
 
   .acq-dialog input,

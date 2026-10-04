@@ -9,6 +9,7 @@ import {
 import { createClient, supabaseConfigured } from '@/lib/supabase/server';
 import { isOfferedSlot } from '@/lib/calendar/slots';
 import { createAcqGhlAppointment, updateGhlContactPhone } from './ghl-sms';
+import { acqPublicClients } from './public-db';
 import { sendAcqAuditEmail } from './schedule-email';
 
 type BookRow = {
@@ -35,24 +36,48 @@ export type AcqScheduleView = {
   meetUrl: string | null;
 };
 
+type ResolveRow = {
+  full_name?: string;
+  coaching_niche?: string;
+  scheduled_for?: string | null;
+  time_zone?: string | null;
+  meet_url?: string | null;
+};
+
+async function scheduleClients() {
+  const clients = acqPublicClients();
+  if (supabaseConfigured) {
+    try {
+      clients.push((await createClient()) as (typeof clients)[number]);
+    } catch {
+      // The cookie client is optional. The public project client can still book.
+    }
+  }
+  return clients;
+}
+
+function asRow<T>(data: T | T[] | null): T | null {
+  if (Array.isArray(data)) return data[0] ?? null;
+  return data;
+}
+
 export async function loadAcqSchedule(token: string): Promise<AcqScheduleView | null> {
-  if (!supabaseConfigured || token.trim().length < 32) return null;
-  const supabase = await createClient();
-  const { data } = await controlRpc<{
-    full_name?: string;
-    coaching_niche?: string;
-    scheduled_for?: string | null;
-    time_zone?: string | null;
-    meet_url?: string | null;
-  }>(supabase, 'acq_resolve_schedule_token', { p_token: token });
-  if (!data?.full_name) return null;
-  return {
-    fullName: data.full_name,
-    offer: data.coaching_niche || '',
-    scheduledFor: data.scheduled_for ?? null,
-    timeZone: data.time_zone ?? null,
-    meetUrl: data.meet_url ?? null,
-  };
+  if (token.trim().length < 32) return null;
+  for (const supabase of await scheduleClients()) {
+    const { data } = await controlRpc<ResolveRow>(supabase as never, 'acq_resolve_schedule_token', {
+      p_token: token,
+    });
+    const row = asRow(data);
+    if (!row?.full_name) continue;
+    return {
+      fullName: row.full_name,
+      offer: row.coaching_niche || '',
+      scheduledFor: row.scheduled_for ?? null,
+      timeZone: row.time_zone ?? null,
+      meetUrl: row.meet_url ?? null,
+    };
+  }
+  return null;
 }
 
 export async function bookAcqAuditAction(
@@ -64,14 +89,15 @@ export async function bookAcqAuditAction(
   | { ok: true; startsAt: string; timeZone: string; meetUrl: string | null; alreadyBooked: boolean }
   | { ok: false; error: string }
 > {
-  if (!supabaseConfigured) return { ok: false, error: 'Scheduling is temporarily unavailable.' };
   if (!isOfferedSlot(startsAt, timeZone)) return { ok: false, error: 'Pick one of the open times.' };
   if (!calendarConfigured()) {
     return { ok: false, error: 'The calendar is not ready yet. Try again shortly.' };
   }
 
   const startsIso = new Date(startsAt).toISOString();
-  const supabase = await createClient();
+  const clients = await scheduleClients();
+  const supabase = clients[0];
+  if (!supabase) return { ok: false, error: 'Scheduling is temporarily unavailable.' };
   const { data, error } = await controlRpc<BookRow>(supabase, 'acq_book_schedule_slot', {
     p_token: token,
     p_starts_at: startsIso,

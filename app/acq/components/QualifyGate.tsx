@@ -12,7 +12,7 @@ import {
   type RefObject,
 } from 'react';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { Field as CossField, FieldLabel } from '@/components/ui/field';
+import { Field as CossField, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/select';
 import { ShineBorder } from '@/components/ui/shine-border';
@@ -25,8 +25,8 @@ import {
 import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
-const fieldLabel = 'mb-1.5 text-[13px] font-semibold normal-case tracking-tight text-white';
-const fieldControl = 'text-base sm:text-[15px]';
+const fieldLabel = 'mb-1.5 text-sm font-medium normal-case tracking-normal text-white';
+const fieldControl = 'min-h-12 text-base';
 
 type QualifyContextValue = {
   open: () => void;
@@ -197,8 +197,9 @@ function QualifyDialog({
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="acq-dialog-body mt-4 grid gap-3.5" noValidate>
-          <div className="grid gap-3 md:grid-cols-2">
+        <form onSubmit={onSubmit} className="acq-dialog-body mt-5" noValidate>
+          <FieldGroup>
+          <div className="grid gap-4 md:grid-cols-2">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.fullName}</FieldLabel>
               <Input
@@ -209,7 +210,7 @@ function QualifyDialog({
                 autoComplete="name"
                 required
                 placeholder="Jordan Blake"
-                size="default"
+                size="lg"
                 className={fieldControl}
               />
             </CossField>
@@ -222,7 +223,7 @@ function QualifyDialog({
                 autoComplete="email"
                 required
                 placeholder="you@company.com"
-                size="default"
+                size="lg"
                 inputMode="email"
                 className={fieldControl}
               />
@@ -238,14 +239,14 @@ function QualifyDialog({
               minLength={2}
               maxLength={200}
               placeholder="A 12-week coaching program"
-              size="default"
+              size="lg"
               className={fieldControl}
             />
           </CossField>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <CossField>
               <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
-              <NativeSelect name="programPrice" required defaultValue="" className="min-h-11 py-2 text-base">
+              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
                 <option value="" disabled>
                   Select one
                 </option>
@@ -268,14 +269,14 @@ function QualifyDialog({
                 max={100000}
                 step={1}
                 placeholder="12"
-                size="default"
+                size="lg"
                 className={fieldControl}
               />
             </CossField>
           </div>
           <CossField>
             <FieldLabel className={fieldLabel}>{FORM_LABELS.followUp}</FieldLabel>
-            <NativeSelect name="followUp" required defaultValue="" className="min-h-11 py-2 text-base">
+            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
               <option value="" disabled>
                 Select one
               </option>
@@ -303,6 +304,7 @@ function QualifyDialog({
           <button type="submit" disabled={pending} className="acq-button acq-button-full mt-1 shrink-0">
             {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
           </button>
+          </FieldGroup>
         </form>
       </div>
     </dialog>
