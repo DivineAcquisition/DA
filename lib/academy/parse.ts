@@ -72,7 +72,7 @@ export type RawAcademyShell = {
       pass_mark_unit?: string;
       passed_at?: string | null;
     } | null;
-    gates?: { id?: string; key?: string; label?: string; status?: string }[];
+    gates?: { id?: string; key?: string; label?: string; status?: string; best_score?: number | null }[];
   }[];
 };
 
@@ -109,11 +109,17 @@ function asQuiz(raw: NonNullable<NonNullable<RawAcademyShell['modules']>[number]
   };
 }
 
-function asGates(raw: { id?: string; key?: string; label?: string; status?: string }[] | undefined): AcademyGateCard[] {
+function asGates(raw: { id?: string; key?: string; label?: string; status?: string; best_score?: number | null }[] | undefined): AcademyGateCard[] {
   if (!Array.isArray(raw)) return [];
   return raw.flatMap((gate) => {
     if (!gate.id || !gate.label) return [];
-    return [{ id: gate.id, key: gate.key ?? '', label: gate.label, status: gate.status === 'satisfied' ? 'satisfied' as const : 'pending' as const }];
+    return [{
+      id: gate.id,
+      key: gate.key ?? '',
+      label: gate.label,
+      status: gate.status === 'satisfied' ? 'satisfied' as const : 'pending' as const,
+      bestScore: typeof gate.best_score === 'number' ? gate.best_score : null,
+    }];
   });
 }
 

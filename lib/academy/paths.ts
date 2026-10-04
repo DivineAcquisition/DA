@@ -1,4 +1,4 @@
-export type AcademyPathKind = 'home' | 'modules' | 'module' | 'lesson' | 'quiz' | 'missing';
+export type AcademyPathKind = 'home' | 'modules' | 'module' | 'lesson' | 'quiz' | 'simulation' | 'drill' | 'reflection' | 'practical' | 'missing';
 
 /** Which trainee screen a path is. Anything else is a not-found, including other apps. */
 export function academyPathKind(pathname: string): AcademyPathKind {
@@ -7,6 +7,10 @@ export function academyPathKind(pathname: string): AcademyPathKind {
   if (path === '/academy/modules') return 'modules';
   if (/^\/academy\/modules\/[^/]+\/lessons\/[^/]+$/.test(path)) return 'lesson';
   if (/^\/academy\/modules\/[^/]+\/quiz$/.test(path)) return 'quiz';
+  if (/^\/academy\/modules\/[^/]+\/simulations\/[^/]+$/.test(path)) return 'simulation';
+  if (/^\/academy\/modules\/[^/]+\/drill$/.test(path)) return 'drill';
+  if (/^\/academy\/modules\/[^/]+\/reflection$/.test(path)) return 'reflection';
+  if (/^\/academy\/modules\/[^/]+\/practical$/.test(path)) return 'practical';
   if (/^\/academy\/modules\/[^/]+$/.test(path)) return 'module';
   return 'missing';
 }

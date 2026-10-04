@@ -46,6 +46,7 @@ export type AcademyGateCard = {
   key: string;
   label: string;
   status: 'satisfied' | 'pending';
+  bestScore: number | null;
 };
 
 export type AcademyModule = {

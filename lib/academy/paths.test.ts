@@ -9,6 +9,10 @@ describe('academy paths', () => {
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f')).toBe('module');
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/lessons/m1')).toBe('lesson');
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/quiz')).toBe('quiz');
+    expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/simulations/abc')).toBe('simulation');
+    expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/drill')).toBe('drill');
+    expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/reflection')).toBe('reflection');
+    expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/practical')).toBe('practical');
     expect(academyPathKind('/academy/not-found')).toBe('missing');
     expect(academyPathKind('/vistrial/ops')).toBe('missing');
     expect(academyPathKind('/workspace/agreements')).toBe('missing');

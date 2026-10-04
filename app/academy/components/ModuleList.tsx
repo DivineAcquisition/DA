@@ -70,10 +70,13 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
               <p className="mt-2 text-xs text-neutral-500">{gateLabel(module)}</p>
               {quizLine(module) ? <p className="mt-1 text-xs text-neutral-300">{quizLine(module)}</p> : null}
               {module.gates
-                .filter((gate) => gate.status === 'pending' && gate.key !== 'quiz' && gate.key !== 'agreement')
+                .filter((gate) => gate.key !== 'quiz' && gate.key !== 'agreement')
                 .map((gate) => (
                   <p key={gate.id} className="mt-1 text-xs text-neutral-400">
-                    {gate.label}: Pending
+                    {gate.key === 'sign_off' && gate.status === 'pending'
+                      ? 'Supervisor sign-off is pending'
+                      : `${gate.label}: ${gate.status === 'satisfied' ? 'Complete' : 'Pending'}`}
+                    {gate.bestScore !== null ? ` · best ${gate.bestScore}` : ''}
                   </p>
                 ))}
             </>
