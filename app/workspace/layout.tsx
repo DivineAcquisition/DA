@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { academyAdminSession } from '@/lib/academy/access';
+import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
@@ -46,8 +46,31 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   }
 
   const session = await getSessionContext();
+  const holdAccess = session ? await academyHoldSession() : null;
+  const holdRoute = pathname.startsWith('/workspace/academy/holds');
 
-  if (!session?.isAdmin) {
+  if (!session) {
+    if (!isLogin) redirect('/workspace/login');
+    return (
+      <div className="da-workspace">
+        <LoginForm />
+      </div>
+    );
+  }
+
+  if (!session.isAdmin) {
+    if (holdAccess) {
+      if (isLogin || !holdRoute) redirect('/workspace/academy/holds');
+      return (
+        <RequireAdminMfa email={session.email}>
+          <div className="da-workspace">
+            <Shell email={session.email} holdsOnly>
+              {children}
+            </Shell>
+          </div>
+        </RequireAdminMfa>
+      );
+    }
     if (!isLogin) redirect('/workspace/login');
     return (
       <div className="da-workspace">
@@ -63,7 +86,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   return (
     <RequireAdminMfa email={session.email}>
       <div className="da-workspace">
-        <Shell email={session.email} showAcademy={Boolean(academy)}>
+        <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)}>
           {children}
         </Shell>
       </div>

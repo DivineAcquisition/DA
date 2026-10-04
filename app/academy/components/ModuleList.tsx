@@ -13,6 +13,9 @@ function quizLine(module: AcademyModule): string | null {
         : `${quiz.highestScore ?? 0} of ${quiz.questionCount}`;
     return `Passed ${score}${when ? ` on ${when}` : ''}`;
   }
+  if (quiz.retryBlock === 'acknowledge') return 'Locked until you confirm the plan';
+  if (quiz.retryBlock === 'retest') return quiz.retestOn ? `Locked until ${quiz.retestOn}` : 'Locked until the re-test date';
+  if (quiz.retryBlock === 'lessons') return 'Locked until you reopen the lessons in the plan';
   if (quiz.status === 'locked' && quiz.lockoutUntil) {
     return `Locked until ${new Date(quiz.lockoutUntil).toLocaleString()}`;
   }

@@ -37,6 +37,8 @@ export type AcademyQuizCard = {
   passMark: number;
   passMarkUnit: string;
   passedAt: string | null;
+  retryBlock: 'acknowledge' | 'retest' | 'lessons' | null;
+  retestOn: string | null;
 };
 
 export type AcademyGateCard = {
@@ -82,6 +84,22 @@ export type AcademyShell = {
   nextAction: { title: string; detail: string; href: string | null } | null;
   banner: string | null;
   modules: AcademyModule[];
+  hold: {
+    managerName: string;
+    openedAt: string;
+    reviewStartedAt: string | null;
+    status: string;
+  } | null;
+  remediation: {
+    holdId: string;
+    outcome: 'reset' | 'extend';
+    plan: string;
+    attemptsGranted: number;
+    retestOn: string | null;
+    acknowledgedAt: string | null;
+    lessons: { id: string; title: string; code: string; moduleId: string; reopened: boolean }[];
+    modules: { id: string; order: number; title: string; reopened: boolean }[];
+  } | null;
 };
 
 export function academyContentOpen(state: AcademyState): boolean {

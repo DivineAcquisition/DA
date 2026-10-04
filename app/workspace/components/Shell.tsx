@@ -115,33 +115,66 @@ function SidebarContent({
   pendingHref,
   onNavigate,
   showAcademy = false,
+  showHolds = false,
+  holdsOnly = false,
 }: {
   pathname: string;
   email: string;
   pendingHref?: string | null;
   onNavigate?: (href: string) => void;
   showAcademy?: boolean;
+  showHolds?: boolean;
+  holdsOnly?: boolean;
 }) {
   return (
     <div className="flex h-full flex-col">
       <Link
-        href="/workspace/overview"
+        href={holdsOnly ? '/workspace/academy/holds' : '/workspace/overview'}
         prefetch
-        onClick={() => onNavigate?.('/workspace/overview')}
+        onClick={() => onNavigate?.(holdsOnly ? '/workspace/academy/holds' : '/workspace/overview')}
         className="flex items-center gap-2.5 px-5 py-6 transition-opacity hover:opacity-80"
       >
         <Logo className="h-[26px] w-auto" />
-        <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
+        <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">
+          {holdsOnly ? 'Review' : 'Admin'}
+        </span>
       </Link>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
-        {NAV.map((group) => (
+        {holdsOnly ? (
+          <div>
+            <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">Academy</p>
+            <ul className="space-y-1">
+              <li>
+                <Link
+                  href="/workspace/academy/holds"
+                  prefetch
+                  onClick={() => onNavigate?.('/workspace/academy/holds')}
+                  aria-current={pathMatches(pathname, '/workspace/academy/holds') ? 'page' : undefined}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                    pathMatches(pathname, '/workspace/academy/holds')
+                      ? 'bg-brand-500/[0.12] text-brand-100 ring-1 ring-inset ring-brand-500/25'
+                      : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
+                  }`}
+                >
+                  <NavIconGlyph icon="document" />
+                  Holds
+                </Link>
+              </li>
+            </ul>
+          </div>
+        ) : null}
+        {(holdsOnly ? [] : NAV).map((group) => (
           <div key={group.heading}>
             <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-300">
               {group.heading}
             </p>
             <ul className="space-y-1">
-              {[...group.items, ...(showAcademy && group.heading === 'Workspace' ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : [])].map((item) => {
+              {[
+                ...group.items,
+                ...(showAcademy && group.heading === 'Workspace' ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : []),
+                ...(showHolds && group.heading === 'Workspace' ? [{ href: '/workspace/academy/holds', label: 'Holds', icon: 'audit' as const }] : []),
+              ].map((item) => {
                 const active = pendingHref
                   ? pathMatches(pendingHref, item.href) || (item.aliases ?? []).some((href) => pathMatches(pendingHref, href))
                   : isActive(pathname, item);
@@ -187,18 +220,25 @@ export default function Shell({
   email,
   children,
   showAcademy = false,
+  showHolds = false,
+  holdsOnly = false,
 }: {
   email: string;
   children: React.ReactNode;
   showAcademy?: boolean;
+  showHolds?: boolean;
+  holdsOnly?: boolean;
 }) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
-  const navItems = [
-    ...NAV.flatMap((group) => group.items),
-    ...(showAcademy ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : []),
-  ];
+  const navItems = holdsOnly
+    ? [{ href: '/workspace/academy/holds', label: 'Holds', icon: 'document' as const }]
+    : [
+        ...NAV.flatMap((group) => group.items),
+        ...(showAcademy ? [{ href: '/workspace/academy', label: 'Academy', icon: 'document' as const }] : []),
+        ...(showHolds ? [{ href: '/workspace/academy/holds', label: 'Holds', icon: 'audit' as const }] : []),
+      ];
   const pendingItem = navItems.find((item) => item.href === pendingHref);
   const navigating = Boolean(pendingHref && pendingItem && !isActive(pathname, pendingItem));
 
@@ -218,6 +258,8 @@ export default function Shell({
           pendingHref={navigating ? pendingHref : null}
           onNavigate={setPendingHref}
           showAcademy={showAcademy}
+          showHolds={showHolds}
+          holdsOnly={holdsOnly}
         />
       </aside>
 
@@ -239,6 +281,8 @@ export default function Shell({
                 setDrawerOpen(false);
               }}
               showAcademy={showAcademy}
+              showHolds={showHolds}
+              holdsOnly={holdsOnly}
             />
           </div>
         </div>

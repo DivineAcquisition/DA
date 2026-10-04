@@ -37,6 +37,7 @@ export type QuizState = {
   attempts_allowed?: number;
   attempts_remaining?: number;
   lockout_until?: string | null;
+  retest_on?: string | null;
   reopen?: Reopen[];
   warning?: string | null;
   attempt?: { id?: string; started_at?: string; time_limit_seconds?: number | null; questions?: Question[] } | null;
@@ -160,7 +161,18 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
               </p>
               {state.result.abandoned ? <p className="text-sm text-neutral-300">This attempt was closed because it was left open.</p> : null}
               {state.warning ? <p className="text-sm font-semibold text-white">{state.warning}</p> : null}
-              {state.lockout_until ? (
+              {state.blocked === 'acknowledge' ? (
+                <p className="text-sm text-neutral-300">Confirm the plan on your dashboard before the next attempt.</p>
+              ) : null}
+              {state.blocked === 'retest' ? (
+                <p className="text-sm text-neutral-300">
+                  The next attempt opens {state.retest_on ?? 'on the re-test date'}.
+                </p>
+              ) : null}
+              {state.blocked === 'plan_lessons' ? (
+                <p className="text-sm text-neutral-300">Reopen the lessons named in the plan before the next attempt.</p>
+              ) : null}
+              {state.lockout_until && state.blocked === 'lockout' ? (
                 <p className="text-sm text-neutral-300">Next attempt opens {new Date(state.lockout_until).toLocaleString()}.</p>
               ) : null}
               <ul className="space-y-1 text-sm">
