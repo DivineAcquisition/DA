@@ -1,54 +1,59 @@
 /** Landing + qualification copy for the coach and consultant acq surface. */
 
-export const PILL_BANNER = 'Sales operations for coaching & consulting';
+export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
 
 export const HEADLINE_BEFORE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
+  "We'll Reply To Every New Inquiry In Under 60 Seconds, Follow Up When They Say Not Yet, And ";
 
-export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+export const HEADLINE_ACCENT = 'Install That In The Next 14 Days';
 
 export const HEADLINE_AFTER = ' To Increase Show Rate';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'Intake, scoring, follow-up, booking, and reporting, installed in the stack you already use. Three founding seats at launch pricing.';
+  'Not more ads, and not a new offer. A first reply, a booking path, reminders before the call, and a follow-up for people who need to think about it. The 30-minute audit is free, and you keep what we find.';
 
-export const CTA_LABEL = 'Book your free audit';
-export const SUBMIT_LABEL = 'Book your free audit';
+export const LANDING_QUALIFIER =
+  'You already get inquiries. If you do not, this is not the install.';
+
+export const LANDING_TRUST = ['30-minute audit, free', 'You keep the findings', 'You own what we install'] as const;
+
+export const CTA_LABEL = 'Book the free 30-minute audit';
+export const SUBMIT_LABEL = 'Book the free 30-minute audit';
 
 export const PROBLEM = {
   eyebrow: 'The problem',
-  body: 'You\'re good at what you do. But referrals come and go, your calendar isn\'t predictable, and when it\'s empty you start doubting yourself. Most coaches and consultants don\'t have a lead problem. They have a follow-up problem: slow replies, no-shows, and "not yet" prospects who never hear from you again.',
+  body: 'A new inquiry waits for hours, sometimes until the next morning. The person who was ready books with whoever answered. The person who says they need to think about it never hears from you again. Most coaches and consultants don\'t have a lead problem. They have a follow-up problem: the reply is slow, the booked call does not show, and "not yet" goes quiet.',
 } as const;
 
 export const QUESTIONS = {
   eyebrow: "Three questions we'll answer for you",
   items: [
-    'How fast does a new inquiry get a reply?',
-    'How many booked calls actually show up?',
-    'What happens to the people who say "I need to think about it"?',
+    'How many minutes until a new inquiry gets a reply?',
+    'How many booked calls this month actually showed up?',
+    'What is the next message when someone says they need to think about it?',
   ],
 } as const;
 
 export const BUILD = {
-  eyebrow: 'What we build',
+  eyebrow: 'What gets installed',
   items: [
     {
-      title: 'Fast response',
-      body: 'Instant replies and a clear booking path.',
+      title: 'Reply in under 60 seconds',
+      body: 'A first response and a booking link go out when the inquiry arrives, including after hours, so the lead is not waiting until morning.',
     },
     {
-      title: 'Show-up system',
-      body: 'Confirmations and reminders that protect your calendar.',
+      title: 'Show-up sequence',
+      body: 'A confirmation, a reminder the day before, and a reminder the morning of, plus a reschedule path when they cannot make it.',
     },
     {
       title: 'Follow-up for "not yet"',
-      body: "A nurture path that doesn't pressure anyone.",
+      body: 'People who are not ready get a short sequence in your voice, instead of one unanswered "let me think about it."',
     },
     {
-      title: 'Visibility',
-      body: 'A simple dashboard showing leads, calls, shows, and closes.',
+      title: 'Weekly numbers',
+      body: 'Inquiries, booked calls, shows, and closes in one view, including the weeks that got worse.',
     },
   ],
 } as const;
@@ -57,44 +62,44 @@ export const HOW_IT_WORKS = {
   eyebrow: 'How it works',
   steps: [
     {
-      label: 'Free audit (30 minutes)',
-      body: 'We review your current process and show you where leads drop.',
+      label: 'Free audit, 30 minutes',
+      body: 'We time the reply, count the shows, and look at what happens after "not yet." You keep that map if you never hire us.',
     },
     {
-      label: 'Install',
-      body: 'We set up the system and write scripts you can adapt to sound like you.',
+      label: 'Install in 14 days',
+      body: 'We put the reply, the show-up reminders, and the "not yet" follow-up in place, and write the lines in your voice for you to approve.',
     },
     {
-      label: 'Review',
-      body: 'We track the numbers with you and refine.',
+      label: 'Weekly review',
+      body: 'We read inquiries, bookings, shows, and closes with you, including the week that got worse, and change the line that is not moving them.',
     },
   ],
 } as const;
 
 export const WHY_US = {
-  eyebrow: "Why work with us, since we're new to this",
-  lead: "We don't have a wall of testimonials yet, so we lower your risk instead.",
+  eyebrow: 'Why work with us before the proof is a wall',
+  lead: 'We are early, so the audit is the proof. You see the leaks before you pay for an install.',
   items: [
-    'The audit is free and you keep the findings.',
-    'You own everything we build.',
-    'You see the real numbers every week, including the weak ones.',
+    'The audit is free, and you keep the findings if you walk away.',
+    'You own the scripts and the system we install.',
+    'Every week you see inquiries, bookings, shows, and closes, including the weak ones.',
     'We start with a limited pilot, not a long contract.',
   ],
 } as const;
 
 export const AUDIENCE = {
   eyebrow: "Who it's for",
-  fit: 'Coaches and consultants who already sell a real program or retainer, get inbound inquiries, and want fewer leaks between inquiry and close.',
+  fit: 'Coaches and consultants who already sell a real program or retainer, already receive inbound inquiries, and want the time between "I\'m interested" and a call that shows to stop depending on memory.',
   notFit:
-    'Not for get-rich-quick offers or anyone without a real offer or the willingness to close.',
+    'Not for get-rich-quick offers, and not for anyone without a real offer or the willingness to close.',
 } as const;
 
 export const FAQ = {
-  eyebrow: 'FAQ',
+  eyebrow: 'Questions you may have',
   items: [
     {
       question: 'Will this sound like a script?',
-      answer: 'No. You approve everything, and we write in your voice.',
+      answer: 'No. You approve every line, and we write it in your voice.',
     },
     {
       question: 'Do you generate my leads?',
@@ -102,7 +107,8 @@ export const FAQ = {
     },
     {
       question: 'What does it cost?',
-      answer: 'The audit is free. Install pricing is shared after we see your numbers.',
+      answer:
+        'The 30-minute audit is free. Install pricing is quoted after we see your reply time, show rate, and the "not yet" pile. It is a pilot, not a long contract.',
     },
   ],
 } as const;
@@ -110,7 +116,7 @@ export const FAQ = {
 export const CLOSING = {
   title: 'Find out where your leads are leaking.',
   cta: CTA_LABEL,
-  note: 'The audit is free. Next, you pick a 30-minute time.',
+  note: '30 minutes. Free. You keep the findings either way.',
 } as const;
 
 export const BOOK_PAGE = {

@@ -13,6 +13,8 @@ import {
   HEADLINE_AFTER,
   HEADLINE_BEFORE,
   HOW_IT_WORKS,
+  LANDING_QUALIFIER,
+  LANDING_TRUST,
   PILL_BANNER,
   PROBLEM,
   QUESTIONS,
@@ -77,8 +79,11 @@ export default async function AcqLandingPage({
                 <em className="acq-headline-accent">{HEADLINE_ACCENT}</em>
                 {HEADLINE_AFTER}
               </h1>
-              <p className="mx-auto mt-4 max-w-[34rem] text-sm leading-relaxed text-neutral-400 sm:mt-5 sm:text-[15px]">
+              <p className="mx-auto mt-4 max-w-[38rem] text-sm leading-relaxed text-neutral-400 sm:mt-5 sm:text-[15px]">
                 {SUBHEADLINE}
+              </p>
+              <p className="mx-auto mt-4 max-w-[32rem] text-sm font-medium leading-relaxed text-brand-200">
+                {LANDING_QUALIFIER}
               </p>
             </div>
           </section>
@@ -87,6 +92,14 @@ export default async function AcqLandingPage({
             <HeroVideo />
             <div className="mx-auto mt-9 flex max-w-[900px] flex-col items-center">
               <QualifyButton />
+              <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[13px] font-medium text-neutral-300">
+                {LANDING_TRUST.map((item) => (
+                  <li key={item} className="inline-flex items-center gap-2">
+                    <span className="size-1.5 rounded-full bg-brand-400" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
               <p className="mt-3 text-center text-sm text-neutral-500">{CLOSING.title}</p>
             </div>
           </section>
