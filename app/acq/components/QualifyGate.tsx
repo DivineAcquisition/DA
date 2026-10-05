@@ -11,11 +11,9 @@ import {
   type ReactNode,
   type RefObject,
 } from 'react';
-import { BorderBeam } from '@/components/ui/border-beam';
 import { Field as CossField, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/select';
-import { ShineBorder } from '@/components/ui/shine-border';
 import { CTA_LABEL, FORM_LABELS, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
   FOLLOW_UP_OPTIONS,
@@ -25,7 +23,7 @@ import {
 import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
-const fieldLabel = 'mb-1.5 text-sm font-medium normal-case tracking-normal text-white';
+const fieldLabel = 'mb-1.5 text-sm font-medium normal-case tracking-normal text-neutral-300';
 const fieldControl = 'min-h-12 text-base';
 
 type QualifyContextValue = {
@@ -162,7 +160,7 @@ function QualifyDialog({
       ref={dialogRef}
       aria-labelledby={titleId}
       aria-describedby={descId}
-      className="acq-dialog relative overflow-hidden"
+      className="acq-dialog acq-coaches"
       onCancel={(event) => {
         if (pending) event.preventDefault();
       }}
@@ -170,15 +168,11 @@ function QualifyDialog({
         if (!pending) setError(null);
       }}
     >
-      <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
-      <BorderBeam size={72} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
       <div className="relative z-[1] flex min-h-0 flex-col">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
-              {QUALIFY_DIALOG.eyebrow}
-            </p>
-            <h2 id={titleId} className="acq-headline mt-1 text-[1.25rem] font-semibold leading-[1.15] tracking-tight text-white sm:text-[1.35rem]">
+            <p className="lx-pill">{QUALIFY_DIALOG.eyebrow}</p>
+            <h2 id={titleId} className="lx-headline mt-4 text-left text-[1.35rem] sm:text-[1.6rem]">
               {QUALIFY_DIALOG.title}
             </h2>
             <p id={descId} className="mt-1 text-sm leading-snug text-neutral-400">

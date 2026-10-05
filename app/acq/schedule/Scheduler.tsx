@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Field as CossField, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { ShineBorder } from '@/components/ui/shine-border';
 import { DateTimePicker } from '@/components/schedule/DateTimePicker';
 import { bookAcqAuditAction } from '@/lib/acq/schedule';
 
@@ -32,13 +31,12 @@ export function AcqScheduler({
 
   return (
     <div className="space-y-4">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-        <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
-        <CossField className="relative z-[1]">
-          <FieldLabel className="mb-1.5 text-[13px] font-semibold normal-case tracking-tight text-white">
+      <div className="lx-card mb-4">
+        <CossField>
+          <FieldLabel className="mb-1.5 text-sm font-medium normal-case tracking-normal text-neutral-300">
             Mobile number
           </FieldLabel>
-          <p className="mb-2 text-sm text-neutral-500">Used for a text 15 minutes before the call.</p>
+          <p className="mb-2 text-sm text-neutral-400">Used for a text 15 minutes before the call.</p>
           <Input
             nativeInput
             value={phone}

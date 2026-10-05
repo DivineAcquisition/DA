@@ -110,7 +110,7 @@ export default function IclosedEmbed() {
   }, []);
 
   return (
-    <CalendarFrame className="max-w-5xl">
+    <CalendarFrame shell className="max-w-5xl">
       <div
         ref={hostRef}
         className="iclosed-widget w-full bg-black [&_iframe]:block [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0"

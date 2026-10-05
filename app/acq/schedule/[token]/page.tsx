@@ -1,4 +1,3 @@
-import Logo from '@/app/components/Logo';
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { loadAcqSchedule } from '@/lib/acq/schedule';
 import { AcqScheduler } from '../Scheduler';
@@ -20,66 +19,45 @@ export default async function AcqSchedulePage({
   const firstName = schedule?.fullName.trim().split(/\s+/)[0] || 'there';
 
   return (
-    <div className="acq-schedule min-h-screen bg-black text-white antialiased">
-      <div className="relative z-10">
-        <header className="px-5 pt-6 sm:px-6 sm:pt-8">
-          <div className="mx-auto flex max-w-3xl justify-center">
-            <Logo className="h-5 w-auto sm:h-6" title="Divine Acquisition" />
-          </div>
-        </header>
-
-        <section className="px-5 pb-20 pt-10 sm:px-6 sm:pt-14">
-          <div className="mx-auto max-w-3xl">
-            {!schedule ? (
-              <div className="text-center">
-                <h1 className="acq-headline text-3xl font-semibold">This scheduling link is not available</h1>
-                <p className="mt-4 text-sm text-neutral-400">
-                  Submit the application again, or reply to the email if you already booked.
-                </p>
+    <div className="acq-coaches acq-schedule min-h-screen antialiased">
+      <section className="lx-hero">
+        <div className="lx-wrap lx-hero-inner">
+          {!schedule ? (
+            <>
+              <p className="lx-pill">Scheduling</p>
+              <h1 className="lx-headline">This Scheduling Link Is Not Available</h1>
+              <p className="lx-lead">Submit the application again, or reply to the email if you already booked.</p>
+            </>
+          ) : (
+            <>
+              <p className="lx-pill">Application received</p>
+              <h1 className="lx-headline">
+                {schedule.scheduledFor ? `You're Booked, ${firstName}.` : `Hi ${firstName}. Pick A Date And Time.`}
+              </h1>
+              <p className="lx-lead">
+                Real time goes into the roadmap for this call. Book a time you will keep. We do not run your ads. We line the follow-up up with the offer you already sell.
+              </p>
+              <div className="mt-8 w-full max-w-3xl text-left">
+                <AcqScheduler
+                  token={token}
+                  booked={
+                    schedule.scheduledFor
+                      ? {
+                          startsAt: schedule.scheduledFor,
+                          timeZone: schedule.timeZone || 'America/New_York',
+                          meetUrl: schedule.meetUrl,
+                        }
+                      : null
+                  }
+                />
               </div>
-            ) : (
-              <>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">
-                  Application received
-                </p>
-                <h1 className="acq-headline mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
-                  {schedule.scheduledFor ? `You're booked, ${firstName}.` : `Hi ${firstName}. Pick a date and time.`}
-                </h1>
-                <div className="mt-5 space-y-4 text-sm leading-relaxed text-neutral-300 sm:text-[15px]">
-                  <p>
-                    I put real time into the system roadmaps and blueprints for this call. That work
-                    only pays off if you show up. Please book a time you will keep.
-                  </p>
-                  <p>
-                    We do not actively manage ad campaigns. We assist with offer positioning and
-                    messaging so it lines up with the system we build.
-                  </p>
-                </div>
-                <div className="mt-8">
-                  <AcqScheduler
-                    token={token}
-                    booked={
-                      schedule.scheduledFor
-                        ? {
-                            startsAt: schedule.scheduledFor,
-                            timeZone: schedule.timeZone || 'America/New_York',
-                            meetUrl: schedule.meetUrl,
-                          }
-                        : null
-                    }
-                  />
-                </div>
-              </>
-            )}
-          </div>
-        </section>
-
-        <footer className="border-t border-white/[0.06] px-5 py-10 text-center">
-          <p className="mx-auto max-w-2xl text-[11px] leading-relaxed text-neutral-600">
-            {FACEBOOK_DISCLAIMER}
-          </p>
-        </footer>
-      </div>
+            </>
+          )}
+        </div>
+      </section>
+      <footer className="lx-foot">
+        <p className="mx-auto max-w-2xl">{FACEBOOK_DISCLAIMER}</p>
+      </footer>
     </div>
   );
 }

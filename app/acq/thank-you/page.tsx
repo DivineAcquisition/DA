@@ -1,6 +1,4 @@
 import { redirect } from 'next/navigation';
-import Logo from '@/app/components/Logo';
-import Backdrop from '@/app/components/Backdrop';
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import { qualificationSchedulePath } from '@/lib/acq/config';
 import { headers } from 'next/headers';
@@ -22,42 +20,22 @@ export default async function AcqThankYouPage({
   }
 
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <Backdrop />
-      <div className="relative z-10">
-        <header className="px-5 pt-6 sm:px-6 sm:pt-8">
-          <div className="mx-auto flex max-w-3xl justify-center">
-            <Logo className="h-[20px] w-auto sm:h-[24px]" title="Divine Acquisition" />
+    <div className="acq-coaches min-h-screen antialiased">
+      <section className="lx-hero">
+        <div className="lx-wrap lx-hero-inner">
+          <p className="lx-pill">Application received</p>
+          <h1 className="lx-headline">Your Application Is In.</h1>
+          <div className="lx-card mt-8 max-w-2xl text-left">
+            <p>The date and time picker opens as soon as the application is saved. Submit it once more if you landed here without a calendar.</p>
+            <p>Real time goes into the roadmap for this call. That work only pays off if you show up. Book a time you will keep.</p>
+            <p>We do not run your ads. We line the follow-up up with the offer you already sell.</p>
+            <p>Submit the application once more to open the date and time picker for your 30-minute audit.</p>
           </div>
-        </header>
-        <section className="px-5 pb-20 pt-12 sm:px-6 sm:pt-16">
-          <div className="mx-auto max-w-3xl">
-            <h1 className="acq-headline text-3xl font-semibold tracking-tight sm:text-4xl">
-              Application received
-            </h1>
-            <div className="mt-5 space-y-4 text-sm leading-relaxed text-neutral-300 sm:text-[15px]">
-              <p>
-                The date and time picker opens as soon as the application is saved. Submit it once
-                more if you landed here without a calendar.
-              </p>
-              <p>
-                I put real time into the system roadmaps and blueprints for this call. That work only
-                pays off if you show up. Please book a time you will keep.
-              </p>
-              <p>
-                We do not actively manage ad campaigns. We assist with offer positioning and messaging
-                so it lines up with the system we build.
-              </p>
-              <p className="text-neutral-400">
-                Submit the application once more to open the date and time picker for your 30-minute audit.
-              </p>
-            </div>
-          </div>
-        </section>
-        <footer className="border-t border-white/[0.06] px-5 py-10 text-center">
-          <p className="mx-auto max-w-2xl text-[11px] leading-relaxed text-neutral-600">{FACEBOOK_DISCLAIMER}</p>
-        </footer>
-      </div>
+        </div>
+      </section>
+      <footer className="lx-foot">
+        <p className="mx-auto max-w-2xl">{FACEBOOK_DISCLAIMER}</p>
+      </footer>
     </div>
   );
 }

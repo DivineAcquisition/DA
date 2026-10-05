@@ -54,10 +54,22 @@ function looksLikeBooking(data: unknown): boolean {
 export function CalendarFrame({
   children,
   className,
+  shell = false,
 }: {
   children: ReactNode;
   className?: string;
+  shell?: boolean;
 }) {
+  if (shell) {
+    return (
+      <div className={cn('lx-video-wrap mt-8', className)}>
+        <div className="lx-video-shell">
+          <div className="w-full overflow-hidden bg-black">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={cn('animate-rise delay-2 relative mx-auto mt-10 w-full max-w-4xl', className)}>
       <div
