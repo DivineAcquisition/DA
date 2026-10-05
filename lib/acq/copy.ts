@@ -1,9 +1,9 @@
 /** Landing + qualification copy for the coach and consultant acq surface. */
 
-export const PILL_BANNER = 'Stellar Sales Operation System Built For Coaches';
+export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
 
 export const HEADLINE_BEFORE =
-  "We'll Install The Stellar Sales Operation System That Works The Leads You Already Paid For. ";
+  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
 
 export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
 
@@ -12,65 +12,48 @@ export const HEADLINE_AFTER = ' To Increase Show Rate';
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'If you run a coaching business, you know how to generate demand. A lot of the traffic you produce from paid ads or content is not converting the way it should, because there is no system in house that consistently creates the output for conversion.';
+  'Not more ads, and not a new offer. A first reply, a booking path, reminders before the call, and a follow-up for people who need to think about it. The 30-minute audit is free, and you keep what we find.';
 
 export const LANDING_QUALIFIER =
-  'Give me 30 seconds. I will break down the losses from not having a proper sales ops system, and the mechanism we build so leads convert when they opt in.';
+  'You already get inquiries. If you do not, this is not the install.';
 
-export const LANDING_TRUST = ['Installed in 14 days', 'The call is free', 'You leave knowing what is broken'] as const;
+export const LANDING_TRUST = ['30-minute audit, free', 'You keep the findings', 'You own what we install'] as const;
 
-export const CTA_LABEL = 'Fill out the application';
-export const SUBMIT_LABEL = 'Fill out the application';
+export const CTA_LABEL = 'Book the free 30-minute audit';
+export const SUBMIT_LABEL = 'Book the free 30-minute audit';
 
 export const PROBLEM = {
   eyebrow: 'The problem',
-  body: 'Right now you have leads in your CRM or a Google sheet who raised their hand and showed interest in your offer. They said they were ready, and they never got a call, or they were not properly followed up with. Not because you do not care, and not because the offer was not good enough. Because there is no system deciding who gets contacted, when, and by whom.',
+  body: 'A new inquiry waits for hours, sometimes until the next morning. The person who was ready books with whoever answered. The person who says they need to think about it never hears from you again. Most coaches and consultants don\'t have a lead problem. They have a follow-up problem: the reply is slow, the booked call does not show, and "not yet" goes quiet.',
 } as const;
 
-export const COST = {
-  eyebrow: 'The cost',
-  body: 'So the ready ones go cold. The not-ready ones get ignored completely. And you are back on Meta buying new leads to replace the ones you already paid for.',
+export const QUESTIONS = {
+  eyebrow: "Three questions we'll answer for you",
   items: [
-    {
-      title: 'The ready ones go cold',
-      body: 'They raised their hand, then nobody worked them while they were still warm.',
-    },
-    {
-      title: 'The not-ready ones get ignored',
-      body: 'There is no sequence for the lead who is interested and not ready to book today.',
-    },
-    {
-      title: 'You buy more to replace them',
-      body: 'Costs go up, close rate stays flat, and it starts to look like the market is saturated or the offer needs work.',
-    },
-    {
-      title: 'The list turns into a graveyard',
-      body: 'Every month those leads sit there, they get colder, they forget who you are, and you become afraid to email them.',
-    },
+    'How many minutes until a new inquiry gets a reply?',
+    'How many booked calls this month actually showed up?',
+    'What is the next message when someone says they need to think about it?',
   ],
-  closeTitle: "It does not. You have never worked the leads you already have.",
-  closeBody:
-    'The offer is not the problem. The market is not saturated. The leads you already paid for were never put through a system.',
 } as const;
 
 export const BUILD = {
-  eyebrow: 'The mechanism',
+  eyebrow: 'So what do you actually get?',
   items: [
     {
-      title: 'Intake into your systems',
-      body: 'We build how leads are captured and taken into the systems you already use.',
+      title: 'Reply in under 60 seconds',
+      body: 'A first response and a booking link go out when the inquiry arrives, including after hours, so the lead is not waiting until morning.',
     },
     {
-      title: 'Scored the second they opt in',
-      body: 'Every lead gets scored on readiness the moment they come in, so someone knows who to contact first.',
+      title: 'Show-up sequence',
+      body: 'A confirmation, a reminder the day before, and a reminder the morning of, plus a reschedule path when they cannot make it.',
     },
     {
-      title: 'A sequence for each type of lead',
-      body: 'Aligned follow-up, built for the ready lead and the not-ready lead, instead of one message for everyone.',
+      title: 'Follow-up for "not yet"',
+      body: 'People who are not ready get a short sequence in your voice, instead of one unanswered "let me think about it."',
     },
     {
-      title: 'Every touch logged',
-      body: 'Every message, every call, every voice note is logged. You can tell a lead that was lost from a lead that was never worked.',
+      title: 'Weekly numbers',
+      body: 'Inquiries, booked calls, shows, and closes in one view, including the weeks that got worse.',
     },
   ],
 } as const;
@@ -79,25 +62,36 @@ export const HOW_IT_WORKS = {
   eyebrow: 'How it works',
   steps: [
     {
-      label: 'The free call',
-      body: 'We show you exactly where your leads are dying. If it makes sense to work together, we talk. If not, you still leave knowing what is broken.',
+      label: 'Free audit, 30 minutes',
+      body: 'We time the reply, count the shows, and look at what happens after "not yet." You keep that map if you never hire us.',
     },
     {
-      label: 'Installed in 14 days',
-      body: 'We install the Stellar Sales Operation System: intake, readiness scoring, follow-up for each type of lead, and the log.',
+      label: 'Install in 14 days',
+      body: 'We put the reply, the show-up reminders, and the "not yet" follow-up in place, and write the lines in your voice for you to approve.',
     },
     {
-      label: 'A target before you pay',
-      body: 'Show rate, close rate, lead volume, and monthly revenue go into the agreement before you pay, with a three-month window.',
+      label: 'Weekly review',
+      body: 'We read inquiries, bookings, shows, and closes with you, including the week that got worse, and change the line that is not moving them.',
     },
+  ],
+} as const;
+
+export const WHY_US = {
+  eyebrow: 'Why the audit is free',
+  lead: 'We are early, so the audit is the proof. You see the leaks before you pay for an install.',
+  items: [
+    'The audit is free, and you keep the findings if you walk away.',
+    'You own the scripts and the system we install.',
+    'Every week you see inquiries, bookings, shows, and closes, including the weak ones.',
+    'We start with a limited pilot, not a long contract.',
   ],
 } as const;
 
 export const AUDIENCE = {
   eyebrow: "Who it's for",
-  fit: 'Coaches or consultants who feel like they are missing the structure their sales ops need to produce, who are spending on ads, and whose follow-up is still living in their head.',
+  fit: 'Coaches and consultants who already sell a real program or retainer, already receive inbound inquiries, and want the time between "I\'m interested" and a call that shows to stop depending on memory.',
   notFit:
-    'Not for a coach who does not have leads opting in yet. If nobody is raising a hand, there is nothing for the system to work.',
+    'Not for get-rich-quick offers, and not for anyone without a real offer or the willingness to close.',
 } as const;
 
 export const FAQ = {
@@ -109,13 +103,12 @@ export const FAQ = {
     },
     {
       question: 'Do you generate my leads?',
-      answer:
-        'The system works the leads you already have. On one install we also helped launch the ads and tighten how the offer was said on the backend.',
+      answer: 'No. We fix what happens after they arrive.',
     },
     {
       question: 'What does it cost?',
       answer:
-        'The call is free. The engagement is $6,500. If we do not hit the written target within three months, we refund 75%, which is $4,875 back, and we keep $1,625 for the work.',
+        'The 30-minute audit is free. Install pricing is quoted after we see your reply time, show rate, and the "not yet" pile. It is a pilot, not a long contract.',
     },
     {
       question: 'Is this proven?',
@@ -136,9 +129,9 @@ export const FAQ = {
 } as const;
 
 export const CLOSING = {
-  title: 'Fill Out The Application And Book Your Call',
+  title: 'Find out where your leads are leaking.',
   cta: CTA_LABEL,
-  note: "This is for coaches or consultants who are spending on ads and whose follow-up is still living in their head. On the call I will show you exactly where your leads are dying, for free. If it makes sense to work together, we will talk. If not, you still leave knowing what is broken.",
+  note: '30 minutes. Free. You keep the findings either way.',
 } as const;
 
 export const BOOK_PAGE = {
@@ -184,9 +177,9 @@ export const PRECALL = {
 } as const;
 
 export const QUALIFY_DIALOG = {
-  eyebrow: 'Free call',
-  title: 'Fill Out The Application',
-  description: 'A few details so the call is about where your leads are dying, not a generic pitch.',
+  eyebrow: 'Free audit',
+  title: 'Book the free 30-minute audit',
+  description: 'A few details so the 30 minutes is about your pipeline, not a generic pitch.',
   submit: SUBMIT_LABEL,
 } as const;
 

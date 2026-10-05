@@ -277,7 +277,7 @@ describe('founding landing media', () => {
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
     expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
     expect(copy.HEADLINE).toContain('To Increase Show Rate');
-    expect(copy.HEADLINE_BEFORE).toContain('Stellar Sales Operation System');
+    expect(copy.HEADLINE_BEFORE).toContain("We'll Build");
     expect(
       copy.HEADLINE.split(/\s+/)
         .filter(Boolean)
@@ -286,30 +286,31 @@ describe('founding landing media', () => {
           return !letter || letter[0] === letter[0].toUpperCase();
         }),
     ).toBe(true);
-    expect(copy.SUBHEADLINE.toLowerCase()).toContain('coaching business');
-    expect(copy.LANDING_QUALIFIER.toLowerCase()).toContain('30 seconds');
+    expect(copy.SUBHEADLINE).toContain('30-minute audit is free');
+    expect(copy.LANDING_QUALIFIER.toLowerCase()).toContain('inquiries');
     expect(copy.LANDING_TRUST).toHaveLength(3);
     expect(copy.HEADLINE.toLowerCase()).not.toContain('med spa');
-    expect(copy.PROBLEM.body.toLowerCase()).toContain('raised their hand');
+    expect(copy.PROBLEM.body).toContain("don't have a lead problem");
     expect(copy.PROBLEM.body.toLowerCase()).not.toContain('med spa');
-    expect(copy.COST.items).toHaveLength(4);
+    expect(copy.QUESTIONS.items).toHaveLength(3);
     expect(copy.BUILD.items).toHaveLength(4);
-    expect(copy.BUILD.items[0].title).toBe('Intake into your systems');
+    expect(copy.BUILD.items[0].title).toBe('Reply in under 60 seconds');
     expect(copy.HOW_IT_WORKS.steps).toHaveLength(3);
-    expect(copy.COST.closeTitle.toLowerCase()).toContain('leads you already have');
+    expect(copy.WHY_US.items).toHaveLength(4);
+    expect(copy.WHY_US.lead.toLowerCase()).not.toContain('testimonial wall');
     expect(copy.FAQ.items).toHaveLength(6);
+    expect(copy.FAQ.items[1].answer).toBe('No. We fix what happens after they arrive.');
     expect(copy.FAQ.items[3].question).toBe('Is this proven?');
     expect(copy.FAQ.items[3].answer).toContain('Will Coles');
-    expect(copy.FAQ.items[3].answer).toContain('$16,000');
     expect(copy.FAQ.items[4].question).toBe('How does the guarantee work?');
     expect(copy.FAQ.items[4].answer).toContain('$4,875');
     expect(copy.FAQ.items[5].question).toBe('How do you set the target?');
-    expect(copy.CLOSING.title).toBe('Fill Out The Application And Book Your Call');
-    expect(copy.CLOSING.cta).toBe('Fill out the application');
-    expect(copy.AUDIENCE.fit.toLowerCase()).toContain('coaches');
+    expect(copy.CLOSING.title).toBe('Find out where your leads are leaking.');
+    expect(copy.CLOSING.cta).toBe('Book the free 30-minute audit');
+    expect(copy.AUDIENCE.notFit.toLowerCase()).toContain('get-rich-quick');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
-    expect(copy.PILL_BANNER).toBe('Stellar Sales Operation System Built For Coaches');
-    expect(copy.CTA_LABEL).toBe('Fill out the application');
+    expect(copy.PILL_BANNER).toBe('For coaches and consultants whose inquiries already come in');
+    expect(copy.CTA_LABEL).toBe('Book the free 30-minute audit');
     expect(copy.FORM_LABELS.offer).toBe('What you sell');
     expect(copy.FORM_LABELS.inquiries).toBe('Inquiries per month');
     expect(copy.FORM_LABELS.programPrice).toBe('Price of your main offer');

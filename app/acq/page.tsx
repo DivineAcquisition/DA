@@ -3,7 +3,6 @@ import {
   AUDIENCE,
   BUILD,
   CLOSING,
-  COST,
   FACEBOOK_DISCLAIMER,
   FAQ,
   HEADLINE_ACCENT,
@@ -14,7 +13,9 @@ import {
   LANDING_TRUST,
   PILL_BANNER,
   PROBLEM,
+  QUESTIONS,
   SUBHEADLINE,
+  WHY_US,
 } from '@/lib/acq/copy';
 import HeroVideo from './components/HeroVideo';
 import { QualifyButton, QualifyProvider } from './components/QualifyGate';
@@ -63,33 +64,6 @@ export default async function AcqLandingPage({
 
         <section className="lx-section">
           <div className="lx-wrap">
-            <h2 className="lx-heading">{PROBLEM.eyebrow}</h2>
-            <p className="lx-intro">{PROBLEM.body}</p>
-          </div>
-        </section>
-
-        <section className="lx-section">
-          <div className="lx-wrap">
-            <h2 className="lx-heading">{COST.eyebrow}</h2>
-            <p className="lx-intro">{COST.body}</p>
-            <ul className="lx-patterns">
-              {COST.items.map((item, index) => (
-                <li key={item.title} className="lx-card lx-pattern">
-                  <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
-                  <h3>{item.title}</h3>
-                  <p>{item.body}</p>
-                </li>
-              ))}
-            </ul>
-            <div className="lx-close">
-              <h3>{COST.closeTitle}</h3>
-              <p>{COST.closeBody}</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="lx-section">
-          <div className="lx-wrap">
             <h2 className="lx-heading">{BUILD.eyebrow}</h2>
             <ul className="lx-offer">
               {BUILD.items.map((item, index) => (
@@ -100,8 +74,35 @@ export default async function AcqLandingPage({
               ))}
             </ul>
             <p className="lx-callout">
-              <strong>Installed in fourteen days.</strong> Then the call shows you where the leads are dying, for free.
+              <strong>The audit is free.</strong> You keep the findings either way.
             </p>
+            <div className="lx-center">
+              <QualifyButton />
+            </div>
+          </div>
+        </section>
+
+        <section className="lx-section">
+          <div className="lx-wrap">
+            <h2 className="lx-heading">{WHY_US.eyebrow}</h2>
+            <p className="lx-intro">{PROBLEM.body}</p>
+            <ul className="lx-patterns">
+              {QUESTIONS.items.map((question, index) => (
+                <li key={question} className="lx-card lx-pattern">
+                  <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
+                  <h3>{question}</h3>
+                </li>
+              ))}
+            </ul>
+            <div className="lx-close">
+              <p>{WHY_US.lead}</p>
+              <h3>So you see the leak before you pay.</h3>
+              <ul>
+                {WHY_US.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
             <div className="lx-center">
               <QualifyButton />
             </div>
