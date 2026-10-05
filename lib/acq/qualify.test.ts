@@ -406,5 +406,7 @@ describe('qualification scoring helpers', () => {
     expect(fields['Opt-In Date']).toBe('2026-08-23');
     expect(fields.Campaign).toBe('Landing Page');
     expect(fields['GHL Contact ID']).toBe('ghl_123');
+    expect(fields.Notes).toContain('What they sell');
+    expect(fields.Notes).toContain('Follow-up');
   });
 });

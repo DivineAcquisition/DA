@@ -1,7 +1,9 @@
+import { sendApplicationAlertEmail } from './application-email';
 import {
   ACQ_GHL_FORM_ID,
   ACQ_GHL_LOCATION_ID,
   ACQ_GHL_WEBHOOK_URL,
+  ACQ_PUBLIC_ORIGIN,
   GHL_PIT_TOKEN,
   qualificationSchedulePath,
   qualificationThankYouPath,
@@ -139,8 +141,10 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     }
   }
 
+  let writtenAirtableId = airtableRecordId;
   try {
     const sent = await upsertAirtableLead(payload, contactId, airtableRecordId);
+    writtenAirtableId = sent.recordId;
     if (leadId) {
       await markLeadAirtable(leadId, { recordId: sent.recordId }, true);
     }
@@ -153,6 +157,18 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
         true,
       );
     }
+  }
+
+  const schedulePath = scheduleToken ? qualificationSchedulePath(host, scheduleToken) : '';
+  try {
+    await sendApplicationAlertEmail({
+      payload,
+      ghlContactId: contactId || undefined,
+      airtableRecordId: writtenAirtableId || undefined,
+      scheduleUrl: schedulePath ? `${ACQ_PUBLIC_ORIGIN}${schedulePath}` : undefined,
+    });
+  } catch (error) {
+    await logPipelineFailure('application-email', payload.email, error);
   }
 
   return {

@@ -17,6 +17,7 @@ import {
   APP_COMPLETE_TAG,
   RESULT_TAGS,
   airtableFieldsFromPayload,
+  ghlContactNote,
   qualificationResultTag,
   type QualificationPayload,
   type QualificationResult,
@@ -55,6 +56,7 @@ type ResolvedGhlFields = {
   adSpend?: string;
   followUp?: string;
   programPrice?: string;
+  inquiries?: string;
   readiness?: string;
   qualification?: string;
 };
@@ -158,6 +160,17 @@ async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
       fields,
       ['DA - Program Price', 'Program Price', 'program_price', 'da_program_price'],
       resolved.programPrice,
+    );
+    resolved.inquiries = pickField(
+      fields,
+      [
+        'DA - Inquiries Per Month',
+        'Inquiries Per Month',
+        'Inquiries',
+        'inquiries_per_month',
+        'da_inquiries_per_month',
+      ],
+      resolved.inquiries,
     );
     resolved.readiness = pickField(
       fields,
@@ -267,6 +280,7 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
     adSpend: payload.monthlyAdSpend,
     followUp: payload.followUpOwner,
     programPrice: payload.programPrice,
+    inquiries: payload.inquiriesPerMonth,
   });
 
   const body: Record<string, unknown> = {
@@ -311,6 +325,15 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
   }
 
   await addGhlTags(contactId, [APP_COMPLETE_TAG], 'ghl-contact');
+  try {
+    await ghlFetch(
+      `/contacts/${contactId}/notes`,
+      { method: 'POST', body: JSON.stringify({ body: ghlContactNote(payload) }) },
+      'ghl-note',
+    );
+  } catch (error) {
+    console.error('[acq:ghl-note]', error);
+  }
   return { contactId };
 }
 

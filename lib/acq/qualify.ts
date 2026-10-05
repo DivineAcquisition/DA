@@ -268,6 +268,7 @@ export function airtableFieldsFromPayload(
   if (payload.monthlyAdSpend) fields['Monthly Ad Spend'] = payload.monthlyAdSpend;
   if (payload.tracking.utm_content) fields['Ad Set'] = payload.tracking.utm_content;
   if (extras.ghlContactId) fields['GHL Contact ID'] = extras.ghlContactId;
+  fields.Notes = ghlContactNote(payload);
 
   return fields;
 }
