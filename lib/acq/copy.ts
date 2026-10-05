@@ -3,11 +3,11 @@
 export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
 
 export const HEADLINE_BEFORE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
+  "We'll build & run your sales operation systems to help turn the demand you are generating into booked calls. ";
 
-export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+export const HEADLINE_ACCENT = 'completely done for you in the next 14 days';
 
-export const HEADLINE_AFTER = ' To Increase Show Rate';
+export const HEADLINE_AFTER = ' to increase show rate';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 

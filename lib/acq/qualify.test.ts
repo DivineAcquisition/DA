@@ -275,9 +275,10 @@ describe('founding landing media', () => {
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
-    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
-    expect(copy.HEADLINE).toContain('To Increase Show Rate');
-    expect(copy.HEADLINE_BEFORE).toContain('Sales Operation Systems');
+    expect(copy.HEADLINE_ACCENT).toBe('completely done for you in the next 14 days');
+    expect(copy.HEADLINE).toContain('to increase show rate');
+    expect(copy.HEADLINE_BEFORE).toContain("We'll build");
+    expect(copy.HEADLINE.slice(1)).toBe(copy.HEADLINE.slice(1).toLowerCase());
     expect(copy.SUBHEADLINE).toContain('30-minute audit is free');
     expect(copy.LANDING_QUALIFIER.toLowerCase()).toContain('inquiries');
     expect(copy.LANDING_TRUST).toHaveLength(3);

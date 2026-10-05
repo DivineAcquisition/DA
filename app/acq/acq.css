@@ -323,7 +323,15 @@ a.acq-button:active {
 .acq-coaches h2,
 .acq-coaches h3 {
   font-family: var(--font-acq-jakarta), 'Inter Tight', Arial, sans-serif;
+}
+
+.acq-coaches h2,
+.acq-coaches h3 {
   text-transform: uppercase;
+}
+
+.acq-coaches h1 {
+  text-transform: none;
 }
 
 .acq-coaches .lx-headline {
