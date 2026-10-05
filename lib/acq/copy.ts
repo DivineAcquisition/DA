@@ -162,8 +162,8 @@ export const PRECALL = {
 } as const;
 
 export const QUALIFY_DIALOG = {
-  title: 'Book your free audit',
-  description: 'A few details so the audit is about your pipeline.',
+  title: 'Book the free 30-minute audit',
+  description: 'A few details so the 30 minutes is about your pipeline, not a generic pitch.',
   submit: SUBMIT_LABEL,
 } as const;
 
