@@ -250,3 +250,380 @@ a.acq-button:active {
     animation: riseIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 }
+
+/* Coaches landing only. Matches the black / gold offer page. Practices is unchanged. */
+.acq-coaches {
+  --lx-page: #000;
+  --lx-text: #fff;
+  --lx-muted: #d2d2d2;
+  --lx-accent: #ffd187;
+  --lx-accent-soft: #fde3b9;
+  --lx-danger: #ff7a7a;
+  background: var(--lx-page);
+  color: var(--lx-text);
+  font-family: var(--font-acq-inter-display), Inter, Arial, sans-serif;
+}
+
+.acq-coaches .lx-section {
+  position: relative;
+  overflow: hidden;
+  padding: 7.75rem 1.75rem;
+  background:
+    radial-gradient(ellipse 58% 220px at 50% 0, rgba(255, 255, 255, 0.18), transparent 72%),
+    var(--lx-page);
+}
+
+.acq-coaches .lx-section + .lx-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  width: min(1000px, calc(100% - 3.5rem));
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(90deg, transparent, rgba(255, 209, 135, 0.72) 18%, rgba(255, 209, 135, 0.72) 82%, transparent);
+}
+
+.acq-coaches .lx-wrap {
+  position: relative;
+  z-index: 1;
+  width: min(1000px, 100%);
+  margin: 0 auto;
+}
+
+.acq-coaches .lx-hero {
+  padding: 1rem 1.75rem 4rem;
+  background:
+    radial-gradient(ellipse 52% 180px at 50% -40px, rgba(255, 255, 255, 0.16), transparent 76%),
+    #000;
+}
+
+.acq-coaches .lx-hero-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.acq-coaches .lx-pill {
+  display: inline-flex;
+  margin: 0;
+  padding: 0.65rem 1.75rem;
+  border-radius: 999px;
+  background: #242424;
+  color: var(--lx-accent);
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.acq-coaches h1,
+.acq-coaches h2,
+.acq-coaches h3 {
+  font-family: var(--font-acq-jakarta), 'Inter Tight', Arial, sans-serif;
+  text-transform: uppercase;
+}
+
+.acq-coaches .lx-headline {
+  max-width: 64rem;
+  margin: 0.5rem auto 0;
+  font-size: clamp(1.7rem, 4.2vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.045em;
+}
+
+.acq-coaches .lx-gold { color: var(--lx-accent); font-style: normal; }
+
+.acq-coaches .lx-lead {
+  max-width: 46rem;
+  margin: 0.7rem auto 0;
+  color: var(--lx-muted);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.acq-coaches .lx-requirement {
+  margin: 0.55rem auto 0;
+  color: var(--lx-accent);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.acq-coaches .lx-video-wrap {
+  width: min(720px, 100%);
+  margin-top: 1.1rem;
+}
+
+.acq-coaches .lx-video-shell {
+  overflow: hidden;
+  border: 4px solid #565656;
+  border-radius: 24px;
+  background: #000;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.68), 0 0 0 2px #050505;
+}
+
+.acq-coaches .acq-button {
+  width: min(720px, 100%);
+  max-width: 720px;
+  min-height: 4.5rem;
+  margin-top: 1.15rem;
+  padding: 1.1rem 1.5rem;
+  border: 1px solid var(--lx-accent);
+  border-radius: 22px;
+  background: var(--lx-accent);
+  background-image: none;
+  color: #000;
+  font-size: clamp(1rem, 1.6vw, 1.45rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: normal;
+  box-shadow: none;
+}
+
+.acq-coaches .acq-button:hover,
+.acq-coaches a.acq-button:hover {
+  background: #ffe1ad;
+  background-image: none;
+  color: #000;
+  border-color: #ffe1ad;
+}
+
+.acq-coaches .lx-trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 2rem;
+  margin-top: 1.4rem;
+  padding: 0;
+  color: var(--lx-accent-soft);
+  font-size: 0.95rem;
+  list-style: none;
+}
+
+.acq-coaches .lx-trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.acq-coaches .lx-trust svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--lx-accent);
+  stroke-width: 2.4;
+}
+
+.acq-coaches .lx-heading {
+  margin: 0 auto 3.5rem;
+  text-align: center;
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
+}
+
+.acq-coaches .lx-offer,
+.acq-coaches .lx-patterns,
+.acq-coaches .lx-audience,
+.acq-coaches .lx-steps {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches .lx-offer,
+  .acq-coaches .lx-patterns,
+  .acq-coaches .lx-audience {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .acq-coaches .lx-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches .lx-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 100%;
+  padding: 1.25rem;
+  border: 1px solid #5a5a5a;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.86);
+}
+
+.acq-coaches .lx-card h3 {
+  margin: 0;
+  color: var(--lx-accent-soft);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.025em;
+}
+
+.acq-coaches .lx-card p {
+  margin: 0;
+  color: var(--lx-muted);
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.72;
+}
+
+.acq-coaches .lx-featured {
+  border-color: rgba(255, 209, 135, 0.7);
+  box-shadow: inset 0 0 38px rgba(255, 209, 135, 0.035);
+}
+
+.acq-coaches .lx-callout {
+  max-width: 65rem;
+  margin: 2.6rem auto 0;
+  padding: 1.5rem 1.75rem;
+  border: 1px solid rgba(255, 209, 135, 0.42);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 209, 135, 0.14), transparent 68%),
+    rgba(255, 209, 135, 0.055);
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.acq-coaches .lx-callout strong { color: var(--lx-accent); font-weight: 700; }
+
+.acq-coaches .lx-center { display: flex; justify-content: center; }
+
+.acq-coaches .lx-pattern {
+  border-color: rgba(255, 69, 69, 0.92);
+  box-shadow: inset 0 0 28px rgba(255, 69, 69, 0.025);
+}
+
+.acq-coaches .lx-pattern h3 { color: var(--lx-danger); }
+
+.acq-coaches .lx-num {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 69, 69, 0.12);
+  color: var(--lx-danger);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.acq-coaches .lx-intro {
+  max-width: 46rem;
+  margin: -2rem auto 2rem;
+  color: var(--lx-muted);
+  text-align: center;
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.acq-coaches .lx-close {
+  margin-top: 1rem;
+  padding: 2.1rem 2.25rem;
+  border: 1px solid rgba(255, 209, 135, 0.36);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0, rgba(255, 209, 135, 0.12), transparent 70%),
+    rgba(255, 209, 135, 0.045);
+  text-align: center;
+}
+
+.acq-coaches .lx-close p { margin: 0; color: var(--lx-muted); font-size: 1.05rem; }
+
+.acq-coaches .lx-close h3 {
+  margin: 1.1rem 0;
+  color: var(--lx-accent);
+  font-size: 1.5rem;
+}
+
+.acq-coaches .lx-close li {
+  margin-top: 0.7rem;
+  color: #fff;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  list-style: none;
+}
+
+.acq-coaches .lx-faq { display: grid; gap: 0.25rem; margin: 0; padding: 0; }
+
+.acq-coaches .lx-faq details {
+  overflow: hidden;
+  border-radius: 16px;
+  background: #080808;
+}
+
+.acq-coaches .lx-faq summary {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem;
+  cursor: pointer;
+  color: var(--lx-accent-soft);
+  font-size: 1.05rem;
+  list-style: none;
+}
+
+.acq-coaches .lx-faq summary::-webkit-details-marker { display: none; }
+
+.acq-coaches .lx-plus {
+  position: relative;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.acq-coaches .lx-plus::before,
+.acq-coaches .lx-plus::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 13px;
+  height: 1.5px;
+  transform: translate(-50%, -50%);
+  background: #b9b9b9;
+}
+
+.acq-coaches .lx-plus::after { transform: translate(-50%, -50%) rotate(90deg); }
+.acq-coaches .lx-faq details[open] .lx-plus::after { transform: translate(-50%, -50%) rotate(0deg); }
+
+.acq-coaches .lx-answer {
+  margin: 0;
+  padding: 0 1rem 1.1rem;
+  color: var(--lx-muted);
+  font-size: 1.05rem;
+  line-height: 1.72;
+}
+
+.acq-coaches .lx-foot {
+  padding: 2.5rem 1.75rem 3rem;
+  color: #8a8a8a;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 700px) {
+  .acq-coaches .lx-section { padding: 4.5rem 1.15rem; }
+  .acq-coaches .lx-hero { padding-inline: 1.15rem; }
+  .acq-coaches .acq-button { min-height: 3.6rem; font-size: 0.95rem; }
+}

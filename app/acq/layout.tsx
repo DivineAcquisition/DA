@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    'We install the retention system that cuts month-2 churn 25-35% in the first membership cycle, without you chasing a single member. Built in 30 days for $4,500.',
+    'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
     title: 'Divine Acquisition | Founding Install',
     description:
-      'We install the retention system that cuts month-2 churn 25-35% in the first membership cycle, without you chasing a single member. Built in 30 days for $4,500.',
+      'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Divine Acquisition | Founding Install',
     description:
-      'We install the retention system that cuts month-2 churn 25-35% in the first membership cycle, without you chasing a single member. Built in 30 days for $4,500.',
+      'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
   },
   robots: {
     index: true,

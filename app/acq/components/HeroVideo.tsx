@@ -9,6 +9,8 @@ import { trackPixel } from './MetaPixel';
 type HeroVideoProps = {
   mediaId?: string;
   contentName?: string;
+  /** Plain frame for the coaches offer page. Precall keeps the default frame. */
+  shell?: boolean;
 };
 
 const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
@@ -31,6 +33,7 @@ declare global {
 export default function HeroVideo({
   mediaId = ACQ_WISTIA_MEDIA_ID,
   contentName = 'Founding Install VSL',
+  shell = false,
 }: HeroVideoProps) {
   const tracked = useRef(false);
 
@@ -71,7 +74,7 @@ export default function HeroVideo({
   }, [mediaId, contentName]);
 
   return (
-    <div className="animate-rise delay-3 relative mx-auto w-full max-w-4xl">
+    <div className={shell ? 'lx-video-wrap' : 'animate-rise delay-3 relative mx-auto w-full max-w-4xl'}>
       {mediaId ? (
         <>
           <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
@@ -84,16 +87,20 @@ export default function HeroVideo({
         </>
       ) : null}
 
-      <div
-        aria-hidden
-        className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
-        style={{
-          background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)',
-        }}
-      />
+      {shell ? null : (
+        <div
+          aria-hidden
+          className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.35) 0%, transparent 70%)',
+          }}
+        />
+      )}
 
-      <div className="panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
-        <BorderBeam size={80} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+      <div className={shell ? 'lx-video-shell' : 'panel relative overflow-hidden rounded-3xl p-1.5 sm:p-2'}>
+        {shell ? null : (
+          <BorderBeam size={80} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+        )}
         <div className="w-full overflow-hidden rounded-[1.25rem] bg-black">
           {mediaId ? (
             <WistiaPlayer media-id={mediaId} aspect={ACQ_WISTIA_ASPECT} />
