@@ -1,122 +1,139 @@
 /** Landing + qualification copy for the coach and consultant acq surface. */
 
-export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
+export const PILL_BANNER = 'For coaches with a paid membership';
 
 export const HEADLINE_BEFORE =
-  "We'll Reply To Every New Inquiry In Under 60 Seconds, Follow Up When They Say Not Yet, And ";
+  "We'll Install The Retention System That Cuts Month-2 Churn 25-35% ";
 
-export const HEADLINE_ACCENT = 'Install That In The Next 14 Days';
+export const HEADLINE_ACCENT = 'In The First Membership Cycle,';
 
-export const HEADLINE_AFTER = ' To Increase Show Rate';
+export const HEADLINE_AFTER = ' Without You Chasing A Single Member';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'Not more ads, and not a new offer. A first reply, a booking path, reminders before the call, and a follow-up for people who need to think about it. The 30-minute audit is free, and you keep what we find.';
+  'Onboarding, a daily engagement score, at-risk alerts, and the ask that moves monthly members to annual. The same build, live in 30 days. $4,500. After handoff, management is $497 a month if you want it.';
 
 export const LANDING_QUALIFIER =
-  'You already get inquiries. If you do not, this is not the install.';
+  'Health, fitness, and wellness coaches on Skool, at $300K to $1M a year, with 50 to 300 paying members.';
 
-export const LANDING_TRUST = ['30-minute audit, free', 'You keep the findings', 'You own what we install'] as const;
+export const LANDING_TRUST = ['Live in 30 days', '$4,500 build', 'You own the system'] as const;
 
-export const CTA_LABEL = 'Book the free 30-minute audit';
-export const SUBMIT_LABEL = 'Book the free 30-minute audit';
+export const CTA_LABEL = 'Apply for the 30-day build';
+export const SUBMIT_LABEL = 'Apply for the 30-day build';
 
 export const PROBLEM = {
   eyebrow: 'The problem',
-  body: 'A new inquiry waits for hours, sometimes until the next morning. The person who was ready books with whoever answered. The person who says they need to think about it never hears from you again. Most coaches and consultants don\'t have a lead problem. They have a follow-up problem: the reply is slow, the booked call does not show, and "not yet" goes quiet.',
+  body: "Members join, then go quiet, and you are the one noticing. Most of these coaches don't have a lead problem. The members already paid. The leak is after they enroll: onboarding depends on you, nobody is flagged before they ghost, and monthly members are never asked to go annual.",
 } as const;
 
 export const QUESTIONS = {
   eyebrow: "Three questions we'll answer for you",
   items: [
-    'How many minutes until a new inquiry gets a reply?',
-    'How many booked calls this month actually showed up?',
-    'What is the next message when someone says they need to think about it?',
+    'What share of new members are still paying in month 2?',
+    'Who is told when a member goes quiet, and how fast?',
+    'What asks a monthly member to switch to annual?',
   ],
 } as const;
 
 export const BUILD = {
-  eyebrow: 'What gets installed',
+  eyebrow: 'What gets installed in 30 days',
   items: [
     {
-      title: 'Reply in under 60 seconds',
-      body: 'A first response and a booking link go out when the inquiry arrives, including after hours, so the lead is not waiting until morning.',
+      title: '14-day onboarding',
+      body: '5 emails, 3 in-platform messages, and 2 milestone triggers, started from the day they enroll.',
     },
     {
-      title: 'Show-up sequence',
-      body: 'A confirmation, a reminder the day before, and a reminder the morning of, plus a reschedule path when they cannot make it.',
+      title: 'Engagement score',
+      body: 'A daily green, yellow, or red score from activity, content, and participation in the community.',
     },
     {
-      title: 'Follow-up for "not yet"',
-      body: 'People who are not ready get a short sequence in your voice, instead of one unanswered "let me think about it."',
+      title: 'At-risk alerts',
+      body: 'A Slack or email alert when a member turns yellow or red, with the message to send.',
     },
     {
-      title: 'Weekly numbers',
-      body: 'Inquiries, booked calls, shows, and closes in one view, including the weeks that got worse.',
+      title: 'Monthly to annual',
+      body: 'At day 60 and day 90: a proof email, the annual offer, and a founder DM template.',
+    },
+    {
+      title: 'Retention dashboard',
+      body: 'Active members, churn by cohort, at-risk count, annual conversion, and MRR. It updates daily.',
+    },
+    {
+      title: 'Cancellation save',
+      body: 'A cancel routes through a pause offer, then a downgrade, then a founder DM.',
+    },
+    {
+      title: 'SOP and training',
+      body: 'A written SOP and a 30-minute training so you can run the alerts and the dashboard after handoff.',
     },
   ],
 } as const;
 
 export const HOW_IT_WORKS = {
-  eyebrow: 'How it works',
+  eyebrow: 'The 30 days',
   steps: [
     {
-      label: 'Free audit, 30 minutes',
-      body: 'We time the reply, count the shows, and look at what happens after "not yet." You keep that map if you never hire us.',
+      label: 'Week 1, foundation',
+      body: 'Kickoff, platform and Stripe access, a member export, and a written baseline. The audit review is on day 7.',
     },
     {
-      label: 'Install in 14 days',
-      body: 'We put the reply, the show-up reminders, and the "not yet" follow-up in place, and write the lines in your voice for you to approve.',
+      label: 'Week 2, onboarding and scoring',
+      body: 'The 14-day onboarding sequence and the daily engagement score go live.',
     },
     {
-      label: 'Weekly review',
-      body: 'We read inquiries, bookings, shows, and closes with you, including the week that got worse, and change the line that is not moving them.',
+      label: 'Week 3, alerts and the annual offer',
+      body: 'At-risk alerts, the day-60 and day-90 annual sequence, the dashboard, and the cancellation save flow go live.',
+    },
+    {
+      label: 'Week 4, handoff',
+      body: 'The SOP, a 30-minute training, 7 days of monitoring, and the final handoff on day 30.',
     },
   ],
 } as const;
 
 export const WHY_US = {
-  eyebrow: 'Why work with us before the proof is a wall',
-  lead: 'We are early, so the audit is the proof. You see the leaks before you pay for an install.',
+  eyebrow: 'The price',
+  lead: 'The build is $4,500. $2,250 when you sign. $2,250 on day 30, before the handoff call.',
   items: [
-    'The audit is free, and you keep the findings if you walk away.',
-    'You own the scripts and the system we install.',
-    'Every week you see inquiries, bookings, shows, and closes, including the weak ones.',
-    'We start with a limited pilot, not a long contract.',
+    'You own the sequences, the score, the alerts, and the dashboard.',
+    'Two revision rounds are included on each deliverable.',
+    'After day 30, management is $497 a month if you want it. Some clients run it themselves.',
+    'That retainer is a 90-day minimum, then month to month with 30 days notice.',
   ],
 } as const;
 
 export const AUDIENCE = {
   eyebrow: "Who it's for",
-  fit: 'Coaches and consultants who already sell a real program or retainer, already receive inbound inquiries, and want the time between "I\'m interested" and a call that shows to stop depending on memory.',
+  fit: 'Health, fitness, and wellness coaches on Skool with a paid membership, or a program plus monthly continuity. $300K to $1M a year. 50 to 300 active paying members. You can give the alerts 30 minutes a week.',
   notFit:
-    'Not for get-rich-quick offers, and not for anyone without a real offer or the willingness to close.',
+    'Not for get-rich-quick offers. Not under $200K a year, not under 30 paying members, not off Skool, and not if you cannot spend 30 minutes a week on the alerts.',
 } as const;
 
 export const FAQ = {
   eyebrow: 'Questions you may have',
   items: [
     {
-      question: 'Will this sound like a script?',
-      answer: 'No. You approve every line, and we write it in your voice.',
+      question: 'Is this a custom brand project?',
+      answer:
+        'No. It is the same 7-part build every time. The only changes are your platform and your content.',
     },
     {
       question: 'Do you generate my leads?',
-      answer: 'No. We fix what happens after they arrive.',
+      answer: 'No. We build what happens after a member enrolls.',
     },
     {
       question: 'What does it cost?',
       answer:
-        'The 30-minute audit is free. Install pricing is quoted after we see your reply time, show rate, and the "not yet" pile. It is a pilot, not a long contract.',
+        'The build is $4,500: $2,250 when you sign, $2,250 on day 30 before handoff. Management after that is $497 a month, optional, with a 90-day minimum.',
     },
   ],
 } as const;
 
 export const CLOSING = {
-  title: 'Find out where your leads are leaking.',
+  title: 'See if your membership is a fit.',
   cta: CTA_LABEL,
-  note: '30 minutes. Free. You keep the findings either way.',
+  note: 'If you are under $200K, under 30 members, or not on Skool, this is not the build.',
 } as const;
 
 export const BOOK_PAGE = {
@@ -162,8 +179,9 @@ export const PRECALL = {
 } as const;
 
 export const QUALIFY_DIALOG = {
-  title: 'Book the free 30-minute audit',
-  description: 'A few details so the 30 minutes is about your pipeline, not a generic pitch.',
+  eyebrow: 'Application',
+  title: 'Apply for the 30-day build',
+  description: 'Your program, what it costs, and how many inquiries come in. We use that to see if the retention build is a fit.',
   submit: SUBMIT_LABEL,
 } as const;
 

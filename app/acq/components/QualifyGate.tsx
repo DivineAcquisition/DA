@@ -176,7 +176,7 @@ function QualifyDialog({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="acq-headline text-[11px] font-semibold tracking-tight text-brand-300">
-              Free audit
+              {QUALIFY_DIALOG.eyebrow}
             </p>
             <h2 id={titleId} className="acq-headline mt-1 text-[1.25rem] font-semibold leading-[1.15] tracking-tight text-white sm:text-[1.35rem]">
               {QUALIFY_DIALOG.title}
