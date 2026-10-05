@@ -43,9 +43,9 @@ export default async function AcqLandingPage({
           <div className="lx-wrap lx-hero-inner">
             <p className="lx-pill">{PILL_BANNER}</p>
             <h1 className="lx-headline">
-              <span className="lx-gold">{HEADLINE_BEFORE}</span>
-              {HEADLINE_ACCENT}
-              <span className="lx-gold">{HEADLINE_AFTER}</span>
+              {HEADLINE_BEFORE}
+              <span className="lx-accent">{HEADLINE_ACCENT}</span>
+              {HEADLINE_AFTER}
             </h1>
             <p className="lx-lead">{SUBHEADLINE}</p>
             <p className="lx-requirement">{LANDING_QUALIFIER}</p>
@@ -115,7 +115,7 @@ export default async function AcqLandingPage({
             <ol className="lx-steps">
               {HOW_IT_WORKS.steps.map((step, index) => (
                 <li key={step.label} className="lx-card">
-                  <span className="lx-num" style={{ background: 'rgba(255, 209, 135, 0.15)', color: '#ffd187' }}>
+                  <span className="lx-num lx-num-brand">
                     {String(index + 1).padStart(2, '0')}
                   </span>
                   <h3>{step.label}</h3>

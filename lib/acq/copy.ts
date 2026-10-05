@@ -3,9 +3,9 @@
 export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
 
 export const HEADLINE_BEFORE =
-  "We'll Reply To Every New Inquiry In Under 60 Seconds, Follow Up When They Say Not Yet, And ";
+  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
 
-export const HEADLINE_ACCENT = 'Install That In The Next 14 Days';
+export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
 
 export const HEADLINE_AFTER = ' To Increase Show Rate';
 

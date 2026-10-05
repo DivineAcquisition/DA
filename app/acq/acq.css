@@ -251,14 +251,13 @@ a.acq-button:active {
   }
 }
 
-/* Coaches landing only. Matches the black / gold offer page. Practices is unchanged. */
+/* Coaches landing layout. Colors stay on the Divine Acquisition purple. */
 .acq-coaches {
-  --lx-page: #000;
+  --lx-page: #07070b;
   --lx-text: #fff;
-  --lx-muted: #d2d2d2;
-  --lx-accent: #ffd187;
-  --lx-accent-soft: #fde3b9;
-  --lx-danger: #ff7a7a;
+  --lx-muted: #a3a3a3;
+  --lx-accent: #c3b6fe;
+  --lx-accent-soft: #d9d1fe;
   background: var(--lx-page);
   color: var(--lx-text);
   font-family: var(--font-acq-inter-display), Inter, Arial, sans-serif;
@@ -269,7 +268,7 @@ a.acq-button:active {
   overflow: hidden;
   padding: 7.75rem 1.75rem;
   background:
-    radial-gradient(ellipse 58% 220px at 50% 0, rgba(255, 255, 255, 0.18), transparent 72%),
+    radial-gradient(ellipse 58% 220px at 50% 0, rgba(154, 136, 252, 0.22), transparent 72%),
     var(--lx-page);
 }
 
@@ -282,7 +281,7 @@ a.acq-button:active {
   width: min(1000px, calc(100% - 3.5rem));
   height: 1px;
   transform: translateX(-50%);
-  background: linear-gradient(90deg, transparent, rgba(255, 209, 135, 0.72) 18%, rgba(255, 209, 135, 0.72) 82%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(154, 136, 252, 0.72) 18%, rgba(154, 136, 252, 0.72) 82%, transparent);
 }
 
 .acq-coaches .lx-wrap {
@@ -295,8 +294,8 @@ a.acq-button:active {
 .acq-coaches .lx-hero {
   padding: 1rem 1.75rem 4rem;
   background:
-    radial-gradient(ellipse 52% 180px at 50% -40px, rgba(255, 255, 255, 0.16), transparent 76%),
-    #000;
+    radial-gradient(ellipse 52% 180px at 50% -40px, rgba(154, 136, 252, 0.28), transparent 76%),
+    #07070b;
 }
 
 .acq-coaches .lx-hero-inner {
@@ -310,8 +309,9 @@ a.acq-button:active {
   display: inline-flex;
   margin: 0;
   padding: 0.65rem 1.75rem;
+  border: 1px solid rgba(154, 136, 252, 0.35);
   border-radius: 999px;
-  background: #242424;
+  background: rgba(154, 136, 252, 0.1);
   color: var(--lx-accent);
   font-size: 0.95rem;
   font-weight: 500;
@@ -335,7 +335,7 @@ a.acq-button:active {
   letter-spacing: -0.045em;
 }
 
-.acq-coaches .lx-gold { color: var(--lx-accent); font-style: normal; }
+.acq-coaches .lx-accent { color: var(--lx-accent); font-style: italic; font-weight: 700; }
 
 .acq-coaches .lx-lead {
   max-width: 46rem;
@@ -360,9 +360,9 @@ a.acq-button:active {
 
 .acq-coaches .lx-video-shell {
   overflow: hidden;
-  border: 4px solid #565656;
+  border: 4px solid rgba(154, 136, 252, 0.45);
   border-radius: 24px;
-  background: #000;
+  background: #07070b;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.68), 0 0 0 2px #050505;
 }
 
@@ -372,25 +372,12 @@ a.acq-button:active {
   min-height: 4.5rem;
   margin-top: 1.15rem;
   padding: 1.1rem 1.5rem;
-  border: 1px solid var(--lx-accent);
   border-radius: 22px;
-  background: var(--lx-accent);
-  background-image: none;
-  color: #000;
   font-size: clamp(1rem, 1.6vw, 1.45rem);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   white-space: normal;
-  box-shadow: none;
-}
-
-.acq-coaches .acq-button:hover,
-.acq-coaches a.acq-button:hover {
-  background: #ffe1ad;
-  background-image: none;
-  color: #000;
-  border-color: #ffe1ad;
 }
 
 .acq-coaches .lx-trust {
@@ -480,19 +467,19 @@ a.acq-button:active {
 }
 
 .acq-coaches .lx-featured {
-  border-color: rgba(255, 209, 135, 0.7);
-  box-shadow: inset 0 0 38px rgba(255, 209, 135, 0.035);
+  border-color: rgba(154, 136, 252, 0.7);
+  box-shadow: inset 0 0 38px rgba(154, 136, 252, 0.08);
 }
 
 .acq-coaches .lx-callout {
   max-width: 65rem;
   margin: 2.6rem auto 0;
   padding: 1.5rem 1.75rem;
-  border: 1px solid rgba(255, 209, 135, 0.42);
+  border: 1px solid rgba(154, 136, 252, 0.42);
   border-radius: 16px;
   background:
-    radial-gradient(circle at 50% 0, rgba(255, 209, 135, 0.14), transparent 68%),
-    rgba(255, 209, 135, 0.055);
+    radial-gradient(circle at 50% 0, rgba(154, 136, 252, 0.16), transparent 68%),
+    rgba(154, 136, 252, 0.06);
   text-align: center;
   font-size: 1.05rem;
 }
@@ -502,11 +489,11 @@ a.acq-button:active {
 .acq-coaches .lx-center { display: flex; justify-content: center; }
 
 .acq-coaches .lx-pattern {
-  border-color: rgba(255, 69, 69, 0.92);
-  box-shadow: inset 0 0 28px rgba(255, 69, 69, 0.025);
+  border-color: rgba(154, 136, 252, 0.7);
+  box-shadow: inset 0 0 28px rgba(154, 136, 252, 0.06);
 }
 
-.acq-coaches .lx-pattern h3 { color: var(--lx-danger); }
+.acq-coaches .lx-pattern h3 { color: var(--lx-accent-soft); }
 
 .acq-coaches .lx-num {
   display: flex;
@@ -515,10 +502,15 @@ a.acq-button:active {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
-  background: rgba(255, 69, 69, 0.12);
-  color: var(--lx-danger);
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent);
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+.acq-coaches .lx-num-brand {
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent);
 }
 
 .acq-coaches .lx-intro {
@@ -533,11 +525,11 @@ a.acq-button:active {
 .acq-coaches .lx-close {
   margin-top: 1rem;
   padding: 2.1rem 2.25rem;
-  border: 1px solid rgba(255, 209, 135, 0.36);
+  border: 1px solid rgba(154, 136, 252, 0.36);
   border-radius: 18px;
   background:
-    radial-gradient(circle at 50% 0, rgba(255, 209, 135, 0.12), transparent 70%),
-    rgba(255, 209, 135, 0.045);
+    radial-gradient(circle at 50% 0, rgba(154, 136, 252, 0.14), transparent 70%),
+    rgba(154, 136, 252, 0.05);
   text-align: center;
 }
 

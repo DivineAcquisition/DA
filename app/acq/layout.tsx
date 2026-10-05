@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
+    "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
     title: 'Divine Acquisition | Founding Install',
     description:
-      'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
+      "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Divine Acquisition | Founding Install',
     description:
-      'We reply to every new coaching or consulting inquiry in under 60 seconds, follow up when they say not yet, and install that in 14 days to increase show rate. The 30-minute audit is free.',
+      "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
   },
   robots: {
     index: true,
