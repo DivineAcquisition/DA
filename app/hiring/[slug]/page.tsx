@@ -314,12 +314,11 @@ export default function RolePage() {
           }
         />
 
-        <main className="px-5 pb-20 pt-14 sm:px-6 sm:pt-20">
-          <div className="mx-auto max-w-3xl">
-            {/* Hero */}
-            <section className="relative mb-14 overflow-hidden">
-              <HiringHeroBackdrop />
-              <div className="relative z-10">
+        <main className="pb-20">
+          {/* Full-bleed, same field as the careers index, so the grid is not boxed into the text column. */}
+          <section className="relative mb-14 overflow-hidden px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
+            <HiringHeroBackdrop />
+            <div className="relative z-10 mx-auto max-w-3xl">
               <div className="animate-rise flex items-center gap-3">
                 <span className="h-px w-6 bg-gradient-to-r from-brand-500 to-transparent" />
                 <AnimatedShinyText className={`${sectionLabel} mx-0 max-w-none dark:text-brand-300`}>
@@ -358,9 +357,10 @@ export default function RolePage() {
                   </svg>
                 </a>
               </div>
-              </div>
-            </section>
+            </div>
+          </section>
 
+          <div className="mx-auto max-w-3xl px-5 sm:px-6">
             {/* Mission */}
             <section className="mb-14">
               <SectionHeading label="The mission" />
