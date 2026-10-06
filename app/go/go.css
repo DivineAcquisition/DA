@@ -74,21 +74,203 @@
   cursor: pointer;
 }
 
-.acq-coaches .go-calendar-wrap {
-  width: min(860px, 100%);
-  margin-top: 1.6rem;
+.acq-coaches .go-scheduler {
+  width: min(920px, 100%);
+  margin: 2rem auto 0;
+  text-align: left;
 }
 
-.acq-coaches .go-calendar-wrap .lx-video-shell {
-  overflow: visible;
+.acq-coaches .go-identity,
+.acq-coaches .go-cal,
+.acq-coaches .go-question {
+  display: grid;
+  gap: 0.9rem;
+  margin: 0 0 1.1rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.55);
 }
 
-.acq-coaches .go-calendar {
-  display: block;
+.acq-coaches .go-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.acq-coaches .go-field span,
+.acq-coaches .go-question legend,
+.acq-coaches .go-times-label {
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.acq-coaches .go-field small {
+  color: var(--lx-muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.acq-coaches .go-field input,
+.acq-coaches .go-field select {
   width: 100%;
-  height: 750px;
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 14px;
+  background: #100f18;
+  color: #fff;
+  padding: 0.85rem 1rem;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.acq-coaches .go-field input:focus,
+.acq-coaches .go-field select:focus {
+  outline: none;
+  border-color: #c3b6fe;
+  box-shadow: 0 0 0 3px rgba(154, 136, 252, 0.2);
+}
+
+.acq-coaches .go-cal-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches .go-cal-grid {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  }
+}
+
+.acq-coaches .go-cal-nav,
+.acq-coaches .go-cal-weekdays,
+.acq-coaches .go-cal-days,
+.acq-coaches .go-times {
+  display: grid;
+}
+
+.acq-coaches .go-cal-nav {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.acq-coaches .go-cal-nav p {
+  margin: 0;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+.acq-coaches .go-cal-nav button,
+.acq-coaches .go-cal-days button,
+.acq-coaches .go-times button {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.acq-coaches .go-cal-nav button {
+  padding: 0.4rem 0.7rem;
+}
+
+.acq-coaches .go-cal-weekdays,
+.acq-coaches .go-cal-days {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.35rem;
+  margin-top: 0.7rem;
+}
+
+.acq-coaches .go-cal-weekdays span {
+  color: var(--lx-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.acq-coaches .go-cal-days button {
+  height: 2.6rem;
+}
+
+.acq-coaches .go-cal-days button[aria-pressed='true'],
+.acq-coaches .go-times button[aria-pressed='true'] {
+  border-color: transparent;
+  background: #9a88fc;
+  color: #07070b;
+  font-weight: 700;
+}
+
+.acq-coaches .go-cal-days button:disabled {
+  color: #4a4a4a;
+  cursor: default;
+}
+
+.acq-coaches .go-times {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+}
+
+.acq-coaches .go-times button {
+  padding: 0.7rem 0.4rem;
+}
+
+.acq-coaches .go-question {
   border: 0;
-  background: #07070b;
+}
+
+.acq-coaches .go-question legend {
+  margin-bottom: 0.8rem;
+  line-height: 1.45;
+}
+
+.acq-coaches .go-question label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  color: #fff;
+  line-height: 1.45;
+}
+
+.acq-coaches .go-question input {
+  margin-top: 0.25rem;
+  accent-color: #9a88fc;
+}
+
+.acq-coaches .go-decline,
+.acq-coaches .go-error {
+  margin: 0.2rem 0 0;
+  color: #f0b45c;
+  line-height: 1.45;
+}
+
+.acq-coaches .go-error {
+  color: #f87171;
+}
+
+.acq-coaches .go-booked {
+  padding: 1.4rem 1.2rem 1.6rem;
+  border: 1px solid rgba(154, 136, 252, 0.45);
+  border-radius: 24px;
+  text-align: center;
+}
+
+.acq-coaches .go-booked h3 {
+  margin: 0.4rem 0 0.6rem;
+  color: #fff;
+}
+
+.acq-coaches .go-booked p {
+  margin: 0.25rem 0;
+  color: var(--lx-muted);
+}
+
+.acq-coaches .go-scheduler .acq-consent {
+  margin-bottom: 0.85rem;
 }
 
 .acq-coaches .go-results {

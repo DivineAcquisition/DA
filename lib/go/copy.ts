@@ -26,8 +26,36 @@ export const CALENDAR = {
   titleBefore: 'Book your ',
   titleAccent: 'strategy session',
   titleAfter: ' here',
-  body: "Pick a time. We'll call you then, look at your missed-call log and calendar, and show you where jobs are leaking. No spam, no pitch deck — just the numbers from your pipeline.",
+  body: 'Pick a weekday. You get a confirmation, then a reminder 24 hours before and 2 hours before by email and text, and a text 15 minutes before with the Google Meet link.',
 } as const;
+
+export const BOOKING = {
+  fullName: 'Full name',
+  email: 'Email',
+  phone: 'Mobile number',
+  phoneNote:
+    'Used for the 24-hour text, the 2-hour text, and the 15-minute text with your Google Meet link. No marketing texts.',
+  emailNote: "Confirmation and reminders go here.",
+  showUpPrompt:
+    'Can you commit to show up in a private area, with no noise and undivided attention, just as we will bring our focus and effort to this call?',
+  showUpYes: 'Yes. I will be in a private, quiet place with my full attention.',
+  showUpNo: 'No. I cannot commit to that.',
+  showUpDecline:
+    'This call needs a private, quiet place and your full attention. Book when you can give it that.',
+  smsConsent:
+    'I agree to receive calls and text messages from DivineAcquisition LLC and team members of DivineAcquisition, including automated appointment reminders about my strategy session and our services. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.',
+  emailConsent:
+    'I agree to receive emails from DivineAcquisition, including the confirmation and reminders about my strategy session. I can unsubscribe anytime.',
+  submit: 'Book this time',
+  submitting: 'Booking…',
+  confirmedTitle: 'Your strategy session is booked.',
+  confirmedNote: 'Check your email for the confirmation. The Google Meet link is in that email and in the 15-minute text.',
+} as const;
+
+/** The second booking question is not written yet. Only the show-up commitment is on the form. */
+
+export const LEGAL_TERMS_URL = 'https://acq.divineacquisition.io/terms';
+export const LEGAL_PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
 
 export const INCLUDED_HEADLINE = "What's included";
 export const INCLUDED_TITLE = 'The stack we install in your cleaning company.';
