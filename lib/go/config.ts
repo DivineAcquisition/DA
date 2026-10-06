@@ -14,13 +14,6 @@ export const GO_DEMO_MEDIA_ID = 'odrdmxlrvq';
 
 export const GO_WISTIA_ASPECT = '1.7777777777777777';
 
-/** Strategy-session calendar embedded on the landing. */
-export const GO_CALENDAR_WIDGET_ID = 'OKuMznUQ5mQ643pUcS3q';
-export const GO_CALENDAR_IFRAME_ID = 'sJewwAfFLhmwqP9psUxK_1776472943234';
-export const GO_CALENDAR_EMBED_SCRIPT =
-  'https://link.msgsndr.divineacquisition.io/js/form_embed.js';
-export const GO_CALENDAR_SRC = `https://link.msgsndr.divineacquisition.io/widget/booking/${GO_CALENDAR_WIDGET_ID}`;
-
 export function wistiaAspectRatio(aspect: '16/9' | '9/16'): string {
   return aspect === '9/16' ? '0.5625' : GO_WISTIA_ASPECT;
 }
