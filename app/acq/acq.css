@@ -482,12 +482,30 @@ a.acq-button:active {
   letter-spacing: -0.025em;
 }
 
-.acq-coaches .lx-card p {
+.acq-coaches .lx-card p,
+.acq-coaches .lx-card ul {
   margin: 0;
   color: var(--lx-muted);
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 500;
-  line-height: 1.72;
+  line-height: 1.6;
+}
+
+.acq-coaches .lx-card ul {
+  padding-left: 1.15rem;
+}
+
+.acq-coaches .lx-card ul li + li {
+  margin-top: 0.4rem;
+}
+
+.acq-coaches .lx-done {
+  color: var(--lx-accent-soft);
+}
+
+.acq-coaches .lx-done strong {
+  color: #fff;
+  font-weight: 700;
 }
 
 .acq-coaches .lx-featured {

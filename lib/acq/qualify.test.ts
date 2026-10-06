@@ -293,8 +293,10 @@ describe('founding landing media', () => {
     expect(copy.PROBLEM.body).toContain("don't have a lead problem");
     expect(copy.PROBLEM.body.toLowerCase()).not.toContain('med spa');
     expect(copy.QUESTIONS.items).toHaveLength(3);
-    expect(copy.BUILD.items).toHaveLength(4);
-    expect(copy.BUILD.items[0].title).toBe('Reply in under 60 seconds');
+    expect(copy.BUILD.items).toHaveLength(6);
+    expect(copy.BUILD.note).toBe('Installed in 14 days.');
+    expect(copy.BUILD.items[0].title).toBe('Lead intake restructure');
+    expect(copy.BUILD.items.map((item) => item.title).join(' ')).not.toMatch(/weeks/i);
     expect(copy.HOW_IT_WORKS.steps).toHaveLength(3);
     expect(copy.WHY_US.items).toHaveLength(4);
     expect(copy.WHY_US.lead.toLowerCase()).not.toContain('testimonial wall');

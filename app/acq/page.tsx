@@ -65,11 +65,19 @@ export default async function AcqLandingPage({
         <section className="lx-section">
           <div className="lx-wrap">
             <h2 className="lx-heading">{BUILD.eyebrow}</h2>
+            <p className="lx-intro">{BUILD.note}</p>
             <ul className="lx-offer">
-              {BUILD.items.map((item, index) => (
-                <li key={item.title} className={index === 1 ? 'lx-card lx-featured' : 'lx-card'}>
+              {BUILD.items.map((item) => (
+                <li key={item.title} className="lx-card">
                   <h3>{item.title}</h3>
-                  <p>{item.body}</p>
+                  <ul>
+                    {item.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                  <p className="lx-done">
+                    <strong>Done when:</strong> {item.done}
+                  </p>
                 </li>
               ))}
             </ul>

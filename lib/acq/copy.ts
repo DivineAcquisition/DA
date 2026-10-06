@@ -37,23 +37,75 @@ export const QUESTIONS = {
 } as const;
 
 export const BUILD = {
-  eyebrow: 'So what do you actually get?',
+  eyebrow: 'What you actually get',
+  note: 'Installed in 14 days.',
   items: [
     {
-      title: 'Reply in under 60 seconds',
-      body: 'A first response and a booking link go out when the inquiry arrives, including after hours, so the lead is not waiting until morning.',
+      title: 'Lead intake restructure',
+      points: [
+        'A one-page map of every place leads enter today: forms, DMs, ads, webinars, referrals.',
+        'One intake path into one system, with source tracking.',
+        'Deduplication, plus an alert to the setter within minutes of a new lead.',
+        'A one-time import and scoring of the existing lead list.',
+      ],
+      done: 'A test lead from each source lands in the CRM, tagged, and triggers the alert.',
     },
     {
-      title: 'Show-up sequence',
-      body: 'A confirmation, a reminder the day before, and a reminder the morning of, plus a reschedule path when they cannot make it.',
+      title: 'Buying-intent scoring',
+      points: [
+        'Four or five scored criteria built from the offer: timeline, budget fit, decision-maker, urgency, source.',
+        'Weights and three tiers (ready, nurture, low), back-tested against the last 30 to 50 closed and lost leads where they exist.',
+        'Overrides so warm referrals and DMs skip the score.',
+        'A re-score every 30 days for nurture leads.',
+      ],
+      done: 'The score sorts past leads in a way you agree with, with most closed deals landing in ready.',
     },
     {
-      title: 'Follow-up for "not yet"',
-      body: 'People who are not ready get a short sequence in your voice, instead of one unanswered "let me think about it."',
+      title: 'Nurture and education sequences',
+      points: [
+        'Ready track: an automated first touch plus four setter call tasks over 14 days.',
+        'Nurture track: six messages over 30 days, then monthly, ending in a reply that re-scores the lead.',
+        'Education: five short pieces answering the top objections (price, timing, spouse, trust, fit).',
+        'Post-call follow-up branched by objection.',
+        'Reactivation: four messages over 10 days to the dormant list.',
+        'All copy is written once in your voice, with two revision rounds.',
+      ],
+      done: 'Every message is approved and every sequence has been tested end to end.',
     },
     {
-      title: 'Weekly numbers',
-      body: 'Inquiries, booked calls, shows, and closes in one view, including the weeks that got worse.',
+      title: 'AI workflows for setters and closers',
+      points: [
+        'Before the call: a one-page brief for every booked call (score, answers in the lead\'s own words, source, touch history, likely objection, and a suggested angle).',
+        'A triage for each new lead: call now, book first, or nurture, with the reason.',
+        'After the call: recorded calls are transcribed and reviewed against a rubric built with you (six to eight points, such as discovery, objection handling, and the next step agreed).',
+        'Debrief fields are pre-filled, key moments are flagged, and each setter and closer gets a weekly digest with two or three coaching points.',
+        'AI recommends and people decide. Scores are coaching signals, not grounds to discipline anyone.',
+        'It needs recorded calls. Many states, including Maryland, require everyone on a call to consent to recording. You own the consent wording. We supply suggested language.',
+        'We spot-check the first 20 calls with the owner.',
+      ],
+      done: 'Briefs generate for every booked call in a test week, and rubric scores on 10 sample calls roughly match the owner\'s own read.',
+    },
+    {
+      title: 'Call protection',
+      points: [
+        'Confirmation by email and SMS, a calendar invite, one prep question, and an optional 60-second what-to-expect video. We script it. You record it.',
+        'Reminders at 24 hours, 2 hours, and 15 minutes.',
+        'A "joining?" text 5 minutes after a missed start.',
+        'No-show recovery: a rebook email at 1 hour, a setter task at 1 day, and a final offer at 3 days. A second no-show moves them to nurture.',
+        'Reschedule and cancel handling, plus show rate tracked by source and time slot.',
+      ],
+      done: 'A test booking fires the full chain, a simulated no-show fires recovery, and show rate is visible on the dashboard.',
+    },
+    {
+      title: 'Tracking, reporting, and weekly tuning',
+      points: [
+        'A baseline recorded and both targets signed before work starts.',
+        'A 15-second touch-logging form and a dashboard: speed to contact, show rate, close rate, contacted versus never worked.',
+        'Alarms for uncontacted ready leads and missing debriefs.',
+        'A weekly 30-minute call with the owner and setter: the numbers, two or three calls reviewed, and message changes.',
+        'A day-30 checkpoint, three monthly reports, two written ad reviews, and a day-90 measurement against both targets.',
+      ],
+      done: 'The baseline and both targets are signed, and the dashboard shows speed to contact, show rate, close rate, and contacted versus never worked.',
     },
   ],
 } as const;

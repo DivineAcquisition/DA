@@ -82,9 +82,9 @@ export function BuildBento() {
                 <div className="w-full">{visuals[index]}</div>
               </div>
               <div className="p-6">
-                <Icon className="size-5 text-brand-300" aria-hidden />
+                {Icon ? <Icon className="size-5 text-brand-300" aria-hidden /> : null}
                 <h3 className="acq-headline mt-3 text-lg font-semibold text-white">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-400">{item.body}</p>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-400">{item.points[0]}</p>
               </div>
             </Panel>
           </li>
