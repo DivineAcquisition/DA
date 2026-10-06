@@ -37,7 +37,7 @@ import {
   VIDEO_LABEL,
 } from '@/lib/go/copy';
 import { DemoLink } from './components/DemoLink';
-import { GoCalendar } from './components/GoCalendar';
+import { StrategyCalendar } from './components/StrategyCalendar';
 import { GoWistia } from './components/GoWistia';
 
 function Check() {
@@ -262,14 +262,16 @@ export default function CleaningFunnelPage() {
       </section>
 
       <section className="lx-section" id="calendar">
-        <div className="lx-wrap lx-hero-inner">
-          <h2 className="lx-heading">
-            {CALENDAR.titleBefore}
-            <span className="lx-accent">{CALENDAR.titleAccent}</span>
-            {CALENDAR.titleAfter}
-          </h2>
-          <p className="lx-lead">{CALENDAR.body}</p>
-          <GoCalendar />
+        <div className="lx-wrap">
+          <div className="lx-hero-inner">
+            <h2 className="lx-heading">
+              {CALENDAR.titleBefore}
+              <span className="lx-accent">{CALENDAR.titleAccent}</span>
+              {CALENDAR.titleAfter}
+            </h2>
+            <p className="lx-lead">{CALENDAR.body}</p>
+          </div>
+          <StrategyCalendar />
         </div>
       </section>
 
