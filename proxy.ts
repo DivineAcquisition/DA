@@ -27,6 +27,7 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq
+ *   go.divineacquisition.io         -> /acq (same coaching funnel)
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
  *   careers / apex                  -> /hiring (and /)
@@ -62,7 +63,12 @@ const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacqu
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
 // The admin app: ADMIN_APP_URL (lib/apps), plus any DA_WORKSPACE_HOSTS.
 const WORKSPACE_HOSTS = appHosts('admin');
-const ACQ_HOSTS = hosts(process.env.VISTRIAL_ACQ_HOSTS, 'acq.divineacquisition.io');
+// go. is the public ad host for the same coaching funnel as acq.
+// Always keep both, even when VISTRIAL_ACQ_HOSTS lists only one of them.
+const ACQ_HOST_DEFAULTS = ['acq.divineacquisition.io', 'go.divineacquisition.io'];
+const ACQ_HOSTS = [
+  ...new Set([...hosts(process.env.VISTRIAL_ACQ_HOSTS, ACQ_HOST_DEFAULTS.join(',')), ...ACQ_HOST_DEFAULTS]),
+];
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
 const TRAINING_HOSTS = appHosts('training');
