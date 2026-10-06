@@ -1,7 +1,9 @@
 /**
- * One look for every email DA sends: brand bar, a single card, and the brand
- * footer. Table layout with inline styles only, because Gmail and
- * Outlook drop <style> blocks and flexbox.
+ * One look for every email DA sends: the auth-page lockup, a single card,
+ * and the brand footer. Table layout with inline styles, because Gmail and
+ * Outlook drop <style> blocks and flexbox. The one style block only loads
+ * Inter Display for clients that keep it (Apple Mail). Everyone else follows
+ * the inline stack down to Helvetica and Arial.
  */
 
 const SITE_URL = 'https://divineacquisition.io';
@@ -15,7 +17,20 @@ export const EMAIL_BRAND = {
   auditUrl: ACQ_ORIGIN,
   privacyUrl: `${ACQ_ORIGIN}/privacy`,
   termsUrl: `${ACQ_ORIGIN}/terms`,
-  markUrl: `${ACQ_ORIGIN}/email-mark.png`,
+  /** Raster of the auth-page lockup (`app/components/Logo.tsx`), 788×116. */
+  logoUrl: `${ACQ_ORIGIN}/email-logo.png`,
+} as const;
+
+/** Display sizes of `logoUrl`. The file is exactly 4× the header size. */
+const LOGO = {
+  header: { width: 197, height: 29 },
+  footer: { width: 163, height: 24 },
+} as const;
+
+const FONT_FILES = {
+  regular: `${ACQ_ORIGIN}/fonts/InterDisplay-Regular.woff2`,
+  italic: `${ACQ_ORIGIN}/fonts/InterDisplay-Italic.woff2`,
+  bold: `${ACQ_ORIGIN}/fonts/InterDisplay-Bold.woff2`,
 } as const;
 
 const C = {
@@ -34,8 +49,17 @@ const C = {
   faint: '#5f5d6c',
 } as const;
 
-const SANS = "'Helvetica Neue',Helvetica,Arial,sans-serif";
-const SERIF = "Georgia,'Times New Roman',serif";
+const FONT = "'Inter Display', Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif";
+
+function fontFaceCss(): string {
+  const face = (style: string, weight: number, file: string) =>
+    `@font-face{font-family:'Inter Display';font-style:${style};font-weight:${weight};font-display:swap;src:url('${file}') format('woff2');}`;
+  return `${face('normal', 400, FONT_FILES.regular)}${face('italic', 400, FONT_FILES.italic)}${face('normal', 700, FONT_FILES.bold)}`;
+}
+
+function logoHtml(size: { width: number; height: number }, alt: string): string {
+  return `<img src="${escapeHtml(EMAIL_BRAND.logoUrl)}" width="${size.width}" height="${size.height}" alt="${escapeHtml(alt)}" style="display:block;border:0;outline:none;width:${size.width}px;height:${size.height}px;" />`;
+}
 
 export function escapeHtml(value: string): string {
   return value
@@ -85,14 +109,14 @@ export type EmailContent = {
 };
 
 export function paragraphHtml(text: string, color: string = C.body): string {
-  return `<p style="margin:0 0 16px;font-family:${SANS};font-size:16px;line-height:1.65;color:${color};">${escapeHtml(text).replace(/\n/g, '<br />')}</p>`;
+  return `<p style="margin:0 0 16px;font-family:${FONT};font-size:16px;line-height:1.65;color:${color};">${escapeHtml(text).replace(/\n/g, '<br />')}</p>`;
 }
 
 export function buttonHtml(href: string, label: string, formal = false): string {
   const bg = formal ? C.formal : C.accent;
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
 <td align="center" bgcolor="${bg}" style="border-radius:12px;background-color:${bg};">
-<a href="${escapeHtml(href)}" style="display:inline-block;padding:15px 30px;font-family:${SANS};font-size:15px;font-weight:700;line-height:1;color:${C.canvas};text-decoration:none;border-radius:12px;">${escapeHtml(label)}&nbsp;&rarr;</a>
+<a href="${escapeHtml(href)}" style="display:inline-block;padding:15px 30px;font-family:${FONT};font-size:15px;font-weight:700;line-height:1;color:${C.canvas};text-decoration:none;border-radius:12px;">${escapeHtml(label)}&nbsp;&rarr;</a>
 </td></tr></table>`;
 }
 
@@ -104,8 +128,8 @@ export function detailsHtml(details: EmailDetail[]): string {
         : escapeHtml(detail.value);
       const border = index === 0 ? '' : `border-top:1px solid ${C.panelBorder};`;
       return `<tr><td style="padding:14px 20px;${border}">
-<p style="margin:0;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${C.muted};">${escapeHtml(detail.label)}</p>
-<p style="margin:6px 0 0;font-family:${SANS};font-size:16px;line-height:1.5;color:${C.heading};">${value}</p>
+<p style="margin:0;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${C.muted};">${escapeHtml(detail.label)}</p>
+<p style="margin:6px 0 0;font-family:${FONT};font-size:16px;line-height:1.5;color:${C.heading};">${value}</p>
 </td></tr>`;
     })
     .join('');
@@ -115,10 +139,10 @@ export function detailsHtml(details: EmailDetail[]): string {
 /** A bordered block used for each item in a digest. */
 export function itemCardHtml(title: string, bodyHtml: string, link?: { href: string; label: string } | null): string {
   const action = link
-    ? `<p style="margin:4px 0 0;font-family:${SANS};font-size:14px;font-weight:700;"><a href="${escapeHtml(link.href)}" style="color:${C.accentSoft};text-decoration:none;">${escapeHtml(link.label)}&nbsp;&rarr;</a></p>`
+    ? `<p style="margin:4px 0 0;font-family:${FONT};font-size:14px;font-weight:700;"><a href="${escapeHtml(link.href)}" style="color:${C.accentSoft};text-decoration:none;">${escapeHtml(link.label)}&nbsp;&rarr;</a></p>`
     : '';
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 14px;background-color:${C.panel};border:1px solid ${C.panelBorder};border-radius:14px;"><tr><td style="padding:18px 20px;">
-<p style="margin:0 0 10px;font-family:${SANS};font-size:16px;font-weight:700;line-height:1.4;color:${C.heading};">${escapeHtml(title)}</p>
+<p style="margin:0 0 10px;font-family:${FONT};font-size:16px;font-weight:700;line-height:1.4;color:${C.heading};">${escapeHtml(title)}</p>
 ${bodyHtml}${action}
 </td></tr></table>`;
 }
@@ -126,7 +150,7 @@ ${bodyHtml}${action}
 function noteHtml(note: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
 <td style="border-left:3px solid ${C.accent};padding:4px 0 4px 16px;">
-<p style="margin:0;font-family:${SANS};font-size:14px;line-height:1.65;color:${C.muted};">${escapeHtml(note).replace(/\n/g, '<br />')}</p>
+<p style="margin:0;font-family:${FONT};font-size:14px;line-height:1.65;color:${C.muted};">${escapeHtml(note).replace(/\n/g, '<br />')}</p>
 </td></tr></table>`;
 }
 
@@ -141,17 +165,13 @@ function footerHtml(footer: EmailFooter): string {
     link(EMAIL_BRAND.termsUrl, 'Terms'),
   ].join(dot);
   const small = (text: string, top = 8) =>
-    `<p style="margin:${top}px 0 0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.faint};">${text}</p>`;
+    `<p style="margin:${top}px 0 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${C.faint};">${text}</p>`;
 
   return `<tr><td style="padding:36px 8px 0;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="border-top:1px solid ${C.rule};padding-top:28px;">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-<td valign="middle" style="padding-right:12px;"><img src="${escapeHtml(EMAIL_BRAND.markUrl)}" width="21" height="28" alt="" style="display:block;border:0;outline:none;" /></td>
-<td valign="middle">
-<p style="margin:0;font-family:${SANS};font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.heading};">${escapeHtml(EMAIL_BRAND.name)}</p>
-</td></tr></table>
-<p style="margin:16px 0 0;font-family:${SERIF};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
-<p style="margin:16px 0 0;font-family:${SANS};font-size:12px;line-height:1.8;">${links}</p>
+${logoHtml(LOGO.footer, 'DivineAcquisition')}
+<p style="margin:16px 0 0;font-family:${FONT};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
+<p style="margin:16px 0 0;font-family:${FONT};font-size:12px;line-height:1.8;">${links}</p>
 ${small(escapeHtml(footer.reason), 16)}
 ${footer.disclaimer ? small(escapeHtml(footer.disclaimer)) : ''}
 ${small(`&copy; ${new Date().getFullYear()} ${escapeHtml(EMAIL_BRAND.name)}. All rights reserved.`)}
@@ -171,7 +191,7 @@ export function renderEmailHtml(content: EmailContent): string {
     sections.push(`<tr><td style="padding:28px 40px 0;">${buttonHtml(content.cta.href, content.cta.label, content.cta.formal)}</td></tr>`);
     if (content.showFallbackLink) {
       sections.push(`<tr><td style="padding:14px 40px 0;">
-<p style="margin:0;font-family:${SANS};font-size:12px;line-height:1.6;color:${C.faint};">If the button does not open, paste this into your browser:<br />
+<p style="margin:0;font-family:${FONT};font-size:12px;line-height:1.6;color:${C.faint};">If the button does not open, paste this into your browser:<br />
 <a href="${escapeHtml(content.cta.href)}" style="color:${C.accentSoft};text-decoration:none;word-break:break-all;">${escapeHtml(content.cta.href)}</a></p>
 </td></tr>`);
     }
@@ -180,8 +200,8 @@ export function renderEmailHtml(content: EmailContent): string {
   if (content.note) sections.push(`<tr><td style="padding:28px 40px 0;">${noteHtml(content.note)}</td></tr>`);
   if (content.signoff) {
     sections.push(`<tr><td style="padding:28px 40px 0;">
-<p style="margin:0;font-family:${SERIF};font-size:17px;font-style:italic;color:${C.heading};">${escapeHtml(content.signoff.name)}</p>
-${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${SANS};font-size:13px;color:${C.muted};">${escapeHtml(content.signoff.role)}</p>` : ''}
+<p style="margin:0;font-family:${FONT};font-size:17px;font-style:italic;color:${C.heading};">${escapeHtml(content.signoff.name)}</p>
+${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${FONT};font-size:13px;color:${C.muted};">${escapeHtml(content.signoff.role)}</p>` : ''}
 </td></tr>`);
   }
 
@@ -193,29 +213,25 @@ ${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${SANS};font-size
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="color-scheme" content="dark" />
 <meta name="supported-color-schemes" content="dark" />
+<!--[if !mso]><!-->
+<style>${fontFaceCss()}</style>
+<!--<![endif]-->
 <title>${escapeHtml(content.subject)}</title>
 </head>
-<body style="margin:0;padding:0;background-color:${C.canvas};">
+<body style="margin:0;padding:0;background-color:${C.canvas};font-family:${FONT};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.canvas};">${escapeHtml(content.preheader)}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="${C.canvas}" style="background-color:${C.canvas};">
 <tr><td align="center" style="padding:40px 16px 48px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width:600px;">
 <tr><td style="padding:0 8px 22px;">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
-<td valign="middle">
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
-<td valign="middle" style="padding-right:12px;"><img src="${escapeHtml(EMAIL_BRAND.markUrl)}" width="27" height="36" alt="${escapeHtml(EMAIL_BRAND.name)}" style="display:block;border:0;outline:none;" /></td>
-<td valign="middle"><p style="margin:0;font-family:${SANS};font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:${C.heading};">${escapeHtml(EMAIL_BRAND.name)}</p></td>
-</tr></table>
-</td>
-</tr></table>
+${logoHtml(LOGO.header, 'DivineAcquisition')}
 </td></tr>
 <tr><td bgcolor="${C.card}" style="background-color:${C.card};border:1px solid ${C.cardBorder};border-radius:20px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr><td style="height:4px;line-height:4px;font-size:0;background-color:${C.accent};border-radius:20px 20px 0 0;">&nbsp;</td></tr>
 <tr><td style="padding:36px 40px 0;">
-<p style="margin:0;font-family:${SANS};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.accent};">${escapeHtml(content.eyebrow)}</p>
-<h1 style="margin:14px 0 0;font-family:${SERIF};font-size:30px;line-height:1.22;font-weight:700;color:${C.heading};">${escapeHtml(content.title)}</h1>
+<p style="margin:0;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.accent};">${escapeHtml(content.eyebrow)}</p>
+<h1 style="margin:14px 0 0;font-family:${FONT};font-size:30px;line-height:1.22;font-weight:700;color:${C.heading};">${escapeHtml(content.title)}</h1>
 </td></tr>
 <tr><td style="padding:22px 40px 0;">${body.join('')}</td></tr>
 ${sections.join('\n')}

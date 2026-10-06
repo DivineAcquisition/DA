@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { EMAIL_BRAND, renderEmailHtml, textFooter } from './layout';
 
@@ -32,6 +33,31 @@ describe('email layout', () => {
     const html = renderEmailHtml(base);
     expect(html).toContain('Title &lt;b&gt;');
     expect(html).toContain('Body &amp; more');
+  });
+
+  it('sets Inter Display on every text style and uses the auth lockup', () => {
+    const html = renderEmailHtml(base);
+    expect(html).toContain(EMAIL_BRAND.logoUrl);
+    expect(html).toContain('alt="DivineAcquisition"');
+    expect(html).toContain('InterDisplay-Regular.woff2');
+    expect(html).toContain('InterDisplay-Italic.woff2');
+    expect(html).toContain('InterDisplay-Bold.woff2');
+    expect(html).not.toContain('email-mark.png');
+    expect(html).not.toMatch(/Georgia|Times New Roman/);
+    const families = html.match(/font-family:[^;}"]+/g) ?? [];
+    expect(families.length).toBeGreaterThan(0);
+    for (const family of families) {
+      expect(family.startsWith("font-family:'Inter Display'")).toBe(true);
+    }
+  });
+
+  it('keeps the password reset template on the same font and logo', () => {
+    const html = readFileSync(new URL('../../supabase/templates/recovery.html', import.meta.url), 'utf8');
+    expect(html).toContain('/email-logo.png');
+    expect(html).toContain('Inter Display');
+    expect(html).toContain('InterDisplay-Bold.woff2');
+    expect(html).not.toContain('email-mark.png');
+    expect(html).not.toMatch(/Georgia|Times New Roman/);
   });
 
   it('mirrors the footer in plain text', () => {

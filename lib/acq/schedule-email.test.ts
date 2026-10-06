@@ -12,7 +12,7 @@ describe('acquisition audit email', () => {
   });
 
   it('uses the logo, legal footer, and the roadmap note', () => {
-    expect(email.html).toContain('/email-mark.png');
+    expect(email.html).toContain('/email-logo.png');
     expect(email.html).toContain('Privacy policy');
     expect(email.html).toContain('system roadmaps and blueprints');
     expect(email.html).toContain('do not actively manage ad campaigns');
