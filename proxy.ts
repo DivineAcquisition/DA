@@ -514,5 +514,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|svg|json|ico|webp|jpg)$).*)'],
+  // Font files live in public/ and must skip the host lock, same as images.
+  // Otherwise acq.divineacquisition.io 404s /fonts/*.woff2 and email clients
+  // cannot load Inter Display.
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|.*\\.(?:png|svg|json|ico|webp|jpg|woff|woff2)$).*)'],
 };
