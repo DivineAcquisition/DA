@@ -26,8 +26,8 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *                                       reachable there too, for staff View As.
  *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
- *   acq.divineacquisition.io        -> /acq
- *   go.divineacquisition.io         -> /acq (same coaching funnel)
+ *   acq.divineacquisition.io        -> /acq  (coaches offer)
+ *   go.divineacquisition.io         -> /go   (cleaning-company funnel, coaches layout)
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
  *   careers / apex                  -> /hiring (and /)
@@ -63,12 +63,17 @@ const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacqu
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
 // The admin app: ADMIN_APP_URL (lib/apps), plus any DA_WORKSPACE_HOSTS.
 const WORKSPACE_HOSTS = appHosts('admin');
-// go. is the public ad host for the same coaching funnel as acq.
-// Always keep both, even when VISTRIAL_ACQ_HOSTS lists only one of them.
-const ACQ_HOST_DEFAULTS = ['acq.divineacquisition.io', 'go.divineacquisition.io'];
+// acq. is the coaches offer. go. is the cleaning-company funnel with that same layout.
+// Keep each default even when its env var lists only one host, and never let go.
+// fall through onto the coaches surface.
+const ACQ_HOST_DEFAULTS = ['acq.divineacquisition.io'];
+const GO_HOST_DEFAULTS = ['go.divineacquisition.io'];
+const GO_HOSTS = [
+  ...new Set([...hosts(process.env.VISTRIAL_GO_HOSTS, GO_HOST_DEFAULTS.join(',')), ...GO_HOST_DEFAULTS]),
+];
 const ACQ_HOSTS = [
   ...new Set([...hosts(process.env.VISTRIAL_ACQ_HOSTS, ACQ_HOST_DEFAULTS.join(',')), ...ACQ_HOST_DEFAULTS]),
-];
+].filter((host) => !GO_HOSTS.includes(host));
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
 const TRAINING_HOSTS = appHosts('training');
@@ -82,6 +87,7 @@ const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
 const WORKSPACE_PREFIX = '/workspace';
 const ACQ_PREFIX = '/acq';
+const GO_PREFIX = '/go';
 const CALLS_PREFIX = '/calls';
 const ONBOARD_PREFIX = '/onboard';
 const ACADEMY_PREFIX = '/academy';
@@ -96,6 +102,7 @@ const SURFACE_PREFIXES = [
   ASSESSMENT_ADMIN_PREFIX,
   WORKSPACE_PREFIX,
   ACQ_PREFIX,
+  GO_PREFIX,
   CALLS_PREFIX,
   ONBOARD_PREFIX,
   ACADEMY_PREFIX,
@@ -189,6 +196,11 @@ const SURFACES: Surface[] = [
       pathname === '/hs/companies' ||
       pathname.startsWith('/hs/companies/') ||
       pathname.startsWith('/settings'),
+  },
+  {
+    hosts: GO_HOSTS,
+    prefix: GO_PREFIX,
+    allow: (pathname) => pathname === '/' || pathname.startsWith('/go'),
   },
   {
     hosts: ACQ_HOSTS,
@@ -345,6 +357,7 @@ export async function proxy(request: NextRequest) {
     if (
       surface.prefix === HIRING_PREFIX ||
       surface.prefix === ACQ_PREFIX ||
+      surface.prefix === GO_PREFIX ||
       surface.prefix === WORKSPACE_PREFIX
     ) {
       return new NextResponse('Not found', {
@@ -490,7 +503,10 @@ export async function proxy(request: NextRequest) {
   }
 
   // Acquisition landing is a public ad destination and must remain indexable.
-  if ((isInternal && prefix !== ACQ_PREFIX) || pathname.startsWith(ONBOARD_PREFIX)) {
+  if (
+    (isInternal && prefix !== ACQ_PREFIX && prefix !== GO_PREFIX) ||
+    pathname.startsWith(ONBOARD_PREFIX)
+  ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }
 

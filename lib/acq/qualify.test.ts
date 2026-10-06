@@ -17,6 +17,7 @@ import {
   acqCalendarEmbedSrc,
   acqPracticesUrl,
   acqPublicPath,
+  isAcqHost,
   qualificationSchedulePath,
   qualificationThankYouPath,
   trackingFromSearchParams,
@@ -161,7 +162,6 @@ describe('qualificationSchedulePath', () => {
 describe('qualificationThankYouPath', () => {
   it('uses the bare /thank-you path on the dedicated acq host', () => {
     expect(qualificationThankYouPath('acq.divineacquisition.io')).toBe('/thank-you');
-    expect(qualificationThankYouPath('go.divineacquisition.io')).toBe('/thank-you');
     expect(qualificationThankYouPath('acq.divineacquisition.io:443')).toBe('/thank-you');
   });
 
@@ -174,7 +174,12 @@ describe('qualificationThankYouPath', () => {
 describe('acqPublicPath', () => {
   it('uses the bare booking path on the dedicated acq host', () => {
     expect(acqPublicPath('/book', 'acq.divineacquisition.io')).toBe('/book');
-    expect(acqPublicPath('/book', 'go.divineacquisition.io')).toBe('/book');
+  });
+
+  it('keeps the cleaning funnel host off the coaches paths', () => {
+    expect(isAcqHost('go.divineacquisition.io')).toBe(false);
+    expect(qualificationThankYouPath('go.divineacquisition.io')).toBe('/acq/thank-you');
+    expect(acqPublicPath('/book', 'go.divineacquisition.io')).toBe('/acq/book');
   });
 
   it('prefixes the booking path on localhost and previews', () => {

@@ -186,12 +186,20 @@ export function withTrackingParams(
 }
 
 /** Hosts that serve the coaching funnel at bare paths (`/book`, not `/acq/book`). */
-const ACQ_BARE_HOSTS = new Set(['acq.divineacquisition.io', 'go.divineacquisition.io']);
+const ACQ_BARE_HOSTS = new Set(['acq.divineacquisition.io']);
+
+/** go.divineacquisition.io is the cleaning-company funnel, not the coaches offer. */
+function isCleaningFunnelHost(hostname: string): boolean {
+  return (
+    hostname === 'go.divineacquisition.io' ||
+    (hostname.startsWith('go.') && hostname.endsWith('.divineacquisition.io'))
+  );
+}
 
 /** Dedicated acq hosts use bare paths; localhost and previews stay under /acq. */
 export function isAcqHost(host?: string | null): boolean {
   const hostname = (host ?? '').toLowerCase().split(':')[0];
-  if (!hostname) return false;
+  if (!hostname || isCleaningFunnelHost(hostname)) return false;
   if (ACQ_BARE_HOSTS.has(hostname)) return true;
   const acqHost = new URL(ACQ_PUBLIC_ORIGIN).hostname;
   return (

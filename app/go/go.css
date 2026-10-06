@@ -1,0 +1,205 @@
+/* Extras for the cleaning funnel. Shared layout lives in the coaches stylesheet. */
+
+/* Italic accent glyphs run into the next word. Keep a real gap after the accent. */
+.acq-coaches .lx-heading .lx-accent {
+  margin-right: 0.28em;
+}
+
+.acq-coaches .go-demo {
+  margin: 0.9rem 0 0;
+  color: var(--lx-muted);
+  font-size: 1.02rem;
+}
+
+.acq-coaches .go-demo button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: rgba(154, 136, 252, 0.7);
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.acq-coaches .go-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.acq-coaches .go-lightbox-panel {
+  width: min(960px, 100%);
+}
+
+.acq-coaches .go-lightbox-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: #07070b;
+  color: #fff;
+  padding: 0.45rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.acq-coaches .go-calendar-wrap {
+  width: min(860px, 100%);
+  margin-top: 1.6rem;
+}
+
+.acq-coaches .go-calendar-wrap .lx-video-shell {
+  overflow: visible;
+}
+
+.acq-coaches .go-calendar {
+  display: block;
+  width: 100%;
+  height: 750px;
+  border: 0;
+  background: #07070b;
+}
+
+.acq-coaches .go-results {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 980px) {
+  .acq-coaches .go-results {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches .go-person {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.acq-coaches .go-initials {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent);
+  font-weight: 700;
+}
+
+.acq-coaches .go-name {
+  margin: 0;
+  color: #fff;
+  font-family: var(--font-acq-jakarta), 'Inter Tight', Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.acq-coaches .go-role,
+.acq-coaches .go-kicker {
+  margin: 0;
+  color: var(--lx-muted);
+  font-size: 0.9rem;
+}
+
+.acq-coaches .go-kicker {
+  color: var(--lx-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.acq-coaches .go-quote {
+  margin: 0;
+  color: var(--lx-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.acq-coaches .go-placeholder {
+  display: flex;
+  aspect-ratio: 16 / 9;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  background: #100f18;
+  color: var(--lx-muted);
+  text-align: center;
+  padding: 1rem;
+}
+
+.acq-coaches .go-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.acq-coaches .go-stats li {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 0.55rem 0.35rem;
+  text-align: center;
+}
+
+.acq-coaches .go-stats strong {
+  display: block;
+  color: var(--lx-accent);
+  font-size: 0.95rem;
+}
+
+.acq-coaches .go-stats span {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--lx-muted);
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+.acq-coaches .go-delta {
+  color: #fff;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.acq-coaches .go-delta span {
+  color: var(--lx-accent);
+}
+
+.acq-coaches .go-foot-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.25rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.acq-coaches .go-foot-links a {
+  color: #c3b6fe;
+  text-decoration: none;
+}
+
+.acq-coaches .lx-foot a {
+  color: #c3b6fe;
+}
