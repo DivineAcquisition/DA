@@ -76,6 +76,9 @@ export function scoreQualification(
     inquiriesPerMonth?: number | null;
   },
 ): WorkspaceScore {
+  if (!payload.monthlyAdSpend && payload.inquiriesPerMonth == null && !payload.followUpOwner) {
+    return { readinessScore: MANUAL_REVIEW_MIN_SCORE, qualificationResult: 'Manual Review' };
+  }
   const readinessScore = readinessScoreFromInputs({
     monthlyAdSpend: payload.monthlyAdSpend,
     followUpOwner: payload.followUpOwner,

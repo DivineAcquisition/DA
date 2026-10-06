@@ -13,13 +13,18 @@ import {
 } from 'react';
 import { Field as CossField, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { NativeSelect } from '@/components/ui/select';
-import { CTA_LABEL, FORM_LABELS, QUALIFY_DIALOG } from '@/lib/acq/copy';
 import {
-  FOLLOW_UP_OPTIONS,
-  PROGRAM_PRICE_OPTIONS,
-  type QualificationInput,
-} from '@/lib/acq/qualify';
+  CONSENT_CALLS,
+  CONSENT_EMAIL,
+  CTA_LABEL,
+  FORM_EMAIL_NOTE,
+  FORM_LABELS,
+  FORM_PHONE_NOTE,
+  LEGAL_PRIVACY_URL,
+  LEGAL_TERMS_URL,
+  QUALIFY_DIALOG,
+} from '@/lib/acq/copy';
+import { type QualificationInput } from '@/lib/acq/qualify';
 import { ACQ_PIXEL_LEAD_EVENT, type TrackingParamKey } from '@/lib/acq/config';
 import { trackPixel } from './MetaPixel';
 
@@ -125,12 +130,11 @@ function QualifyDialog({
 
     const form = new FormData(event.currentTarget);
     const input: QualificationInput = {
-      fullName: String(form.get('fullName') ?? ''),
+      fullName: String(form.get('firstName') ?? ''),
       email: String(form.get('email') ?? ''),
-      offer: String(form.get('offer') ?? ''),
-      programPrice: String(form.get('programPrice') ?? ''),
-      inquiriesPerMonth: String(form.get('inquiriesPerMonth') ?? ''),
-      followUp: String(form.get('followUp') ?? ''),
+      phone: String(form.get('phone') ?? ''),
+      smsConsent: form.get('smsConsent') === 'on',
+      emailConsent: form.get('emailConsent') === 'on',
       website: String(form.get('website') ?? ''),
       tracking,
     };
@@ -193,94 +197,64 @@ function QualifyDialog({
 
         <form onSubmit={onSubmit} className="acq-dialog-body mt-5" noValidate>
           <FieldGroup>
-          <div className="grid gap-4 md:grid-cols-2">
-            <CossField>
-              <FieldLabel className={fieldLabel}>{FORM_LABELS.fullName}</FieldLabel>
-              <Input
-                nativeInput
-                ref={firstFieldRef}
-                name="fullName"
-                type="text"
-                autoComplete="name"
-                required
-                placeholder="Jordan Blake"
-                size="lg"
-                className={fieldControl}
-              />
-            </CossField>
-            <CossField>
-              <FieldLabel className={fieldLabel}>{FORM_LABELS.email}</FieldLabel>
-              <Input
-                nativeInput
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                placeholder="you@company.com"
-                size="lg"
-                inputMode="email"
-                className={fieldControl}
-              />
-            </CossField>
-          </div>
           <CossField>
-            <FieldLabel className={fieldLabel}>{FORM_LABELS.offer}</FieldLabel>
+            <FieldLabel className={fieldLabel}>First name</FieldLabel>
             <Input
               nativeInput
-              name="offer"
+              ref={firstFieldRef}
+              name="firstName"
               type="text"
+              autoComplete="given-name"
               required
-              minLength={2}
-              maxLength={200}
-              placeholder="A 12-week coaching program"
+              placeholder="Jordan"
               size="lg"
               className={fieldControl}
             />
           </CossField>
-          <div className="grid gap-4 md:grid-cols-2">
-            <CossField>
-              <FieldLabel className={fieldLabel}>{FORM_LABELS.programPrice}</FieldLabel>
-              <NativeSelect name="programPrice" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
-                <option value="" disabled>
-                  Select one
-                </option>
-                {PROGRAM_PRICE_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </NativeSelect>
-            </CossField>
-            <CossField>
-              <FieldLabel className={fieldLabel}>{FORM_LABELS.inquiries}</FieldLabel>
-              <Input
-                nativeInput
-                name="inquiriesPerMonth"
-                type="number"
-                inputMode="numeric"
-                required
-                min={0}
-                max={100000}
-                step={1}
-                placeholder="12"
-                size="lg"
-                className={fieldControl}
-              />
-            </CossField>
-          </div>
           <CossField>
-            <FieldLabel className={fieldLabel}>{FORM_LABELS.followUp}</FieldLabel>
-            <NativeSelect name="followUp" required defaultValue="" className="min-h-12 px-4 py-3 text-base">
-              <option value="" disabled>
-                Select one
-              </option>
-              {FOLLOW_UP_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </NativeSelect>
+            <FieldLabel className={fieldLabel}>{FORM_LABELS.email}</FieldLabel>
+            <Input
+              nativeInput
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="you@company.com"
+              size="lg"
+              inputMode="email"
+              className={fieldControl}
+            />
+            <p className="mt-1.5 text-sm leading-snug text-neutral-400">{FORM_EMAIL_NOTE}</p>
           </CossField>
+          <CossField>
+            <FieldLabel className={fieldLabel}>{FORM_LABELS.phone}</FieldLabel>
+            <Input
+              nativeInput
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              required
+              placeholder="(555) 201-8890"
+              size="lg"
+              inputMode="tel"
+              className={fieldControl}
+            />
+            <p className="mt-1.5 text-sm leading-snug text-neutral-400">{FORM_PHONE_NOTE}</p>
+          </CossField>
+
+          <label className="acq-consent">
+            <input name="smsConsent" type="checkbox" required />
+            <span>
+              {CONSENT_CALLS.lead}{' '}
+              <a href={LEGAL_TERMS_URL}>Terms</a>
+              {' | '}
+              <a href={LEGAL_PRIVACY_URL}>Privacy Policy</a>
+            </span>
+          </label>
+          <label className="acq-consent">
+            <input name="emailConsent" type="checkbox" required />
+            <span>{CONSENT_EMAIL}</span>
+          </label>
 
           <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
             <label>
@@ -298,6 +272,11 @@ function QualifyDialog({
           <button type="submit" disabled={pending} className="acq-button acq-button-full mt-1 shrink-0">
             {pending ? 'Submitting…' : QUALIFY_DIALOG.submit}
           </button>
+          <p className="acq-submit-note">
+            By submitting, you agree to our <a href={LEGAL_TERMS_URL}>Terms</a> and{' '}
+            <a href={LEGAL_PRIVACY_URL}>Privacy Policy</a>, and we&apos;ll email you about your audit. You
+            can unsubscribe anytime.
+          </p>
           </FieldGroup>
         </form>
       </div>

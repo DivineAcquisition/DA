@@ -25,8 +25,10 @@ export type QualificationInput = {
   adSpend?: string;
   /** Whole number of inbound inquiries per month. */
   inquiriesPerMonth?: string;
-  followUp: string;
-  programPrice: string;
+  followUp?: string;
+  programPrice?: string;
+  smsConsent?: boolean;
+  emailConsent?: boolean;
   /** Honeypot. Bots that fill it are accepted locally and dropped. */
   website?: string;
   tracking?: Partial<Record<TrackingParamKey, string>>;
@@ -43,9 +45,11 @@ export type QualificationPayload = {
   /** Blank when the audit form collected inquiries instead of ad spend. */
   monthlyAdSpend: AdSpend | '';
   inquiriesPerMonth: number | null;
-  followUpOwner: FollowUpValue;
+  followUpOwner: FollowUpValue | '';
   followUpOwnerLabel: string;
-  programPrice: ProgramPrice;
+  programPrice: ProgramPrice | '';
+  smsConsent: boolean;
+  emailConsent: boolean;
   leadSource: 'Paid Ad';
   entryPoint: 'Audit Booking' | 'Landing Page';
   stage: 'Step 1 Captured';
@@ -74,7 +78,9 @@ export type QualifyErrorField =
   | 'adSpend'
   | 'inquiriesPerMonth'
   | 'followUp'
-  | 'programPrice';
+  | 'programPrice'
+  | 'smsConsent'
+  | 'emailConsent';
 
 export class QualificationError extends Error {
   readonly field?: QualifyErrorField;
@@ -143,9 +149,30 @@ export function parseQualification(input: QualificationInput): QualificationPayl
 
   const offer = (input.offer ?? '').trim();
   const companyInput = (input.companyName ?? '').trim();
+  const blueprint =
+    input.offer == null &&
+    input.companyName == null &&
+    input.followUp == null &&
+    input.programPrice == null &&
+    input.inquiriesPerMonth == null &&
+    input.adSpend == null;
+
+  if (blueprint) {
+    const digits = phone.match(PHONE_DIGITS_RE)?.length ?? 0;
+    if (digits < 10) {
+      throw new QualificationError('Enter a valid phone number.', 'phone');
+    }
+    if (!input.smsConsent) {
+      throw new QualificationError('Agree to calls and texts to continue.', 'smsConsent');
+    }
+    if (!input.emailConsent) {
+      throw new QualificationError('Agree to emails to continue.', 'emailConsent');
+    }
+  }
+
   const whatYouSell = offer || companyInput;
   const identityField: QualifyErrorField = input.offer != null ? 'offer' : 'companyName';
-  if (whatYouSell.length < 2) {
+  if (!blueprint && whatYouSell.length < 2) {
     throw new QualificationError(
       input.offer != null ? 'Tell us what you sell.' : 'Enter your company name.',
       identityField,
@@ -172,23 +199,33 @@ export function parseQualification(input: QualificationInput): QualificationPayl
       throw new QualificationError('Enter inquiries per month as a whole number.', 'inquiriesPerMonth');
     }
     inquiriesPerMonth = Number(inquiriesRaw);
-  } else if (!monthlyAdSpend) {
+  } else if (!monthlyAdSpend && !blueprint) {
     throw new QualificationError('Enter how many inquiries you get per month.', 'inquiriesPerMonth');
   }
 
-  const followUpOwner = followUpValueFromInput(input.followUp);
-  if (!followUpOwner) {
+  const followUpRaw = (input.followUp ?? '').trim();
+  const followUpOwner = followUpRaw ? followUpValueFromInput(followUpRaw) : null;
+  if (followUpRaw && !followUpOwner) {
+    throw new QualificationError('Select who handles follow-up.', 'followUp');
+  }
+  if (!blueprint && !followUpOwner) {
     throw new QualificationError('Select who handles follow-up.', 'followUp');
   }
 
-  const programPrice = PROGRAM_PRICE_OPTIONS.find((option) => option === input.programPrice);
-  if (!programPrice) {
+  const programPriceRaw = (input.programPrice ?? '').trim();
+  const programPrice = programPriceRaw
+    ? PROGRAM_PRICE_OPTIONS.find((option) => option === programPriceRaw)
+    : undefined;
+  if (programPriceRaw && !programPrice) {
+    throw new QualificationError('Select your program price.', 'programPrice');
+  }
+  if (!blueprint && !programPrice) {
     throw new QualificationError('Select your program price.', 'programPrice');
   }
 
   const { firstName, lastName } = splitName(fullName);
-  const companyName = companyInput || offer;
-  const coachingNiche = offer || companyInput;
+  const companyName = companyInput || (blueprint ? '' : offer);
+  const coachingNiche = offer || companyInput || (blueprint ? 'Free blueprint' : '');
 
   return {
     fullName,
@@ -200,9 +237,11 @@ export function parseQualification(input: QualificationInput): QualificationPayl
     coachingNiche,
     monthlyAdSpend,
     inquiriesPerMonth,
-    followUpOwner,
-    followUpOwnerLabel: followUpLabelFromValue(followUpOwner),
-    programPrice,
+    followUpOwner: followUpOwner ?? '',
+    followUpOwnerLabel: followUpOwner ? followUpLabelFromValue(followUpOwner) : '',
+    programPrice: programPrice ?? '',
+    smsConsent: Boolean(input.smsConsent),
+    emailConsent: Boolean(input.emailConsent),
     leadSource: 'Paid Ad',
     entryPoint: 'Audit Booking',
     stage: 'Step 1 Captured',
@@ -253,10 +292,7 @@ export function airtableFieldsFromPayload(
   const fields: Record<string, string> = {
     'Lead Name': payload.fullName,
     Email: payload.email,
-    'Company Name': payload.companyName,
     'Coaching Niche': payload.coachingNiche,
-    'Follow-Up Owner': payload.followUpOwner,
-    'Program Price': payload.programPrice,
     'Lead Source': payload.leadSource,
     'Entry Point': extras.entryPoint ?? payload.entryPoint,
     'Opt-In Date': extras.today ?? todayIsoDate(),
@@ -264,6 +300,9 @@ export function airtableFieldsFromPayload(
     Campaign: payload.tracking.utm_campaign || 'Landing Page',
   };
 
+  if (payload.companyName) fields['Company Name'] = payload.companyName;
+  if (payload.followUpOwner) fields['Follow-Up Owner'] = payload.followUpOwner;
+  if (payload.programPrice) fields['Program Price'] = payload.programPrice;
   if (payload.phone) fields.Phone = payload.phone;
   if (payload.monthlyAdSpend) fields['Monthly Ad Spend'] = payload.monthlyAdSpend;
   if (payload.tracking.utm_content) fields['Ad Set'] = payload.tracking.utm_content;
@@ -312,11 +351,15 @@ export function ghlContactNote(payload: QualificationPayload): string {
   return [
     'Founding install qualification',
     `What they sell: ${payload.coachingNiche}`,
-    `Company: ${payload.companyName}`,
+    payload.companyName ? `Company: ${payload.companyName}` : null,
     payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
     payload.inquiriesPerMonth != null ? `Inquiries per month: ${payload.inquiriesPerMonth}` : null,
-    `Follow-up: ${payload.followUpOwnerLabel} (${payload.followUpOwner})`,
-    `Program price: ${payload.programPrice}`,
+    payload.followUpOwner
+      ? `Follow-up: ${payload.followUpOwnerLabel} (${payload.followUpOwner})`
+      : null,
+    payload.programPrice ? `Program price: ${payload.programPrice}` : null,
+    payload.smsConsent ? 'Consent to calls and texts: yes' : null,
+    payload.emailConsent ? 'Consent to email and the free blueprint: yes' : null,
   ]
     .filter((line): line is string => Boolean(line))
     .join('\n');

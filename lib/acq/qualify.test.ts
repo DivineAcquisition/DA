@@ -79,6 +79,32 @@ describe('parseQualification', () => {
     expect(() => parseQualification({ ...valid, adSpend: 'a lot' })).toThrow(QualificationError);
   });
 
+  it('accepts the blueprint form with first name, email, phone, and consent', () => {
+    const payload = parseQualification({
+      fullName: 'Jordan',
+      email: 'jordan@example.com',
+      phone: '5552018890',
+      smsConsent: true,
+      emailConsent: true,
+    });
+
+    expect(payload.firstName).toBe('Jordan');
+    expect(payload.lastName).toBe('');
+    expect(payload.phone).toBe('5552018890');
+    expect(payload.coachingNiche).toBe('Free blueprint');
+    expect(payload.smsConsent).toBe(true);
+    expect(payload.emailConsent).toBe(true);
+    expect(payload.followUpOwner).toBe('');
+    expect(payload.programPrice).toBe('');
+    expect(() =>
+      parseQualification({
+        fullName: 'Jordan',
+        email: 'jordan@example.com',
+        phone: '5552018890',
+      }),
+    ).toThrow(QualificationError);
+  });
+
   it('accepts the coach audit form without phone, company, or ad spend', () => {
     const payload = parseQualification({
       fullName: 'Jordan Blake',

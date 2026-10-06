@@ -229,11 +229,29 @@ export const PRECALL = {
 } as const;
 
 export const QUALIFY_DIALOG = {
-  eyebrow: 'Free audit',
-  title: 'Book the free 30-minute audit',
-  description: 'A few details so the 30 minutes is about your pipeline, not a generic pitch.',
-  submit: SUBMIT_LABEL,
+  eyebrow: 'Free blueprint',
+  title: 'Get The Free Blueprint',
+  description: "We'll email it to you, then you can book the free audit.",
+  submit: 'Send the blueprint',
 } as const;
+
+export const FORM_EMAIL_NOTE = "We'll send the free blueprint here.";
+
+export const FORM_PHONE_NOTE =
+  "We don't send automated SMS except for one call reminder. We collect your phone number so we can have a real conversation with you before any commitment, whether that's a FaceTime or a phone call. We don't do spam.";
+
+export const CONSENT_CALLS = {
+  lead: 'I agree to receive calls and text messages from DivineAcquisition LLC and team members of DivineAcquisition, including automated appointment messages about my free audit and our services. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.',
+} as const;
+
+export const CONSENT_EMAIL =
+  'I agree to receive emails from DivineAcquisition, including the free blueprint and messages about my audit. I can unsubscribe anytime.';
+
+export const FORM_SUBMIT_NOTE =
+  "By submitting, you agree to our Terms and Privacy Policy, and we'll email you about your audit. You can unsubscribe anytime.";
+
+export const LEGAL_TERMS_URL = 'https://acq.divineacquisition.io/terms';
+export const LEGAL_PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
 
 export const FORM_LABELS = {
   fullName: 'Name',

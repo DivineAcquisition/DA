@@ -143,7 +143,7 @@ a.acq-button:active {
   box-shadow: 0 24px 80px -28px rgba(0, 0, 0, 0.9);
 }
 
-.acq-dialog input:not([name='website']),
+.acq-dialog input:not([name='website']):not([type='checkbox']),
 .acq-dialog select {
   width: 100%;
   border: 1px solid rgba(154, 136, 252, 0.35);
@@ -679,4 +679,36 @@ a.acq-button:active {
   min-height: 3.35rem;
   margin-top: 0.5rem;
   font-size: 0.95rem;
+}
+
+.acq-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  color: #d4d4d4;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.acq-consent input {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.15rem;
+  flex: 0 0 auto;
+  accent-color: #9a88fc;
+}
+
+.acq-consent a,
+.acq-submit-note a {
+  color: #c3b6fe;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.acq-submit-note {
+  margin: 0.35rem 0 0;
+  color: #a3a3a3;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  text-align: center;
 }
