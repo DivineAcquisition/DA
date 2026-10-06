@@ -52,8 +52,11 @@ export function GoWistia({ mediaId, aspect = '1.7777777777777777' }: WistiaProps
       <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
       <Script src={`https://fast.wistia.com/embed/${mediaId}.js`} strategy="afterInteractive" type="module" />
       <style>{`wistia-player[media-id='${mediaId}']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${mediaId}/swatch'); display: block; filter: blur(5px); padding-top:${pad}; }`}</style>
-      <div className="w-full overflow-hidden bg-black">
-        <WistiaPlayer media-id={mediaId} aspect={aspect} style={{ width: '100%', display: 'block' }} />
+      <div
+        className="go-player"
+        data-aspect={aspect === '0.5625' ? '9/16' : '16/9'}
+      >
+        <WistiaPlayer media-id={mediaId} aspect={aspect} style={{ width: '100%', height: '100%', display: 'block' }} />
       </div>
     </>
   );
