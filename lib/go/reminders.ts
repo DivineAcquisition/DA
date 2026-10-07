@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import { greetingName, paragraphHtml, renderEmailHtml, textFooter } from '@/lib/email/layout';
 import { ACQ_AUDIT_CC } from '@/lib/acq/config';
+import { GO_PRECALL_URL } from '@/lib/go/config';
 
 export type GoEmailKind = 'confirmation' | 'reminder_24h' | 'reminder_2h';
 export type GoSmsKind = 'sms_24h' | 'sms_2h' | 'sms_15m';
@@ -56,6 +57,7 @@ export function buildGoSessionEmail(input: {
     `When: ${when}`,
     'Length: 30 minutes',
     input.meetUrl ? `Google Meet: ${input.meetUrl}` : 'Google Meet: the link will be in your calendar invite.',
+    input.kind === 'confirmation' ? `Before the call: ${GO_PRECALL_URL}` : null,
     '',
     focus,
     '',
@@ -63,7 +65,9 @@ export function buildGoSessionEmail(input: {
     'Founder, Divine Acquisition',
     '',
     ...textFooter(footer),
-  ].join('\n');
+  ]
+    .filter((line): line is string => line !== null)
+    .join('\n');
 
   const html = renderEmailHtml({
     subject,
@@ -76,9 +80,14 @@ export function buildGoSessionEmail(input: {
       { label: 'When', value: when },
       { label: 'Length', value: '30 minutes' },
       ...(input.meetUrl ? [{ label: 'Google Meet', value: input.meetUrl, href: input.meetUrl }] : []),
+      ...(input.kind === 'confirmation'
+        ? [{ label: 'Before the call', value: 'Watch the briefing', href: GO_PRECALL_URL }]
+        : []),
     ],
     cta: input.meetUrl ? { href: input.meetUrl, label: 'Join Google Meet' } : null,
-    extraHtml: paragraphHtml(focus),
+    extraHtml: `${paragraphHtml(focus)}${
+      input.kind === 'confirmation' ? paragraphHtml(`Watch this before we talk: ${GO_PRECALL_URL}`) : ''
+    }`,
     signoff: { name: 'Malik', role: 'Founder, Divine Acquisition' },
     footer,
   });

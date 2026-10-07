@@ -15,6 +15,8 @@ describe('cleaning funnel reminders', () => {
     expect(email.html).toContain('Join Google Meet');
     expect(email.text).toContain('private room');
     expect(email.text).toContain('15 minutes before we start');
+    expect(email.text).toContain('https://go.divineacquisition.io/precall');
+    expect(email.html).toContain('https://go.divineacquisition.io/precall');
     expect(email.text.toLowerCase()).not.toContain('coach');
   });
 

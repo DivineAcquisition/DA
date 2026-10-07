@@ -53,6 +53,30 @@ export const BOOKING = {
 
 /** The second booking question is not written yet. Only the show-up commitment is on the form. */
 
+export const PRECALL = {
+  eyebrow: 'Confirmed',
+  titleBefore: 'Your strategy session is ',
+  titleAccent: 'confirmed',
+  body: "The time is locked. Watch the briefing below before we talk, and take the call from a private, quiet room. We'll show up the same way.",
+  stepsTitle: 'Before we talk',
+  stepsBody: 'Three things, so the 30 minutes are about your pipeline and not about catching you up.',
+  steps: [
+    {
+      label: 'Open the email',
+      body: 'Accept the calendar invite so the time is on your phone, not only in your inbox. The Google Meet link is in that email. We text it again 15 minutes before we start.',
+    },
+    {
+      label: 'Protect the room',
+      body: 'Be somewhere private, with the noise off and nothing else in front of you. If that stops being true, move the time early.',
+    },
+    {
+      label: 'Bring the numbers',
+      body: 'A rough read is enough: monthly leads, how many quotes become jobs, how many first cleans turn into recurring work, and where jobs leak after the lead comes in.',
+    },
+  ],
+  bonus: 'Show up and partner with us, and the first 30 days on the system are free.',
+} as const;
+
 export const LEGAL_TERMS_URL = 'https://acq.divineacquisition.io/terms';
 export const LEGAL_PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
 

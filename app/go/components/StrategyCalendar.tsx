@@ -1,24 +1,24 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useMemo, useState, useTransition } from 'react';
 import {
   DEFAULT_TIME_ZONE,
   SCHEDULE_TIME_ZONES,
   civilToday,
   formatSlotTime,
-  formatSlotWhen,
   isWeekendDate,
   monthMatrix,
   slotsForDate,
 } from '@/lib/calendar/slots';
 import { bookGoStrategyAction } from '@/lib/go/book';
+import { goPrecallHref } from '@/lib/go/config';
 import { BOOKING, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/go/copy';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-type Booked = { startsAt: string; timeZone: string; meetUrl: string | null; alreadyBooked: boolean };
-
 export function StrategyCalendar() {
+  const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -35,7 +35,6 @@ export function StrategyCalendar() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [booked, setBooked] = useState<Booked | null>(null);
   const [pending, startTransition] = useTransition();
 
   const weeks = useMemo(
@@ -48,24 +47,6 @@ export function StrategyCalendar() {
     year: 'numeric',
     timeZone: 'UTC',
   });
-
-  if (booked) {
-    return (
-      <div className="go-scheduler go-booked">
-        <p className="go-kicker">{booked.alreadyBooked ? 'Already booked' : 'Confirmed'}</p>
-        <h3>{BOOKING.confirmedTitle}</h3>
-        <p>{formatSlotWhen(booked.startsAt, booked.timeZone)}</p>
-        <p>30 minutes</p>
-        {booked.meetUrl ? (
-          <a className="acq-button" href={booked.meetUrl}>
-            Join Google Meet
-          </a>
-        ) : (
-          <p>{BOOKING.confirmedNote}</p>
-        )}
-      </div>
-    );
-  }
 
   return (
     <form
@@ -93,7 +74,7 @@ export function StrategyCalendar() {
             setError(result.error);
             return;
           }
-          setBooked(result);
+          router.push(goPrecallHref(window.location.host));
         });
       }}
     >
