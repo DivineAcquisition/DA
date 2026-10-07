@@ -40,9 +40,9 @@ export function buildGoSessionEmail(input: {
       ? 'This is a reminder that your 30-minute strategy session is in 24 hours. Please keep the time.'
       : input.kind === 'reminder_2h'
         ? 'This is a reminder that your 30-minute strategy session starts in about 2 hours.'
-        : 'Your 30-minute strategy session is confirmed. A text will also arrive 24 hours before, 2 hours before, and 15 minutes before.';
+        : "You're booked. We'll email you the day before and again two hours out, and text the Google Meet link 15 minutes before we start.";
   const focus =
-    'Come from a private, quiet place with your full attention. We will bring the same focus to the call.';
+    "Take the call from a private room, with the noise off and nothing else competing for your attention. We'll give the hour the same focus.";
   const footer = {
     reason: 'You received this email because you booked a strategy session with Divine Acquisition.',
     disclaimer: META_DISCLAIMER,
@@ -95,7 +95,8 @@ export function goReminderSms(input: { kind: GoSmsKind; when: string; meetUrl?: 
   const link = input.meetUrl ? ` Google Meet: ${input.meetUrl}` : ' Check your email for the Google Meet link.';
   const stop = ' Reply STOP to opt out.';
   if (input.kind === 'sms_15m') {
-    return `Divine Acquisition: your strategy session starts in 15 minutes.${link}${stop}`;
+    const join = input.meetUrl ? ` Join: ${input.meetUrl}` : ' The Google Meet link is in your confirmation email.';
+    return `Divine Acquisition: we start in 15 minutes.${join}${stop}`;
   }
   if (input.kind === 'sms_2h') {
     return `Divine Acquisition: your strategy session is in 2 hours (${input.when}).${link}${stop}`;
