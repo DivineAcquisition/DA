@@ -77,7 +77,7 @@ export async function bookGoStrategyAction(input: GoBookingInput): Promise<GoBoo
       summary: `Strategy session with ${value.fullName}`,
       description: [
         'Divine Acquisition strategy session for a cleaning company.',
-        'They committed to a private, quiet place and their full attention.',
+        'They agreed to take the call from a private, quiet room with their full attention.',
         `Phone: ${value.phone}`,
       ].join('\n'),
       startsAt: data.scheduled_for,

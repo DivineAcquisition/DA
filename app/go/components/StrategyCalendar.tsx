@@ -244,6 +244,7 @@ export function StrategyCalendar() {
 
       <fieldset className="go-question">
         <legend>{BOOKING.showUpPrompt}</legend>
+        <p className="go-question-note">{BOOKING.showUpNote}</p>
         <label>
           <input
             type="radio"

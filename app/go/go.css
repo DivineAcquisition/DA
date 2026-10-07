@@ -224,8 +224,15 @@
 }
 
 .acq-coaches .go-question legend {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.35rem;
   line-height: 1.45;
+}
+
+.acq-coaches .go-question-note {
+  margin: 0 0 0.45rem;
+  color: var(--lx-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .acq-coaches .go-question label {

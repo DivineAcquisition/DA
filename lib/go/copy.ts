@@ -26,22 +26,21 @@ export const CALENDAR = {
   titleBefore: 'Book your ',
   titleAccent: 'strategy session',
   titleAfter: ' here',
-  body: 'Pick a weekday. You get a confirmation, then a reminder 24 hours before and 2 hours before by email and text, and a text 15 minutes before with the Google Meet link.',
+  body: "Choose a weekday. We'll confirm by email, remind you the day before and two hours out, and text you the Google Meet link 15 minutes before we start.",
 } as const;
 
 export const BOOKING = {
   fullName: 'Full name',
   email: 'Email',
   phone: 'Mobile number',
-  phoneNote:
-    'Used for the 24-hour text, the 2-hour text, and the 15-minute text with your Google Meet link. No marketing texts.',
-  emailNote: "Confirmation and reminders go here.",
-  showUpPrompt:
-    'Can you commit to show up in a private area, with no noise and undivided attention, just as we will bring our focus and effort to this call?',
-  showUpYes: 'Yes. I will be in a private, quiet place with my full attention.',
-  showUpNo: 'No. I cannot commit to that.',
+  phoneNote: 'Appointment texts only. The Meet link arrives here just before we start.',
+  emailNote: 'Your confirmation, and the reminders the day before and two hours out, come here.',
+  showUpPrompt: 'Can you take this call in a private, quiet room, with your full attention on it?',
+  showUpNote: "We'll give the hour the same focus. If the time isn't protected, pick another day.",
+  showUpYes: "Yes. I'll be in a private room, with the noise off and nothing else going on.",
+  showUpNo: "No. I can't protect the time like that.",
   showUpDecline:
-    'This call needs a private, quiet place and your full attention. Book when you can give it that.',
+    "Book when you can be in a quiet room with the call as the only thing in front of you. We'll show up the same way.",
   smsConsent:
     'I agree to receive calls and text messages from DivineAcquisition LLC and team members of DivineAcquisition, including automated appointment reminders about my strategy session and our services. Consent is not a condition of purchase. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.',
   emailConsent:
@@ -49,7 +48,7 @@ export const BOOKING = {
   submit: 'Book this time',
   submitting: 'Booking…',
   confirmedTitle: 'Your strategy session is booked.',
-  confirmedNote: 'Check your email for the confirmation. The Google Meet link is in that email and in the 15-minute text.',
+  confirmedNote: "The confirmation is in your email. We'll text the Google Meet link 15 minutes before we start.",
 } as const;
 
 /** The second booking question is not written yet. Only the show-up commitment is on the form. */
