@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { civilToday, slotsForDate } from '@/lib/calendar/slots';
 import { parseGoBooking, normalizeBookingPhone } from './booking';
+import { goPrecallHref } from './config';
 import { BOOKING } from './copy';
 
 function openSlot() {
@@ -28,6 +29,11 @@ const valid = () => ({
 });
 
 describe('cleaning funnel booking', () => {
+  it('sends a booked session to the bare precall path on the cleaning host', () => {
+    expect(goPrecallHref('go.divineacquisition.io')).toBe('/precall');
+    expect(goPrecallHref('localhost')).toBe('/go/precall');
+  });
+
   it('normalizes a US mobile number', () => {
     expect(normalizeBookingPhone('(555) 201-8890')).toBe('+15552018890');
   });

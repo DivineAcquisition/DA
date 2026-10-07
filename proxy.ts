@@ -200,7 +200,11 @@ const SURFACES: Surface[] = [
   {
     hosts: GO_HOSTS,
     prefix: GO_PREFIX,
-    allow: (pathname) => pathname === '/' || pathname.startsWith('/go'),
+    allow: (pathname) =>
+      pathname === '/' ||
+      pathname === '/precall' ||
+      pathname.startsWith('/precall/') ||
+      pathname.startsWith('/go'),
   },
   {
     hosts: ACQ_HOSTS,
