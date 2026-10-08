@@ -899,7 +899,6 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
   };
 
   const payload = {
-    docuseal_api_key: keepIfBlank('docuseal_api_key', current?.docuseal_api_key ?? ''),
     docuseal_account_id: String(formData.get('docuseal_account_id') ?? '').trim(),
     docuseal_webhook_secret: keepIfBlank(
       'docuseal_webhook_secret',
