@@ -1,8 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { DocusealForm } from '@docuseal/react';
 import Logo from '@/app/components/Logo';
 import { teamUrl } from '@/lib/team/url';
+import { VA_SALES_OPERATOR_AGREEMENT } from '@/lib/workspace/onboarding-protocol';
 import type { FinishResult, OnboardingPageState, SaveResult } from '@/lib/workspace/onboarding';
 import {
   groupSteps,
@@ -13,7 +16,17 @@ import {
   type OnboardingStep,
 } from '@/lib/workspace/onboarding-steps';
 
-type Props = { token: string; initial: OnboardingPageState };
+export type OnboardingSigning = {
+  agreementToken: string;
+  embedSrc: string;
+  email: string;
+  name: string;
+  templateName: string;
+  /** True when this is their own submission, not the blank template. */
+  personalized: boolean;
+};
+
+type Props = { token: string; initial: OnboardingPageState; signing?: OnboardingSigning | null };
 
 const INVALID_MESSAGE =
   "This link isn't valid or has expired. If you're expecting onboarding from Divine Acquisition, reply to the email it came in and we'll send you a fresh one.";
@@ -23,7 +36,7 @@ type SaveStatus = { state: 'saving' } | { state: 'saved' } | { state: 'error'; m
 const inputClass =
   'w-full rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] px-3.5 py-3 text-base text-white outline-none focus:border-[var(--ws-accent)] sm:text-sm';
 
-export default function OnboardingView({ token, initial }: Props) {
+export default function OnboardingView({ token, initial, signing = null }: Props) {
   switch (initial.state) {
     case 'invalid':
       return (
@@ -34,38 +47,7 @@ export default function OnboardingView({ token, initial }: Props) {
         </Shell>
       );
     case 'sign_first':
-      return (
-        <Shell>
-          <Card>
-            <h1 className="text-xl font-semibold text-white">Sign your agreement first</h1>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
-              Onboarding opens once your agreement is signed. It only takes a few minutes, and you&apos;ll come
-              straight back here.
-            </p>
-            {initial.agreementToken ? (
-              <a
-                href={`/s/${encodeURIComponent(initial.agreementToken)}`}
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
-              >
-                Go to my agreement
-              </a>
-            ) : (
-              <p className="mt-4 text-sm text-[var(--ws-body)]">
-                Reach out to Divine Acquisition
-                {initial.contactEmail ? (
-                  <>
-                    {' '}at{' '}
-                    <a className="text-[var(--ws-accent)] underline" href={`mailto:${initial.contactEmail}`}>
-                      {initial.contactEmail}
-                    </a>
-                  </>
-                ) : null}{' '}
-                and we&apos;ll send you a fresh agreement link.
-              </p>
-            )}
-          </Card>
-        </Shell>
-      );
+      return <SignAgreement page={initial} signing={signing} />;
     case 'completed':
       return <Completed page={initial} />;
     case 'open':
@@ -648,6 +630,153 @@ function SaveLine({ status, onRetry }: { status: SaveStatus | undefined; onRetry
         Retry
       </button>
     </p>
+  );
+}
+
+const POLL_EVERY_MS = 3000;
+const POLL_FOR_MS = 60000;
+
+function SignAgreement({
+  page,
+  signing,
+}: {
+  page: Extract<OnboardingPageState, { state: 'sign_first' }>;
+  signing: OnboardingSigning | null;
+}) {
+  const router = useRouter();
+  const [finalizing, setFinalizing] = useState<'idle' | 'waiting' | 'slow'>('idle');
+  const startedAt = useRef(0);
+
+  const check = useCallback(async () => {
+    if (!signing) return false;
+    try {
+      const response = await fetch(`/s/${encodeURIComponent(signing.agreementToken)}/state`, { cache: 'no-store' });
+      const next = (await response.json()) as { state?: string };
+      if (next.state && next.state !== 'open') {
+        router.refresh();
+        return true;
+      }
+    } catch {
+      // A dropped request is just another tick.
+    }
+    return false;
+  }, [router, signing]);
+
+  useEffect(() => {
+    if (finalizing !== 'waiting' || !signing) return;
+    let cancelled = false;
+    const tick = async () => {
+      if (cancelled) return;
+      if (await check()) return;
+      if (Date.now() - startedAt.current >= POLL_FOR_MS) {
+        if (!cancelled) setFinalizing('slow');
+        return;
+      }
+      timer = window.setTimeout(tick, POLL_EVERY_MS);
+    };
+    let timer = window.setTimeout(tick, POLL_EVERY_MS);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [check, finalizing, signing]);
+
+  if (!signing?.embedSrc) {
+    return (
+      <Shell>
+        <Card>
+          <h1 className="text-xl font-semibold text-white">Sign your agreement first</h1>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
+            Onboarding opens once {VA_SALES_OPERATOR_AGREEMENT.name} is signed.
+          </p>
+          <p className="mt-4 text-sm text-[var(--ws-body)]">
+            Reach out to Divine Acquisition
+            {page.contactEmail ? (
+              <>
+                {' '}
+                at{' '}
+                <a className="text-[var(--ws-accent)] underline" href={`mailto:${page.contactEmail}`}>
+                  {page.contactEmail}
+                </a>
+              </>
+            ) : null}{' '}
+            and we&apos;ll send you a fresh agreement link.
+          </p>
+        </Card>
+      </Shell>
+    );
+  }
+
+  if (finalizing !== 'idle') {
+    return (
+      <Shell>
+        <Card>
+          {finalizing === 'waiting' ? (
+            <>
+              <h1 className="text-xl font-semibold text-white">Finalizing your agreement…</h1>
+              <p className="mt-2 text-sm text-[var(--ws-body)]">This usually takes a few seconds. Keep this page open.</p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-xl font-semibold text-white">We received your signature</h1>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
+                Your onboarding will open here as soon as the signed copy is on file. You don&apos;t need to sign again.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  startedAt.current = Date.now();
+                  setFinalizing('waiting');
+                }}
+                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
+              >
+                Check again
+              </button>
+            </>
+          )}
+        </Card>
+      </Shell>
+    );
+  }
+
+  return (
+    <div className="mx-auto w-full max-w-3xl">
+      <header className="mb-6 flex items-center justify-between gap-4">
+        <Logo className="h-7 w-auto" />
+        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-dim)]">
+          {page.protocolName}
+        </span>
+      </header>
+      <section className="animate-rise rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-5 sm:p-7">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-accent)]">
+          Prepared for {signing.name || page.recipientName}
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-3xl">{signing.templateName}</h1>
+        <p className="mt-4 text-sm text-[var(--ws-body)]">
+          Review and sign it here. Onboarding continues on this page once the signature is on file.
+        </p>
+      </section>
+      <section className="mt-4 overflow-hidden rounded-2xl border border-[var(--ws-border)] bg-white">
+        <DocusealForm
+          src={signing.embedSrc}
+          email={signing.personalized ? undefined : signing.email}
+          name={signing.personalized ? undefined : signing.name}
+          role={signing.personalized ? undefined : VA_SALES_OPERATOR_AGREEMENT.signerRole}
+          withTitle={false}
+          withDecline
+          withDownloadButton={false}
+          backgroundColor="#ffffff"
+          onComplete={() => {
+            startedAt.current = Date.now();
+            setFinalizing('waiting');
+          }}
+          onDecline={() => {
+            startedAt.current = Date.now();
+            setFinalizing('waiting');
+          }}
+        />
+      </section>
+    </div>
   );
 }
 

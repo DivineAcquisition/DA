@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import Backdrop from '@/app/components/Backdrop';
-import { clientFromHeaders } from '@/lib/workspace/agreement-page';
+import { clientFromHeaders, loadAgreementPage } from '@/lib/workspace/agreement-page';
 import { loadOnboardingPage } from '@/lib/workspace/onboarding';
-import OnboardingView from './OnboardingView';
+import { VA_SALES_OPERATOR_AGREEMENT } from '@/lib/workspace/onboarding-protocol';
+import OnboardingView, { type OnboardingSigning } from './OnboardingView';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,13 +17,31 @@ export const metadata: Metadata = {
 
 export default async function OnboardingPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const page = await loadOnboardingPage(token, clientFromHeaders(await headers()));
+  const client = clientFromHeaders(await headers());
+  let page = await loadOnboardingPage(token, client);
+  let signing: OnboardingSigning | null = null;
+
+  if (page.state === 'sign_first' && page.agreementToken) {
+    const agreement = await loadAgreementPage(page.agreementToken, client);
+    if (agreement.state === 'completed') {
+      page = await loadOnboardingPage(token, client);
+    } else if (agreement.state === 'open' && agreement.embedSrc) {
+      signing = {
+        agreementToken: page.agreementToken,
+        embedSrc: agreement.embedSrc,
+        email: agreement.email,
+        name: agreement.recipientName || page.recipientName,
+        templateName: agreement.templateName || VA_SALES_OPERATOR_AGREEMENT.name,
+        personalized: true,
+      };
+    }
+  }
 
   return (
     <div className="da-workspace relative min-h-screen">
       <Backdrop />
       <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-10">
-        <OnboardingView token={token} initial={page} />
+        <OnboardingView token={token} initial={page} signing={signing} />
       </div>
     </div>
   );
