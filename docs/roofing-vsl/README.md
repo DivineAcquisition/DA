@@ -26,7 +26,7 @@ Every word on screen comes from the script or from its claims table. The deck ha
 | ← · Backspace | Back one build |
 | Home / End | First / last frame |
 | P | Open the script window |
-| S | Switch between the main cut (2:30) and the short cut (0:45) |
+| S | Switch between the main cut (about 2:15) and the short cut (0:45) |
 | F | Full screen |
 | H | Show or hide the key hint |
 | R (in the script window) | Restart the clock |
@@ -35,9 +35,9 @@ The bottom 180 px of every frame are left empty for burned-in captions. If you p
 
 The script's production notes say to shoot vertical or 4:5 on your phone. This deck is for a 16:9 version, which is what the page's video slot plays. If you shoot phone-only, use the frames as cutaways in the edit.
 
-## Storyboard: main cut (about 2:30)
+## Storyboard: main cut (about 2:15)
 
-Times assume the script's pace of about 150 words a minute. They land on the script's section marks.
+Times assume the script's pace of about 150 words a minute. The coaching-client result is cut, so everything from Fit and ask on runs about 13 seconds ahead of the script's marks.
 
 ### 0:00 Hook
 
@@ -88,26 +88,24 @@ Times assume the script's pace of about 150 words a minute. They land on the scr
 | # | Time | Frame | On screen | You say |
 | --- | --- | --- | --- | --- |
 | 20 | 1:41 | `frames/20-talk-free-audit.png` | The audit is free. 30 minutes: time the reply, count the estimates, you keep the findings | I'm new in roofing, so the audit is free. In 30 minutes I time how fast your leads get a reply and count the estimates nobody followed up on. You keep the findings, even if we never work together. |
-| 21 | 1:56 | `frames/21-talk-one-result.png` | 20% → 41%, a coaching client's close rate in 31 days | My one result so far: a coaching client went from a 20 percent close rate to 41 in 31 days. |
-| 22 | 2:04 | `frames/22-talk-not-a-track-record.png` | ONE CLIENT. ONE MONTH. DIFFERENT INDUSTRY. NOT A TRACK RECORD. | One client, one month, different industry. That's not a track record. |
 
-### 2:09 Fit and ask
+### 1:56 Fit and ask
 
 | # | Time | Frame | On screen | You say |
 | --- | --- | --- | --- | --- |
-| 23 | 2:09 | `frames/23-fit-who-its-for.png` | A fit: $2,000+ a month on leads, sending estimates | This is for roofing companies paying at least two thousand dollars a month for leads and sending estimates. |
-| 24 | 2:16 | `frames/24-fit-who-its-not-for.png` | + Not a fit: want leads generated, want guaranteed jobs | If you want me to generate leads, or guarantee jobs, this isn't for you. |
-| 25 | 2:22 | `frames/25-ask-book-the-audit.png` | Button: Book my free Lead Leak Audit | If it is, book the free audit below. Thirty minutes. You keep the findings. |
+| 21 | 1:56 | `frames/21-fit-who-its-for.png` | A fit: $2,000+ a month on leads, sending estimates | This is for roofing companies paying at least two thousand dollars a month for leads and sending estimates. |
+| 22 | 2:04 | `frames/22-fit-who-its-not-for.png` | + Not a fit: want leads generated, want guaranteed jobs | If you want me to generate leads, or guarantee jobs, this isn't for you. |
+| 23 | 2:09 | `frames/23-ask-book-the-audit.png` | Button: Book my free Lead Leak Audit | If it is, book the free audit below. Thirty minutes. You keep the findings. |
 
 ## Storyboard: short cut (about 0:45)
 
-This cut has the same hook and offer, then the ask. It uses frames 01 to 08 and then 25.
+This cut has the same hook and offer, then the ask. It uses frames 01 to 08 and then 23.
 
 | # | Time | Frame | You say |
 | --- | --- | --- | --- |
 | 01 to 02 | 0:00 | Hook | As in the main cut |
 | 03 to 08 | 0:13 | Offer | As in the main cut |
-| 25 | 0:35 | `frames/25-ask-book-the-audit.png` | If you pay for roofing leads, book the free 30-minute audit below. You keep the findings. |
+| 23 | 0:35 | `frames/23-ask-book-the-audit.png` | If you pay for roofing leads, book the free 30-minute audit below. You keep the findings. |
 
 ## Before you record
 
@@ -115,7 +113,7 @@ The script left these items open. The deck follows the script as written, so cha
 
 - Confirm "about a minute" is the first-reply time you will build to (frame 04).
 - Confirm you want your name in the opening line (frame 03).
-- Confirm the audit is still 30 minutes and the install is still 14 days (frames 06, 20, 25).
+- Confirm the audit is still 30 minutes and the install is still 14 days (frames 06, 20, 23).
 - The video proposal line (frame 15) belongs in the pitch only for clients who already have a measurement tool. For a general VSL, decide whether to keep it.
 
 ## Changing the deck

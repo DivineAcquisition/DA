@@ -196,8 +196,7 @@ body.idle { cursor: none; }
   pointer-events: none;
 }
 
-html.export [data-step],
-html.export .dim { transition: none !important; }
+html.export [data-step] { transition: none !important; }
 
 /* ─── Shared pieces, scaled up from the roofing page ────────────────────── */
 
@@ -292,12 +291,6 @@ h1, h2, h3 {
   stroke-width: 1.8;
   stroke-linecap: round;
   stroke-linejoin: round;
-}
-
-.dim {
-  opacity: 0.38;
-  filter: saturate(0.6);
-  transition: opacity 0.45s ease, filter 0.45s ease;
 }
 
 .rule {
@@ -556,33 +549,6 @@ h1, h2, h3 {
   font-weight: 800;
 }
 .clock li:last-child { color: #fff; font-weight: 700; }
-
-/* ─── Straight talk: the one result ──────────────────────────────────────── */
-
-.s-result { align-items: center; gap: 70px; }
-.s-result .result { display: flex; flex: 1; flex-direction: column; gap: 30px; }
-.jump { display: flex; align-items: center; gap: 34px; }
-.jump strong { font-family: var(--head); font-size: 160px; font-weight: 800; letter-spacing: -0.06em; line-height: 0.9; }
-.jump .from { color: var(--muted); }
-.jump svg { width: 96px; height: 62px; fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
-.s-result .lead strong { color: #fff; font-weight: 700; }
-.truth {
-  width: 640px;
-  flex: none;
-  padding: 48px 52px;
-  gap: 6px;
-  border-color: rgba(154, 136, 252, 0.75);
-}
-.truth p {
-  margin: 0;
-  font-family: var(--head);
-  font-size: 58px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  text-transform: uppercase;
-}
-.truth p:last-child { margin-top: 18px; color: var(--accent); font-style: italic; }
 
 /* ─── Fit and ask ────────────────────────────────────────────────────────── */
 
@@ -899,7 +865,7 @@ html.script-mode .prompter {
     </div>
   </section>
 
-  <!-- ═══ 1:41 STRAIGHT TALK (the audit) ══════════════════════════════════ -->
+  <!-- ═══ 1:41 STRAIGHT TALK ════════════════════════════════════════ -->
   <section class="slide s-audit" data-id="audit" data-section="talk" data-cuts="main"
            data-names="talk-free-audit">
     <div class="copy">
@@ -918,30 +884,6 @@ html.script-mode .prompter {
     </div>
     <div class="notes">
       <div class="say" data-step="0">I'm new in roofing, so the audit is free. In 30 minutes I time how fast your leads get a reply and count the estimates nobody followed up on. You keep the findings, even if we never work together.</div>
-    </div>
-  </section>
-
-  <!-- ═══ 1:41 STRAIGHT TALK (the one result) ═════════════════════════════ -->
-  <section class="slide s-result" data-id="result" data-section="talk" data-cuts="main"
-           data-names="talk-one-result,talk-not-a-track-record">
-    <div class="result" data-dim-at="1">
-      <p class="pill">My one result so far</p>
-      <div class="jump">
-        <strong class="from">20%</strong>
-        <svg viewBox="0 0 110 70"><path d="M6 35h94M74 9l26 26-26 26"/></svg>
-        <strong>41%</strong>
-      </div>
-      <p class="lead">A coaching client's <strong>close rate, in 31 days.</strong></p>
-    </div>
-    <div class="card truth featured" data-step="1">
-      <p>One client.</p>
-      <p>One month.</p>
-      <p>Different industry.</p>
-      <p>Not a track record.</p>
-    </div>
-    <div class="notes">
-      <div class="say" data-step="0">My one result so far: a coaching client went from a 20 percent close rate to 41 in 31 days.</div>
-      <div class="say" data-step="1">One client, one month, different industry. That's not a track record.</div>
     </div>
   </section>
 
@@ -1047,11 +989,11 @@ html.script-mode .prompter {
     main: [
       ['hook', 'Hook', '0:00'], ['offer', 'Offer', '0:13'], ['leaks', 'Three leaks', '0:35'],
       ['money', 'The money', '0:58'], ['install', 'What we install', '1:11'],
-      ['talk', 'Straight talk', '1:41'], ['fit', 'Fit and ask', '2:09'],
+      ['talk', 'Straight talk', '1:41'], ['fit', 'Fit and ask', '1:56'],
     ],
     short: [['hook', 'Hook', '0:00'], ['offer', 'Offer', '0:13'], ['fit', 'Ask', '0:35']],
   };
-  const LENGTH = { main: '2:30', short: '0:45' };
+  const LENGTH = { main: '2:15', short: '0:45' };
 
   const params = new URLSearchParams(location.search);
   const isScript = location.hash === '#script';
@@ -1084,7 +1026,6 @@ html.script-mode .prompter {
     slide.querySelectorAll('[data-step]:not(.say)').forEach((el) => {
       el.classList.toggle('off', +el.dataset.step > step);
     });
-    slide.querySelectorAll('[data-dim-at]').forEach((el) => el.classList.toggle('dim', step >= +el.dataset.dimAt));
 
     // Leak cards: built ones are solid, the newest is lit, the rest are outlines.
     slide.querySelectorAll('[data-leak]').forEach((el) => {
