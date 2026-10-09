@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { RoofingPixel } from '@/app/acq/components/RoofingPixel';
 import { ROOFING } from '@/lib/acq/niche-content';
 import './niche.css';
 
@@ -27,5 +28,10 @@ export const metadata: Metadata = {
 };
 
 export default function RoofingLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return (
+    <>
+      <RoofingPixel />
+      {children}
+    </>
+  );
 }

@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { CONSENT_CALLS, CONSENT_EMAIL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
 import type { NicheContent } from '@/lib/acq/niche-content';
 import { captureVisitAttribution, type HeadlineVariant, type NicheVisit } from '@/lib/acq/niche-tracking';
-import { trackPixel, trackPixelCustom } from '../MetaPixel';
+import { browserClickIds, trackRoofingBrowser } from '../RoofingPixel';
 
 type MarkName = 'hero' | 'final' | 'footer';
 
@@ -270,6 +270,8 @@ function RoofingDialog({
           headlineVariant: variant,
           tracking: visit,
           website,
+          eventSourceUrl: window.location.href,
+          ...browserClickIds(),
         }),
       });
       const result = (await response.json()) as {
@@ -278,6 +280,7 @@ function RoofingDialog({
         field?: string;
         redirectTo?: string;
         pixel?: 'Lead' | 'UnqualifiedLead';
+        eventId?: string;
       };
       if (!result.ok || !result.redirectTo) {
         if (result.field) {
@@ -287,8 +290,10 @@ function RoofingDialog({
         setPending(false);
         return;
       }
-      if (result.pixel === 'Lead') trackPixel('Lead');
-      else if (result.pixel === 'UnqualifiedLead') trackPixelCustom('UnqualifiedLead');
+      if (result.eventId && result.pixel === 'Lead') trackRoofingBrowser('Lead', result.eventId);
+      else if (result.eventId && result.pixel === 'UnqualifiedLead') {
+        trackRoofingBrowser('UnqualifiedLead', result.eventId, true);
+      }
       window.location.assign(result.redirectTo);
     } catch {
       setError('We could not submit that just now. Try again in a moment.');

@@ -194,6 +194,7 @@ describe('roofing lead payload', () => {
       expect(low.redirectTo).toContain('utm_content=roof-c2-cost');
       expect(low.redirectTo).toContain('ad_id=333');
       expect(low.pixel).toBe('UnqualifiedLead');
+      expect(low.eventId && low.eventId.length > 8).toBe(true);
     }
 
     const high = await submitLead(valid, 'acq.divineacquisition.io');
@@ -201,6 +202,7 @@ describe('roofing lead payload', () => {
     if (high.ok) {
       expect(high.redirectTo.startsWith('/roofing/not-yet')).toBe(false);
       expect(high.pixel).toBe('Lead');
+      expect(high.eventId && high.eventId.length > 8).toBe(true);
       expect(high.redirectTo).toContain('placement=feed');
     }
   });

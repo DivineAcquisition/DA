@@ -1,7 +1,9 @@
 'use client';
 
 import Script from 'next/script';
+import { usePathname } from 'next/navigation';
 import { ACQ_META_PIXEL_ID } from '@/lib/acq/config';
+import { isRoofingPath } from '@/lib/acq/roofing-pixel';
 
 declare global {
   interface Window {
@@ -28,8 +30,10 @@ export function trackPixelCustom(event: string, params?: Record<string, unknown>
 }
 
 export function MetaPixel() {
+  const pathname = usePathname() || '';
   const pixelId = ACQ_META_PIXEL_ID;
-  if (!pixelId) return null;
+  // Roofing ads use their own pixel. The coaches pixel stays on the coaches pages.
+  if (!pixelId || isRoofingPath(pathname)) return null;
 
   return (
     <>

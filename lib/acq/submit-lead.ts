@@ -16,6 +16,7 @@ import {
   upsertGhlContact,
   writeScoreToGhl,
 } from './pipeline';
+import { sendRoofingCapi } from './meta-capi';
 import { nichePixelEvent, parseRoofingLead, roofingNotYetPath, roofingVisitorPath } from './niche-lead';
 import { scoreQualification } from './score';
 import {
@@ -27,8 +28,16 @@ import {
   type QualificationPayload,
 } from './qualify';
 
+export type LeadRequestMeta = {
+  ip?: string;
+  userAgent?: string;
+  eventSourceUrl?: string;
+  fbp?: string;
+  fbc?: string;
+};
+
 export type QualifyResult =
-  | { ok: true; redirectTo: string; pixel?: 'Lead' | 'UnqualifiedLead' }
+  | { ok: true; redirectTo: string; pixel?: 'Lead' | 'UnqualifiedLead'; eventId?: string }
   | { ok: false; error: string; field?: string };
 
 const GHL_API = 'https://services.leadconnectorhq.com';
@@ -82,7 +91,11 @@ async function postForm(payload: QualificationPayload): Promise<void> {
  * destination — missing PAT does not block scheduling. Score is computed
  * in-app, not read from Airtable.
  */
-export async function submitLead(input: QualificationInput, host?: string): Promise<QualifyResult> {
+export async function submitLead(
+  input: QualificationInput,
+  host?: string,
+  meta?: LeadRequestMeta,
+): Promise<QualifyResult> {
   if (isHoneypot(input)) {
     return {
       ok: true,
@@ -181,6 +194,26 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
   }
 
   if (payload.niche === 'roofing') {
+    const pixel = nichePixelEvent(Boolean(payload.nicheQualified));
+    const eventId = crypto.randomUUID();
+    await sendRoofingCapi({
+      eventName: pixel,
+      eventId,
+      eventSourceUrl: meta?.eventSourceUrl,
+      email: payload.email,
+      phone: payload.phone,
+      firstName: payload.firstName,
+      fbp: meta?.fbp,
+      fbc: meta?.fbc,
+      fbclid: payload.tracking.fbclid,
+      clientIp: meta?.ip,
+      userAgent: meta?.userAgent,
+      customData: {
+        content_name: 'Lead Leak Audit',
+        content_category: 'roofing',
+        status: payload.nicheQualified ? 'qualified' : 'unqualified',
+      },
+    });
     return {
       ok: true,
       redirectTo: roofingVisitorPath(
@@ -190,7 +223,8 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
         schedulePath,
         redirectTo(host),
       ),
-      pixel: nichePixelEvent(Boolean(payload.nicheQualified)),
+      pixel,
+      eventId,
     };
   }
 

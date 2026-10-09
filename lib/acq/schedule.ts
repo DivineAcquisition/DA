@@ -7,9 +7,12 @@ import {
   deleteGoogleCalendarEvent,
 } from '@/lib/assessment/calendar';
 import { createClient, supabaseConfigured } from '@/lib/supabase/server';
+import { headers } from 'next/headers';
 import { isOfferedSlot } from '@/lib/calendar/slots';
 import { createAcqGhlAppointment, updateGhlContactPhone } from './ghl-sms';
 import { acqPublicClients } from './public-db';
+import { sendRoofingCapi } from './meta-capi';
+import { ROOFING } from './niche-content';
 import { sendAcqAuditEmail } from './schedule-email';
 
 type BookRow = {
@@ -86,7 +89,7 @@ export async function bookAcqAuditAction(
   timeZone: string,
   phone: string,
 ): Promise<
-  | { ok: true; startsAt: string; timeZone: string; meetUrl: string | null; alreadyBooked: boolean }
+  | { ok: true; startsAt: string; timeZone: string; meetUrl: string | null; alreadyBooked: boolean; eventId?: string }
   | { ok: false; error: string }
 > {
   if (!isOfferedSlot(startsAt, timeZone)) return { ok: false, error: 'Pick one of the open times.' };
@@ -207,11 +210,30 @@ export async function bookAcqAuditAction(
     p_confirmation_email_id: confirmationId,
   });
 
+  let metaEventId: string | undefined;
+  if (data.coaching_niche === ROOFING.offerLabel) {
+    metaEventId = crypto.randomUUID();
+    const headerList = await headers();
+    const forwarded = headerList.get('x-forwarded-for')?.split(',')[0]?.trim();
+    await sendRoofingCapi({
+      eventName: 'Schedule',
+      eventId: metaEventId,
+      email: data.email,
+      phone,
+      firstName: name.split(/\s+/)[0],
+      clientIp: forwarded || headerList.get('x-real-ip') || undefined,
+      userAgent: headerList.get('user-agent') || undefined,
+      eventSourceUrl: headerList.get('referer') || undefined,
+      customData: { content_name: 'Lead Leak Audit', content_category: 'roofing' },
+    });
+  }
+
   return {
     ok: true,
     startsAt: data.scheduled_for,
     timeZone: data.time_zone,
     meetUrl,
     alreadyBooked: false,
+    eventId: metaEventId,
   };
 }

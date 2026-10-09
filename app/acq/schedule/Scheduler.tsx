@@ -5,7 +5,7 @@ import { Field as CossField, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { DateTimePicker } from '@/components/schedule/DateTimePicker';
 import { bookAcqAuditAction } from '@/lib/acq/schedule';
-import { trackPixel } from '../components/MetaPixel';
+import { trackRoofingBrowser } from '../components/RoofingPixel';
 
 function rememberSchedulePixel(token: string): boolean {
   const key = `da-schedule-pixel:${token}`;
@@ -35,7 +35,7 @@ export function AcqScheduler({
     if (!trackBooking || !booked || fired.current) return;
     if (!rememberSchedulePixel(token)) return;
     fired.current = true;
-    trackPixel('Schedule');
+    trackRoofingBrowser('Schedule', crypto.randomUUID());
   }, [booked, token, trackBooking]);
 
   if (booked) {
@@ -84,7 +84,7 @@ export function AcqScheduler({
           if (!result.ok) return result;
           if (trackBooking && !result.alreadyBooked && !fired.current && rememberSchedulePixel(token)) {
             fired.current = true;
-            trackPixel('Schedule');
+            trackRoofingBrowser('Schedule', result.eventId || crypto.randomUUID());
           }
           return {
             ok: true,

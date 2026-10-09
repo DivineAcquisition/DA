@@ -228,6 +228,7 @@ const SURFACES: Surface[] = [
       pathname === '/roofing' ||
       pathname.startsWith('/roofing/') ||
       pathname === '/api/submit-lead' ||
+      pathname === '/api/meta/capi' ||
       pathname.startsWith('/acq') ||
       pathname.startsWith('/onboard'),
   },
@@ -296,7 +297,8 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith(MACHINE_DOOR_PREFIX) ||
     pathname.startsWith(CRON_PREFIX) ||
-    pathname === '/api/submit-lead'
+    pathname === '/api/submit-lead' ||
+    pathname === '/api/meta/capi'
   ) {
     const response = NextResponse.next();
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
