@@ -13,6 +13,7 @@ import {
   GHL_FIELD_READINESS,
   GHL_PIT_TOKEN,
 } from './config';
+import { GHL_FIELDS_TO_CREATE, nicheGhlValues, type NicheGhlFieldKey } from './niche-lead';
 import {
   APP_COMPLETE_TAG,
   RESULT_TAGS,
@@ -59,7 +60,7 @@ type ResolvedGhlFields = {
   inquiries?: string;
   readiness?: string;
   qualification?: string;
-};
+} & Partial<Record<NicheGhlFieldKey, string>>;
 
 function ghlHeaders(): HeadersInit {
   return {
@@ -182,6 +183,9 @@ async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
       ['DA - Qualification Result', 'Qualification Result', 'qualification_result', 'da_qualification_result'],
       resolved.qualification,
     );
+    for (const spec of GHL_FIELDS_TO_CREATE) {
+      resolved[spec.key] = pickField(fields, [...spec.aliases], resolved[spec.key]);
+    }
     customFieldCache = { at: Date.now(), fields: resolved };
   } catch (error) {
     console.error('[acq:ghl-custom-fields]', error);
@@ -281,6 +285,7 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
     followUp: payload.followUpOwner,
     programPrice: payload.programPrice,
     inquiries: payload.inquiriesPerMonth,
+    ...nicheGhlValues(payload),
   });
 
   const body: Record<string, unknown> = {
@@ -325,6 +330,10 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
   }
 
   await addGhlTags(contactId, [APP_COMPLETE_TAG], 'ghl-contact');
+  if (payload.niche) {
+    const nicheTags = payload.tags.filter((tag) => tag !== APP_COMPLETE_TAG);
+    await addGhlTags(contactId, nicheTags, 'ghl-niche');
+  }
   try {
     await ghlFetch(
       `/contacts/${contactId}/notes`,

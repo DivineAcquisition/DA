@@ -16,6 +16,7 @@ import {
   upsertGhlContact,
   writeScoreToGhl,
 } from './pipeline';
+import { nichePixelEvent, parseRoofingLead, roofingNotYetPath, roofingVisitorPath } from './niche-lead';
 import { scoreQualification } from './score';
 import {
   ghlWebhookBody,
@@ -27,7 +28,7 @@ import {
 } from './qualify';
 
 export type QualifyResult =
-  | { ok: true; redirectTo: string }
+  | { ok: true; redirectTo: string; pixel?: 'Lead' | 'UnqualifiedLead' }
   | { ok: false; error: string; field?: string };
 
 const GHL_API = 'https://services.leadconnectorhq.com';
@@ -83,12 +84,15 @@ async function postForm(payload: QualificationPayload): Promise<void> {
  */
 export async function submitLead(input: QualificationInput, host?: string): Promise<QualifyResult> {
   if (isHoneypot(input)) {
-    return { ok: true, redirectTo: redirectTo(host) };
+    return {
+      ok: true,
+      redirectTo: input.niche === 'roofing' ? roofingNotYetPath(host) : redirectTo(host),
+    };
   }
 
   let payload: QualificationPayload;
   try {
-    payload = parseQualification(input);
+    payload = input.niche === 'roofing' ? parseRoofingLead(input) : parseQualification(input);
   } catch (error) {
     if (error instanceof QualificationError) {
       return { ok: false, error: error.message, field: error.field };
@@ -159,7 +163,12 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     }
   }
 
-  const schedulePath = scheduleToken ? qualificationSchedulePath(host, scheduleToken) : '';
+  const schedulePath =
+    payload.nicheQualified === false
+      ? ''
+      : scheduleToken
+        ? qualificationSchedulePath(host, scheduleToken)
+        : '';
   try {
     await sendApplicationAlertEmail({
       payload,
@@ -169,6 +178,20 @@ export async function submitLead(input: QualificationInput, host?: string): Prom
     });
   } catch (error) {
     await logPipelineFailure('application-email', payload.email, error);
+  }
+
+  if (payload.niche === 'roofing') {
+    return {
+      ok: true,
+      redirectTo: roofingVisitorPath(
+        payload,
+        host,
+        scheduleToken,
+        schedulePath,
+        redirectTo(host),
+      ),
+      pixel: nichePixelEvent(Boolean(payload.nicheQualified)),
+    };
   }
 
   return {

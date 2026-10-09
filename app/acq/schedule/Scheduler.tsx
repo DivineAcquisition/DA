@@ -1,19 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Field as CossField, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { DateTimePicker } from '@/components/schedule/DateTimePicker';
 import { bookAcqAuditAction } from '@/lib/acq/schedule';
+import { trackPixel } from '../components/MetaPixel';
+
+function rememberSchedulePixel(token: string): boolean {
+  const key = `da-schedule-pixel:${token}`;
+  try {
+    if (sessionStorage.getItem(key) === '1') return false;
+    sessionStorage.setItem(key, '1');
+    return true;
+  } catch {
+    return true;
+  }
+}
 
 export function AcqScheduler({
   token,
   booked = null,
+  trackBooking = false,
 }: {
   token: string;
   booked?: { startsAt: string; timeZone: string; meetUrl?: string | null } | null;
+  /** Roofing leads fire the existing Schedule event once. Coaches stay unchanged. */
+  trackBooking?: boolean;
 }) {
   const [phone, setPhone] = useState('');
+  const fired = useRef(false);
+
+  useEffect(() => {
+    if (!trackBooking || !booked || fired.current) return;
+    if (!rememberSchedulePixel(token)) return;
+    fired.current = true;
+    trackPixel('Schedule');
+  }, [booked, token, trackBooking]);
 
   if (booked) {
     return (
@@ -59,6 +82,10 @@ export function AcqScheduler({
           }
           const result = await bookAcqAuditAction(token, input.startsAt, input.timeZone, phone.trim());
           if (!result.ok) return result;
+          if (trackBooking && !result.alreadyBooked && !fired.current && rememberSchedulePixel(token)) {
+            fired.current = true;
+            trackPixel('Schedule');
+          }
           return {
             ok: true,
             startsAt: result.startsAt,

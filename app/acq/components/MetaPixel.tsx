@@ -18,6 +18,15 @@ export function trackPixel(event: string, params?: Record<string, unknown>) {
   else window.fbq('track', event);
 }
 
+/** Custom events stay out of Meta's standard Lead optimization. */
+export function trackPixelCustom(event: string, params?: Record<string, unknown>) {
+  if (typeof window === 'undefined' || !ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') {
+    return;
+  }
+  if (params) window.fbq('trackCustom', event, params);
+  else window.fbq('trackCustom', event);
+}
+
 export function MetaPixel() {
   const pixelId = ACQ_META_PIXEL_ID;
   if (!pixelId) return null;

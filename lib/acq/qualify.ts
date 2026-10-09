@@ -1,4 +1,5 @@
 import { TRACKING_PARAM_KEYS, type TrackingParamKey } from './config';
+import type { HeadlineVariant } from './niche-tracking';
 
 export const AD_SPEND_OPTIONS = ['$0', 'Under $2k', '$2-5k', '$5k+'] as const;
 export const PROGRAM_PRICE_OPTIONS = ['Under $2k', '$2-5k', '$5k+'] as const;
@@ -32,6 +33,10 @@ export type QualificationInput = {
   /** Honeypot. Bots that fill it are accepted locally and dropped. */
   website?: string;
   tracking?: Partial<Record<TrackingParamKey, string>>;
+  /** Set by the roofing (and later niche) form. Coaches leave this empty. */
+  niche?: string;
+  spendBand?: string;
+  headlineVariant?: string;
 };
 
 export type QualificationPayload = {
@@ -53,9 +58,16 @@ export type QualificationPayload = {
   leadSource: 'Paid Ad';
   entryPoint: 'Audit Booking' | 'Landing Page';
   stage: 'Step 1 Captured';
-  source: 'Founding Install Qualification';
+  source: string;
   tags: string[];
   tracking: Partial<Record<TrackingParamKey, string>>;
+  /** Niche ads page only. Coaches leads leave these empty. */
+  niche?: string;
+  spendBand?: string;
+  nicheQualified?: boolean;
+  headlineVariant?: HeadlineVariant;
+  /** Visit values that are not already keys on `tracking`. */
+  attribution?: Record<string, string>;
 };
 
 export type QualificationResult = 'Qualified' | 'Manual Review' | 'Disqualified';
@@ -80,7 +92,8 @@ export type QualifyErrorField =
   | 'followUp'
   | 'programPrice'
   | 'smsConsent'
-  | 'emailConsent';
+  | 'emailConsent'
+  | 'spendBand';
 
 export class QualificationError extends Error {
   readonly field?: QualifyErrorField;
@@ -343,15 +356,36 @@ export function ghlWebhookBody(payload: QualificationPayload): Record<string, un
     stage: payload.stage,
     source: payload.source,
     tags: payload.tags,
+    ...(payload.niche
+      ? {
+          niche: payload.niche,
+          spendBand: payload.spendBand,
+          spend_band: payload.spendBand,
+          qualified: payload.nicheQualified ? 'yes' : 'no',
+          headlineVariant: payload.headlineVariant,
+          headline_variant: payload.headlineVariant,
+        }
+      : {}),
     ...payload.tracking,
+    ...(payload.attribution ?? {}),
   };
 }
 
 export function ghlContactNote(payload: QualificationPayload): string {
+  const visit = { ...payload.tracking, ...(payload.attribution ?? {}) };
+  const visitLines = payload.niche
+    ? Object.entries(visit)
+        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+        .map(([key, value]) => `${key}: ${value}`)
+    : [];
   return [
-    'Founding install qualification',
+    payload.niche ? `${payload.niche} Lead Leak Audit` : 'Founding install qualification',
     `What they sell: ${payload.coachingNiche}`,
     payload.companyName ? `Company: ${payload.companyName}` : null,
+    payload.niche ? `Niche: ${payload.niche}` : null,
+    payload.spendBand ? `Spend band: ${payload.spendBand}` : null,
+    payload.nicheQualified == null ? null : `Qualified: ${payload.nicheQualified ? 'yes' : 'no'}`,
+    payload.headlineVariant ? `Headline: ${payload.headlineVariant}` : null,
     payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
     payload.inquiriesPerMonth != null ? `Inquiries per month: ${payload.inquiriesPerMonth}` : null,
     payload.followUpOwner
@@ -360,6 +394,7 @@ export function ghlContactNote(payload: QualificationPayload): string {
     payload.programPrice ? `Program price: ${payload.programPrice}` : null,
     payload.smsConsent ? 'Consent to calls and texts: yes' : null,
     payload.emailConsent ? 'Consent to email and the free blueprint: yes' : null,
+    ...visitLines,
   ]
     .filter((line): line is string => Boolean(line))
     .join('\n');

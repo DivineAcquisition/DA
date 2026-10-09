@@ -3,7 +3,8 @@ import { serviceClient, workspaceClient } from '@/lib/workspace/db';
 import { supabaseConfigured } from '@/lib/supabase/server';
 import { acqPublicClients } from './public-db';
 import { closedStagesPostgrestIn, isClosedStage } from './stages';
-import type { QualificationPayload } from './qualify';
+import { storedAttribution } from './niche-lead';
+import { ghlContactNote, type QualificationPayload } from './qualify';
 import { scoreQualification, type WorkspaceScore } from './score';
 
 const UUID_RE =
@@ -134,18 +135,28 @@ export function leadWriteFromQualification(
     monthly_ad_spend: payload.monthlyAdSpend,
     follow_up_owner: payload.followUpOwner,
     program_price: payload.programPrice,
-    ...(payload.inquiriesPerMonth != null && !extras.existing?.notes
-      ? { notes: `Inquiries per month: ${payload.inquiriesPerMonth}` }
-      : {}),
+    ...(payload.niche
+      ? { notes: ghlContactNote(payload) }
+      : payload.inquiriesPerMonth != null && !extras.existing?.notes
+        ? { notes: `Inquiries per month: ${payload.inquiriesPerMonth}` }
+        : {}),
     ghl_contact_id:
       extras.ghlContactId?.trim() || extras.existing?.ghl_contact_id?.trim() || '',
     payload: {
       ...(extras.existing?.payload ?? {}),
-      tracking: payload.tracking,
+      tracking: storedAttribution(payload),
       source: payload.source,
       tags: payload.tags,
       offer: payload.coachingNiche,
       inquiriesPerMonth: payload.inquiriesPerMonth,
+      ...(payload.niche
+        ? {
+            niche: payload.niche,
+            spendBand: payload.spendBand,
+            qualified: payload.nicheQualified ? 'yes' : 'no',
+            headlineVariant: payload.headlineVariant,
+          }
+        : {}),
     },
   };
 }
@@ -280,9 +291,14 @@ async function captureApplication(
     ghlContactId,
     inquiriesPerMonth: payload.inquiriesPerMonth,
     source: payload.source,
-    tracking: payload.tracking,
+    tracking: storedAttribution(payload),
     tags: payload.tags,
     scheduleToken,
+    niche: payload.niche ?? '',
+    spendBand: payload.spendBand ?? '',
+    qualified: payload.nicheQualified == null ? '' : payload.nicheQualified ? 'yes' : 'no',
+    headlineVariant: payload.headlineVariant ?? '',
+    nicheNote: payload.niche ? ghlContactNote(payload) : '',
   };
 
   for (const client of clients) {

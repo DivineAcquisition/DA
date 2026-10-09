@@ -74,8 +74,15 @@ export type WorkspaceScore = {
 export function scoreQualification(
   payload: Pick<QualificationPayload, 'monthlyAdSpend' | 'followUpOwner' | 'programPrice'> & {
     inquiriesPerMonth?: number | null;
+    nicheQualified?: boolean;
   },
 ): WorkspaceScore {
+  if (payload.nicheQualified === true) {
+    return { readinessScore: QUALIFIED_MIN_SCORE, qualificationResult: 'Qualified' };
+  }
+  if (payload.nicheQualified === false) {
+    return { readinessScore: 0, qualificationResult: 'Disqualified' };
+  }
   if (!payload.monthlyAdSpend && payload.inquiriesPerMonth == null && !payload.followUpOwner) {
     return { readinessScore: MANUAL_REVIEW_MIN_SCORE, qualificationResult: 'Manual Review' };
   }

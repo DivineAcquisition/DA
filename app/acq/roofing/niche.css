@@ -1,0 +1,519 @@
+/* Roofing ads page. Scoped so the coaches landing keeps its own layout. */
+
+.acq-coaches.acq-niche {
+  max-width: 100%;
+}
+
+.acq-coaches.acq-niche .lx-hero,
+.acq-coaches.acq-niche .lx-section,
+.acq-coaches.acq-niche .lx-foot {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.acq-coaches.acq-niche .lx-hero {
+  padding-top: 1.25rem;
+  padding-bottom: 3rem;
+}
+
+.acq-coaches.acq-niche .lx-section {
+  padding-top: 3.25rem;
+  padding-bottom: 3.25rem;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches.acq-niche .lx-section {
+    padding-top: 5.25rem;
+    padding-bottom: 5.25rem;
+  }
+}
+
+.acq-coaches.acq-niche h2,
+.acq-coaches.acq-niche h3,
+.acq-coaches.acq-niche h4 {
+  text-transform: none;
+}
+
+.acq-coaches.acq-niche .lx-headline {
+  font-size: clamp(1.65rem, 7.2vw, 2.7rem);
+  line-height: 1.16;
+}
+
+.acq-coaches.acq-niche .lx-heading {
+  margin-bottom: 1.75rem;
+  font-size: clamp(1.55rem, 6vw, 2.4rem);
+  line-height: 1.16;
+}
+
+.acq-coaches.acq-niche .lx-intro {
+  margin: 0 auto 1.5rem;
+}
+
+.acq-coaches.acq-niche .lx-lead,
+.acq-coaches.acq-niche .niche-body,
+.acq-coaches.acq-niche .lx-card p,
+.acq-coaches.acq-niche .lx-answer,
+.acq-coaches.acq-niche .niche-honesty {
+  color: #f4f4f5;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+.acq-coaches.acq-niche .niche-honesty {
+  margin: 0;
+}
+
+.acq-coaches.acq-niche .niche-eyebrow {
+  margin: 0 0 0.85rem;
+  color: var(--lx-accent);
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.acq-coaches.acq-niche .niche-source-mark {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.12em;
+  color: var(--lx-accent);
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  vertical-align: super;
+}
+
+.acq-coaches.acq-niche .niche-source-mark::after {
+  content: '';
+  position: absolute;
+  inset: -0.85rem -0.55rem;
+}
+
+.acq-coaches.acq-niche .niche-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.acq-coaches.acq-niche .niche-chips li {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid rgba(154, 136, 252, 0.4);
+  border-radius: 999px;
+  background: rgba(154, 136, 252, 0.12);
+  color: var(--lx-accent-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.acq-coaches.acq-niche .niche-quiet {
+  margin: 0.85rem 0 0;
+  color: #e4e4e7;
+  font-size: 1rem;
+}
+
+.acq-coaches.acq-niche .niche-video {
+  width: min(720px, 100%);
+  margin-top: 1.1rem;
+}
+
+.acq-coaches.acq-niche .niche-video video,
+.acq-coaches.acq-niche .niche-video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  background: #000;
+}
+
+.acq-coaches.acq-niche .niche-stats,
+.acq-coaches.acq-niche .niche-places,
+.acq-coaches.acq-niche .niche-needs,
+.acq-coaches.acq-niche .niche-offer,
+.acq-coaches.acq-niche .niche-commits {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 700px) {
+  .acq-coaches.acq-niche .niche-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1000px) {
+  .acq-coaches.acq-niche .niche-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches.acq-niche .niche-stat strong {
+  color: #fff;
+  font-size: clamp(1.85rem, 7vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.acq-coaches.acq-niche .niche-stat .niche-stat-label {
+  color: #f4f4f5;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.acq-coaches.acq-niche .niche-stat small {
+  color: #d4d4d8;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.acq-coaches.acq-niche .niche-foot-line {
+  margin: 1.35rem 0 0;
+  color: #f4f4f5;
+  text-align: center;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.acq-coaches.acq-niche .niche-icon {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent);
+}
+
+.acq-coaches.acq-niche .niche-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (min-width: 900px) {
+  .acq-coaches.acq-niche .niche-places,
+  .acq-coaches.acq-niche .niche-needs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches.acq-niche .niche-closing {
+  margin: 1.25rem 0 0;
+  color: #fff;
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.acq-coaches.acq-niche .niche-offer {
+  gap: 1rem;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches.acq-niche .niche-offer {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.acq-coaches.acq-niche .niche-piece {
+  margin: 0;
+}
+
+.acq-coaches.acq-niche .niche-piece > summary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 44px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.acq-coaches.acq-niche .niche-piece > summary::-webkit-details-marker {
+  display: none;
+}
+
+.acq-coaches.acq-niche .niche-piece-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.acq-coaches.acq-niche .niche-piece h3 {
+  margin: 0;
+}
+
+.acq-coaches.acq-niche h4 {
+  margin: 0;
+  color: var(--lx-accent-soft);
+  font-family: var(--font-acq-jakarta), 'Inter Tight', Arial, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.acq-coaches.acq-niche .niche-subhead {
+  margin: 0 auto 1.25rem;
+  text-align: center;
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
+}
+
+.acq-coaches.acq-niche .niche-done {
+  margin: 0;
+  color: #d9d1fe;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.acq-coaches.acq-niche .niche-done strong {
+  color: #fff;
+  font-weight: 800;
+}
+
+.acq-coaches.acq-niche .niche-piece:not([open]) > .niche-bullets {
+  display: none;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches.acq-niche .niche-piece:not([open]) > .niche-bullets {
+    display: block;
+  }
+
+  .acq-coaches.acq-niche .niche-piece .lx-plus {
+    display: none;
+  }
+
+  .acq-coaches.acq-niche .niche-piece > summary {
+    cursor: default;
+  }
+}
+
+.acq-coaches.acq-niche .niche-piece[open] .lx-plus::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.acq-coaches.acq-niche .niche-checks,
+.acq-coaches.acq-niche .niche-steps-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.acq-coaches.acq-niche .niche-checks li,
+.acq-coaches.acq-niche .niche-steps-list li {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  color: #f4f4f5;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+}
+
+.acq-coaches.acq-niche .niche-check-num,
+.acq-coaches.acq-niche .niche-step-num {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent);
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches.acq-niche .niche-commits {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .acq-coaches.acq-niche .niche-steps-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches.acq-niche .niche-commit {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  min-height: 44px;
+  color: #f4f4f5;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
+.acq-coaches.acq-niche .niche-commit svg {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  margin-top: 0.1rem;
+  fill: none;
+  stroke: var(--lx-accent);
+  stroke-width: 2.4;
+}
+
+.acq-coaches.acq-niche .niche-kicker {
+  margin: 0;
+  color: var(--lx-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.acq-coaches.acq-niche .niche-proof {
+  margin-top: 1.25rem;
+}
+
+.acq-coaches.acq-niche .niche-after {
+  margin-top: 1rem;
+  color: #f4f4f5;
+  text-align: center;
+  font-size: 1.0625rem;
+  font-weight: 600;
+}
+
+.acq-coaches.acq-niche .lx-faq summary {
+  min-height: 48px;
+  font-size: 1.05rem;
+}
+
+.acq-coaches.acq-niche .niche-sources {
+  margin: 1.5rem auto 0;
+  max-width: 40rem;
+  text-align: left;
+}
+
+.acq-coaches.acq-niche .niche-sources > summary {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: #c3b6fe;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.acq-coaches.acq-niche .niche-sources ol {
+  margin: 0.5rem 0 0;
+  padding-left: 1.2rem;
+  color: #e4e4e7;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.acq-coaches.acq-niche .niche-sources a {
+  color: #c3b6fe;
+}
+
+.acq-coaches.acq-niche .lx-foot a {
+  color: #c3b6fe;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.acq-coaches.acq-niche .niche-sticky {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  padding: 0.55rem 16px calc(0.55rem + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(154, 136, 252, 0.4);
+  background: rgba(7, 7, 11, 0.96);
+}
+
+.acq-coaches.acq-niche .niche-sticky .acq-button {
+  min-height: 48px;
+  margin-top: 0;
+  padding: 0.7rem 1rem;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 768px) {
+  .acq-coaches.acq-niche .niche-sticky {
+    display: none;
+  }
+
+  .acq-coaches.acq-niche.niche-has-sticky {
+    padding-bottom: 0;
+  }
+}
+
+.acq-coaches.acq-niche.niche-has-sticky {
+  padding-bottom: calc(4.75rem + env(safe-area-inset-bottom));
+}
+
+.acq-coaches.acq-niche :focus-visible {
+  outline: 2px solid #c3b6fe;
+  outline-offset: 3px;
+}
+
+.acq-coaches.acq-niche .acq-button,
+.acq-coaches.acq-niche .niche-piece > summary,
+.acq-coaches.acq-niche .lx-faq summary {
+  touch-action: manipulation;
+}
+
+.acq-coaches.acq-niche .acq-consent {
+  min-height: 44px;
+  padding: 0.35rem 0;
+}
+
+.acq-coaches.acq-niche .acq-dialog select {
+  min-height: 48px;
+  padding: 0.7rem 0.9rem;
+  font-size: 16px;
+}
+
+.niche-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .acq-coaches.acq-niche .niche-reveal {
+      animation: niche-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 18%;
+    }
+  }
+}
+
+@keyframes niche-rise {
+  from {
+    transform: translateY(8px);
+  }
+  to {
+    transform: none;
+  }
+}

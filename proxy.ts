@@ -225,6 +225,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/precall') ||
       pathname === '/practices' ||
       pathname.startsWith('/practices') ||
+      pathname === '/roofing' ||
+      pathname.startsWith('/roofing/') ||
       pathname === '/api/submit-lead' ||
       pathname.startsWith('/acq') ||
       pathname.startsWith('/onboard'),
@@ -507,9 +509,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // Acquisition landing is a public ad destination and must remain indexable.
+  // The roofing ads page is the exception: paid traffic, not a search result.
   if (
     (isInternal && prefix !== ACQ_PREFIX && prefix !== GO_PREFIX) ||
     pathname.startsWith(ONBOARD_PREFIX)
+  ) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+  }
+  if (
+    pathname === '/roofing' ||
+    pathname.startsWith('/roofing/') ||
+    pathname === '/acq/roofing' ||
+    pathname.startsWith('/acq/roofing/')
   ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }

@@ -15,17 +15,25 @@ export function buildApplicationAlertEmail(input: {
   scheduleUrl?: string;
 }): { subject: string; html: string; text: string } {
   const { payload } = input;
+  const niche = Boolean(payload.niche);
   const subject = `New application: ${payload.fullName}`;
   const inquiries =
     payload.inquiriesPerMonth != null ? String(payload.inquiriesPerMonth) : 'Not given';
+  const intro = niche
+    ? `A ${payload.niche} owner requested the Lead Leak Audit.`
+    : 'A coach just filled out the application.';
   const lines = [
     `Name: ${payload.fullName}`,
     `Email: ${payload.email}`,
     payload.phone ? `Phone: ${payload.phone}` : null,
     `Company: ${payload.companyName}`,
     `What they sell: ${payload.coachingNiche}`,
+    payload.niche ? `Niche: ${payload.niche}` : null,
+    payload.spendBand ? `Spend band: ${payload.spendBand}` : null,
+    payload.nicheQualified == null ? null : `Qualified: ${payload.nicheQualified ? 'yes' : 'no'}`,
+    payload.headlineVariant ? `Headline: ${payload.headlineVariant}` : null,
     payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
-    `Inquiries per month: ${inquiries}`,
+    niche ? null : `Inquiries per month: ${inquiries}`,
     payload.followUpOwnerLabel ? `Follow-up: ${payload.followUpOwnerLabel}` : null,
     payload.programPrice ? `Program price: ${payload.programPrice}` : null,
     payload.smsConsent ? 'Calls and texts: consented' : null,
@@ -33,17 +41,25 @@ export function buildApplicationAlertEmail(input: {
     input.ghlContactId ? `GHL contact: ${input.ghlContactId}` : 'GHL contact: not created',
     input.airtableRecordId ? `Airtable record: ${input.airtableRecordId}` : 'Airtable record: not written',
     input.scheduleUrl ? `Schedule link: ${input.scheduleUrl}` : null,
+    ...(niche
+      ? Object.entries(payload.attribution ?? {})
+          .filter((entry): entry is [string, string] => Boolean(entry[1]))
+          .map(([key, value]) => `${key}: ${value}`)
+      : []),
   ].filter((line): line is string => Boolean(line));
 
+  const reason = niche
+    ? `You received this because someone submitted the ${payload.niche} Lead Leak Audit form.`
+    : 'You received this because an application was submitted on the coaches landing page.';
   const text = [
-    'A coach just filled out the application.',
+    intro,
     '',
     ...lines,
     '',
     '— Divine Acquisition',
     '',
     ...textFooter({
-      reason: 'You received this because an application was submitted on the coaches landing page.',
+      reason,
     }),
   ].join('\n');
 
@@ -52,14 +68,20 @@ export function buildApplicationAlertEmail(input: {
     preheader: `${payload.fullName} applied. ${payload.email}`,
     eyebrow: 'New application',
     title: payload.fullName,
-    paragraphs: ['A coach just filled out the application.'],
+    paragraphs: [intro],
     details: [
       { label: 'Email', value: payload.email },
       ...(payload.phone ? [{ label: 'Phone', value: payload.phone }] : []),
       { label: 'Company', value: payload.companyName },
       { label: 'What they sell', value: payload.coachingNiche },
+      ...(payload.niche ? [{ label: 'Niche', value: payload.niche }] : []),
+      ...(payload.spendBand ? [{ label: 'Spend band', value: payload.spendBand }] : []),
+      ...(payload.nicheQualified == null
+        ? []
+        : [{ label: 'Qualified', value: payload.nicheQualified ? 'yes' : 'no' }]),
+      ...(payload.headlineVariant ? [{ label: 'Headline', value: payload.headlineVariant }] : []),
       ...(payload.monthlyAdSpend ? [{ label: 'Monthly ad spend', value: payload.monthlyAdSpend }] : []),
-      { label: 'Inquiries per month', value: inquiries },
+      ...(niche ? [] : [{ label: 'Inquiries per month', value: inquiries }]),
       ...(payload.followUpOwnerLabel ? [{ label: 'Follow-up', value: payload.followUpOwnerLabel }] : []),
       ...(payload.programPrice ? [{ label: 'Program price', value: payload.programPrice }] : []),
       { label: 'GHL', value: input.ghlContactId || 'Not created' },
@@ -67,7 +89,7 @@ export function buildApplicationAlertEmail(input: {
     ],
     cta: input.scheduleUrl ? { href: input.scheduleUrl, label: 'Open their scheduling link' } : null,
     footer: {
-      reason: 'You received this because an application was submitted on the coaches landing page.',
+      reason,
     },
   });
 

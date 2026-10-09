@@ -1,4 +1,5 @@
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
+import { ROOFING } from '@/lib/acq/niche-content';
 import { loadAcqSchedule } from '@/lib/acq/schedule';
 import { AcqScheduler } from '../Scheduler';
 
@@ -17,6 +18,7 @@ export default async function AcqSchedulePage({
   const { token } = await params;
   const schedule = await loadAcqSchedule(token);
   const firstName = schedule?.fullName.trim().split(/\s+/)[0] || 'there';
+  const roofing = schedule?.offer === ROOFING.offerLabel;
 
   return (
     <div className="acq-coaches acq-schedule min-h-screen antialiased">
@@ -35,11 +37,14 @@ export default async function AcqSchedulePage({
                 {schedule.scheduledFor ? `You're Booked, ${firstName}.` : `Hi ${firstName}. Pick A Date And Time.`}
               </h1>
               <p className="lx-lead">
-                Real time goes into the roadmap for this call. Book a time you will keep. We do not run your ads. We line the follow-up up with the offer you already sell.
+                {roofing
+                  ? ROOFING.bookingLead
+                  : 'Real time goes into the roadmap for this call. Book a time you will keep. We do not run your ads. We line the follow-up up with the offer you already sell.'}
               </p>
               <div className="mt-8 w-full max-w-3xl text-left">
                 <AcqScheduler
                   token={token}
+                  trackBooking={roofing}
                   booked={
                     schedule.scheduledFor
                       ? {
