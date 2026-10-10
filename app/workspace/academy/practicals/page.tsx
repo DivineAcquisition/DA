@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { savePracticalDefinition } from '@/lib/academy/practiceAdmin';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select, Textarea } from '../../components/ui';
+import { StudioHeader, studioLink } from '../Studio';
 
 type ModuleRow = { id: string; order: number; title: string; parts?: { id: string; key: string; label: string }[] };
 type Item = { label: string; required: boolean };
@@ -29,12 +30,13 @@ export default async function PracticalsAdminPage({ searchParams }: { searchPara
   const current = (data?.practicals ?? []).find((item) => item.id === params.id);
   const lines = (current?.items ?? []).map((item) => (item.required ? item.label : `optional ${item.label}`)).join('\n');
   return (
-    <div className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Practicals</h1>
-        <Link href="/workspace/academy/holds/practicals" className="text-sm text-neutral-300">Review queue</Link>
-      </div>
-      <p className="text-sm text-neutral-400">One checklist line per item. Start a line with “optional” when it is not required to pass. Checklist edits apply before the first submission.</p>
+    <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6">
+      <StudioHeader
+        title="Practicals"
+        lede="One checklist line per item. Start a line with “optional” when it is not required to pass. Checklist edits apply before the first submission."
+      >
+        <Link href="/workspace/academy/holds/practicals" className={studioLink}>Review queue</Link>
+      </StudioHeader>
       {params.error ? <p className="text-sm text-flag-critical">{params.error}</p> : null}
       <ul className="space-y-1 text-sm text-neutral-300">
         {(data?.practicals ?? []).map((item) => (

@@ -186,7 +186,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">
           {lesson.code} · {lesson.moduleTitle}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold">{lesson.title}</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{lesson.title}</h1>
         <p className="mt-1 text-sm text-neutral-400">
           Lesson {lesson.position} of {lesson.total}
         </p>
@@ -247,7 +247,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
       {note ? <p className="text-sm text-red-200">{note}</p> : null}
 
       {!lesson.preview ? (
-        <div className="sticky bottom-3 rounded-2xl border border-white/10 bg-[#100f18]/95 p-4">
+        <div className="sticky bottom-3 rounded-3xl border border-white/10 bg-[#100f18]/95 p-4 shadow-[0_16px_50px_-24px_rgba(106,0,255,0.8)]">
           {complete ? <p className="text-sm font-semibold text-[#937DFF]">Completed.</p> : null}
           {missing.length > 0 && !complete ? (
             <ul className="mb-3 space-y-1 text-sm text-neutral-300">
@@ -259,7 +259,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
           <button
             type="button"
             disabled={complete || missing.length > 0}
-            className="min-h-11 w-full rounded-xl bg-[#6A00FF] text-sm font-semibold text-white disabled:opacity-40"
+            className="min-h-12 w-full rounded-2xl bg-[#9A88FC] text-sm font-semibold text-[#07070b] disabled:opacity-40"
             onClick={() => {
               void markLessonComplete(lesson.id).then((result) => {
                 setMissing(result.missing);

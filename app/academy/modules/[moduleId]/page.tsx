@@ -118,8 +118,8 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
             </>
           );
           return (
-            <li key={lesson.id} className="rounded-3xl border border-white/10 bg-white/[0.03] p-4">
-              {lesson.open ? <Link href={`/academy/modules/${moduleId}/lessons/${lesson.id}`}>{inner}</Link> : inner}
+            <li key={lesson.id} className={`rounded-3xl border p-4 ${lesson.complete ? 'border-[#9A88FC]/40 bg-[#6A00FF]/10' : 'border-white/10 bg-white/[0.03]'}`}>
+              {lesson.open ? <Link href={`/academy/modules/${moduleId}/lessons/${lesson.id}`} className="block">{inner}</Link> : inner}
             </li>
           );
         })}

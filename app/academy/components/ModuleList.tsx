@@ -53,7 +53,10 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
 
   return (
     <div className="space-y-3">
-      <h1 className="text-2xl font-semibold">Modules</h1>
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c3b6fe]">Your program</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Modules</h1>
+      </div>
       <ol className="space-y-3">
         {modules.map((module) => {
           const label = moduleStatusLabel(module.display);

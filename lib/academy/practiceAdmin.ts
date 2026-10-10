@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
+import { formId } from '@/lib/academy/form';
 import { planDrills, planSimulations, type DrillPlan, type SimulationPlan } from '@/lib/academy/practiceImport';
 import { createClient } from '@/lib/supabase/server';
 import { serviceClient } from '@/lib/workspace/db';
@@ -152,7 +153,7 @@ export async function saveReflectionPrompt(formData: FormData) {
   if (!supabase) redirect('/workspace/login');
   const { error } = await controlRpc(supabase, 'academy_reflection_save', {
     p_payload: {
-      id: String(formData.get('id') ?? '') || null,
+      id: formId(formData.get('id')),
       module_id: String(formData.get('module_id') ?? ''),
       gate_part_id: String(formData.get('gate_part_id') ?? '') || null,
       prompt: String(formData.get('prompt') ?? ''),
@@ -173,7 +174,7 @@ export async function savePracticalDefinition(formData: FormData) {
   const labels = String(formData.get('items') ?? '').split('\n').map((line) => line.trim()).filter(Boolean);
   const { error } = await controlRpc(supabase, 'academy_practical_save', {
     p_payload: {
-      id: String(formData.get('id') ?? '') || null,
+      id: formId(formData.get('id')),
       module_id: String(formData.get('module_id') ?? ''),
       gate_part_id: String(formData.get('gate_part_id') ?? '') || null,
       title: String(formData.get('title') ?? ''),

@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useRef, useState, useTransition } from 'react';
 import { archiveLesson, overrideProgress, reorderLesson, saveLesson } from '@/lib/academy/adminActions';
 import { Button, Field, Input, Select } from '../../components/ui';
 
@@ -27,6 +28,7 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [overrideError, setOverrideError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   function wrap(before: string, after = before) {
     const node = bodyRef.current;
@@ -39,12 +41,27 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8 px-4 py-8">
+    <div className="mx-auto max-w-3xl space-y-8 px-4 py-8 sm:px-6">
+      <div>
+        <Link href="/workspace/academy" className="text-sm font-semibold text-brand-200">
+          Back to lessons
+        </Link>
+        <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">Academy</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+          {lesson.id ? 'Edit lesson' : 'New lesson'}
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+          {lesson.id
+            ? `${lesson.code} stays the id trainees and imports use.`
+            : 'Save it as a draft first. Set it live when it has a title and a video or written lesson.'}
+        </p>
+      </div>
       <form
-        className="space-y-4"
+        className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.02] p-4 sm:p-6"
         action={(formData) => {
           setError(null);
-          void saveLesson(formData).then((result) => {
+          startTransition(async () => {
+            const result = await saveLesson(formData);
             if (!result.ok) setError(result.error ?? 'The lesson was not saved.');
             else if (result.id) router.push(`/workspace/academy/lessons/${result.id}`);
             else router.refresh();
@@ -104,7 +121,7 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
             name="body"
             rows={14}
             defaultValue={lesson.body}
-            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white"
+            className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-base leading-relaxed text-white outline-none focus:border-brand-400/60"
           />
         </Field>
         <Field label="Video link" hint="Vimeo or Mux. Playback must be limited to training.divineacquisition.io.">
@@ -133,9 +150,15 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
             </label>
           </fieldset>
         ) : null}
-        {error ? <p className="text-sm text-red-300">{error}</p> : null}
+        {error ? (
+          <p className="rounded-2xl border border-flag-critical/40 bg-flag-critical/10 px-4 py-3 text-sm text-red-100" role="alert">
+            {error}
+          </p>
+        ) : null}
         <div className="flex flex-wrap gap-2">
-          <Button type="submit">Save lesson</Button>
+          <Button type="submit" disabled={pending}>
+            {pending ? 'Saving…' : 'Save lesson'}
+          </Button>
           {lesson.id ? (
             <a href={`/workspace/academy/preview/${lesson.id}`} className="inline-flex items-center rounded-full border border-white/15 px-4 py-2 text-sm text-white">
               Preview

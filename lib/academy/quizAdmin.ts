@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
+import { formId } from '@/lib/academy/form';
 import { planQuestions, type QuestionPlan, type QuestionRow } from '@/lib/academy/questionImport';
 import { workspaceClient } from '@/lib/workspace/db';
 
@@ -60,7 +61,7 @@ export async function saveQuestion(formData: FormData): Promise<{ ok: boolean; e
   });
   const { data, error } = await controlRpc<{ id?: string }>(admin.client, 'academy_save_question', {
     p_payload: {
-      id: String(formData.get('id') ?? '') || null,
+      id: formId(formData.get('id')),
       module_id: String(formData.get('module_id') ?? ''),
       prompt: String(formData.get('prompt') ?? ''),
       question_type: String(formData.get('question_type') ?? ''),

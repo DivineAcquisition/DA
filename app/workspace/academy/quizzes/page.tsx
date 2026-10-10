@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
 import { createClient } from '@/lib/supabase/server';
+import { StudioHeader, studioLink } from '../Studio';
 
 type QuizRow = {
   id: string;
@@ -29,16 +30,10 @@ export default async function QuizzesPage() {
   const { data } = await controlRpc<QuizRow[]>(supabase, 'academy_admin_quizzes');
   const quizzes = data ?? [];
   return (
-    <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-      <div className="flex items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Quiz settings</h1>
-          <p className="mt-1 text-sm text-neutral-400">Changes apply to future attempts only.</p>
-        </div>
-        <Link href="/workspace/academy/questions" className="text-sm text-brand-200">
-          Question bank
-        </Link>
-      </div>
+    <div className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-6">
+      <StudioHeader title="Quiz settings" lede="Changes apply to future attempts only.">
+        <Link href="/workspace/academy/questions" className={studioLink}>Question bank</Link>
+      </StudioHeader>
       <div className="overflow-x-auto rounded-2xl border border-white/10">
         <table className="w-full min-w-[40rem] text-left text-sm text-neutral-200">
           <thead className="text-xs uppercase tracking-wide text-neutral-500">

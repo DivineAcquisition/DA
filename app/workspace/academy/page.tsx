@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { saveAcademySettings } from '@/lib/academy/adminActions';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input } from '../components/ui';
+import { StudioHeader, studioLink } from './Studio';
 
 type Lesson = {
   id: string;
@@ -32,36 +33,21 @@ export default async function AcademyAdminPage() {
   const settings = data?.settings;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Academy lessons</h1>
-          <p className="mt-1 text-sm text-neutral-400">Load videos, documents, and written lessons by lesson ID.</p>
-        </div>
-        <div className="flex gap-2">
-          <Link href="/workspace/academy/simulations" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Simulations
-          </Link>
-          <Link href="/workspace/academy/quizzes" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Quizzes
-          </Link>
-          <Link href="/workspace/academy/questions" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Questions
-          </Link>
-          <Link href="/workspace/academy/import" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Import
-          </Link>
-          <a href="/workspace/academy/template" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Blank manifest
-          </a>
-          <a href="/workspace/academy/export" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-            Export
-          </a>
-        </div>
-      </div>
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6">
+      <StudioHeader
+        title="Lessons"
+        lede="Add a lesson to a module, write it, then set it live when trainees should see it."
+      >
+        <Link href="/workspace/academy/questions" className={studioLink}>Questions</Link>
+        <Link href="/workspace/academy/quizzes" className={studioLink}>Quizzes</Link>
+        <Link href="/workspace/academy/simulations" className={studioLink}>Simulations</Link>
+        <Link href="/workspace/academy/import" className={studioLink}>Import</Link>
+        <a href="/workspace/academy/template" className={studioLink}>Blank manifest</a>
+        <a href="/workspace/academy/export" className={studioLink}>Export</a>
+      </StudioHeader>
 
       {settings ? (
-        <form action={saveAcademySettings} className="grid gap-3 rounded-2xl border border-white/10 p-4 sm:grid-cols-4">
+        <form action={saveAcademySettings} className="grid gap-3 rounded-3xl border border-white/10 bg-white/[0.02] p-4 sm:grid-cols-4">
           <Field label="Default watch %">
             <Input name="watch" type="number" min={1} max={100} defaultValue={settings.default_watch_percent} />
           </Field>
@@ -80,56 +66,69 @@ export default async function AcademyAdminPage() {
         </form>
       ) : null}
 
+      {modules.length === 0 ? (
+        <section className="rounded-3xl border border-white/10 bg-white/[0.02] p-6">
+          <h2 className="text-lg font-semibold text-white">No modules yet</h2>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+            Lessons belong to a module. Once a program has modules, each one gets an Add lesson button.
+          </p>
+        </section>
+      ) : null}
+
       {modules.map((module) => (
-        <section key={module.id} className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold text-white">
-              {module.order}. {module.title}
-              <span className="ml-2 text-sm font-normal text-neutral-500">{module.program}</span>
-            </h2>
-            <Link href={`/workspace/academy/lessons/new?module=${module.id}`} className="text-sm text-brand-200">
+        <section key={module.id} className="overflow-hidden rounded-3xl border border-white/10 bg-white/[0.02]">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-4 sm:px-5">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">{module.program}</p>
+              <h2 className="mt-1 text-lg font-semibold text-white">
+                {module.order}. {module.title}
+              </h2>
+            </div>
+            <Link
+              href={`/workspace/academy/lessons/new?module=${module.id}`}
+              className="inline-flex min-h-11 items-center rounded-full bg-brand-500 px-4 text-sm font-semibold text-ink-950 hover:bg-brand-400"
+            >
               Add lesson
             </Link>
           </div>
-          <div className="overflow-x-auto rounded-2xl border border-white/10">
-            <table className="w-full min-w-[40rem] text-left text-sm text-neutral-200">
-              <thead className="text-xs uppercase tracking-wide text-neutral-500">
-                <tr>
-                  <th className="px-3 py-2">ID</th>
-                  <th className="px-3 py-2">Title</th>
-                  <th className="px-3 py-2">Status</th>
-                  <th className="px-3 py-2">Version</th>
-                  <th className="px-3 py-2">Video</th>
-                  <th className="px-3 py-2">Document</th>
-                </tr>
-              </thead>
-              <tbody>
-                {module.lessons.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="px-3 py-4 text-neutral-500">
-                      No lessons yet.
-                    </td>
-                  </tr>
-                ) : (
-                  module.lessons.map((lesson) => (
-                    <tr key={lesson.id} className="border-t border-white/5">
-                      <td className="px-3 py-2 font-mono text-xs">{lesson.code}</td>
-                      <td className="px-3 py-2">
-                        <Link href={`/workspace/academy/lessons/${lesson.id}`} className="text-white">
-                          {lesson.title}
-                        </Link>
-                        {lesson.archived ? <span className="ml-2 text-xs text-neutral-500">Archived</span> : null}
-                      </td>
-                      <td className="px-3 py-2 capitalize">{lesson.status}</td>
-                      <td className="px-3 py-2">{lesson.version}</td>
-                      <td className="px-3 py-2">{lesson.video ? 'Yes' : 'No'}</td>
-                      <td className="px-3 py-2">{lesson.document ? 'Yes' : 'No'}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          {module.lessons.length === 0 ? (
+            <p className="px-4 py-6 text-sm text-neutral-500 sm:px-5">No lessons in this module yet.</p>
+          ) : (
+            <ul>
+              {module.lessons.map((lesson) => (
+                <li key={lesson.id} className="border-t border-white/5 first:border-t-0">
+                  <Link
+                    href={`/workspace/academy/lessons/${lesson.id}`}
+                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 transition hover:bg-white/[0.03] sm:px-5"
+                  >
+                    <span>
+                      <span className="block font-medium text-white">{lesson.title}</span>
+                      <span className="mt-0.5 block font-mono text-xs text-neutral-500">
+                        {lesson.code}
+                        {lesson.video ? ' · video' : ''}
+                        {lesson.document ? ' · document' : ''}
+                        {lesson.archived ? ' · archived' : ''}
+                      </span>
+                    </span>
+                    <span className="inline-flex items-center gap-2 text-xs">
+                      <span className="text-neutral-500">v{lesson.version}</span>
+                      <span
+                        className={`rounded-full px-2.5 py-1 font-semibold capitalize ${
+                          lesson.status === 'live'
+                            ? 'bg-brand-500/15 text-brand-200'
+                            : lesson.status === 'ready'
+                              ? 'bg-amber-400/10 text-amber-200'
+                              : 'bg-white/5 text-neutral-400'
+                        }`}
+                      >
+                        {lesson.status}
+                      </span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       ))}
     </div>

@@ -72,12 +72,12 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
 
       <Panel className="p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Progress</h2>
-        <p className="mt-2 text-lg font-semibold">
+        <p className="mt-2 text-2xl font-semibold tracking-tight">
           {shell.progress.completed} of {shell.progress.total}{' '}
           {shell.progress.unit === 'lessons' ? 'lessons' : 'modules'} complete
         </p>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10" role="presentation">
-          <div className="h-full rounded-full bg-[#6A00FF]" style={{ width: `${Math.min(100, Math.max(0, shell.progress.percent))}%` }} />
+        <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10" role="presentation">
+          <div className="h-full rounded-full bg-[#9A88FC]" style={{ width: `${Math.min(100, Math.max(0, shell.progress.percent))}%` }} />
         </div>
         <p className="mt-2 text-sm text-neutral-400">{shell.progress.percent}%</p>
       </Panel>

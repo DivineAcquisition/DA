@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { saveConcept, setQuestionActive } from '@/lib/academy/quizAdmin';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select } from '../../components/ui';
+import { StudioHeader, studioLink } from '../Studio';
 
 type Bank = {
   concepts: { id: string; module_id: string; name: string; lesson_title: string | null }[];
@@ -36,20 +37,14 @@ export default async function QuestionsPage() {
   const bank = data ?? { concepts: [], questions: [], pools: [] };
   const modules = catalog?.modules ?? [];
   return (
-    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-white">Question bank</h1>
-          <p className="mt-1 text-sm text-neutral-400">A pool under 15 active questions will repeat itself.</p>
-        </div>
-        <div className="flex gap-2 text-sm">
-          <Link href="/workspace/academy/questions/new" className="rounded-full border border-white/15 px-4 py-2 text-white">Add question</Link>
-          <Link href="/workspace/academy/questions/import" className="rounded-full border border-white/15 px-4 py-2 text-white">Import</Link>
-          <a href="/workspace/academy/questions/template" className="rounded-full border border-white/15 px-4 py-2 text-white" download>Blank file</a>
-          <a href="/workspace/academy/questions/export" className="rounded-full border border-white/15 px-4 py-2 text-white" download>Export</a>
-          <Link href="/workspace/academy/questions/stats" className="rounded-full border border-white/15 px-4 py-2 text-white">Statistics</Link>
-        </div>
-      </div>
+    <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6">
+      <StudioHeader title="Question bank" lede="A pool under 15 active questions will repeat itself.">
+        <Link href="/workspace/academy/questions/new" className="inline-flex min-h-11 items-center rounded-full bg-brand-500 px-4 text-sm font-semibold text-ink-950 hover:bg-brand-400">Add question</Link>
+        <Link href="/workspace/academy/questions/import" className={studioLink}>Import</Link>
+        <a href="/workspace/academy/questions/template" className={studioLink} download>Blank file</a>
+        <a href="/workspace/academy/questions/export" className={studioLink} download>Export</a>
+        <Link href="/workspace/academy/questions/stats" className={studioLink}>Statistics</Link>
+      </StudioHeader>
       <div className="grid gap-2 sm:grid-cols-2">
         {bank.pools.map((pool) => (
           <p key={pool.module_id} className="rounded-2xl border border-white/10 px-3 py-2 text-sm text-neutral-200">

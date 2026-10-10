@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { saveReflectionPrompt } from '@/lib/academy/practiceAdmin';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select, Textarea } from '../../components/ui';
+import { StudioHeader, studioLink } from '../Studio';
 
 type ModuleRow = { id: string; order: number; title: string; parts?: { id: string; key: string; label: string }[] };
 type Rubric = { id: string; name: string; kind: string; version: number };
@@ -30,11 +31,10 @@ export default async function ReflectionsAdminPage({ searchParams }: { searchPar
   const { data } = await controlRpc<{ modules?: ModuleRow[]; rubrics?: Rubric[]; reflections?: Reflection[] }>(supabase, 'academy_practice_catalog');
   const current = (data?.reflections ?? []).find((item) => item.id === params.id) ?? data?.reflections?.[0];
   return (
-    <div className="mx-auto max-w-3xl space-y-4 px-4 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Written reflection</h1>
-        <Link href="/workspace/academy/simulations" className="text-sm text-neutral-300">Simulations</Link>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-4 px-4 py-8 sm:px-6">
+      <StudioHeader title="Written reflection" lede="The prompt trainees answer after the module lessons.">
+        <Link href="/workspace/academy/simulations" className={studioLink}>Simulations</Link>
+      </StudioHeader>
       {params.error ? <p className="text-sm text-flag-critical">{params.error}</p> : null}
       <ul className="space-y-1 text-sm text-neutral-300">
         {(data?.reflections ?? []).map((item) => (

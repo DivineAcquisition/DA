@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { beginPreview, saveSimulation } from '@/lib/academy/simActions';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select, Textarea } from '../../components/ui';
+import { StudioHeader, studioLink } from '../Studio';
 
 type Part = { id: string; key: string; label: string };
 type ModuleRow = { id: string; order: number; title: string; parts?: Part[] };
@@ -56,21 +57,18 @@ export default async function SimulationsPage({ searchParams }: { searchParams: 
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-2xl font-semibold text-white">Simulations</h1>
-        <div className="flex flex-wrap gap-2 text-sm">
-          <Link href="/workspace/academy/simulations/import" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Import</Link>
-          <a href="/workspace/academy/simulations/template" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Template</a>
-          <Link href="/workspace/academy/offers" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Offer Pack</Link>
-          <Link href="/workspace/academy/rubrics" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Rubrics</Link>
-          <Link href="/workspace/academy/drills/import" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Signal Reading</Link>
-          <Link href="/workspace/academy/reflections" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Reflection</Link>
-          <Link href="/workspace/academy/practicals" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Practicals</Link>
-          <Link href="/workspace/academy/practice" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Settings</Link>
-          <Link href="/workspace/academy/calibration" className="rounded-full border border-white/15 px-3 py-1.5 text-white">Calibration</Link>
-        </div>
-      </div>
+    <div className="mx-auto max-w-4xl space-y-8 px-4 py-8 sm:px-6">
+      <StudioHeader title="Simulations" lede="Practice conversations trainees run after the lessons in a module.">
+        <Link href="/workspace/academy/simulations/import" className={studioLink}>Import</Link>
+        <a href="/workspace/academy/simulations/template" className={studioLink}>Template</a>
+        <Link href="/workspace/academy/offers" className={studioLink}>Offer Pack</Link>
+        <Link href="/workspace/academy/rubrics" className={studioLink}>Rubrics</Link>
+        <Link href="/workspace/academy/drills/import" className={studioLink}>Signal Reading</Link>
+        <Link href="/workspace/academy/reflections" className={studioLink}>Reflection</Link>
+        <Link href="/workspace/academy/practicals" className={studioLink}>Practicals</Link>
+        <Link href="/workspace/academy/practice" className={studioLink}>Settings</Link>
+        <Link href="/workspace/academy/calibration" className={studioLink}>Calibration</Link>
+      </StudioHeader>
       {params.error ? <p className="text-sm text-flag-critical">{params.error}</p> : null}
       <ul className="space-y-2 text-sm text-neutral-200">
         {simulations.length === 0 ? <li className="text-neutral-500">No simulations yet.</li> : null}

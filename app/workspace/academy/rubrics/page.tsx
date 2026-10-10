@@ -5,6 +5,7 @@ import { academyAdminSession } from '@/lib/academy/access';
 import { saveRubric } from '@/lib/academy/practiceAdmin';
 import { createClient } from '@/lib/supabase/server';
 import { Button, Field, Input, Select, Textarea } from '../../components/ui';
+import { StudioHeader, studioLink } from '../Studio';
 
 type Criterion = {
   key: string;
@@ -34,12 +35,13 @@ export default async function RubricsPage({ searchParams }: { searchParams: Prom
   const criteria = source?.criteria ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-white">Rubrics</h1>
-        <Link href="/workspace/academy/simulations" className="text-sm text-neutral-300">Simulations</Link>
-      </div>
-      <p className="text-sm text-neutral-400">Saving creates a new version and keeps the old one. Every graded run records the version it used.</p>
+    <div className="mx-auto max-w-3xl space-y-6 px-4 py-8 sm:px-6">
+      <StudioHeader
+        title="Rubrics"
+        lede="Saving creates a new version and keeps the old one. Every graded run records the version it used."
+      >
+        <Link href="/workspace/academy/simulations" className={studioLink}>Simulations</Link>
+      </StudioHeader>
       {params.error ? <p className="text-sm text-flag-critical">{params.error}</p> : null}
       <ul className="space-y-1 text-sm text-neutral-200">
         {rubrics.map((rubric) => (

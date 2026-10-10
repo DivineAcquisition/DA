@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
+import { formId } from '@/lib/academy/form';
 import { gradeWithModel, leadReply } from '@/lib/academy/ai';
 import { createClient } from '@/lib/supabase/server';
 import { serviceClient } from '@/lib/workspace/db';
@@ -228,7 +229,7 @@ export async function saveSimulation(formData: FormData) {
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'academy_sim_save', {
     p_payload: {
-      id: String(formData.get('id') ?? '') || null,
+      id: formId(formData.get('id')),
       title: String(formData.get('title') ?? ''),
       vertical: String(formData.get('vertical') ?? 'general'),
       module_id: String(formData.get('module_id') ?? ''),

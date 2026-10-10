@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
+import { formId } from '@/lib/academy/form';
 import { importedLessonBody, planManifest, type ManifestPlan, type ManifestRow } from '@/lib/academy/manifest';
 import { parseVideoRef, videoResolves } from '@/lib/academy/video';
 import { workspaceClient, serviceClient } from '@/lib/workspace/db';
@@ -70,7 +71,7 @@ export async function saveLesson(formData: FormData): Promise<{ ok: boolean; err
     document = { storage_path: path, file_name: safeName(file.name) };
   }
   const payload: Record<string, unknown> = {
-    id: String(formData.get('id') ?? '') || null,
+    id: formId(formData.get('id')),
     module_id: String(formData.get('module_id') ?? ''),
     lesson_code: String(formData.get('lesson_code') ?? ''),
     title: String(formData.get('title') ?? ''),
