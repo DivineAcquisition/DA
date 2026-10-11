@@ -28,6 +28,25 @@ export async function saveQuizAnswer(
   return { ok: true, state: data };
 }
 
+export async function checkLessonAnswer(
+  questionId: string,
+  optionId: string,
+): Promise<{ ok: true; correct: boolean; explanation: string; correctText: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<{ ok?: boolean; correct?: boolean; explanation?: string; correct_text?: string }>(
+    supabase,
+    'academy_check_lesson_answer',
+    { p_question_id: questionId, p_option_id: optionId },
+  );
+  if (error || !data?.ok) return { ok: false, error: error ? readable(error) : 'That answer could not be checked.' };
+  return {
+    ok: true,
+    correct: Boolean(data.correct),
+    explanation: data.explanation ?? '',
+    correctText: data.correct_text ?? '',
+  };
+}
+
 export async function submitQuiz(attemptId: string): Promise<{ ok: true; state: Record<string, unknown> } | { ok: false; error: string }> {
   const supabase = await createClient();
   const { data, error } = await controlRpc<Record<string, unknown>>(supabase, 'academy_submit_quiz', {

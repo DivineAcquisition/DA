@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { LessonSurface } from '@/app/academy/components/LessonSurface';
 import { controlRpc } from '@/lib/ad/rpc';
 import { inApp } from '@/lib/academy/comms';
 import { moduleStatusLabel } from '@/lib/academy/paths';
@@ -83,19 +84,23 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
           {current.order}. {current.title}
         </h1>
       </div>
-      {current.quiz && current.quiz.status !== 'not_available' ? (
-        <Link href={`/academy/modules/${moduleId}/quiz`} className="block rounded-3xl border border-[#937DFF]/40 bg-[#6A00FF]/10 p-4">
-          <p className="text-base font-semibold">{current.quiz.kind === 'final' ? 'Final Quiz' : 'Module quiz'}</p>
-          <p className="mt-1 text-sm text-neutral-300">
-            {current.quiz.status === 'passed'
-              ? 'Review your passed attempt.'
-              : current.quiz.status === 'in_progress'
-                ? 'Continue the open attempt.'
-                : current.quiz.status === 'locked'
-                  ? 'The next attempt is locked.'
-                  : `${current.quiz.attemptsRemaining} attempts remaining.`}
-          </p>
-        </Link>
+      {current.quiz ? (
+        <LessonSurface beam>
+          <Link href={`/academy/modules/${moduleId}/quiz`} className="block p-5">
+            <p className="text-base font-semibold">{current.quiz.kind === 'final' ? 'Final Quiz' : 'Module quiz'}</p>
+            <p className="mt-1 text-sm leading-relaxed text-neutral-300">
+              {current.quiz.status === 'passed'
+                ? 'Review your passed attempt.'
+                : current.quiz.status === 'in_progress'
+                  ? 'Continue the open attempt.'
+                  : current.quiz.status === 'locked'
+                    ? 'The next attempt is locked.'
+                    : current.quiz.status === 'not_available'
+                      ? 'Finish the lessons in this module, then take the quiz from the lesson page.'
+                      : `${current.quiz.attemptsRemaining} attempts remaining.`}
+            </p>
+          </Link>
+        </LessonSurface>
       ) : null}
       <PracticeLinks moduleId={moduleId} />
       {current.gates
@@ -122,8 +127,10 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
             </>
           );
           return (
-            <li key={lesson.id} className={`rounded-3xl border p-4 ${lesson.complete ? 'border-[#9A88FC]/40 bg-[#6A00FF]/10' : 'border-white/10 bg-white/[0.03]'}`}>
-              {lesson.open ? <Link href={`/academy/modules/${moduleId}/lessons/${lesson.id}`} className="block">{inner}</Link> : inner}
+            <li key={lesson.id}>
+              <LessonSurface className={lesson.complete ? 'border-[#9A88FC]/40 bg-[#6A00FF]/10' : ''}>
+                {lesson.open ? <Link href={`/academy/modules/${moduleId}/lessons/${lesson.id}`} className="block p-4">{inner}</Link> : <div className="p-4">{inner}</div>}
+              </LessonSurface>
             </li>
           );
         })}

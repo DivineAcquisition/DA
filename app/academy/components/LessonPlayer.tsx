@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { inApp } from '@/lib/academy/comms';
 import { renderLesson } from '@/lib/academy/markdown';
 import type { LessonView, LessonVideo } from '@/lib/academy/lessonView';
 import { markLessonComplete, openDocument, openLessonVideo, recordPlayback, recordReading } from '@/lib/academy/lessonActions';
 import { vimeoEmbedSrc } from '@/lib/academy/video';
+import { LessonSurface } from './LessonSurface';
 
 type VimeoPlayer = {
   on: (event: string, cb: (data: { seconds?: number }) => void) => void;
@@ -314,9 +316,9 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
   return (
     <article className="space-y-5">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
           {lesson.code} · {lesson.moduleTitle}
-        </p>
+        </AnimatedShinyText>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">{lesson.title}</h1>
         <p className="mt-1 text-sm text-neutral-400">
           Lesson {lesson.position} of {lesson.total}
@@ -327,21 +329,25 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
       </div>
 
       {lesson.video ? (
-        <LessonMedia
-          lessonId={lesson.id}
-          title={lesson.title}
-          video={lesson.video}
-          start={lesson.positionSeconds}
-          track={!lesson.preview}
-          report={lesson.preview ? undefined : reportPlayback}
-        />
+        <LessonSurface beam>
+          <LessonMedia
+            lessonId={lesson.id}
+            title={lesson.title}
+            video={lesson.video}
+            start={lesson.positionSeconds}
+            track={!lesson.preview}
+            report={lesson.preview ? undefined : reportPlayback}
+          />
+        </LessonSurface>
       ) : null}
 
       {html.trim() ? (
-        <div
-          className="lesson-body space-y-3 text-base leading-7 text-neutral-100"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <LessonSurface>
+          <div
+            className="lesson-body space-y-3 p-5 text-base leading-7 text-neutral-100 sm:p-6"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+        </LessonSurface>
       ) : null}
       <div ref={endRef} aria-hidden className="h-px" />
 
@@ -370,7 +376,8 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
 
       {note ? <p className="text-sm text-red-200">{note}</p> : null}
 
-      <div className="sticky bottom-3 rounded-3xl border border-white/10 bg-[#100f18]/95 p-4 shadow-[0_16px_50px_-24px_rgba(106,0,255,0.8)]">
+      <LessonSurface className="sticky bottom-3 bg-[#100f18]/95 shadow-[0_16px_50px_-24px_rgba(106,0,255,0.8)]">
+        <div className="p-4">
         {complete ? <p className="text-sm font-semibold text-[#937DFF]">Completed.</p> : null}
         {missing.length > 0 && !complete ? (
           <ul className="mb-3 space-y-1 text-sm text-neutral-300">
@@ -396,7 +403,8 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         >
           {inApp.lesson.markComplete}
         </button>
-      </div>
+        </div>
+      </LessonSurface>
 
       <div className="flex items-center justify-between gap-3 text-sm">
         {lesson.prevId ? (
