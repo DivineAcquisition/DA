@@ -36,9 +36,13 @@ export const ACQ_GHL_WEBHOOK_URL = process.env.ACQ_GHL_WEBHOOK_URL?.trim() || ''
 export const ACQ_GHL_FORM_ID = process.env.ACQ_GHL_FORM_ID?.trim() || '';
 
 /**
- * Location for the Free Sales Ops Audit calendar (widget v0e24e3kxYEGCTUkSP4A).
+ * Location for the Free Sales Ops Audit calendar.
  * That calendar is on the same subaccount as the talent booking widget.
  */
+
+/** GHL calendar "Free Sales Ops Audit | DivineACQ™" (booking widget v0e24e3kxYEGCTUkSP4A). */
+export const FREE_SALES_OPS_AUDIT_CALENDAR_NAME = 'Free Sales Ops Audit | DivineACQ™';
+export const FREE_SALES_OPS_AUDIT_CALENDAR_ID = 'v0e24e3kxYEGCTUkSP4A';
 export const ACQ_GHL_LOCATION_ID =
   process.env.ACQ_GHL_LOCATION_ID?.trim() ||
   process.env.GHL_ACQ_LOCATION_ID?.trim() ||
@@ -78,11 +82,11 @@ export const ACQ_ERROR_WEBHOOK = process.env.ACQ_ERROR_WEBHOOK?.trim() || '';
 export const ACQ_THANK_YOU_PATH = '/thank-you';
 export const ACQ_SCHEDULE_PATH = '/schedule';
 
-/** GoHighLevel calendar for audit appointments. Defaults to the issued booking widget. */
+/** GoHighLevel calendar for audit appointments. Defaults to Free Sales Ops Audit | DivineACQ™. */
 export const ACQ_GHL_CALENDAR_ID =
   process.env.ACQ_GHL_CALENDAR_ID?.trim() ||
   process.env.GHL_ACQ_CALENDAR_ID?.trim() ||
-  'v0e24e3kxYEGCTUkSP4A';
+  FREE_SALES_OPS_AUDIT_CALENDAR_ID;
 
 export const ACQ_AUDIT_CC = 'malik@divineacquisition.io';
 export const ACQ_BOOK_PATH = '/book';
@@ -94,7 +98,7 @@ export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
 export const ACQ_TYPEFORM_URL =
   process.env.NEXT_PUBLIC_ACQ_TYPEFORM_URL?.trim() || ACQ_TYPEFORM_DEFAULT_URL;
 
-export const ACQ_CALENDAR_WIDGET_ID = 'v0e24e3kxYEGCTUkSP4A';
+export const ACQ_CALENDAR_WIDGET_ID = FREE_SALES_OPS_AUDIT_CALENDAR_ID;
 export const ACQ_CALENDAR_IFRAME_ID = 'sJewwAfFLhmwqP9psUxK_1787884446665';
 export const ACQ_CALENDAR_EMBED_SCRIPT =
   'https://link.msgsndr.divineacquisition.io/js/form_embed.js';

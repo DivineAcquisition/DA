@@ -1,4 +1,10 @@
-import { ACQ_GHL_CALENDAR_ID, ACQ_GHL_LOCATION_ID, GHL_PIT_TOKEN } from './config';
+import { redact } from '@/lib/ghl/rules';
+import {
+  ACQ_GHL_CALENDAR_ID,
+  ACQ_GHL_LOCATION_ID,
+  FREE_SALES_OPS_AUDIT_CALENDAR_NAME,
+  GHL_PIT_TOKEN,
+} from './config';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 
@@ -21,22 +27,25 @@ export async function updateGhlContactPhone(contactId: string, phone: string): P
     body: JSON.stringify({ phone }),
   });
   if (!response.ok) {
-    throw new Error(`ghl_contact_phone_failed: ${response.status} ${await response.text()}`);
+    throw safeGhlError('ghl_contact_phone_failed', response.status, await response.text());
   }
 }
 
-export async function createAcqGhlAppointment(input: {
+export function salesOpsCalendarReady(): boolean {
+  return Boolean(GHL_PIT_TOKEN && ACQ_GHL_LOCATION_ID && ACQ_GHL_CALENDAR_ID);
+}
+
+export type GhlAppointmentInput = {
   contactId: string;
   title: string;
   startsAt: string;
   endsAt: string;
   meetUrl?: string | null;
-}): Promise<string> {
-  if (!GHL_PIT_TOKEN || !ACQ_GHL_LOCATION_ID || !ACQ_GHL_CALENDAR_ID) {
-    throw new Error('ACQ GHL calendar is not configured');
-  }
-  if (!input.contactId) throw new Error('GHL contact id is required');
+  notes?: string | null;
+};
 
+/** Appointment body for the Free Sales Ops Audit | DivineACQ™ calendar. */
+export function salesOpsAppointmentBody(input: GhlAppointmentInput): Record<string, unknown> {
   const body: Record<string, unknown> = {
     calendarId: ACQ_GHL_CALENDAR_ID,
     locationId: ACQ_GHL_LOCATION_ID,
@@ -49,6 +58,7 @@ export async function createAcqGhlAppointment(input: {
     ignoreFreeSlotValidation: true,
     toNotify: false,
   };
+  if (input.notes) body.notes = input.notes;
   if (input.meetUrl) {
     body.address = input.meetUrl;
     body.meetingLocationType = 'custom';
@@ -56,22 +66,66 @@ export async function createAcqGhlAppointment(input: {
     body.overrideLocationConfig = true;
     body.description = `Google Meet: ${input.meetUrl}`;
   }
+  return body;
+}
+
+export function meetingLinkFromAppointment(payload: unknown): string | null {
+  if (!payload || typeof payload !== 'object') return null;
+  const row = payload as Record<string, unknown>;
+  const nested = row.appointment && typeof row.appointment === 'object' ? (row.appointment as Record<string, unknown>) : {};
+  const candidates = [row.address, nested.address, row.meetingLocation, nested.meetingLocation];
+  for (const value of candidates) {
+    if (typeof value === 'string' && value.trim().toLowerCase().startsWith('https://')) return value.trim();
+  }
+  return null;
+}
+
+function appointmentIdFrom(payload: unknown): string | null {
+  if (!payload || typeof payload !== 'object') return null;
+  const row = payload as Record<string, unknown>;
+  const nested = row.appointment && typeof row.appointment === 'object' ? (row.appointment as Record<string, unknown>) : {};
+  const id = row.id ?? nested.id;
+  return typeof id === 'string' && id ? id : null;
+}
+
+function safeGhlError(prefix: string, status: number, body: string): Error {
+  return new Error(redact(`${prefix}: ${status} ${body}`, [GHL_PIT_TOKEN]));
+}
+
+export async function createSalesOpsAppointment(
+  input: GhlAppointmentInput,
+): Promise<{ id: string; meetingLink: string | null; calendarName: string }> {
+  if (!salesOpsCalendarReady()) throw new Error('ACQ GHL calendar is not configured');
+  if (!input.contactId) throw new Error('GHL contact id is required');
 
   const response = await fetch(`${GHL_API}/calendars/events/appointments`, {
     method: 'POST',
     headers: headers('2021-04-15'),
-    body: JSON.stringify(body),
+    body: JSON.stringify(salesOpsAppointmentBody(input)),
   });
-  if (!response.ok) {
-    throw new Error(`ghl_appointment_failed: ${response.status} ${await response.text()}`);
-  }
-  const payload = (await response.json()) as {
-    id?: string;
-    appointment?: { id?: string };
-  };
-  const id = payload.id ?? payload.appointment?.id;
+  const text = await response.text();
+  if (!response.ok) throw safeGhlError('ghl_appointment_failed', response.status, text);
+  const payload = text ? JSON.parse(text) : {};
+  const id = appointmentIdFrom(payload);
   if (!id) throw new Error('ghl_appointment_failed: response missing appointment id');
-  return id;
+  return { id, meetingLink: meetingLinkFromAppointment(payload), calendarName: FREE_SALES_OPS_AUDIT_CALENDAR_NAME };
+}
+
+export async function cancelSalesOpsAppointment(appointmentId: string): Promise<void> {
+  if (!GHL_PIT_TOKEN || !appointmentId) return;
+  const response = await fetch(`${GHL_API}/calendars/events/appointments/${encodeURIComponent(appointmentId)}`, {
+    method: 'PUT',
+    headers: headers('2021-04-15'),
+    body: JSON.stringify({ appointmentStatus: 'cancelled' }),
+  });
+  if (!response.ok && response.status !== 404) {
+    console.error('[ghl] appointment cancel failed', response.status);
+  }
+}
+
+export async function createAcqGhlAppointment(input: GhlAppointmentInput): Promise<string> {
+  const created = await createSalesOpsAppointment(input);
+  return created.id;
 }
 
 export async function sendGhlSms(contactId: string, message: string): Promise<void> {
@@ -88,6 +142,6 @@ export async function sendGhlSms(contactId: string, message: string): Promise<vo
     }),
   });
   if (!response.ok) {
-    throw new Error(`ghl_sms_failed: ${response.status} ${await response.text()}`);
+    throw safeGhlError('ghl_sms_failed', response.status, await response.text());
   }
 }
