@@ -1,7 +1,8 @@
 export type LessonVideo = {
-  provider: 'vimeo' | 'mux';
+  provider: 'vimeo' | 'mux' | 'file';
   id: string;
   duration: number | null;
+  url: string | null;
 };
 
 export type LessonView = {
@@ -44,7 +45,7 @@ type RawLesson = {
   module_order?: number;
   watch_percent?: number;
   reading_seconds?: number;
-  video?: { provider?: string; provider_id?: string; duration?: number | null } | null;
+  video?: { provider?: string; provider_id?: string; duration?: number | null; url?: string | null } | null;
   document?: boolean;
   document_name?: string | null;
   position_seconds?: number;
@@ -59,9 +60,16 @@ type RawLesson = {
   next_open?: boolean;
 };
 
+export function lessonVideo(raw: RawLesson['video']): LessonVideo | null {
+  const provider = raw?.provider === 'vimeo' || raw?.provider === 'mux' || raw?.provider === 'file' ? raw.provider : null;
+  if (!provider) return null;
+  const id = raw?.provider_id ?? '';
+  if (provider !== 'file' && !id) return null;
+  return { provider, id, duration: raw?.duration ?? null, url: raw?.url ?? null };
+}
+
 export function lessonView(raw: RawLesson, preview = false): LessonView | null {
   if (!raw.id || !raw.code || !raw.title || !raw.module_id) return null;
-  const provider = raw.video?.provider === 'vimeo' || raw.video?.provider === 'mux' ? raw.video.provider : null;
   return {
     id: raw.id,
     code: raw.code,
@@ -74,7 +82,7 @@ export function lessonView(raw: RawLesson, preview = false): LessonView | null {
     moduleOrder: raw.module_order ?? 0,
     watchPercent: raw.watch_percent ?? 90,
     readingSeconds: raw.reading_seconds ?? 0,
-    video: provider && raw.video?.provider_id ? { provider, id: raw.video.provider_id, duration: raw.video.duration ?? null } : null,
+    video: lessonVideo(raw.video),
     hasDocument: Boolean(raw.document),
     documentName: raw.document_name ?? null,
     positionSeconds: Number(raw.position_seconds ?? 0),

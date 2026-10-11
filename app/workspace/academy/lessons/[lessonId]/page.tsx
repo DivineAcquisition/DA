@@ -1,6 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
+import { lessonVideo } from '@/lib/academy/lessonView';
 import { createClient } from '@/lib/supabase/server';
 import LessonForm from '../LessonForm';
 
@@ -16,7 +17,7 @@ type AdminLesson = {
   watch_percent: number;
   completions: number;
   document?: { file_name?: string } | null;
-  video?: { url?: string; provider?: string; provider_id?: string; duration?: number | null } | null;
+  video?: { url?: string | null; provider?: string; provider_id?: string; duration?: number | null; file_name?: string | null } | null;
 };
 
 export default async function EditLessonPage({ params }: { params: Promise<{ lessonId: string }> }) {
@@ -30,9 +31,13 @@ export default async function EditLessonPage({ params }: { params: Promise<{ les
     supabase,
     'academy_admin_catalog',
   );
+  const video = data.video?.provider === 'file' ? { ...data.video, url: null } : data.video;
   const videoUrl =
-    data.video?.url ||
-    (data.video?.provider === 'vimeo' && data.video.provider_id ? `https://vimeo.com/${data.video.provider_id}` : '');
+    video?.provider === 'file'
+      ? ''
+      : video?.url ||
+        (video?.provider === 'vimeo' && video.provider_id ? `https://vimeo.com/${video.provider_id}` : '') ||
+        (video?.provider === 'mux' && video.provider_id ? `https://stream.mux.com/${video.provider_id}.m3u8` : '');
   return (
     <LessonForm
       lesson={{
@@ -46,6 +51,8 @@ export default async function EditLessonPage({ params }: { params: Promise<{ les
         body: data.body,
         videoUrl,
         duration: data.video?.duration ? String(data.video.duration) : '',
+        playback: lessonVideo(video),
+        videoFileName: data.video?.provider === 'file' ? data.video.file_name ?? null : null,
         documentName: data.document?.file_name ?? null,
         completions: data.completions,
         modules: (catalog?.modules ?? []).map((module) => ({

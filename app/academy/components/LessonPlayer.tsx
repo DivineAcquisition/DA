@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { renderLesson } from '@/lib/academy/markdown';
-import type { LessonView } from '@/lib/academy/lessonView';
-import { markLessonComplete, openDocument, recordPlayback, recordReading } from '@/lib/academy/lessonActions';
+import type { LessonView, LessonVideo } from '@/lib/academy/lessonView';
+import { markLessonComplete, openDocument, openLessonVideo, recordPlayback, recordReading } from '@/lib/academy/lessonActions';
+import { vimeoEmbedSrc } from '@/lib/academy/video';
 
 type VimeoPlayer = {
   on: (event: string, cb: (data: { seconds?: number }) => void) => void;
@@ -12,10 +13,80 @@ type VimeoPlayer = {
   destroy: () => void;
 };
 
+type PlaybackEvent = 'tick' | 'play' | 'pause' | 'seek';
+
 declare global {
   interface Window {
     Vimeo?: { Player: new (frame: HTMLIFrameElement) => VimeoPlayer };
   }
+}
+
+function VimeoFrame({
+  id,
+  pageUrl,
+  title,
+  start,
+  track,
+  report,
+}: {
+  id: string;
+  pageUrl: string | null;
+  title: string;
+  start: number;
+  track: boolean;
+  report?: (seconds: number, event: PlaybackEvent) => void;
+}) {
+  const frame = useRef<HTMLIFrameElement>(null);
+  const reportRef = useRef(report);
+  useEffect(() => {
+    reportRef.current = report;
+  }, [report]);
+  useEffect(() => {
+    if (!track || !frame.current) return;
+    let stopped = false;
+    let player: VimeoPlayer | null = null;
+    const frameEl = frame.current;
+    const position = { current: start };
+    const script = document.createElement('script');
+    script.src = 'https://player.vimeo.com/api/player.js';
+    script.async = true;
+    script.onload = () => {
+      if (stopped || !window.Vimeo || !frameEl) return;
+      const next = new window.Vimeo.Player(frameEl);
+      player = next;
+      if (start > 1) void next.setCurrentTime(start);
+      next.on('timeupdate', (data) => {
+        if (typeof data.seconds === 'number') {
+          position.current = data.seconds;
+          reportRef.current?.(data.seconds, 'tick');
+        }
+      });
+      next.on('play', () => reportRef.current?.(position.current, 'play'));
+      next.on('pause', () => reportRef.current?.(position.current, 'pause'));
+      next.on('seeked', (data) => {
+        if (typeof data.seconds === 'number') position.current = data.seconds;
+        reportRef.current?.(position.current, 'seek');
+      });
+    };
+    document.body.appendChild(script);
+    return () => {
+      stopped = true;
+      player?.destroy();
+      script.remove();
+    };
+  }, [id, pageUrl, start, track]);
+  return (
+    <div className="overflow-hidden rounded-2xl bg-black">
+      <iframe
+        ref={frame}
+        title={title}
+        src={vimeoEmbedSrc(id, pageUrl)}
+        className="aspect-video w-full"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
 }
 
 function MuxFrame({
@@ -25,47 +96,142 @@ function MuxFrame({
 }: {
   playbackId: string;
   start: number;
-  report?: (seconds: number, event: 'tick' | 'play' | 'pause') => void;
+  report?: (seconds: number, event: PlaybackEvent) => void;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const reportRef = useRef(report);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     reportRef.current = report;
   }, [report]);
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player@3';
-    script.async = true;
-    document.body.appendChild(script);
-    const node = document.createElement('mux-player');
-    node.setAttribute('playback-id', playbackId);
-    node.setAttribute('accent-color', '#6A00FF');
-    node.style.width = '100%';
-    node.style.aspectRatio = '16 / 9';
-    if (start > 1) node.setAttribute('start-time', String(Math.floor(start)));
-    const emit = (event: 'tick' | 'play' | 'pause') => {
-      const seconds = Number((node as HTMLElement & { currentTime?: number }).currentTime);
-      reportRef.current?.(Number.isFinite(seconds) ? seconds : 0, event);
+    let cancelled = false;
+    let node: HTMLElement | null = null;
+    const mount = () => {
+      if (cancelled || !host.current || !customElements.get('mux-player')) return;
+      node = document.createElement('mux-player');
+      node.setAttribute('playback-id', playbackId);
+      node.setAttribute('accent-color', '#6A00FF');
+      node.style.width = '100%';
+      node.style.aspectRatio = '16 / 9';
+      if (start > 1) node.setAttribute('start-time', String(Math.floor(start)));
+      const emit = (event: PlaybackEvent) => {
+        const seconds = Number((node as HTMLElement & { currentTime?: number }).currentTime);
+        reportRef.current?.(Number.isFinite(seconds) ? seconds : 0, event);
+      };
+      node.addEventListener('play', () => emit('play'));
+      node.addEventListener('pause', () => emit('pause'));
+      node.addEventListener('seeked', () => emit('seek'));
+      node.addEventListener('timeupdate', () => emit('tick'));
+      host.current.replaceChildren(node);
     };
-    const onPlay = () => emit('play');
-    const onPause = () => emit('pause');
-    const onTick = () => emit('tick');
-    node.addEventListener('play', onPlay);
-    node.addEventListener('pause', onPause);
-    node.addEventListener('seeked', onPause);
-    node.addEventListener('timeupdate', onTick);
-    host.current?.replaceChildren(node);
+    const ready = customElements.whenDefined('mux-player').then(mount);
+    let script = document.querySelector<HTMLScriptElement>('script[data-mux-player]');
+    if (!script && !customElements.get('mux-player')) {
+      script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player@3';
+      script.async = true;
+      script.dataset.muxPlayer = '1';
+      script.onerror = () => {
+        if (!cancelled) setError('This Mux video did not load. Check that the playback id is allowed on this site.');
+      };
+      document.body.appendChild(script);
+    }
+    void ready.catch(() => {
+      if (!cancelled) setError('This Mux video did not load. Check that the playback id is allowed on this site.');
+    });
     return () => {
-      node.remove();
-      script.remove();
+      cancelled = true;
+      node?.remove();
     };
   }, [playbackId, start]);
+  if (error) return <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-neutral-300">{error}</p>;
   return <div ref={host} className="overflow-hidden rounded-2xl bg-black" />;
 }
 
+function FileVideo({
+  lessonId,
+  start,
+  report,
+}: {
+  lessonId: string;
+  start: number;
+  report?: (seconds: number, event: PlaybackEvent) => void;
+}) {
+  const reportRef = useRef(report);
+  const refreshed = useRef(false);
+  const [src, setSrc] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    reportRef.current = report;
+  }, [report]);
+  useEffect(() => {
+    let cancelled = false;
+    void openLessonVideo(lessonId).then((result) => {
+      if (cancelled) return;
+      if (!result.ok) setError(result.error);
+      else setSrc(result.href);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [lessonId]);
+  if (error) return <p className="rounded-2xl border border-white/10 px-4 py-3 text-sm text-neutral-300">{error}</p>;
+  if (!src) return <p className="rounded-2xl bg-black px-4 py-10 text-center text-sm text-neutral-400">Loading video…</p>;
+  return (
+    <div className="overflow-hidden rounded-2xl bg-black">
+      <video
+        src={src}
+        controls
+        playsInline
+        preload="metadata"
+        className="aspect-video w-full"
+        onLoadedMetadata={(event) => {
+          if (start > 1) event.currentTarget.currentTime = start;
+        }}
+        onPlay={(event) => reportRef.current?.(event.currentTarget.currentTime, 'play')}
+        onPause={(event) => reportRef.current?.(event.currentTarget.currentTime, 'pause')}
+        onSeeked={(event) => reportRef.current?.(event.currentTarget.currentTime, 'seek')}
+        onTimeUpdate={(event) => reportRef.current?.(event.currentTarget.currentTime, 'tick')}
+        onError={() => {
+          if (refreshed.current) {
+            setError('This video could not be played.');
+            return;
+          }
+          refreshed.current = true;
+          void openLessonVideo(lessonId).then((result) => {
+            if (!result.ok) setError(result.error);
+            else setSrc(result.href);
+          });
+        }}
+      />
+    </div>
+  );
+}
+
+export function LessonMedia({
+  lessonId,
+  title,
+  video,
+  start = 0,
+  track = false,
+  report,
+}: {
+  lessonId: string;
+  title: string;
+  video: LessonVideo;
+  start?: number;
+  track?: boolean;
+  report?: (seconds: number, event: PlaybackEvent) => void;
+}) {
+  if (video.provider === 'vimeo') {
+    return <VimeoFrame id={video.id} pageUrl={video.url} title={title} start={start} track={track} report={report} />;
+  }
+  if (video.provider === 'mux') return <MuxFrame playbackId={video.id} start={start} report={report} />;
+  return <FileVideo lessonId={lessonId} start={start} report={report} />;
+}
+
 export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
-  const frame = useRef<HTMLIFrameElement>(null);
-  const player = useRef<VimeoPlayer | null>(null);
   const position = useRef(lesson.positionSeconds);
   const playing = useRef(false);
   const [missing, setMissing] = useState(lesson.missing);
@@ -76,60 +242,12 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
   const html = renderLesson(lesson.body);
   const writtenOnly = !lesson.video && lesson.body.trim().length > 0;
 
-  useEffect(() => {
-    if (lesson.preview || !lesson.video || lesson.video.provider !== 'vimeo' || !frame.current) return;
-    let timer = 0;
-    let stopped = false;
-    const frameEl = frame.current;
-    const script = document.createElement('script');
-    script.src = 'https://player.vimeo.com/api/player.js';
-    script.async = true;
-    script.onload = () => {
-      if (stopped || !window.Vimeo || !frameEl) return;
-      const next = new window.Vimeo.Player(frameEl);
-      player.current = next;
-      if (lesson.positionSeconds > 1) void next.setCurrentTime(lesson.positionSeconds);
-      const flush = () => {
-        if (lesson.preview) return;
-        void recordPlayback(lesson.id, position.current).then((result) => {
-          setMissing(result.missing);
-          setComplete(result.complete);
-        });
-      };
-      next.on('timeupdate', (data) => {
-        if (typeof data.seconds === 'number') position.current = data.seconds;
-      });
-      next.on('play', () => {
-        playing.current = true;
-        window.clearInterval(timer);
-        timer = window.setInterval(() => {
-          if (playing.current) flush();
-        }, 2000);
-      });
-      next.on('pause', () => {
-        playing.current = false;
-        window.clearInterval(timer);
-        flush();
-      });
-      next.on('seeked', (data) => {
-        if (typeof data.seconds === 'number') position.current = data.seconds;
-        flush();
-      });
-    };
-    document.body.appendChild(script);
-    return () => {
-      stopped = true;
-      window.clearInterval(timer);
-      player.current?.destroy();
-      script.remove();
-    };
-  }, [lesson.id, lesson.preview, lesson.positionSeconds, lesson.video]);
-
-  const reportMux = (seconds: number, event: 'tick' | 'play' | 'pause') => {
+  const reportPlayback = (seconds: number, event: PlaybackEvent) => {
     position.current = seconds;
+    if (lesson.preview) return;
     if (event === 'play') playing.current = true;
-    if (event === 'pause') {
-      playing.current = false;
+    if (event === 'pause') playing.current = false;
+    if (event === 'pause' || event === 'seek') {
       void recordPlayback(lesson.id, seconds).then((result) => {
         setMissing(result.missing);
         setComplete(result.complete);
@@ -138,7 +256,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
   };
 
   useEffect(() => {
-    if (lesson.preview || lesson.video?.provider !== 'mux') return;
+    if (lesson.preview || !lesson.video) return;
     const timer = window.setInterval(() => {
       if (!playing.current) return;
       void recordPlayback(lesson.id, position.current).then((result) => {
@@ -196,21 +314,15 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         <p className="rounded-2xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm">Preview. This does not record progress.</p>
       ) : null}
 
-      {lesson.video?.provider === 'vimeo' ? (
-        <div className="overflow-hidden rounded-2xl bg-black">
-          <iframe
-            ref={frame}
-            title={lesson.title}
-            src={`https://player.vimeo.com/video/${lesson.video.id}?dnt=1`}
-            className="aspect-video w-full"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      ) : null}
-
-      {lesson.video?.provider === 'mux' ? (
-        <MuxFrame playbackId={lesson.video.id} start={lesson.positionSeconds} report={lesson.preview ? undefined : reportMux} />
+      {lesson.video ? (
+        <LessonMedia
+          lessonId={lesson.id}
+          title={lesson.title}
+          video={lesson.video}
+          start={lesson.positionSeconds}
+          track={!lesson.preview}
+          report={lesson.preview ? undefined : reportPlayback}
+        />
       ) : null}
 
       {html.trim() ? (

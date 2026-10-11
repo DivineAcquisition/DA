@@ -36,7 +36,7 @@ export default async function AcademyAdminPage() {
     <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6">
       <StudioHeader
         title="Lessons"
-        lede="Add a lesson to a module, write it, then set it live when trainees should see it."
+        lede="Add a lesson, upload a video or paste a Vimeo or Mux link, then set it to Live. Trainees only see Live lessons."
       >
         <Link href="/workspace/academy/questions" className={studioLink}>Questions</Link>
         <Link href="/workspace/academy/quizzes" className={studioLink}>Quizzes</Link>

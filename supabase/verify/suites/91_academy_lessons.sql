@@ -246,3 +246,52 @@ begin
   assert (public.academy_claim_document(v_token) ->> 'ok') = 'false';
 end $$;
 reset role;
+
+\echo '== an uploaded video stays private, and a Vimeo page keeps its url =='
+do $$ begin perform set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-0000-0000-000000000001', false); end $$;
+do $$
+declare
+  v_id uuid;
+  v jsonb;
+begin
+  v := public.academy_save_lesson(jsonb_build_object(
+    'module_id', (select module_id from public.academy_lesson where lesson_code = 'M00-L08'),
+    'lesson_code', 'M00-L10', 'title', 'Uploaded video', 'sort_order', 10,
+    'body', '', 'status', 'draft',
+    'video', jsonb_build_object(
+      'provider', 'file', 'provider_id', 'file1710000000',
+      'storage_path', 'M00-L10/video/1710000000/lesson.mp4',
+      'file_name', 'lesson.mp4', 'duration_seconds', 40
+    )
+  ));
+  v_id := (v ->> 'id')::uuid;
+  assert (select provider from public.academy_asset where id = (select video_asset_id from public.academy_lesson where id = v_id)) = 'file';
+  assert public.academy_lesson_video(v_id) ->> 'provider' = 'file';
+  assert (public.academy_lesson_video(v_id) ? 'storage_path') = false;
+  assert public.academy_lesson_video_file(v_id) = 'M00-L10/video/1710000000/lesson.mp4';
+  assert public.academy_admin_lesson(v_id) -> 'video' ->> 'file_name' = 'lesson.mp4';
+  assert (public.academy_admin_lesson(v_id) -> 'video' ? 'storage_path') = false;
+  begin
+    perform public.academy_save_lesson(jsonb_build_object(
+      'id', v_id,
+      'module_id', (select module_id from public.academy_lesson where id = v_id),
+      'lesson_code', 'M00-L10', 'title', 'Uploaded video', 'sort_order', 10,
+      'body', '', 'status', 'draft',
+      'video', jsonb_build_object('provider', 'file', 'provider_id', 'file1710000001', 'storage_path', 'M00-L08/video/1710000001/other.mp4')
+    ));
+    raise exception 'a video for another lesson should be refused';
+  exception when others then
+    if sqlerrm not like '%bad_video%' then raise; end if;
+  end;
+end $$;
+do $$ begin perform set_config('request.jwt.claim.sub', 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1', false); end $$;
+do $$
+declare
+  v_id uuid;
+begin
+  select id into v_id from public.academy_lesson where lesson_code = 'M00-L10';
+  assert public.academy_lesson_video(v_id) is null;
+  assert public.academy_lesson_video_file(v_id) is null;
+  assert public.academy_lesson_page((select id from public.academy_lesson where lesson_code = 'M00-L08')) -> 'video' ->> 'url'
+    = 'https://vimeo.com/123456789';
+end $$;

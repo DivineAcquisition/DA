@@ -5,7 +5,8 @@ import { controlRpc, readable } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
 import { formId } from '@/lib/academy/form';
 import { importedLessonBody, planManifest, type ManifestPlan, type ManifestRow } from '@/lib/academy/manifest';
-import { parseVideoRef, videoResolves } from '@/lib/academy/video';
+import { VIDEO_STORAGE_ERROR, videoStorage } from '@/lib/academy/storage';
+import { isLessonVideoPath, lessonVideoPath, parseVideoRef, videoFileError, videoResolves } from '@/lib/academy/video';
 import { workspaceClient, serviceClient } from '@/lib/workspace/db';
 
 const DOCUMENTS = new Set(['pdf', 'doc', 'docx', 'ppt', 'pptx', 'txt', 'md', 'rtf']);
@@ -36,22 +37,71 @@ export async function saveAcademySettings(formData: FormData): Promise<void> {
   revalidatePath('/workspace/academy');
 }
 
+export async function prepareLessonVideoUpload(input: {
+  lessonCode: string;
+  fileName: string;
+  size: number;
+}): Promise<{ ok: true; path: string; token: string; fileName: string } | { ok: false; error: string }> {
+  const gate = await catalogClient();
+  if (!gate) return { ok: false, error: 'Academy admin access is required.' };
+  const problem = videoFileError(input.fileName, input.size);
+  if (problem) return { ok: false, error: problem };
+  const planned = lessonVideoPath(input.lessonCode, input.fileName);
+  if (!planned) return { ok: false, error: 'The lesson id must look like M07-L03 before a video can be uploaded.' };
+  const service = videoStorage();
+  if (!service) return { ok: false, error: VIDEO_STORAGE_ERROR };
+  const signed = await service.storage.from('academy-documents').createSignedUploadUrl(planned);
+  if (signed.error || !signed.data?.token) {
+    return { ok: false, error: 'The video could not be prepared for upload. Check that academy-documents allows files up to 100 MB.' };
+  }
+  const path = signed.data.path || planned;
+  if (!isLessonVideoPath(path, input.lessonCode)) return { ok: false, error: 'The video upload path was not accepted.' };
+  return { ok: true, path, token: signed.data.token, fileName: path.split('/').pop() ?? 'video' };
+}
+
+async function uploadedVideoExists(path: string): Promise<boolean> {
+  const service = videoStorage();
+  if (!service) return false;
+  const checked = await service.storage.from('academy-documents').exists(path);
+  if (!checked.error) return checked.data;
+  const folder = path.split('/').slice(0, -1).join('/');
+  const name = path.split('/').pop();
+  const listed = await service.storage.from('academy-documents').list(folder);
+  return Boolean(listed.data?.some((item) => item.name === name));
+}
+
 export async function saveLesson(formData: FormData): Promise<{ ok: boolean; error?: string; id?: string }> {
   const gate = await catalogClient();
   if (!gate) return { ok: false, error: 'Academy admin access is required.' };
   const videoLink = String(formData.get('video') ?? '').trim();
+  const videoPath = String(formData.get('video_path') ?? '').trim();
   let video: Record<string, unknown> | null = null;
-  if (videoLink) {
+  if (videoPath) {
+    const code = String(formData.get('lesson_code') ?? '');
+    if (!isLessonVideoPath(videoPath, code)) return { ok: false, error: 'That video upload is not valid. Choose the file again.' };
+    if (!videoStorage()) return { ok: false, error: VIDEO_STORAGE_ERROR };
+    if (!(await uploadedVideoExists(videoPath))) return { ok: false, error: 'The video upload did not finish. Try again.' };
+    const typed = Number(formData.get('duration') ?? '');
+    const stamp = videoPath.split('/')[2] ?? '';
+    video = {
+      provider: 'file',
+      provider_id: `file${stamp}`.slice(0, 128),
+      storage_path: videoPath,
+      file_name: String(formData.get('video_file_name') ?? '').replace(/[^A-Za-z0-9._-]+/g, '_').slice(0, 120) || 'video',
+      duration_seconds: Number.isFinite(typed) && typed > 0 ? Math.round(typed) : null,
+    };
+  } else if (videoLink) {
     const ref = parseVideoRef(videoLink);
     if (!ref) return { ok: false, error: 'Use a Vimeo or Mux link. Other hosts are not accepted.' };
     const check = await videoResolves(ref);
     if (!check.ok) return { ok: false, error: check.reason };
     const typed = Number(formData.get('duration') ?? '');
+    const duration = Number.isFinite(typed) && typed > 0 ? Math.round(typed) : check.duration;
     video = {
       provider: ref.provider,
       provider_id: ref.id,
       url: ref.url,
-      duration_seconds: Number.isFinite(typed) && typed > 0 ? typed : check.duration,
+      duration_seconds: typeof duration === 'number' ? Math.round(duration) : duration,
     };
   }
   let document: Record<string, string> | null = null;
@@ -80,7 +130,7 @@ export async function saveLesson(formData: FormData): Promise<{ ok: boolean; err
     required_watch_percent: Number(formData.get('watch') ?? 90),
     status: String(formData.get('status') ?? 'draft'),
     completion_policy: String(formData.get('completion_policy') ?? '') || null,
-    clear_video: formData.get('clear_video') === 'on' ? 'true' : 'false',
+    clear_video: !video && formData.get('clear_video') === 'on' ? 'true' : 'false',
   };
   if (video) payload.video = video;
   if (document) payload.document = document;

@@ -1,7 +1,8 @@
 'use server';
 
 import { controlRpc, readable } from '@/lib/ad/rpc';
-import { createClient } from '@/lib/supabase/server';
+import { VIDEO_STORAGE_ERROR, videoStorage } from '@/lib/academy/storage';
+import { createClient, SUPABASE_URL } from '@/lib/supabase/server';
 
 export type LessonProgress = {
   missing: string[];
@@ -48,6 +49,24 @@ export async function markLessonComplete(lessonId: string): Promise<LessonProgre
   });
   if (error) return { ok: false, missing: [readable(error)], complete: false };
   return { ok: Boolean(data?.ok), missing: data?.missing ?? [], complete: Boolean(data?.ok) };
+}
+
+function absoluteStorageUrl(url: string): string {
+  if (/^https?:\/\//i.test(url)) return url;
+  const base = SUPABASE_URL.replace(/\/$/, '');
+  return `${base}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
+export async function openLessonVideo(lessonId: string): Promise<{ ok: true; href: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<string>(supabase, 'academy_lesson_video_file', { p_lesson_id: lessonId });
+  if (error) return { ok: false, error: readable(error) };
+  if (!data) return { ok: false, error: 'This video is not available.' };
+  const service = videoStorage();
+  if (!service) return { ok: false, error: VIDEO_STORAGE_ERROR };
+  const signed = await service.storage.from('academy-documents').createSignedUrl(data, 60 * 60 * 4);
+  if (signed.error || !signed.data?.signedUrl) return { ok: false, error: 'The video could not be opened.' };
+  return { ok: true, href: absoluteStorageUrl(signed.data.signedUrl) };
 }
 
 export async function openDocument(lessonId: string): Promise<{ ok: true; href: string } | { ok: false; error: string }> {

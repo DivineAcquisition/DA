@@ -30,6 +30,8 @@ export default async function NewLessonPage({ searchParams }: { searchParams: Pr
         body: '',
         videoUrl: '',
         duration: '',
+        playback: null,
+        videoFileName: null,
         documentName: null,
         completions: 0,
         modules: modules.map((module) => ({ id: module.id, label: `${module.program} · ${module.order}. ${module.title}` })),

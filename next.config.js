@@ -8,7 +8,7 @@ const PRIVATE_LINK_HEADERS = [
 const nextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '25mb',
+      bodySizeLimit: '100mb',
     },
   },
   async rewrites() {

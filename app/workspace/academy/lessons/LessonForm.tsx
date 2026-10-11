@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useRef, useState, useTransition } from 'react';
-import { archiveLesson, overrideProgress, reorderLesson, saveLesson } from '@/lib/academy/adminActions';
+import { LessonMedia } from '@/app/academy/components/LessonPlayer';
+import { archiveLesson, overrideProgress, prepareLessonVideoUpload, reorderLesson, saveLesson } from '@/lib/academy/adminActions';
+import type { LessonVideo } from '@/lib/academy/lessonView';
+import { videoFileError } from '@/lib/academy/video';
+import { uploadLessonVideo } from '@/lib/academy/videoUpload';
 import { Button, Field, Input, Select } from '../../components/ui';
 
 type ModuleOption = { id: string; label: string };
@@ -18,6 +22,8 @@ type LessonFields = {
   body: string;
   videoUrl: string;
   duration: string;
+  playback: LessonVideo | null;
+  videoFileName: string | null;
   documentName: string | null;
   completions: number;
   modules: ModuleOption[];
@@ -26,9 +32,11 @@ type LessonFields = {
 export default function LessonForm({ lesson }: { lesson: LessonFields }) {
   const router = useRouter();
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [overrideError, setOverrideError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [pendingLabel, setPendingLabel] = useState('Saving…');
 
   function wrap(before: string, after = before) {
     const node = bodyRef.current;
@@ -53,14 +61,52 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
         <p className="mt-2 text-sm leading-relaxed text-neutral-400">
           {lesson.id
             ? `${lesson.code} stays the id trainees and imports use.`
-            : 'Save it as a draft first. Set it live when it has a title and a video or written lesson.'}
+            : 'Save it as a draft first. Set it live when it has a title and a video or written lesson. Trainees only see Live lessons.'}
         </p>
       </div>
       <form
+        ref={formRef}
         className="space-y-4 rounded-3xl border border-white/10 bg-white/[0.02] p-4 sm:p-6"
         action={(formData) => {
           setError(null);
           startTransition(async () => {
+            const chosen = formRef.current?.querySelector<HTMLInputElement>('input[data-video-file]')?.files?.[0];
+            const status = String(formData.get('status') ?? '');
+            const duration = Number(formData.get('duration') ?? '');
+            const link = String(formData.get('video') ?? '').trim();
+            const clearing = formData.get('clear_video') === 'on' && !chosen;
+            const hasVideo = Boolean(chosen || link || (lesson.playback && !clearing));
+            if (status === 'live' && hasVideo && !(duration > 0)) {
+              setError('Enter the video duration in seconds before this lesson goes live.');
+              return;
+            }
+            if (chosen && chosen.size > 0) {
+              const problem = videoFileError(chosen.name, chosen.size);
+              if (problem) {
+                setError(problem);
+                return;
+              }
+              setPendingLabel('Uploading video…');
+              const prepared = await prepareLessonVideoUpload({
+                lessonCode: String(formData.get('lesson_code') ?? ''),
+                fileName: chosen.name,
+                size: chosen.size,
+              });
+              if (!prepared.ok) {
+                setError(prepared.error);
+                setPendingLabel('Saving…');
+                return;
+              }
+              const uploaded = await uploadLessonVideo(chosen, prepared.path, prepared.token);
+              if (!uploaded.ok) {
+                setError(uploaded.error);
+                setPendingLabel('Saving…');
+                return;
+              }
+              formData.set('video_path', prepared.path);
+              formData.set('video_file_name', prepared.fileName);
+              setPendingLabel('Saving…');
+            }
             const result = await saveLesson(formData);
             if (!result.ok) setError(result.error ?? 'The lesson was not saved.');
             else if (result.id) router.push(`/workspace/academy/lessons/${result.id}`);
@@ -90,7 +136,7 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
           <Input name="title" defaultValue={lesson.title} required />
         </Field>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Status">
+          <Field label="Status" hint="Draft and Ready stay in this builder. Trainees only see a lesson after you set it to Live and save.">
             <Select name="status" defaultValue={lesson.status}>
               <option value="draft">Draft</option>
               <option value="ready">Ready</option>
@@ -124,10 +170,56 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
             className="w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-base leading-relaxed text-white outline-none focus:border-brand-400/60"
           />
         </Field>
-        <Field label="Video link" hint="Vimeo or Mux. Playback must be limited to training.divineacquisition.io.">
+        {lesson.id && lesson.playback ? (
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-white">Current video</p>
+            {lesson.playback.provider === 'file' && lesson.videoFileName ? (
+              <p className="text-sm text-neutral-400">Uploaded file: {lesson.videoFileName}</p>
+            ) : null}
+            <LessonMedia lessonId={lesson.id} title={lesson.title || lesson.code} video={lesson.playback} />
+          </div>
+        ) : null}
+        <Field
+          label="Video file"
+          hint={
+            lesson.videoFileName
+              ? `Current file: ${lesson.videoFileName}. A new file replaces it. mp4, webm, mov, or m4v, up to 100 MB.`
+              : 'mp4, webm, mov, or m4v, up to 100 MB. Larger videos should use a Vimeo or Mux link.'
+          }
+        >
+          <Input
+            data-video-file
+            type="file"
+            accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.m4v"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              const problem = videoFileError(file.name, file.size);
+              if (problem) {
+                setError(problem);
+                event.target.value = '';
+                return;
+              }
+              setError(null);
+              const url = URL.createObjectURL(file);
+              const probe = document.createElement('video');
+              probe.preload = 'metadata';
+              probe.onloadedmetadata = () => {
+                const seconds = Math.round(probe.duration);
+                const field = formRef.current?.elements.namedItem('duration');
+                if (Number.isFinite(seconds) && seconds > 0 && field instanceof HTMLInputElement && !field.value) {
+                  field.value = String(seconds);
+                }
+                URL.revokeObjectURL(url);
+              };
+              probe.src = url;
+            }}
+          />
+        </Field>
+        <Field label="Video link" hint="Vimeo or Mux, including the privacy code on an unlisted Vimeo link. Playback must be limited to training.divineacquisition.io. A file upload is used instead of this link.">
           <Input name="video" defaultValue={lesson.videoUrl} placeholder="Vimeo or Mux link" />
         </Field>
-        <Field label="Duration in seconds">
+        <Field label="Duration in seconds" hint="Required before a video lesson can go Live.">
           <Input name="duration" type="number" min={1} defaultValue={lesson.duration} />
         </Field>
         <label className="flex items-center gap-2 text-sm text-neutral-300">
@@ -157,7 +249,7 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
         ) : null}
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={pending}>
-            {pending ? 'Saving…' : 'Save lesson'}
+            {pending ? pendingLabel : 'Save lesson'}
           </Button>
           {lesson.id ? (
             <a href={`/workspace/academy/preview/${lesson.id}`} className="inline-flex items-center rounded-full border border-white/15 px-4 py-2 text-sm text-white">

@@ -20,7 +20,7 @@ export default async function PreviewLessonPage({ params }: { params: Promise<{ 
   const supabase = await createClient();
   const { data } = await controlRpc<Record<string, unknown>>(supabase, 'academy_admin_lesson', { p_lesson_id: lessonId });
   if (!data || data.state === 'missing') notFound();
-  const video = data.video as { provider?: string; provider_id?: string; duration?: number | null } | null;
+  const video = data.video as { provider?: string; provider_id?: string; url?: string | null; duration?: number | null } | null;
   const document = data.document as { file_name?: string } | null;
   const lesson = lessonView(
     {
@@ -35,7 +35,7 @@ export default async function PreviewLessonPage({ params }: { params: Promise<{ 
       module_order: Number(data.module_order ?? 0),
       watch_percent: Number(data.watch_percent ?? 90),
       reading_seconds: Number(data.reading_seconds ?? 0),
-      video: video?.provider_id ? { provider: video.provider, provider_id: video.provider_id, duration: video.duration } : null,
+      video: video?.provider ? { provider: video.provider, provider_id: video.provider_id, url: video.url ?? null, duration: video.duration } : null,
       document: Boolean(document),
       document_name: document?.file_name ?? null,
       missing: [],
