@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { inApp } from '@/lib/academy/comms';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import { serviceClient } from '@/lib/workspace/db';
@@ -20,7 +21,7 @@ export async function GET(_request: Request, context: { params: Promise<{ token:
     { p_token: token },
   );
   if (!data?.ok || !data.storage_path) {
-    return new NextResponse('This document link is closed.', { status: 404 });
+    return new NextResponse(inApp.lesson.linkExpired, { status: 404 });
   }
   const service = serviceClient();
   if (!service) return new NextResponse('Storage is not configured.', { status: 503 });

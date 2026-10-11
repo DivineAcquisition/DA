@@ -1,7 +1,29 @@
 import Link from 'next/link';
+import { inApp } from '@/lib/academy/comms';
 import { formatAcademyDate, moduleStatusLabel } from '@/lib/academy/paths';
 import type { AcademyModule } from '@/lib/academy/types';
 import Panel from './Panel';
+
+function moduleSentence(module: AcademyModule, previous?: string): string {
+  switch (module.display) {
+    case 'locked':
+      return inApp.modules.locked(previous);
+    case 'unpublished':
+      return inApp.modules.unpublished;
+    case 'available':
+      return inApp.modules.available;
+    case 'in_progress':
+      return inApp.modules.inProgress;
+    case 'complete':
+      return inApp.modules.complete;
+    case 'quiz_available':
+      return inApp.modules.quizOpen;
+    case 'quiz_passed_pending':
+      return inApp.modules.extra(module.gates.find((gate) => gate.status === 'pending' && gate.key !== 'quiz')?.label);
+    default:
+      return moduleStatusLabel(module.display);
+  }
+}
 
 function quizLine(module: AcademyModule): string | null {
   const quiz = module.quiz;
@@ -58,8 +80,10 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Modules</h1>
       </div>
       <ol className="space-y-3">
-        {modules.map((module) => {
+        {modules.map((module, index) => {
+          const previous = modules[index - 1]?.title;
           const label = moduleStatusLabel(module.display);
+          const sentence = moduleSentence(module, previous);
           const inner = (
             <>
               <div className="flex items-start justify-between gap-3">
@@ -70,6 +94,7 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
                   {label}
                 </span>
               </div>
+              <p className="mt-2 text-sm leading-relaxed text-neutral-300">{sentence}</p>
               {module.description ? <p className="mt-2 text-sm leading-relaxed text-neutral-300">{module.description}</p> : null}
               <p className="mt-2 text-xs text-neutral-500">{gateLabel(module)}</p>
               {quizLine(module) ? <p className="mt-1 text-xs text-neutral-300">{quizLine(module)}</p> : null}

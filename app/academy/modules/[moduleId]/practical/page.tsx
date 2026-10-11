@@ -1,4 +1,5 @@
 import { controlRpc } from '@/lib/ad/rpc';
+import { inApp } from '@/lib/academy/comms';
 import { submitPractical } from '@/lib/academy/practiceAdmin';
 import { loadAcademyShell } from '@/lib/academy/load';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -54,13 +55,25 @@ export default async function PracticalPage({
         {(data?.items ?? []).map((item) => (
           <li key={item.id} className="rounded-2xl border border-white/10 p-3">
             <p>{item.label}{item.required ? '' : ' · optional'}</p>
-            <p className="text-neutral-400">{item.status}{item.comment ? ` · ${item.comment}` : ''}</p>
+            <p className="text-neutral-400">
+              {item.status === 'approved' || item.status === 'passed'
+                ? inApp.practical.approved
+                : item.status === 'needs_work'
+                  ? inApp.practical.needsWork
+                  : item.status === 'pending'
+                    ? inApp.practical.pending
+                    : item.status}
+              {item.comment ? ` · ${item.comment}` : ''}
+            </p>
             {item.has_file && item.evidence_id ? (
               <a href={`/academy/practical-files/${item.evidence_id}`} className="text-[#937DFF]">Open screenshot</a>
             ) : null}
           </li>
         ))}
       </ul>
+      {(data?.items ?? []).length > 0 && (data?.items ?? []).every((item) => item.status === 'approved' || item.status === 'passed') ? (
+        <p className="text-sm font-semibold text-[#937DFF]">{inApp.practical.complete}</p>
+      ) : null}
       {canSubmit ? (
         <form action={submitPractical.bind(null, moduleId, practicalId)} className="space-y-4">
           {openItems.map((item) => (

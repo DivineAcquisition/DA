@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react';
 import Logo from '@/app/components/Logo';
 import { academyResetAction, academySignInAction } from '@/lib/academy/actions';
+import { inApp } from '@/lib/academy/comms';
 import Panel from './Panel';
 
 export default function SignIn({ linkExpired = false }: { linkExpired?: boolean }) {
@@ -15,7 +16,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
       <Panel beam className="w-full max-w-md p-6 sm:p-8">
         <Logo className="h-6 w-auto" />
         <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#937DFF]">
-          Devotion. Value. Exclusivity.
+          {inApp.signIn.tagline}
         </p>
 
         {mode === 'sent' ? (
@@ -34,7 +35,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
           </>
         ) : (
           <>
-            <h1 className="mt-4 text-2xl font-semibold">DA Operator Academy</h1>
+            <h1 className="mt-4 text-2xl font-semibold">{inApp.signIn.headline}</h1>
             {linkExpired ? (
               <p role="status" className="mt-3 text-sm leading-relaxed text-neutral-300">
                 That link has expired. Sign in, or request a new one.
@@ -99,7 +100,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
                 disabled={pending}
                 className="min-h-11 w-full rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white disabled:opacity-60"
               >
-                {mode === 'forgot' ? (pending ? 'Sending…' : 'Send the link') : pending ? 'Signing in…' : 'Sign in'}
+                {mode === 'forgot' ? (pending ? 'Sending…' : 'Send the link') : pending ? 'Signing in…' : inApp.signIn.button}
               </button>
             </form>
             <button
@@ -110,7 +111,7 @@ export default function SignIn({ linkExpired = false }: { linkExpired?: boolean 
               }}
               className="mt-4 min-h-11 text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
             >
-              {mode === 'forgot' ? 'Back to sign in' : 'Forgot your password?'}
+              {mode === 'forgot' ? 'Back to sign in' : inApp.signIn.forgot}
             </button>
           </>
         )}

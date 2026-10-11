@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { controlRpc } from '@/lib/ad/rpc';
+import { inApp } from '@/lib/academy/comms';
 import { moduleStatusLabel } from '@/lib/academy/paths';
 import { loadAcademyShell } from '@/lib/academy/load';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -49,10 +50,13 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
 
   const label = moduleStatusLabel(current.display);
   if (current.display === 'unpublished' || current.display === 'locked' || !current.openable) {
+    const previous = loaded.shell.modules.filter((item) => item.order < current.order).at(-1);
     const detail =
       current.display === 'unpublished'
-        ? 'This module has no lessons yet.'
-        : 'Finish the previous module before this one opens.';
+        ? inApp.modules.unpublished
+        : current.display === 'locked'
+          ? inApp.modules.locked(previous?.title)
+          : 'Finish the previous module before this one opens.';
     return (
       <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">{label}</p>

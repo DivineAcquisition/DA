@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { inApp } from '@/lib/academy/comms';
 import { saveQuizAnswer, startQuiz, submitQuiz } from '@/lib/academy/quizActions';
 
 type Option = { id: string; text: string };
@@ -36,6 +37,7 @@ export type QuizState = {
   attempts_used?: number;
   attempts_allowed?: number;
   attempts_remaining?: number;
+  lockout_minutes?: number;
   lockout_until?: string | null;
   retest_on?: string | null;
   reopen?: Reopen[];
@@ -66,6 +68,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
   const [index, setIndex] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const [now, setNow] = useState(() => Date.now());
   const submitted = useRef(false);
   const questions = state.attempt?.questions ?? [];
@@ -150,17 +153,43 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
 
       {state.phase === 'start' || state.phase === 'fail' ? (
         <section className="space-y-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
-          <p className="text-sm leading-relaxed text-neutral-200">{state.rules}</p>
-          <p className="text-sm text-neutral-300">
-            Attempts used: {state.attempts_used ?? 0}. Remaining: {state.attempts_remaining ?? 0}. Pass mark: {state.pass_mark_label}.
+          <p className="text-sm leading-relaxed text-neutral-200">
+            {inApp.quiz.start(
+              title,
+              state.questions_per_attempt ?? 0,
+              state.pass_mark_label ?? 'the pass mark',
+              state.attempts_used ?? 0,
+              state.attempts_allowed ?? 0,
+            )}
           </p>
           {state.phase === 'fail' && state.result ? (
             <div className="space-y-2 border-t border-white/10 pt-3">
               <p className="text-base font-semibold">
-                Score {state.result.score} of {state.result.total}. Pass mark {state.result.pass_mark_label}.
+                {inApp.quiz.fail(
+                  state.result.score ?? 0,
+                  state.result.total ?? 0,
+                  state.result.pass_mark_label ?? state.pass_mark_label ?? 'the pass mark',
+                  state.lockout_minutes ?? 30,
+                  state.attempts_remaining ?? 0,
+                )}
               </p>
-              {state.result.abandoned ? <p className="text-sm text-neutral-300">This attempt was closed because it was left open.</p> : null}
-              {state.warning ? <p className="text-sm font-semibold text-white">{state.warning}</p> : null}
+              {state.result.abandoned ? <p className="text-sm text-neutral-300">{inApp.quiz.abandoned}</p> : null}
+              {state.attempts_remaining === 1 ? (
+                <p className="text-sm font-semibold text-white">{inApp.quiz.attempt4}</p>
+              ) : state.attempts_used === 3 ? (
+                <p className="text-sm font-semibold text-white">{inApp.quiz.attempt3()}</p>
+              ) : state.warning ? (
+                <p className="text-sm font-semibold text-white">{state.warning}</p>
+              ) : null}
+              {state.can_start ? <p className="text-sm text-neutral-300">{inApp.quiz.ready}</p> : null}
+              {state.blocked === 'lockout' && state.lockout_until ? (
+                <p className="text-sm text-neutral-300">
+                  {inApp.quiz.lockout(
+                    new Date(state.lockout_until).toLocaleString(),
+                    (state.reopen ?? []).map((item) => item.title).filter(Boolean).join(', ') || 'the lesson',
+                  )}
+                </p>
+              ) : null}
               {state.blocked === 'acknowledge' ? (
                 <p className="text-sm text-neutral-300">Confirm the plan on your dashboard before the next attempt.</p>
               ) : null}
@@ -172,9 +201,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
               {state.blocked === 'plan_lessons' ? (
                 <p className="text-sm text-neutral-300">Reopen the lessons named in the plan before the next attempt.</p>
               ) : null}
-              {state.lockout_until && state.blocked === 'lockout' ? (
-                <p className="text-sm text-neutral-300">Next attempt opens {new Date(state.lockout_until).toLocaleString()}.</p>
-              ) : null}
+              {(state.result.concepts ?? []).length > 0 ? <p className="text-sm text-neutral-200">Review these topics:</p> : null}
               <ul className="space-y-1 text-sm">
                 {(state.result.concepts ?? []).map((concept) => (
                   <li key={`${concept.tag}-${concept.lesson_id}`}>
@@ -208,9 +235,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
       {state.phase === 'take' && question ? (
         <section className="space-y-4">
           <div className="flex items-center justify-between text-sm text-neutral-300">
-            <span>
-              Question {index + 1} of {questions.length}
-            </span>
+            <span>{inApp.quiz.progress(index + 1, questions.length)}</span>
             {remaining !== null ? (
               <span>
                 {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}
@@ -234,17 +259,29 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
             ))}
           </div>
           <div className="flex items-center justify-between gap-3">
-            <button type="button" disabled={index === 0} onClick={() => setIndex((value) => value - 1)} className="min-h-11 text-sm text-[#937DFF] disabled:opacity-40">
+            <button type="button" disabled={index === 0} onClick={() => { setConfirming(false); setIndex((value) => value - 1); }} className="min-h-11 text-sm text-[#937DFF] disabled:opacity-40">
               Back
             </button>
             {index < questions.length - 1 ? (
-              <button type="button" onClick={() => setIndex((value) => value + 1)} className="min-h-11 text-sm text-[#937DFF]">
+              <button type="button" onClick={() => { setConfirming(false); setIndex((value) => value + 1); }} className="min-h-11 text-sm text-[#937DFF]">
                 Next
               </button>
             ) : (
-              <button type="button" disabled={pending} onClick={() => void finish()} className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white disabled:opacity-40">
-                Submit
-              </button>
+              confirming ? (
+                <div className="space-y-2 text-right">
+                  <p className="text-sm text-neutral-200">{inApp.quiz.submitConfirm}</p>
+                  <button type="button" onClick={() => setConfirming(false)} className="min-h-11 px-3 text-sm text-[#937DFF]">
+                    Back
+                  </button>
+                  <button type="button" disabled={pending} onClick={() => void finish()} className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white disabled:opacity-40">
+                    Submit
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setConfirming(true)} className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white">
+                  Submit
+                </button>
+              )
             )}
           </div>
         </section>
@@ -253,8 +290,9 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
       {state.phase === 'pass' && state.result ? (
         <section className="space-y-4">
           <p className="text-lg font-semibold">
-            Passed. Score {state.result.score} of {state.result.total}.
+            {state.kind === 'final' ? inApp.quiz.finalPass : inApp.quiz.pass(state.result.score ?? 0, state.result.total ?? 0)}
           </p>
+          <p className="text-sm text-neutral-300">{inApp.quiz.lockedAfterPass}</p>
           {(state.result.breakdown ?? []).length > 0 ? (
             <ul className="space-y-1 text-sm text-neutral-200">
               {state.result.breakdown?.map((row) => (

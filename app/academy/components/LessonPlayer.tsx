@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { inApp } from '@/lib/academy/comms';
 import { renderLesson } from '@/lib/academy/markdown';
 import type { LessonView, LessonVideo } from '@/lib/academy/lessonView';
 import { markLessonComplete, openDocument, openLessonVideo, recordPlayback, recordReading } from '@/lib/academy/lessonActions';
@@ -19,6 +20,18 @@ declare global {
   interface Window {
     Vimeo?: { Player: new (frame: HTMLIFrameElement) => VimeoPlayer };
   }
+}
+
+function clock(seconds: number): string {
+  const whole = Math.max(0, Math.floor(seconds));
+  return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, '0')}`;
+}
+
+function lessonGap(item: string, watchPercent: number): string {
+  if (item.startsWith('Watch ')) return inApp.lesson.watch(watchPercent);
+  if (item.startsWith('Stay on the page') || item.startsWith('Scroll to the end')) return inApp.lesson.readToEnd;
+  if (item.startsWith('Open the companion')) return inApp.lesson.openDocument;
+  return item;
 }
 
 function VimeoFrame({
@@ -308,6 +321,9 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         <p className="mt-1 text-sm text-neutral-400">
           Lesson {lesson.position} of {lesson.total}
         </p>
+        {lesson.positionSeconds > 1 && !lesson.complete ? (
+          <p className="mt-3 text-sm text-neutral-200">{inApp.lesson.resume(clock(lesson.positionSeconds))}</p>
+        ) : null}
       </div>
 
       {lesson.preview ? (
@@ -364,7 +380,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
           {missing.length > 0 && !complete ? (
             <ul className="mb-3 space-y-1 text-sm text-neutral-300">
               {missing.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item}>{lessonGap(item, lesson.watchPercent)}</li>
               ))}
             </ul>
           ) : null}
@@ -379,7 +395,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
               });
             }}
           >
-            Mark complete
+            {inApp.lesson.markComplete}
           </button>
         </div>
       ) : null}
@@ -397,7 +413,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
             Next
           </Link>
         ) : (
-          <span className="text-neutral-500">{lesson.nextId ? 'Next lesson is locked' : ''}</span>
+          <span className="text-neutral-500">{lesson.nextId ? inApp.lesson.outOfOrder(lesson.title) : ''}</span>
         )}
       </div>
     </article>
