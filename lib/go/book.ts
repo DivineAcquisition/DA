@@ -3,6 +3,7 @@
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { FREE_SALES_OPS_AUDIT_CALENDAR_NAME } from '@/lib/acq/config';
 import { acqPublicClients } from '@/lib/acq/public-db';
+import { sendGhlSms } from '@/lib/acq/ghl-sms';
 import { createGoogleMeetEvent, deleteGoogleCalendarEvent } from '@/lib/assessment/calendar';
 import { bookingMessagesOwnDelivery } from '@/lib/booking-messages/config';
 import { GO_SMS_CONSENT_VERSION } from '@/lib/booking-messages/copy';
@@ -10,7 +11,7 @@ import { recordBookingEvent } from '@/lib/booking-messages/transport';
 import { parseGoBooking, type GoBookingInput } from './booking';
 import { GO_PUBLIC_ORIGIN } from './config';
 import { upsertStrategyContact } from './contact';
-import { sendGoSessionEmail } from './reminders';
+import { formatSessionWhen, goConfirmationSms, sendGoSessionEmail } from './reminders';
 
 type BookRow = {
   ok?: boolean;
@@ -82,7 +83,7 @@ export async function bookGoStrategyAction(input: GoBookingInput): Promise<GoBoo
       endsAt,
       timeZone: data.time_zone,
       attendeeEmails: [value.email, 'malik@divineacquisition.io'],
-      notifyAttendees: !bookingMessagesOwnDelivery(),
+      notifyAttendees: false,
     });
     eventId = event.eventId;
     meetUrl = event.meetUrl;
@@ -118,8 +119,17 @@ export async function bookGoStrategyAction(input: GoBookingInput): Promise<GoBoo
       p_id: data.id,
       p_ghl_contact_id: contactId,
     });
+    const firstName = value.fullName.trim().split(/\s+/)[0] || 'there';
+    await sendGhlSms(
+      contactId,
+      goConfirmationSms({
+        firstName,
+        when: formatSessionWhen(data.scheduled_for, data.time_zone),
+        meetUrl,
+      }),
+    );
   } catch (contactError) {
-    console.error('[go] strategy contact failed', contactError);
+    console.error('[go] confirmation text failed', contactError);
   }
 
   let confirmationId: string | null = null;

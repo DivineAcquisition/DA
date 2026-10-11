@@ -100,6 +100,14 @@ export function goSessionCc(to: string): string[] {
   return recipient === ACQ_AUDIT_CC ? [] : [ACQ_AUDIT_CC];
 }
 
+export function goConfirmationSms(input: { firstName: string; when: string; meetUrl?: string | null }): string {
+  const name = input.firstName.trim() || 'there';
+  const link = input.meetUrl
+    ? ` Link: ${input.meetUrl}`
+    : ' The meeting link is in your confirmation email.';
+  return `Hi ${name}, it's Malik at Divine Acquisition. You're confirmed for your audit on ${input.when}.${link} Reply STOP to opt out.`;
+}
+
 export function goReminderSms(input: { kind: GoSmsKind; when: string; meetUrl?: string | null }): string {
   const link = input.meetUrl ? ` Google Meet: ${input.meetUrl}` : ' Check your email for the Google Meet link.';
   const stop = ' Reply STOP to opt out.';

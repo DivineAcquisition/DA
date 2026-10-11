@@ -1,4 +1,25 @@
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { ShineBorder } from '@/components/ui/shine-border';
 import { GO_VSL_MEDIA_ID, wistiaAspectRatio } from '@/lib/go/config';
+import {
+  Bell,
+  CalendarCheck,
+  CalendarDays,
+  CircleCheck,
+  FileWarning,
+  ListChecks,
+  Moon,
+  Phone,
+  PhoneMissed,
+  RefreshCw,
+  Repeat,
+  Star,
+  UserRoundX,
+  Wrench,
+  X,
+  Zap,
+} from 'lucide-react';
 import {
   CALENDAR,
   CTA_LABEL,
@@ -48,6 +69,19 @@ function Check() {
   );
 }
 
+const PROBLEM_ICONS = [PhoneMissed, Moon, FileWarning, UserRoundX] as const;
+const INCLUDED_ICONS = [Phone, Zap, ListChecks, Bell, RefreshCw, Star] as const;
+const SYSTEM_ICONS = [Phone, ListChecks, Repeat] as const;
+const PROCESS_ICONS = [CalendarCheck, Wrench, CalendarDays] as const;
+
+function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: typeof Phone; tone?: 'brand' | 'red' }) {
+  return (
+    <span className={tone === 'red' ? 'go-saas-icon go-saas-icon-red' : 'go-saas-icon'}>
+      <Icon aria-hidden />
+    </span>
+  );
+}
+
 function BookLink() {
   return (
     <a className="acq-button" href="#calendar">
@@ -61,7 +95,7 @@ export default function CleaningFunnelPage() {
     <div className="acq-coaches min-h-screen antialiased">
       <section className="lx-hero">
         <div className="lx-wrap lx-hero-inner">
-          <p className="lx-pill">{PILL_BANNER}</p>
+          <AnimatedShinyText className="lx-pill mx-0 max-w-none text-brand-300">{PILL_BANNER}</AnimatedShinyText>
           <h1 className="lx-headline">
             {HEADLINE_BEFORE}
             <span className="lx-accent">{HEADLINE_ACCENT}</span>
@@ -70,8 +104,10 @@ export default function CleaningFunnelPage() {
           <p className="lx-lead">{SUBHEADLINE}</p>
           <p className="lx-requirement">{PRICING_LINE}</p>
           <p className="lx-requirement">{VIDEO_LABEL}</p>
-          <div className="lx-video-wrap">
+          <div className="lx-video-wrap go-magic">
             <div className="lx-video-shell">
+              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={14} />
+              <BorderBeam size={90} duration={9} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
               <GoWistia mediaId={GO_VSL_MEDIA_ID} />
             </div>
           </div>
@@ -129,8 +165,9 @@ export default function CleaningFunnelPage() {
         <div className="lx-wrap">
           <h2 className="lx-heading">{INCLUDED_TITLE}</h2>
           <ul className="lx-offer">
-            {INCLUDED.map((item) => (
-              <li key={item.title} className="lx-card">
+            {INCLUDED.map((item, index) => (
+              <li key={item.title} className="lx-card go-saas-card">
+                <SaasIcon icon={INCLUDED_ICONS[index] ?? Phone} />
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
               </li>
@@ -147,13 +184,16 @@ export default function CleaningFunnelPage() {
         <div className="lx-wrap">
           <h2 className="lx-heading">{PROBLEMS_HEADLINE}</h2>
           <ul className="lx-patterns">
-            {PROBLEMS.map((problem, index) => (
-              <li key={problem.title} className="lx-card lx-pattern">
-                <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
-                <h3>{problem.title}</h3>
-                <p>{problem.description}</p>
-              </li>
-            ))}
+            {PROBLEMS.map((problem, index) => {
+              const Icon = PROBLEM_ICONS[index] ?? PhoneMissed;
+              return (
+                <li key={problem.title} className="lx-card lx-pattern go-problem">
+                  <SaasIcon icon={Icon} tone="red" />
+                  <h3>{problem.title}</h3>
+                  <p>{problem.description}</p>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </section>
@@ -164,8 +204,8 @@ export default function CleaningFunnelPage() {
           <p className="lx-intro">{SYSTEMS_LEAD}</p>
           <ol className="lx-steps">
             {SYSTEMS.map((system, index) => (
-              <li key={system.key} className="lx-card">
-                <span className="lx-num lx-num-brand">{String(index + 1).padStart(2, '0')}</span>
+              <li key={system.key} className="lx-card go-saas-card">
+                <SaasIcon icon={SYSTEM_ICONS[index] ?? Phone} />
                 <h3>{system.title}</h3>
                 <p>{system.description}</p>
               </li>
@@ -179,8 +219,8 @@ export default function CleaningFunnelPage() {
           <h2 className="lx-heading">{PROCESS_HEADLINE}</h2>
           <ol className="lx-steps">
             {PROCESS.map((step, index) => (
-              <li key={step.title} className="lx-card">
-                <span className="lx-num lx-num-brand">{String(index + 1).padStart(2, '0')}</span>
+              <li key={step.title} className="lx-card go-saas-card">
+                <SaasIcon icon={PROCESS_ICONS[index] ?? CalendarCheck} />
                 <h3>{step.title}</h3>
                 <p>{step.description}</p>
               </li>
@@ -215,18 +255,30 @@ export default function CleaningFunnelPage() {
           <h2 className="lx-heading">{FIT_HEADLINE}</h2>
           <ul className="lx-audience">
             <li className="lx-card lx-featured">
-              <h3>{FIT_YES_TITLE}</h3>
-              <ul>
+              <h3 className="go-fit-title">
+                <CircleCheck aria-hidden />
+                {FIT_YES_TITLE}
+              </h3>
+              <ul className="go-fit-list">
                 {FIT_YES.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>
+                    <CircleCheck aria-hidden />
+                    <span>{item}</span>
+                  </li>
                 ))}
               </ul>
             </li>
-            <li className="lx-card">
-              <h3>{FIT_NO_TITLE}</h3>
-              <ul>
+            <li className="lx-card go-not-fit">
+              <h3 className="go-fit-title">
+                <X aria-hidden />
+                {FIT_NO_TITLE}
+              </h3>
+              <ul className="go-fit-list">
                 {FIT_NO.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>
+                    <X aria-hidden />
+                    <span>{item}</span>
+                  </li>
                 ))}
               </ul>
             </li>
@@ -271,7 +323,11 @@ export default function CleaningFunnelPage() {
             </h2>
             <p className="lx-lead">{CALENDAR.body}</p>
           </div>
-          <StrategyCalendar />
+          <div className="go-calendar-frame">
+            <ShineBorder shineColor={['#9A88FC', '#F87171']} borderWidth={1} duration={16} />
+            <BorderBeam size={120} duration={10} colorFrom="#9A88FC" colorTo="#F87171" borderWidth={1} />
+            <StrategyCalendar />
+          </div>
         </div>
       </section>
 

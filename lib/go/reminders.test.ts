@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildGoSessionEmail, goReminderSms } from './reminders';
+import { buildGoSessionEmail, goConfirmationSms, goReminderSms } from './reminders';
 
 const when = {
   startsAt: '2026-10-08T14:00:00.000Z',
@@ -36,5 +36,17 @@ describe('cleaning funnel reminders', () => {
     expect(sms15).toContain('15 minutes');
     expect(sms15).toContain('https://meet.google.com/abc-defg-hij');
     expect(sms15).toContain('STOP');
+  });
+
+  it('confirms the booking in one text', () => {
+    const text = goConfirmationSms({
+      firstName: 'Jordan',
+      when: 'Thursday, October 15 at 2:00 PM ET',
+      meetUrl: when.meetUrl,
+    });
+    expect(text).toContain('Hi Jordan');
+    expect(text).toContain('Thursday, October 15 at 2:00 PM ET');
+    expect(text).toContain(when.meetUrl);
+    expect(text).toContain('STOP');
   });
 });
