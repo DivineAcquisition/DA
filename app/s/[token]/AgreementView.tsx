@@ -72,19 +72,19 @@ export default function AgreementView({ token, initial, signFields = { signature
           {finalizing === 'waiting' ? (
             <>
               <Spinner />
-              <h1 className="mt-5 text-xl font-semibold text-white">Finalizing your agreement…</h1>
+              <h1 className="mt-6 text-[1.7rem] font-medium tracking-[-0.03em] text-white">Finalizing your agreement</h1>
               <p className="mt-2 text-sm text-[var(--ws-body)]">This usually takes a few seconds. Keep this page open.</p>
             </>
           ) : (
             <>
-              <h1 className="text-xl font-semibold text-white">We received your signature</h1>
+              <h1 className="text-[1.7rem] font-medium tracking-[-0.03em] text-white">We received your signature</h1>
               <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
                 Your signed copy will be ready here shortly. You don&apos;t need to sign again.
               </p>
               <button
                 type="button"
                 onClick={startFinalizing}
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)] sm:w-auto"
+                className="mt-8 inline-flex h-12 w-full items-center justify-center rounded-full bg-white px-6 text-[13px] font-semibold tracking-[0.08em] text-[#121018] uppercase sm:w-auto"
               >
                 Check again
               </button>
@@ -109,7 +109,7 @@ export default function AgreementView({ token, initial, signFields = { signature
       return (
         <Shell>
           <Card>
-            <h1 className="text-xl font-semibold text-white">You declined this agreement</h1>
+            <h1 className="text-[1.7rem] font-medium tracking-[-0.03em] text-white">You declined this agreement</h1>
             <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
               Nothing else is needed. If that was a mistake, reach out to Divine Acquisition and we&apos;ll send it
               again.
@@ -122,7 +122,7 @@ export default function AgreementView({ token, initial, signFields = { signature
       return (
         <Shell>
           <Card>
-            <h1 className="text-xl font-semibold text-white">A newer version was sent</h1>
+            <h1 className="text-[1.7rem] font-medium tracking-[-0.03em] text-white">A newer version was sent</h1>
             <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
               This agreement was replaced. Please use the link in your most recent email from Divine Acquisition.
             </p>
@@ -134,19 +134,20 @@ export default function AgreementView({ token, initial, signFields = { signature
       return (
         <Shell>
           <Card>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ws-success)]/15 text-2xl text-[var(--ws-success)]">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[var(--ws-success)]/30 bg-[var(--ws-success)]/10 text-xl text-[var(--ws-success)]">
               ✓
             </div>
-            <h1 className="mt-5 text-2xl font-semibold text-white">Agreement signed</h1>
-            <p className="mt-2 text-sm text-[var(--ws-body)]">
+            <p className="mt-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#c3b6fe]">Complete</p>
+            <h1 className="mt-3 text-[2rem] font-medium leading-none tracking-[-0.03em] text-white">Agreement signed</h1>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--ws-body)]">
               {page.templateName}
               {page.completedAt ? ` · signed ${formatDate(page.completedAt)}` : ''}
             </p>
-            <div className="mt-7 flex flex-col gap-3">
+            <div className="mt-8 flex flex-col gap-3">
               {page.onboardingUrl && (
                 <a
                   href={page.onboardingUrl}
-                  className="inline-flex items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-[13px] font-semibold tracking-[0.08em] text-[#121018] uppercase"
                 >
                   Continue to onboarding
                 </a>
@@ -156,8 +157,8 @@ export default function AgreementView({ token, initial, signFields = { signature
                   href={`/s/${encodeURIComponent(token)}/document`}
                   className={
                     page.onboardingUrl
-                      ? 'inline-flex items-center justify-center rounded-xl border border-[var(--ws-border)] px-6 py-3 text-sm font-semibold text-white'
-                      : 'inline-flex items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]'
+                      ? 'inline-flex h-12 items-center justify-center rounded-full border border-white/15 px-6 text-[13px] font-semibold tracking-[0.08em] text-white uppercase'
+                      : 'inline-flex h-12 items-center justify-center rounded-full bg-white px-6 text-[13px] font-semibold tracking-[0.08em] text-[#121018] uppercase'
                   }
                 >
                   Download your signed copy
@@ -170,36 +171,37 @@ export default function AgreementView({ token, initial, signFields = { signature
 
     case 'open':
       return (
-        <div className="mx-auto w-full max-w-3xl">
-          <header className="mb-6 flex items-center justify-between gap-4">
-            <Logo className="h-7 w-auto" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-dim)]">
-              Private link
-            </span>
+        <div className="mx-auto w-full max-w-[760px] pb-8">
+          <header className="flex items-end justify-between gap-6 border-b border-white/10 pb-5">
+            <Logo className="h-6 w-auto" />
+            <p className="pb-0.5 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/40">Private signing</p>
           </header>
 
-          <section className="animate-rise rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-5 sm:p-7">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-accent)]">
+          <section className="animate-rise pt-10 sm:pt-14">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#c3b6fe]">
               Prepared for {page.recipientName}
               {page.businessName ? ` · ${page.businessName}` : ''}
             </p>
-            <h1 className="mt-2 text-2xl font-semibold leading-tight text-white sm:text-3xl">{page.templateName}</h1>
+            <h1 className="mt-4 max-w-[16ch] text-[2.4rem] font-medium leading-[1.02] tracking-[-0.04em] text-white sm:text-[3.35rem]">
+              {page.templateName}
+            </h1>
             {page.templateDescription && (
-              <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">{page.templateDescription}</p>
+              <p className="mt-5 max-w-[46ch] text-[15px] leading-7 text-white/60">{page.templateDescription}</p>
             )}
-            <p className="mt-4 text-sm text-[var(--ws-body)]">
-              Review it below, then sign in the signature box. Your signature is placed on each signature line in
-              the agreement.
+            <p className="mt-6 max-w-[46ch] text-sm leading-relaxed text-white/40">
+              Read the agreement, then sign once. That signature is placed on each signature line.
             </p>
           </section>
 
           {page.pages.map((section, index) => (
             <article
               key={`${index}-${section.title}`}
-              className="animate-rise mt-4 rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-5 sm:p-7"
+              className="animate-rise mt-8 rounded-[28px] border border-white/10 bg-[#12111a] px-6 py-8 sm:px-10 sm:py-10"
             >
-              {section.title && <h2 className="text-lg font-semibold text-white">{section.title}</h2>}
-              <div className="prose-da mt-4" dangerouslySetInnerHTML={{ __html: section.html }} />
+              {section.title && (
+                <h2 className="text-xl font-medium tracking-[-0.02em] text-white">{section.title}</h2>
+              )}
+              <div className="prose-da mt-4 text-[15px]" dangerouslySetInnerHTML={{ __html: section.html }} />
             </article>
           ))}
 
@@ -208,12 +210,13 @@ export default function AgreementView({ token, initial, signFields = { signature
             embedSrc={page.embedSrc}
             recipientName={page.recipientName}
             recipientType={page.recipientType}
+            documentTitle={page.templateName}
             signFields={signFields}
             onDone={startFinalizing}
           />
 
-          <p className="mt-6 text-center text-xs text-[var(--ws-dim)]">
-            Sent by Divine Acquisition. This link is private to you; please don&apos;t forward it.
+          <p className="mt-10 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-white/30">
+            Divine Acquisition · Private to you
           </p>
         </div>
       );
@@ -222,8 +225,8 @@ export default function AgreementView({ token, initial, signFields = { signature
 
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex min-h-[80vh] w-full max-w-md flex-col items-center justify-center">
-      <Logo className="mb-8 h-7 w-auto" />
+    <div className="mx-auto flex min-h-[82vh] w-full max-w-[440px] flex-col items-center justify-center">
+      <Logo className="mb-10 h-6 w-auto" />
       {children}
     </div>
   );
@@ -231,7 +234,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="w-full animate-rise rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-7 text-center">
+    <div className="w-full animate-rise rounded-[28px] border border-white/10 bg-white/[0.04] px-8 py-10 text-center shadow-[0_30px_80px_rgba(0,0,0,0.35)] sm:px-10">
       {children}
     </div>
   );

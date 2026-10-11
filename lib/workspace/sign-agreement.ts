@@ -49,6 +49,11 @@ async function loadCatalogue(token: string): Promise<SigningCatalogue | null> {
   return catalogueFromSigningPayload(raw);
 }
 
+/** The DocuSeal template behind a signing token, for the in-page document. */
+export async function loadSigningCatalogue(token: string): Promise<SigningCatalogue | null> {
+  return loadCatalogue(token);
+}
+
 /** Prefer the live template so a signature lands on the fields DocuSeal has now. */
 async function resolveCatalogueFields(catalogue: SigningCatalogue, timeoutMs: number): Promise<SigningCatalogue> {
   const apiKey = await readDocuSealApiKey();
