@@ -11,8 +11,10 @@ import {
   submitLessonQuiz,
   type LessonQuizState,
 } from '@/lib/academy/quizActions';
+import Logo from '@/app/components/Logo';
 import { inApp } from '@/lib/academy/comms';
 import { LessonSurface } from './LessonSurface';
+import { QuizMisses, type QuizMiss } from './QuizMisses';
 
 type Question = {
   id: string;
@@ -30,7 +32,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [previewAnswers, setPreviewAnswers] = useState<Record<string, string>>({});
-  const [previewResult, setPreviewResult] = useState<{ score: number; total: number; percent: number; passed: boolean } | null>(null);
+  const [previewResult, setPreviewResult] = useState<{ score: number; total: number; percent: number; passed: boolean; misses: QuizMiss[] } | null>(null);
 
   const liveQuestions = state.attempt?.questions ?? [];
   const previewQuestions = state.questions ?? [];
@@ -95,14 +97,27 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
     setPending(true);
     if (state.preview) {
       let score = 0;
+      const misses: QuizMiss[] = [];
       const entries = Object.entries(answers ?? previewAnswers);
       for (const [questionId, optionId] of entries) {
         const checked = await checkLessonAnswer(questionId, optionId);
+        const asked = questions.find((item) => item.id === questionId);
+        const chosen = asked?.options.find((option) => option.id === optionId);
         if (checked.ok && checked.correct) score += 1;
+        else if (checked.ok) {
+          misses.push({
+            id: questionId,
+            prompt: asked?.prompt ?? '',
+            scenario: asked?.scenario,
+            your_text: chosen?.text ?? 'No answer selected',
+            correct_text: checked.correctText,
+            explanation: checked.explanation,
+          });
+        }
       }
       const total = questions.length;
       const percent = total === 0 ? 0 : Math.round((score / total) * 1000) / 10;
-      setPreviewResult({ score, total, percent, passed: total > 0 && (score / total) * 100 >= 85 });
+      setPreviewResult({ score, total, percent, passed: total > 0 && (score / total) * 100 >= 85, misses });
       setPending(false);
       setIndex(questions.length);
       return;
@@ -125,6 +140,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
   if (!state.has_quiz) return null;
 
   const progress = questions.length === 0 ? 0 : Math.round(((Math.min(index, questions.length - 1) + (result ? 1 : 0)) / questions.length) * 100);
+  const record = state.preview ? previewResult?.misses ?? [] : state.first_attempt?.passed === false ? state.first_attempt.misses ?? [] : [];
 
   return (
     <>
@@ -144,6 +160,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
             <p className="text-sm text-neutral-200">{inApp.quiz.flagged}</p>
           ) : null}
           {error ? <p className="text-sm text-red-200">{error}</p> : null}
+          {!state.passed && record.length > 0 ? <QuizMisses misses={record} /> : null}
           {!state.passed && (state.preview || (state.attempts_remaining ?? 0) > 0) ? (
             <button
               type="button"
@@ -168,13 +185,14 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                 >
                   <div className="space-y-5 p-5 sm:p-7">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C3B6FE]">
-                        {result ? 'Result' : `Question ${index + 1} of ${questions.length}`}
-                      </p>
+                      <Logo className="h-6 w-auto" />
                       <button type="button" className="text-sm text-neutral-400" onClick={() => setOpen(false)}>
                         Close
                       </button>
                     </div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C3B6FE]">
+                      {result ? 'Result' : `Question ${index + 1} of ${questions.length}`}
+                    </p>
                     <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
                       <div className="h-full rounded-full bg-[#9A88FC]" style={{ width: `${result ? 100 : progress}%` }} />
                     </div>
@@ -191,6 +209,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                         ) : (
                           <p className="text-sm text-neutral-300">{state.attempts_remaining} attempts left.</p>
                         )}
+                        {!result.passed && record.length > 0 ? <QuizMisses misses={record} /> : null}
                         <button
                           type="button"
                           className="inline-flex min-h-11 items-center rounded-full bg-[#9A88FC] px-5 text-sm font-semibold text-[#07070b]"

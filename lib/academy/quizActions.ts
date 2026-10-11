@@ -37,6 +37,13 @@ export type LessonQuizState = {
   pass_percent?: number;
   preview?: boolean;
   flagged?: boolean;
+  first_attempt?: {
+    attempt_number?: number;
+    score?: number;
+    total?: number;
+    passed?: boolean;
+    misses?: { id: string; prompt: string; scenario?: string | null; your_text?: string | null; correct_text?: string | null; explanation?: string | null }[];
+  } | null;
   questions?: { id: string; prompt: string; scenario?: string | null; options: { id: string; text: string }[] }[];
   attempt?: {
     id: string;

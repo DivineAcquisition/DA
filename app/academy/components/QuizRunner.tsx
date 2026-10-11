@@ -7,6 +7,7 @@ import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { inApp } from '@/lib/academy/comms';
 import { saveQuizAnswer, startQuiz, submitQuiz } from '@/lib/academy/quizActions';
 import Panel from './Panel';
+import { QuizMisses } from './QuizMisses';
 
 type Option = { id: string; text: string };
 type Question = {
@@ -44,6 +45,13 @@ export type QuizState = {
   retest_on?: string | null;
   reopen?: Reopen[];
   warning?: string | null;
+  first_attempt?: {
+    attempt_number?: number;
+    score?: number;
+    total?: number;
+    passed?: boolean;
+    misses?: { id: string; prompt: string; scenario?: string | null; your_text?: string | null; correct_text?: string | null; explanation?: string | null }[];
+  } | null;
   attempt?: { id?: string; started_at?: string; time_limit_seconds?: number | null; questions?: Question[] } | null;
   result?: {
     score?: number;
@@ -133,6 +141,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
   }
 
   const title = state.kind === 'final' ? 'Final Quiz' : `Module ${state.module_order} quiz`;
+  const firstMisses = state.first_attempt?.passed === false ? state.first_attempt.misses ?? [] : [];
 
   return (
     <article className="space-y-5">
@@ -140,7 +149,10 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
         <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
           {state.module_title}
         </AnimatedShinyText>
-        <h1 className="mt-2 text-2xl font-semibold">{title}</h1>
+        <h1 className="mt-2 text-xl font-semibold tracking-tight">{title}</h1>
+        <p className="mt-1 text-sm text-neutral-400">
+          {state.attempts_used ?? 0} of {state.attempts_allowed ?? 0} attempts used. You need {state.pass_mark_label ?? 'the pass mark'}.
+        </p>
       </div>
 
       {state.phase === 'unavailable' ? (
@@ -224,6 +236,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
               {(state.reopen ?? []).length > 0 ? (
                 <p className="text-sm text-neutral-300">Reopen every linked lesson before the next attempt.</p>
               ) : null}
+              {firstMisses.length > 0 ? <QuizMisses misses={firstMisses} /> : null}
             </div>
           ) : null}
           <button
@@ -241,13 +254,18 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
       {state.phase === 'take' && question ? (
         <Panel beam>
         <section className="space-y-4 p-5">
-          <div className="flex items-center justify-between text-sm text-neutral-300">
-            <span>{inApp.quiz.progress(index + 1, questions.length)}</span>
-            {remaining !== null ? (
-              <span>
-                {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}
-              </span>
-            ) : null}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm text-neutral-300">
+              <span>{inApp.quiz.progress(index + 1, questions.length)}</span>
+              {remaining !== null ? (
+                <span>
+                  {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}
+                </span>
+              ) : null}
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+              <div className="h-full rounded-full bg-[#9A88FC]" style={{ width: `${Math.round(((index + 1) / Math.max(questions.length, 1)) * 100)}%` }} />
+            </div>
           </div>
           {question.scenario ? <p className="text-sm leading-relaxed text-neutral-300">{question.scenario}</p> : null}
           <h2 className="text-lg font-semibold leading-snug">{question.prompt}</h2>
@@ -257,8 +275,8 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
                 key={option.id}
                 type="button"
                 onClick={() => void choose(option.id)}
-                className={`min-h-11 w-full rounded-xl border px-4 py-3 text-left text-base ${
-                  question.selected === option.id ? 'border-[#937DFF] bg-[#6A00FF]/20' : 'border-white/10'
+                className={`min-h-12 w-full rounded-2xl border px-4 py-3 text-left text-sm ${
+                  question.selected === option.id ? 'border-[#C3B6FE] bg-[#2c2454] text-white' : 'border-white/10 bg-[#1e1d28] text-neutral-100'
                 }`}
               >
                 {option.text}
