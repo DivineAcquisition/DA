@@ -5,8 +5,9 @@ import {
   AIRTABLE_BASE_ID,
   AIRTABLE_ENTRY_POINT,
   AIRTABLE_LEADS_TABLE_ID,
-  GHL_PIT_TOKEN,
 } from './config';
+import { ghlPit, ghlPitSync } from '@/lib/ghl/pit';
+import { redact } from '@/lib/ghl/rules';
 import {
   GHL_CONTACT_FIELDS,
   applicationFieldValues,
@@ -55,9 +56,9 @@ type GhlCustomField = {
 
 type ResolvedGhlFields = Partial<Record<GhlFieldKey, string>>;
 
-function ghlHeaders(): HeadersInit {
+async function ghlHeaders(): Promise<HeadersInit> {
   return {
-    Authorization: `Bearer ${GHL_PIT_TOKEN}`,
+    Authorization: `Bearer ${await ghlPit()}`,
     Version: '2021-07-28',
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -78,13 +79,16 @@ export async function ghlFetch<T>(path: string, init: RequestInit, step: string)
   try {
     const response = await fetch(`${GHL_API}${path}`, {
       ...init,
-      headers: { ...ghlHeaders(), ...init.headers },
+      headers: { ...(await ghlHeaders()), ...init.headers },
       signal: controller.signal,
       cache: 'no-store',
     });
     const text = await readBody(response);
     if (!response.ok) {
-      throw new PipelineStepError(step, `GHL ${init.method ?? 'GET'} ${path} failed (${response.status}): ${text}`);
+      throw new PipelineStepError(
+        step,
+        redact(`GHL ${init.method ?? 'GET'} ${path} failed (${response.status}): ${text}`, [ghlPitSync()]),
+      );
     }
     if (!text) return {} as T;
     return JSON.parse(text) as T;
@@ -126,7 +130,7 @@ export async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
     if ('envId' in spec && spec.envId) resolved[spec.key] = spec.envId;
   }
 
-  if (!GHL_PIT_TOKEN || !ACQ_GHL_LOCATION_ID) return resolved;
+  if (!(await ghlPit()) || !ACQ_GHL_LOCATION_ID) return resolved;
 
   try {
     const payload = await ghlFetch<{ customFields?: GhlCustomField[] }>(
@@ -211,7 +215,15 @@ export async function removeGhlTags(contactId: string, tags: string[], step: str
 }
 
 export function ghlConfigured(): boolean {
-  return Boolean(GHL_PIT_TOKEN && ACQ_GHL_LOCATION_ID);
+  return Boolean(ghlPitSync() && ACQ_GHL_LOCATION_ID);
+}
+
+export async function ghlReady(): Promise<boolean> {
+  return Boolean((await ghlPit()) && ACQ_GHL_LOCATION_ID);
+}
+
+export function forgetGhlCustomFields(): void {
+  customFieldCache = null;
 }
 
 export function airtableConfigured(): boolean {
@@ -226,10 +238,10 @@ export async function upsertGhlContact(
   payload: QualificationPayload,
   extras: { stage?: LeadStage } = {},
 ): Promise<GhlContactRef> {
-  if (!ghlConfigured()) {
+  if (!(await ghlReady())) {
     throw new PipelineStepError(
       'ghl-contact',
-      'ACQ GHL location or PIT token is not configured. Set ACQ_GHL_LOCATION_ID and GHL_PIT_TOKEN.',
+      'ACQ GHL location or PIT token is not configured. Save the token in Workspace settings or set GHL_PIT_TOKEN.',
     );
   }
 
@@ -298,7 +310,7 @@ export async function writeScoreToGhl(
   contactId: string,
   score: AirtableScore,
 ): Promise<void> {
-  if (!ghlConfigured()) {
+  if (!(await ghlReady())) {
     throw new PipelineStepError('ghl-score', 'ACQ GHL location or PIT token is not configured.');
   }
 

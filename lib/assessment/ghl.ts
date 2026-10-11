@@ -1,11 +1,12 @@
 import { SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
-import { GHL_CALENDAR_ID, GHL_LOCATION_ID, GHL_PIT_TOKEN } from './config';
+import { ghlPit } from '@/lib/ghl/pit';
+import { GHL_CALENDAR_ID, GHL_LOCATION_ID } from './config';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 
-function ghlHeaders(): HeadersInit {
+async function ghlHeaders(): Promise<HeadersInit> {
   return {
-    Authorization: `Bearer ${GHL_PIT_TOKEN}`,
+    Authorization: `Bearer ${await ghlPit()}`,
     Version: '2021-07-28',
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -25,7 +26,7 @@ export async function upsertTalentContact(input: {
   source?: string;
   tags?: string[];
 }): Promise<GhlContactResult> {
-  if (!GHL_PIT_TOKEN) return { contactId: null };
+  if (!(await ghlPit())) return { contactId: null };
 
   const parts = input.fullName.trim().split(/\s+/);
   const firstName = parts[0] ?? '';
@@ -49,7 +50,7 @@ export async function upsertTalentContact(input: {
   try {
     const response = await fetch(`${GHL_API}/contacts/upsert`, {
       method: 'POST',
-      headers: ghlHeaders(),
+      headers: await ghlHeaders(),
       body: JSON.stringify(body),
     });
 
@@ -90,8 +91,8 @@ export async function createTalentAppointment(input: {
   notes?: string | null;
   toNotify?: boolean;
 }): Promise<CreatedGhlAppointment> {
-  if (!GHL_PIT_TOKEN) {
-    throw new Error('GHL_PIT_TOKEN is not configured');
+  if (!(await ghlPit())) {
+    throw new Error('The GHL token is not configured');
   }
   if (!input.contactId) {
     throw new Error('GHL contact id is required to create an appointment');
@@ -121,7 +122,7 @@ export async function createTalentAppointment(input: {
 
   const response = await fetch(`${GHL_API}/calendars/events/appointments`, {
     method: 'POST',
-    headers: ghlHeaders(),
+    headers: await ghlHeaders(),
     body: JSON.stringify(body),
   });
 
@@ -167,8 +168,8 @@ export async function bookAssessmentInGhl(input: {
   endsAt: string;
   meetUrl?: string | null;
 }): Promise<{ contactId: string; appointmentId: string }> {
-  if (!GHL_PIT_TOKEN) {
-    throw new Error('GHL_PIT_TOKEN is not configured');
+  if (!(await ghlPit())) {
+    throw new Error('The GHL token is not configured');
   }
 
   const { contactId } = await upsertTalentContact({

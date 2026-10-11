@@ -8,7 +8,7 @@ import {
   type AssessmentInviteRow,
 } from '@/lib/assessment/actions';
 import { calendarConfigured } from '@/lib/assessment/calendar';
-import { GHL_PIT_TOKEN } from '@/lib/assessment/config';
+import { ghlPit } from '@/lib/ghl/pit';
 
 function inviteStatus(invite: AssessmentInviteRow): { label: string; tone: string } {
   const now = Date.now();
@@ -40,7 +40,7 @@ export default async function AssessmentBookingPanel() {
     listAssessmentBookings(),
   ]);
   const calendarReady = calendarConfigured();
-  const ghlReady = Boolean(GHL_PIT_TOKEN);
+  const ghlReady = Boolean(await ghlPit());
 
   return (
     <div className="space-y-8">

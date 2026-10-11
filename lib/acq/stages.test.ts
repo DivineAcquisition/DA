@@ -50,11 +50,11 @@ describe('GHL pipeline mapping', () => {
     ],
   };
 
-  it('picks the pipeline by id, then name, then the only one', () => {
+  it('picks the pipeline by id or name only', () => {
     const other: GhlPipeline = { id: 'p2', name: 'Recruiting', stages: [] };
     expect(pickPipeline([other, pipeline], { id: 'p1' })?.id).toBe('p1');
     expect(pickPipeline([other, pipeline], { name: 'divineacq sales pipeline' })?.id).toBe('p1');
-    expect(pickPipeline([pipeline], { name: 'Missing' })?.id).toBe('p1');
+    expect(pickPipeline([pipeline], { name: 'Missing' })).toBeNull();
     expect(pickPipeline([other, pipeline], { name: 'Missing' })).toBeNull();
   });
 

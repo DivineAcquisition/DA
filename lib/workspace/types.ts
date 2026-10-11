@@ -163,6 +163,8 @@ export type DaSettings = {
   updated_at: string;
   /** True when a destination PAT is stored. The secret itself is never sent to the client. */
   pipeline_airtable_pat_set: boolean;
+  /** True when a GHL Private Integration Token is stored. Never sent to the client. */
+  ghl_pit_token_set: boolean;
 };
 
 export type ActionResult =

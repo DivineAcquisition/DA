@@ -19,7 +19,6 @@ export const RESEND_CC = (
   .map((email) => email.trim())
   .filter(Boolean);
 
-export const GHL_PIT_TOKEN = process.env.GHL_PIT_TOKEN ?? '';
 /** Talent acquisition subaccount location (Assessment Interview calendar). */
 export const GHL_LOCATION_ID =
   process.env.GHL_LOCATION_ID?.trim() || 'pNbNaLXpftikGN2jOFKG';

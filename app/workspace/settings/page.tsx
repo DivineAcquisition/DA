@@ -1,24 +1,39 @@
+import GhlSetupPanel, { type GhlSetupRun } from '../components/GhlSetupPanel';
 import SettingsForm from '../components/SettingsForm';
 import SyncDocuSealButton from '../components/SyncControls';
 import { Badge, EmptyState, PageHeader } from '../components/ui';
 import { ws } from '../components/tokens';
 import { formatDateTime } from '@/lib/workspace/format';
+import { workspaceClient } from '@/lib/workspace/db';
 import { getDocuSealConnection, getLatestSyncRun, getSettings } from '@/lib/workspace/queries';
+
+async function latestGhlRun(): Promise<GhlSetupRun | null> {
+  const supabase = await workspaceClient();
+  if (!supabase) return null;
+  const { data } = await supabase
+    .from('ghl_setup_run')
+    .select('ran_at, ok, summary')
+    .order('ran_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return (data as GhlSetupRun | null) ?? null;
+}
 
 export const dynamic = 'force-dynamic';
 
 export default async function SettingsPage() {
   const settings = await getSettings();
-  const [connection, lastSync] = await Promise.all([
+  const [connection, lastSync, lastGhlRun] = await Promise.all([
     getDocuSealConnection(settings),
     getLatestSyncRun(),
+    latestGhlRun(),
   ]);
 
   return (
     <div className="animate-rise space-y-6">
       <PageHeader
         title="Settings"
-        description="Signing credentials, lead-list destination, field mapping, and the public URL. Values are stored in the database."
+        description="Signing credentials, GoHighLevel, lead-list destination, field mapping, and the public URL. Values are stored in the database."
         actions={<SyncDocuSealButton variant="secondary" />}
       />
 
@@ -49,6 +64,8 @@ export default async function SettingsPage() {
           </div>
         </div>
       </section>
+
+      <GhlSetupPanel lastRun={lastGhlRun} />
 
       {!settings ? (
         <EmptyState

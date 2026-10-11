@@ -35,11 +35,13 @@ function omitBackendSecrets(row: Record<string, unknown>): Record<string, unknow
   const {
     pipeline_airtable_pat: _airtablePat,
     pipeline_call_webhook_secret: _callSecret,
+    ghl_pit_token: _ghlPit,
     ...safe
   } = row;
   return {
     ...safe,
     pipeline_airtable_pat_set: Boolean(String(_airtablePat ?? '').trim()),
+    ghl_pit_token_set: Boolean(String(_ghlPit ?? '').trim()),
   };
 }
 
@@ -56,6 +58,7 @@ function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings |
     company_title: String(safe.company_title ?? ''),
     last_synced_at: (safe.last_synced_at as string | null) ?? null,
     pipeline_airtable_pat_set: Boolean(safe.pipeline_airtable_pat_set),
+    ghl_pit_token_set: Boolean(safe.ghl_pit_token_set),
   };
 }
 

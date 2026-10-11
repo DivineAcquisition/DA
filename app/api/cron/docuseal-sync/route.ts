@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
     prefill_readonly: row.prefill_readonly === true,
     last_synced_at: (row.last_synced_at as string | null) ?? null,
     pipeline_airtable_pat_set: Boolean(String(row.pipeline_airtable_pat ?? '').trim()),
+    ghl_pit_token_set: Boolean(String(row.ghl_pit_token ?? '').trim()),
   };
 
   const result = await syncDocuSeal(supabase as never, settings);

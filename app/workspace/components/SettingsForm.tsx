@@ -106,6 +106,23 @@ export default function SettingsForm({ settings }: { settings: DaSettings }) {
         </Field>
       </div>
 
+      <div className="space-y-3 rounded-xl border border-white/10 bg-ink-950 p-4">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">
+          GoHighLevel
+        </p>
+        <p className="text-sm text-neutral-500">
+          Private Integration Token for the DivineACQ location. Contacts, tags, fields, the lead
+          pipeline, texts and audit messages all use it. A GHL_PIT_TOKEN on the server wins.
+        </p>
+        <Field label="GHL Private Integration Token" hint="Leave blank to keep the current token.">
+          <SecretInput
+            name="ghl_pit_token"
+            defaultValue={settings.ghl_pit_token_set ? 'stored' : ''}
+            placeholder="pit-…"
+          />
+        </Field>
+      </div>
+
       <div className="space-y-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-page)] p-4">
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]">
           Automatic field mapping

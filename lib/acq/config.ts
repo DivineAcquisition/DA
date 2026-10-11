@@ -49,13 +49,9 @@ export const ACQ_GHL_LOCATION_ID =
   process.env.GHL_LOCATION_ID?.trim() ||
   'pNbNaLXpftikGN2jOFKG';
 
-/** Private Integration Token. GHL_PIT_KEY is accepted as an alias. */
-export const GHL_PIT_TOKEN =
-  process.env.GHL_PIT_TOKEN?.trim() || process.env.GHL_PIT_KEY?.trim() || '';
-
 /**
- * The GHL pipeline leads move through. An id wins; otherwise the pipeline is
- * matched by name, or used when it is the only one on the location.
+ * The GHL pipeline leads move through. An id wins; otherwise it is matched by
+ * name. Build in GHL (Workspace settings) creates it when it is missing.
  */
 export const ACQ_GHL_PIPELINE_ID = process.env.ACQ_GHL_PIPELINE_ID?.trim() || '';
 export const ACQ_GHL_PIPELINE_NAME = process.env.ACQ_GHL_PIPELINE_NAME?.trim() || 'DivineACQ Sales Pipeline';
