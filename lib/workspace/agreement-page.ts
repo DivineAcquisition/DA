@@ -54,6 +54,13 @@ type RawPage = {
 
 const INVALID: AgreementPageState = { state: 'invalid' };
 
+/** Sync writes this when a template has no real description. It is not copy for a signer. */
+export function signerFacingDescription(value: string | null | undefined): string | null {
+  const text = (value ?? '').trim();
+  if (!text || /^pulled from docuseal\b/i.test(text)) return null;
+  return text;
+}
+
 /** DocuSeal's embed only loads from DocuSeal; anything else is not rendered. */
 function safeEmbedSrc(src: string | null | undefined): string | null {
   if (!src) return null;
@@ -111,7 +118,7 @@ export async function loadAgreementPage(
         recipientName: raw.recipient_name ?? '',
         businessName: raw.business_name ?? null,
         templateName: raw.template_name ?? 'Agreement',
-        templateDescription: raw.template_description ?? null,
+        templateDescription: signerFacingDescription(raw.template_description),
         embedSrc: safeEmbedSrc(raw.embed_src),
         email: raw.email ?? '',
         recipientType: raw.recipient_type === 'operator' ? 'operator' : 'client',
