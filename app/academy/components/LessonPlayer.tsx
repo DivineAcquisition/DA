@@ -310,10 +310,6 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         </p>
       </div>
 
-      {lesson.preview ? (
-        <p className="rounded-2xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm">Preview. This does not record progress.</p>
-      ) : null}
-
       {lesson.video ? (
         <LessonMedia
           lessonId={lesson.id}
@@ -358,42 +354,44 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
 
       {note ? <p className="text-sm text-red-200">{note}</p> : null}
 
-      {!lesson.preview ? (
-        <div className="sticky bottom-3 rounded-3xl border border-white/10 bg-[#100f18]/95 p-4 shadow-[0_16px_50px_-24px_rgba(106,0,255,0.8)]">
-          {complete ? <p className="text-sm font-semibold text-[#937DFF]">Completed.</p> : null}
-          {missing.length > 0 && !complete ? (
-            <ul className="mb-3 space-y-1 text-sm text-neutral-300">
-              {missing.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
-          <button
-            type="button"
-            disabled={complete || missing.length > 0}
-            className="min-h-12 w-full rounded-2xl bg-[#9A88FC] text-sm font-semibold text-[#07070b] disabled:opacity-40"
-            onClick={() => {
-              void markLessonComplete(lesson.id).then((result) => {
-                setMissing(result.missing);
-                setComplete(result.complete);
-              });
-            }}
-          >
-            Mark complete
-          </button>
-        </div>
-      ) : null}
+      <div className="sticky bottom-3 rounded-3xl border border-white/10 bg-[#100f18]/95 p-4 shadow-[0_16px_50px_-24px_rgba(106,0,255,0.8)]">
+        {complete ? <p className="text-sm font-semibold text-[#937DFF]">Completed.</p> : null}
+        {missing.length > 0 && !complete ? (
+          <ul className="mb-3 space-y-1 text-sm text-neutral-300">
+            {missing.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : null}
+        <button
+          type="button"
+          disabled={complete || missing.length > 0}
+          className="min-h-12 w-full rounded-2xl bg-[#9A88FC] text-sm font-semibold text-[#07070b] disabled:opacity-40"
+          onClick={() => {
+            if (lesson.preview) {
+              setNote('This is the student view. Progress is not recorded.');
+              return;
+            }
+            void markLessonComplete(lesson.id).then((result) => {
+              setMissing(result.missing);
+              setComplete(result.complete);
+            });
+          }}
+        >
+          Mark complete
+        </button>
+      </div>
 
       <div className="flex items-center justify-between gap-3 text-sm">
         {lesson.prevId ? (
-          <Link href={`/academy/modules/${lesson.moduleId}/lessons/${lesson.prevId}`} className="min-h-11 inline-flex items-center text-[#937DFF]">
+          <Link href={lesson.preview ? `/workspace/academy/preview/${lesson.prevId}` : `/academy/modules/${lesson.moduleId}/lessons/${lesson.prevId}`} className="min-h-11 inline-flex items-center text-[#937DFF]">
             Previous
           </Link>
         ) : (
           <span />
         )}
-        {lesson.nextId && lesson.nextOpen ? (
-          <Link href={`/academy/modules/${lesson.moduleId}/lessons/${lesson.nextId}`} className="min-h-11 inline-flex items-center text-[#937DFF]">
+        {lesson.nextId && (lesson.nextOpen || lesson.preview) ? (
+          <Link href={lesson.preview ? `/workspace/academy/preview/${lesson.nextId}` : `/academy/modules/${lesson.moduleId}/lessons/${lesson.nextId}`} className="min-h-11 inline-flex items-center text-[#937DFF]">
             Next
           </Link>
         ) : (

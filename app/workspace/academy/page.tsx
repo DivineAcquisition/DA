@@ -96,10 +96,10 @@ export default async function AcademyAdminPage() {
           ) : (
             <ul>
               {module.lessons.map((lesson) => (
-                <li key={lesson.id} className="border-t border-white/5 first:border-t-0">
+                <li key={lesson.id} className="flex items-stretch border-t border-white/5 first:border-t-0">
                   <Link
                     href={`/workspace/academy/lessons/${lesson.id}`}
-                    className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 transition hover:bg-white/[0.03] sm:px-5"
+                    className="flex min-w-0 flex-1 flex-wrap items-center justify-between gap-3 px-4 py-3 transition hover:bg-white/[0.03] sm:px-5"
                   >
                     <span>
                       <span className="block font-medium text-white">{lesson.title}</span>
@@ -124,6 +124,12 @@ export default async function AcademyAdminPage() {
                         {lesson.status}
                       </span>
                     </span>
+                  </Link>
+                  <Link
+                    href={`/workspace/academy/preview/${lesson.id}`}
+                    className="inline-flex shrink-0 items-center px-4 text-sm font-semibold text-brand-200 hover:bg-white/[0.03]"
+                  >
+                    Student view
                   </Link>
                 </li>
               ))}
