@@ -1,26 +1,31 @@
 import Link from 'next/link';
+import { inApp } from '@/lib/academy/comms';
 import { acknowledgePlan } from '@/lib/academy/holdActions';
 import { formatAcademyDate } from '@/lib/academy/paths';
 import type { AcademyShell } from '@/lib/academy/types';
 import Panel from './Panel';
 
-export default function Dashboard({ shell, error }: { shell: AcademyShell; error?: string }) {
+export default function Dashboard({ shell, error, firstName }: { shell: AcademyShell; error?: string; firstName?: string }) {
   const started = formatAcademyDate(shell.enrollment?.startDate);
   const target = formatAcademyDate(shell.enrollment?.targetDate);
   const granted = formatAcademyDate(shell.certification?.grantedAt);
   const recert = formatAcademyDate(shell.certification?.recertifyOn);
+  const banner = shell.state === 'stalled' ? inApp.dashboard.stalled(shell.nextAction?.title) : shell.banner;
+  const moduleNumber = shell.currentModule?.order ?? Math.max(shell.progress.completed, 1);
+  const moduleTotal = shell.modules.length || shell.progress.total;
 
   return (
     <div className="space-y-4">
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">DA Operator Academy</p>
-        <h1 className="mt-2 text-2xl font-semibold">{shell.program?.name ?? 'Your program'}</h1>
+        <h1 className="mt-2 text-2xl font-semibold">{inApp.dashboard.greeting(firstName)}</h1>
+        {shell.program?.name ? <p className="mt-1 text-sm text-neutral-400">{shell.program.name}</p> : null}
         {shell.enrollment?.track ? <p className="mt-1 text-sm text-neutral-400">Track: {shell.enrollment.track}</p> : null}
       </div>
 
-      {shell.banner ? (
+      {banner ? (
         <p className="rounded-2xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm leading-relaxed text-white">
-          {shell.banner}
+          {banner}
         </p>
       ) : null}
 
@@ -29,6 +34,11 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
           <h2 className="text-sm font-semibold text-[#937DFF]">
             {shell.remediation.outcome === 'extend' ? 'Your re-test plan' : 'Your plan'}
           </h2>
+          <p className="text-sm leading-relaxed text-white">
+            {shell.remediation.outcome === 'extend' && shell.remediation.retestOn
+              ? inApp.hold.extend(formatAcademyDate(shell.remediation.retestOn) ?? shell.remediation.retestOn)
+              : inApp.hold.reset(shell.remediation.attemptsGranted)}
+          </p>
           <p className="text-sm leading-relaxed text-white">{shell.remediation.plan}</p>
           <p className="text-sm text-neutral-200">Attempts granted: {shell.remediation.attemptsGranted}.</p>
           {shell.remediation.retestOn ? (
@@ -63,7 +73,7 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
             <form action={acknowledgePlan}>
               <input type="hidden" name="hold" value={shell.remediation.holdId} />
               <button type="submit" className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white">
-                I have read the plan
+                {inApp.hold.acknowledge}
               </button>
             </form>
           )}
@@ -73,8 +83,7 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
       <Panel className="p-5">
         <h2 className="text-sm font-semibold text-neutral-300">Progress</h2>
         <p className="mt-2 text-2xl font-semibold tracking-tight">
-          {shell.progress.completed} of {shell.progress.total}{' '}
-          {shell.progress.unit === 'lessons' ? 'lessons' : 'modules'} complete
+          {moduleTotal > 0 ? inApp.dashboard.progress(moduleNumber, moduleTotal, shell.progress.percent) : `${shell.progress.percent} percent complete.`}
         </p>
         <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10" role="presentation">
           <div className="h-full rounded-full bg-[#9A88FC]" style={{ width: `${Math.min(100, Math.max(0, shell.progress.percent))}%` }} />
@@ -112,14 +121,14 @@ export default function Dashboard({ shell, error }: { shell: AcademyShell; error
       {shell.nextAction ? (
         <Panel beam className="bg-[#6A00FF]/10 p-5">
           <h2 className="text-sm font-semibold text-[#937DFF]">Next</h2>
-          <p className="mt-2 text-lg font-semibold">{shell.nextAction.title}</p>
+          <p className="mt-2 text-lg font-semibold">{inApp.dashboard.next(shell.nextAction.title)}</p>
           {shell.nextAction.detail ? <p className="mt-1 text-sm leading-relaxed text-neutral-300">{shell.nextAction.detail}</p> : null}
           {shell.nextAction.href ? (
             <Link
               href={shell.nextAction.href}
               className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white"
             >
-              Open
+              Continue
             </Link>
           ) : null}
         </Panel>

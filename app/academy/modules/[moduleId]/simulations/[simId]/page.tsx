@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { controlRpc } from '@/lib/ad/rpc';
+import { inApp } from '@/lib/academy/comms';
 import { beginSimulation } from '@/lib/academy/simActions';
 import { loadAcademyShell } from '@/lib/academy/load';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -59,13 +60,17 @@ export default async function SimulationPage({
       <div>
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">Simulation</p>
         <h1 className="mt-2 text-2xl font-semibold">{data.title}</h1>
-        <p className="mt-3 text-sm leading-relaxed text-neutral-300">{data.brief}</p>
+        <p className="mt-3 text-sm leading-relaxed text-neutral-300">{inApp.simulation.start}</p>
+        {data.brief ? <p className="mt-3 text-sm leading-relaxed text-neutral-300">{data.brief}</p> : null}
       </div>
       <p className="text-sm text-neutral-300">
-        The lead is an AI playing a fictional person. Maximum {data.max_turns} turns.
+        Maximum {data.max_turns} turns.
         {data.time_limit_seconds ? ` Time limit ${Math.round(data.time_limit_seconds / 60)} minutes.` : ''} Pass score {data.pass_score}.
         Attempts used {data.attempts_used} of {data.attempts_allowed}. Sessions today {data.sessions_today ?? 0} of {data.daily_limit}.
       </p>
+      {data.daily_limit != null && (data.sessions_today ?? 0) >= data.daily_limit ? (
+        <p className="text-sm text-neutral-200">{inApp.simulation.dailyLimit}</p>
+      ) : null}
       {data.locked && data.lockout_until ? (
         <p className="text-sm text-neutral-300">Next attempt opens {new Date(data.lockout_until).toLocaleString()}.</p>
       ) : null}
@@ -85,8 +90,16 @@ export default async function SimulationPage({
       {query.error ? <p className="text-sm text-white">{query.error}</p> : null}
       {session?.status === 'graded' || session?.status === 'needs_manual' ? (
         <section className="space-y-2 rounded-3xl border border-white/10 p-4">
-          <h2 className="text-lg font-semibold">{session.status === 'needs_manual' ? 'Needs manual grading' : session.passed ? 'Passed' : 'Not passed'}</h2>
-          {session.score !== null && session.score !== undefined ? <p className="text-sm">Score {session.score}.</p> : null}
+          <h2 className="text-lg font-semibold">
+            {session.status === 'needs_manual'
+              ? inApp.simulation.manual
+              : session.passed
+                ? inApp.simulation.pass(session.score ?? 0)
+                : (session.score ?? 0) >= (data.pass_score ?? 101)
+                  ? inApp.simulation.failCompliance
+                  : inApp.simulation.failScore(session.score ?? 0, data.pass_score ?? 0)}
+          </h2>
+          {session.persona && session.passed ? <p className="text-sm text-neutral-200">{inApp.simulation.reveal}</p> : null}
           {session.fail_reason ? <p className="text-sm text-neutral-200">{session.fail_reason}</p> : null}
           {session.summary ? <p className="text-sm text-neutral-300">{session.summary}</p> : null}
           {(session.violations ?? []).length > 0 ? (

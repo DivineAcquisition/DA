@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
 import { controlRpc, readable } from '@/lib/ad/rpc';
+import { inApp } from '@/lib/academy/comms';
 import { gradeReflectionAttempt } from '@/lib/academy/simActions';
 import { loadAcademyShell } from '@/lib/academy/load';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -69,7 +70,9 @@ export default async function ReflectionPage({
       {query.error ? <p className="text-sm text-white">{query.error}</p> : null}
       {latest ? (
         <section className="space-y-2 rounded-3xl border border-white/10 p-4 text-sm text-neutral-200">
-          <h2 className="text-lg font-semibold">{latest.status === 'needs_manual' ? 'Needs manual grading' : latest.passed ? 'Passed' : 'Not passed'}</h2>
+          <h2 className="text-lg font-semibold">
+            {latest.status === 'needs_manual' ? inApp.simulation.manual : latest.passed ? inApp.reflection.passed : inApp.reflection.notYet}
+          </h2>
           {latest.score !== null && latest.score !== undefined ? <p>Score {latest.score}.</p> : null}
           {latest.fail_reason ? <p>{latest.fail_reason}</p> : null}
           {latest.summary ? <p className="text-neutral-300">{latest.summary}</p> : null}
