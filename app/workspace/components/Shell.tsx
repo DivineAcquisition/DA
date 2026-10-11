@@ -38,51 +38,6 @@ import {
 } from '@/lib/workspace/adminNav';
 import { interDisplay } from './fonts';
 
-const TONES: Record<NavTone, { active: string; idle: string; dot: string; text: string }> = {
-  violet: {
-    active: 'bg-linear-to-br from-violet-400/35 to-violet-600/10 ring-violet-300/35 text-violet-100 shadow-[0_0_18px_-4px] shadow-violet-500/50',
-    idle: 'text-violet-300/75',
-    dot: 'bg-violet-400',
-    text: 'text-violet-300',
-  },
-  sky: {
-    active: 'bg-linear-to-br from-sky-400/35 to-sky-600/10 ring-sky-300/35 text-sky-100 shadow-[0_0_18px_-4px] shadow-sky-500/50',
-    idle: 'text-sky-300/75',
-    dot: 'bg-sky-400',
-    text: 'text-sky-300',
-  },
-  emerald: {
-    active: 'bg-linear-to-br from-emerald-400/35 to-emerald-600/10 ring-emerald-300/35 text-emerald-100 shadow-[0_0_18px_-4px] shadow-emerald-500/50',
-    idle: 'text-emerald-300/75',
-    dot: 'bg-emerald-400',
-    text: 'text-emerald-300',
-  },
-  amber: {
-    active: 'bg-linear-to-br from-amber-400/35 to-amber-600/10 ring-amber-300/35 text-amber-100 shadow-[0_0_18px_-4px] shadow-amber-500/50',
-    idle: 'text-amber-300/75',
-    dot: 'bg-amber-400',
-    text: 'text-amber-300',
-  },
-  rose: {
-    active: 'bg-linear-to-br from-rose-400/35 to-rose-600/10 ring-rose-300/35 text-rose-100 shadow-[0_0_18px_-4px] shadow-rose-500/50',
-    idle: 'text-rose-300/75',
-    dot: 'bg-rose-400',
-    text: 'text-rose-300',
-  },
-  fuchsia: {
-    active: 'bg-linear-to-br from-fuchsia-400/35 to-fuchsia-600/10 ring-fuchsia-300/35 text-fuchsia-100 shadow-[0_0_18px_-4px] shadow-fuchsia-500/50',
-    idle: 'text-fuchsia-300/75',
-    dot: 'bg-fuchsia-400',
-    text: 'text-fuchsia-300',
-  },
-  slate: {
-    active: 'bg-linear-to-br from-slate-300/30 to-slate-500/10 ring-slate-200/30 text-slate-100 shadow-[0_0_18px_-4px] shadow-slate-400/40',
-    idle: 'text-slate-300/75',
-    dot: 'bg-slate-300',
-    text: 'text-slate-300',
-  },
-};
-
 const COLLAPSE_KEY = 'da-admin-sidebar-collapsed';
 const COLLAPSE_EVENT = 'da-admin-sidebar-toggle';
 const SEARCH_ID = 'da-admin-nav-search';
@@ -120,19 +75,17 @@ function initials(email: string) {
   return ((parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')).toUpperCase();
 }
 
-function IconTile({ icon: Glyph, tone, active, size = 'md' }: { icon: NavIcon; tone: NavTone; active: boolean; size?: 'md' | 'lg' }) {
+function IconTile({ icon: Glyph, active, size = 'md' }: { icon: NavIcon; tone?: NavTone; active: boolean; size?: 'md' | 'lg' }) {
   return (
-    <span
+    <Glyph
       className={cn(
-        'relative flex shrink-0 items-center justify-center rounded-[9px] ring-1 ring-inset transition-[background-color,box-shadow,color] duration-200',
-        size === 'lg' ? 'size-9' : 'size-7',
-        active
-          ? TONES[tone].active
-          : cn('bg-white/[0.035] ring-white/[0.07] group-hover/row:bg-white/[0.07] group-hover/row:ring-white/[0.12]', TONES[tone].idle),
+        'shrink-0',
+        size === 'lg' ? 'size-[18px]' : 'size-4',
+        active ? 'text-brand-200' : 'text-neutral-500 group-hover/row:text-neutral-200',
       )}
-    >
-      <Glyph className={size === 'lg' ? 'size-[17px]' : 'size-[15px]'} strokeWidth={1.9} aria-hidden />
-    </span>
+      strokeWidth={1.9}
+      aria-hidden
+    />
   );
 }
 
@@ -144,7 +97,7 @@ function ActiveGlow({ layoutId }: { layoutId: string }) {
     <motion.span
       layoutId={layoutId}
       transition={{ type: 'spring', stiffness: 520, damping: 42 }}
-      className="absolute inset-0 -z-10 rounded-[10px] bg-linear-to-r from-white/[0.085] to-white/[0.025] ring-1 ring-inset ring-white/[0.08]"
+      className="absolute inset-0 -z-10 rounded-lg bg-brand-500/12 shadow-[inset_2px_0_0_#9a88fc]"
       aria-hidden
     />
   );
@@ -180,8 +133,8 @@ function ExpandedItem({
         onClick={() => onNavigate(item.href)}
         aria-current={isCurrent ? 'page' : undefined}
         className={cn(
-          'flex min-w-0 flex-1 items-center gap-2.5 rounded-[10px] py-[5px] pl-[5px] pr-2 text-[13.5px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-          containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.035] hover:text-neutral-100',
+          'flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
+          containsActive ? 'text-brand-200' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
         )}
       >
         <IconTile icon={item.icon} tone={section.tone} active={containsActive} />
@@ -213,7 +166,7 @@ function ExpandedItem({
                 <li key={child.href} className="relative isolate">
                   {current ? (
                     <>
-                      <span className={cn('absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full', TONES[section.tone].dot)} aria-hidden />
+                      <span className="absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-brand-500" aria-hidden />
                       <ActiveGlow layoutId={glowId} />
                     </>
                   ) : null}
@@ -223,11 +176,11 @@ function ExpandedItem({
                     onClick={() => onNavigate(child.href)}
                     aria-current={current ? 'page' : undefined}
                     className={cn(
-                      'flex items-center gap-2 rounded-[10px] px-2 py-[5px] text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-                      current ? 'font-medium text-white' : 'text-neutral-500 hover:bg-white/[0.035] hover:text-neutral-200',
+                      'flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
+                      current ? 'font-medium text-brand-200' : 'text-neutral-500 hover:bg-white/[0.04] hover:text-neutral-200',
                     )}
                   >
-                    <Glyph className={cn('size-3.5 shrink-0', current ? TONES[section.tone].text : 'opacity-70')} strokeWidth={1.9} aria-hidden />
+                    <Glyph className={cn('size-3.5 shrink-0', current ? 'text-brand-200' : 'opacity-70')} strokeWidth={1.9} aria-hidden />
                     <span className="truncate">{child.label}</span>
                   </Link>
                 </li>
@@ -256,7 +209,7 @@ function CollapsedItem({
   const containsActive = active?.item === item;
   const children = item.children ?? [];
   const tileClass =
-    'group/row relative isolate flex size-11 items-center justify-center rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60';
+    'group/row relative isolate flex size-10 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60';
 
   if (!children.length) {
     return (
@@ -296,7 +249,7 @@ function CollapsedItem({
         <MenuPopup side="right" align="start" sideOffset={10} className="w-56">
           <MenuGroup>
             <MenuGroupLabel className="flex items-center gap-1.5">
-              <span className={cn('size-1.5 rounded-full', TONES[section.tone].dot)} aria-hidden />
+              <span className="size-1.5 rounded-full bg-brand-400" aria-hidden />
               {section.heading}
             </MenuGroupLabel>
             {[item, ...children].map((leaf) => {
@@ -308,7 +261,7 @@ function CollapsedItem({
                   render={<Link href={leaf.href} prefetch onClick={() => onNavigate(leaf.href)} />}
                   className={cn(current && 'bg-accent text-accent-foreground')}
                 >
-                  <Glyph className={cn(current && TONES[section.tone].text)} strokeWidth={1.9} aria-hidden />
+                  <Glyph className={cn(current && 'text-brand-200')} strokeWidth={1.9} aria-hidden />
                   {leaf.label}
                 </MenuLinkItem>
               );
@@ -594,8 +547,7 @@ function SidebarContent({
                   {collapsed ? (
                     <div className="mx-auto mb-2 h-px w-7 bg-white/[0.07]" aria-hidden />
                   ) : (
-                    <p className="da-display mb-1.5 flex items-center gap-2 px-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-neutral-500">
-                      <span className={cn('size-1.5 rounded-full opacity-80', TONES[section.tone].dot)} aria-hidden />
+                    <p className="mb-1.5 flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
                       {section.heading}
                     </p>
                   )}
@@ -718,12 +670,31 @@ export default function Shell({
 
   return (
     <TooltipProvider delay={120}>
-      <div className={cn('da-admin-shell relative flex min-h-screen bg-ink-950 text-white antialiased', interDisplay.variable)}>
+      <div className={cn('da-admin-shell relative isolate min-h-svh overflow-x-hidden bg-background text-card-foreground antialiased', interDisplay.variable)}>
+        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+          <div
+            className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.18) 0%, transparent 70%)',
+              filter: 'blur(64px)',
+              animation: 'app-breathe 9s ease-in-out infinite',
+            }}
+          />
+          <div
+            className="absolute right-[-12%] bottom-[-18%] h-[380px] w-[380px]"
+            style={{
+              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.1) 0%, transparent 70%)',
+              filter: 'blur(56px)',
+              animation: 'app-breathe 11s ease-in-out infinite',
+              animationDelay: '1.6s',
+            }}
+          />
+        </div>
         <form ref={signOutForm} action={signOutAction} hidden />
 
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-40 hidden border-r border-white/[0.06] bg-ink-900 transition-[width] duration-200 ease-out lg:block',
+            'fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
             collapsed ? 'w-[72px]' : 'w-[272px]',
           )}
         >
@@ -748,7 +719,7 @@ export default function Shell({
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] border-r border-white/[0.06] bg-ink-900 shadow-2xl"
+              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl"
             >
               <button
                 type="button"
@@ -773,8 +744,8 @@ export default function Shell({
           </div>
         ) : null}
 
-        <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-out', collapsed ? 'lg:pl-[72px]' : 'lg:pl-[272px]')}>
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-white/[0.06] bg-ink-950/80 px-4 backdrop-blur-xl sm:px-6">
+        <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-linear', collapsed ? 'lg:pl-[72px]' : 'lg:pl-[272px]')}>
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl sm:px-6">
             <button
               type="button"
               onClick={() => setDrawerOpenOn(pathname)}
@@ -785,7 +756,7 @@ export default function Shell({
             </button>
 
             <nav aria-label="Breadcrumb" className="da-display flex min-w-0 items-center gap-2 text-sm">
-              {active ? <span className={cn('size-1.5 shrink-0 rounded-full', TONES[active.section.tone].dot)} aria-hidden /> : null}
+              {active ? <span className="size-1.5 shrink-0 rounded-full bg-brand-400" aria-hidden /> : null}
               {crumbs.map((crumb, index) => {
                 const last = index === crumbs.length - 1;
                 return (
@@ -810,7 +781,7 @@ export default function Shell({
                     requestAnimationFrame(() => document.getElementById(`${SEARCH_ID}-drawer`)?.focus());
                   }
                 }}
-                className="hidden h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] pl-3 pr-1.5 text-xs text-neutral-400 transition-colors hover:border-white/20 hover:text-white md:flex"
+                className="hidden h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] pl-3 pr-1.5 text-xs text-muted-foreground transition-colors hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-card-foreground md:flex"
               >
                 <Search className="size-3.5" strokeWidth={1.9} aria-hidden />
                 Jump to
@@ -822,7 +793,17 @@ export default function Shell({
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+          <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10">
+            <div className="mx-auto w-full min-w-0 max-w-[1400px]">
+              {children}
+              <footer className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
+                <a href="https://acq.divineacquisition.io/privacy" className="hover:text-card-foreground">Privacy</a>
+                <a href="https://acq.divineacquisition.io/terms" className="hover:text-card-foreground">Terms</a>
+                <a href="https://acq.divineacquisition.io/disclaimer" className="hover:text-card-foreground">Disclaimer</a>
+                <span className="ml-auto">Divine Acquisition</span>
+              </footer>
+            </div>
+          </main>
         </div>
       </div>
     </TooltipProvider>

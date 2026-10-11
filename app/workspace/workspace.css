@@ -95,3 +95,42 @@
   font-variation-settings: 'opsz' 32;
   letter-spacing: -0.012em;
 }
+
+@keyframes app-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate3d(0, 8px, 0) scale(1.04);
+  }
+}
+
+.da-admin-shell .panel-hover {
+  transition: border-color 150ms ease, transform 150ms ease;
+}
+
+.da-admin-shell .panel-hover:hover {
+  border-color: rgba(154, 136, 252, 0.28);
+}
+
+.da-admin-shell table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.da-admin-shell :is(th) {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c3b6fe;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .da-admin-shell [style*='app-breathe'] {
+    animation: none !important;
+  }
+}

@@ -11,13 +11,23 @@ export default function LoginForm() {
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-ink-950 px-5 py-12 text-white antialiased">
+    <div className="da-admin-shell relative isolate flex min-h-svh items-center justify-center overflow-hidden bg-background px-5 py-12 text-card-foreground antialiased">
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.18) 0%, transparent 70%)',
+            filter: 'blur(64px)',
+            animation: 'app-breathe 9s ease-in-out infinite',
+          }}
+        />
+      </div>
       <Backdrop />
       <div className={`${ws.card} relative z-10 w-full max-w-md animate-rise p-7 sm:p-8`}>
         <div className="mb-8 flex flex-col items-center text-center">
           <Logo className="h-8 w-auto" />
-          <h1 className={`${ws.heading} mt-6 text-2xl font-semibold`}>Administrator sign in</h1>
-          <p className="mt-2 text-sm text-neutral-400">Divine Acquisition admin workspace. Academy reviewers open the hold queue from here.</p>
+          <h1 className="mt-6 font-heading text-[1.75rem] tracking-tight text-white">Administrator sign in</h1>
+          <p className="mt-2.5 text-[15px] leading-relaxed text-silver">Divine Acquisition admin workspace. Academy reviewers open the hold queue from here.</p>
         </div>
 
         <form

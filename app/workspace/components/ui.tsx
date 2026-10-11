@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
+import { useEffect, useId, useState, useSyncExternalStore, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Input as CossInput } from '@/components/ui/input';
@@ -25,16 +25,16 @@ export function Button({
 }) {
   const variants = {
     primary:
-      'bg-brand-500 text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)] hover:bg-brand-400 hover:shadow-[0_16px_40px_-14px_rgba(154,136,252,1)] active:bg-brand-600 active:text-white',
+      'border border-primary bg-primary text-primary-foreground shadow-xs shadow-primary/24 hover:bg-primary/90 active:scale-[0.98]',
     secondary:
-      'border border-white/[0.12] bg-white/[0.03] text-white hover:border-white/25 hover:bg-white/[0.07]',
-    ghost: 'text-neutral-300 hover:text-white',
-    danger: 'border border-flag-critical/40 bg-flag-critical/10 text-flag-critical hover:bg-flag-critical/20',
+      'border border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90',
+    ghost: 'border border-transparent text-foreground hover:bg-accent',
+    danger: 'border border-destructive bg-destructive text-white hover:bg-destructive/90',
   };
-  const sizes = { sm: 'px-4 py-2 text-[13px]', md: 'px-5 py-2.5 text-sm' };
+  const sizes = { sm: 'h-8 gap-1.5 px-2.5 text-sm', md: 'h-10 px-3.5 text-sm sm:h-9' };
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap transition-all disabled:pointer-events-none disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`relative inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-[box-shadow,transform,background-color,border-color,color] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     />
   );
@@ -70,11 +70,11 @@ export function Field({
   );
 }
 
-/** Workspace card: Vistrial panel surface with Magic shine on the border. */
+/** Vistrial panel: quiet card, brand wash only when a screen asks for it. */
 export function Card({
   children,
   className = '',
-  shine = true,
+  shine = false,
   beam = false,
 }: {
   children: ReactNode;
@@ -83,7 +83,7 @@ export function Card({
   beam?: boolean;
 }) {
   return (
-    <div className={cn(ws.card, className)}>
+    <div className={cn(ws.card, 'panel-hover', className)}>
       {shine ? <ShineBorder borderWidth={1} duration={14} /> : null}
       {beam ? <BorderBeam borderWidth={1} colorFrom="#9A88FC" colorTo="#C3B6FE" /> : null}
       <div className="relative z-[1]">{children}</div>
@@ -151,14 +151,17 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div>
-        <h1 className={`${ws.heading} text-2xl font-semibold tracking-tight sm:text-[28px]`}>{title}</h1>
-        {description && (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-400">{description}</p>
-        )}
+    <header className="relative mb-10">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="font-heading text-[1.75rem] tracking-tight text-white sm:text-[2rem]">{title}</h1>
+          {description ? (
+            <p className="mt-2.5 max-w-2xl text-[15px] leading-relaxed text-silver">{description}</p>
+          ) : null}
+        </div>
+        {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
       </div>
-      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+      <div aria-hidden className="mt-6 h-px bg-linear-to-r from-transparent via-brand-500/30 to-transparent" />
     </header>
   );
 }
@@ -166,8 +169,8 @@ export function PageHeader({
 export function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <Card className="px-6 py-14 text-center">
-      <p className={`${ws.heading} text-base font-semibold`}>{title}</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-400">{description}</p>
+      <p className="font-heading text-sm text-card-foreground">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
     </Card>
   );
 }
@@ -184,11 +187,11 @@ export function Dialog({
   children: ReactNode;
 }) {
   const titleId = useId();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     if (!open) return;
