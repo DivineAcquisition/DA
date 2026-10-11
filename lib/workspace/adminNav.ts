@@ -118,6 +118,7 @@ const SALES: NavSection = {
     { href: '/workspace/calls', label: 'Calls', icon: PhoneCall, aliases: ['/workspace/hs/calls'] },
     { href: '/workspace/accounts', label: 'Accounts', icon: Stethoscope, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
     { href: '/workspace/bookings', label: 'Prospect bookings', icon: CalendarCheck2 },
+    { href: '/workspace/booking-messages', label: 'Message problems', icon: TriangleAlert },
     { href: '/workspace/calendar-links', label: 'Calendar links', icon: CalendarRange },
   ],
 };

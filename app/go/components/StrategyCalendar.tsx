@@ -74,7 +74,8 @@ export function StrategyCalendar() {
             setError(result.error);
             return;
           }
-          router.push(goPrecallHref(window.location.host));
+          const href = goPrecallHref(window.location.host);
+          router.push(`${href}?booked=1`);
         });
       }}
     >
