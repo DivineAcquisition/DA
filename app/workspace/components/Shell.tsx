@@ -421,7 +421,6 @@ function SidebarContent({
 }) {
   const router = useRouter();
   const [query, setQuery] = useState('');
-  const [openOverrides, setOpenOverrides] = useState<Record<string, boolean>>({});
   const glowId = `da-admin-${instance}-active`;
   const searching = query.trim().length > 0;
   const searchId = instance === 'rail' ? SEARCH_ID : `${SEARCH_ID}-drawer`;
@@ -552,12 +551,13 @@ function SidebarContent({
                     </p>
                   )}
                   <ul className={collapsed ? 'flex flex-col items-center gap-1' : 'space-y-0.5'}>
-                    {section.items.map((item) =>
-                      collapsed ? (
+                    {section.items.map((item) => {
+                      const railItem = { ...item, children: undefined };
+                      return collapsed ? (
                         <CollapsedItem
                           key={item.href}
                           section={section}
-                          item={item}
+                          item={railItem}
                           active={active}
                           onNavigate={navigate}
                           glowId={glowId}
@@ -566,15 +566,15 @@ function SidebarContent({
                         <ExpandedItem
                           key={item.href}
                           section={section}
-                          item={item}
+                          item={railItem}
                           active={active}
-                          open={openOverrides[item.href] ?? active?.item === item}
-                          onOpenChange={(open) => setOpenOverrides((current) => ({ ...current, [item.href]: open }))}
+                          open={false}
+                          onOpenChange={() => {}}
                           onNavigate={navigate}
                           glowId={glowId}
                         />
-                      ),
-                    )}
+                      );
+                    })}
                   </ul>
                 </div>
               ))}

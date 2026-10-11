@@ -24,22 +24,22 @@ describe('normalizePath', () => {
 
 describe('findActive', () => {
   it('picks one entry: team sub-pages no longer also light up the roster', () => {
-    expect(activeLabels('/vistrial/team/queues')).toEqual(['Team', 'Team board', 'Queues']);
-    expect(activeLabels('/vistrial/team')).toEqual(['Team', 'Team board', 'Roster & View As']);
+    expect(activeLabels('/vistrial/team/queues')).toEqual(['Workspace', 'People', 'Queues']);
+    expect(activeLabels('/vistrial/team')).toEqual(['Workspace', 'People', 'Roster & View As']);
   });
 
   it('separates Holds from the Academy it lives under', () => {
-    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['Academy', 'Holds', 'Grading']);
-    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['Academy', 'Academy', 'Question bank']);
-    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['Academy', 'Academy']);
+    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['Workspace', 'Holds', 'Grading']);
+    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['Workspace', 'Academy', 'Question bank']);
+    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['Workspace', 'Academy']);
   });
 
   it('follows aliases and mirrored routes', () => {
-    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Sales', 'Calls']);
-    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Operations', 'Operators', 'Payroll']);
-    expect(activeLabels('/da/margin')).toEqual(['Growth', 'Growth', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['Team', 'Invites']);
-    expect(activeLabels('/accounts/123')).toEqual(['Sales', 'Accounts']);
+    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Workspace', 'Sales']);
+    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Workspace', 'People', 'Payroll']);
+    expect(activeLabels('/da/margin')).toEqual(['Workspace', 'Growth', 'Margin']);
+    expect(activeLabels('/ad/invite')).toEqual(['Workspace', 'People', 'Invites']);
+    expect(activeLabels('/accounts/123')).toEqual(['Workspace', 'Sales', 'Accounts']);
   });
 
   it('returns nothing for pages outside the nav', () => {
@@ -79,13 +79,15 @@ describe('findActive', () => {
     expect(plain.some((section) => section.id === 'academy')).toBe(false);
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
+    const labels = full.flatMap((section) => section.items.map((item) => item.label));
+    expect(labels).toEqual(['Overview', 'Clients', 'People', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
   });
 });
 
 describe('searchNav', () => {
   it('finds sub-pages by their parent or section name', () => {
     expect(searchNav(full, 'payroll').map((hit) => hit.leaf.label)).toEqual(['Payroll']);
-    expect(searchNav(full, 'operations').map((hit) => hit.leaf.label)).toContain('View as');
+    expect(searchNav(full, 'people').map((hit) => hit.leaf.label)).toContain('View as');
     expect(searchNav(full, 'credentials')).toEqual([]);
     expect(searchNav(full, '  ')).toEqual([]);
   });
