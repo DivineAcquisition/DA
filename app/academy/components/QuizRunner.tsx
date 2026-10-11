@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { inApp } from '@/lib/academy/comms';
 import { saveQuizAnswer, startQuiz, submitQuiz } from '@/lib/academy/quizActions';
+import Panel from './Panel';
 
 type Option = { id: string; text: string };
 type Question = {
@@ -135,7 +137,9 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
   return (
     <article className="space-y-5">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">{state.module_title}</p>
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
+          {state.module_title}
+        </AnimatedShinyText>
         <h1 className="mt-2 text-2xl font-semibold">{title}</h1>
       </div>
 
@@ -152,7 +156,8 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
       ) : null}
 
       {state.phase === 'start' || state.phase === 'fail' ? (
-        <section className="space-y-3 rounded-3xl border border-white/10 bg-white/[0.03] p-5">
+        <Panel beam>
+          <section className="space-y-3 p-5">
           <p className="text-sm leading-relaxed text-neutral-200">
             {inApp.quiz.start(
               title,
@@ -229,11 +234,13 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
           >
             {state.phase === 'fail' ? 'Start next attempt' : 'Start quiz'}
           </button>
-        </section>
+          </section>
+        </Panel>
       ) : null}
 
       {state.phase === 'take' && question ? (
-        <section className="space-y-4">
+        <Panel beam>
+        <section className="space-y-4 p-5">
           <div className="flex items-center justify-between text-sm text-neutral-300">
             <span>{inApp.quiz.progress(index + 1, questions.length)}</span>
             {remaining !== null ? (
@@ -285,10 +292,12 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
             )}
           </div>
         </section>
+        </Panel>
       ) : null}
 
       {state.phase === 'pass' && state.result ? (
-        <section className="space-y-4">
+        <Panel>
+        <section className="space-y-4 p-5">
           <p className="text-lg font-semibold">
             {state.kind === 'final' ? inApp.quiz.finalPass : inApp.quiz.pass(state.result.score ?? 0, state.result.total ?? 0)}
           </p>
@@ -315,6 +324,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
             ))}
           </ol>
         </section>
+        </Panel>
       ) : null}
 
       {error ? <p className="text-sm text-red-200">{error}</p> : null}

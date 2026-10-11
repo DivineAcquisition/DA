@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Panel from '@/app/academy/components/Panel';
 import LessonPlayer from '@/app/academy/components/LessonPlayer';
 import LessonQuiz, { type LessonQuizPack } from '@/app/academy/components/LessonQuiz';
 import { controlRpc } from '@/lib/ad/rpc';
@@ -15,13 +16,13 @@ export default async function AcademyLessonPage({ params }: { params: Promise<{ 
   const { data } = await controlRpc<Record<string, unknown>>(supabase, 'academy_lesson_page', { p_lesson_id: lessonId });
   if (!data || data.state !== 'ok') {
     return (
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+      <Panel className="p-6">
         <h1 className="text-2xl font-semibold">This lesson is locked.</h1>
         <p className="mt-3 text-sm text-neutral-300">Finish the lesson before it, or wait until this module is published.</p>
         <Link href={`/academy/modules/${moduleId}`} className="mt-6 inline-flex min-h-11 items-center text-sm text-[#937DFF]">
           Back to the module
         </Link>
-      </section>
+      </Panel>
     );
   }
   const lesson = lessonView(data);

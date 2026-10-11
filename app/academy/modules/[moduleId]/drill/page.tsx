@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Panel from '@/app/academy/components/Panel';
 import { redirect } from 'next/navigation';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { loadAcademyShell } from '@/lib/academy/load';
@@ -103,7 +104,8 @@ export default async function DrillPage({
         <form action={submitDrill.bind(null, moduleId)} className="space-y-4">
           <input type="hidden" name="attempt" value={data?.attempt_id ?? ''} />
           {openAttempt.map((item) => (
-            <fieldset key={item.id} className="space-y-2 rounded-3xl border border-white/10 p-4">
+            <Panel key={item.id}>
+            <fieldset className="space-y-2 p-4">
               <input type="hidden" name="item" value={item.id} />
               <p className="text-sm">{item.situation}</p>
               <p className="text-xs text-neutral-400">{item.source} {item.reply_speed} {item.earlier_touches}</p>
@@ -124,6 +126,7 @@ export default async function DrillPage({
                 </select>
               </label>
             </fieldset>
+            </Panel>
           ))}
           <button type="submit" className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold">Submit</button>
         </form>

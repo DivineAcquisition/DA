@@ -1,3 +1,4 @@
+import Panel from '@/app/academy/components/Panel';
 import { controlRpc } from '@/lib/ad/rpc';
 import { inApp } from '@/lib/academy/comms';
 import { submitPractical } from '@/lib/academy/practiceAdmin';
@@ -53,7 +54,8 @@ export default async function PracticalPage({
       {query.error ? <p className="text-sm text-white">{query.error}</p> : null}
       <ul className="space-y-2 text-sm text-neutral-200">
         {(data?.items ?? []).map((item) => (
-          <li key={item.id} className="rounded-2xl border border-white/10 p-3">
+          <li key={item.id}>
+            <Panel className="p-3">
             <p>{item.label}{item.required ? '' : ' · optional'}</p>
             <p className="text-neutral-400">
               {item.status === 'approved' || item.status === 'passed'
@@ -68,6 +70,7 @@ export default async function PracticalPage({
             {item.has_file && item.evidence_id ? (
               <a href={`/academy/practical-files/${item.evidence_id}`} className="text-[#937DFF]">Open screenshot</a>
             ) : null}
+            </Panel>
           </li>
         ))}
       </ul>
@@ -77,7 +80,8 @@ export default async function PracticalPage({
       {canSubmit ? (
         <form action={submitPractical.bind(null, moduleId, practicalId)} className="space-y-4">
           {openItems.map((item) => (
-            <fieldset key={item.id} className="space-y-2 rounded-3xl border border-white/10 p-4">
+            <Panel key={item.id}>
+            <fieldset className="space-y-2 p-4">
               <input type="hidden" name="item" value={item.id} />
               <p className="text-sm font-semibold">{item.label}</p>
               <label className="block text-sm">
@@ -91,6 +95,7 @@ export default async function PracticalPage({
               <textarea name={`body-${item.id}`} rows={3} placeholder="Text or link" className="w-full rounded-xl border border-white/10 bg-transparent px-3 py-2 text-sm" />
               <input name={`file-${item.id}`} type="file" accept="image/png,image/jpeg,image/webp" className="block w-full text-sm" />
             </fieldset>
+            </Panel>
           ))}
           <button type="submit" className="min-h-11 rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold">Submit</button>
         </form>

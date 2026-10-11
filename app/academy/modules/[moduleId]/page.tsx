@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import Panel from '@/app/academy/components/Panel';
 import { LessonSurface } from '@/app/academy/components/LessonSurface';
 import { controlRpc } from '@/lib/ad/rpc';
 import { inApp } from '@/lib/academy/comms';
@@ -24,9 +26,11 @@ async function PracticeLinks({ moduleId }: { moduleId: string }) {
   return (
     <div className="space-y-2">
       {links.map((link) => (
-        <Link key={link.href} href={link.href} className="block rounded-3xl border border-white/10 bg-white/[0.03] p-4 text-sm font-semibold">
-          {link.label}
-        </Link>
+        <Panel key={link.href}>
+          <Link href={link.href} className="block p-4 text-sm font-semibold">
+            {link.label}
+          </Link>
+        </Panel>
       ))}
     </div>
   );
@@ -40,12 +44,12 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
 
   if (!current) {
     return (
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
+      <Panel className="p-6">
         <h1 className="text-2xl font-semibold">This module is not in your program.</h1>
         <Link href="/academy/modules" className="mt-6 inline-flex min-h-11 items-center text-sm text-[#937DFF]">
           Back to modules
         </Link>
-      </section>
+      </Panel>
     );
   }
 
@@ -59,8 +63,8 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
           ? inApp.modules.locked(previous?.title)
           : 'Finish the previous module before this one opens.';
     return (
-      <section className="rounded-3xl border border-white/10 bg-white/[0.03] p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">{label}</p>
+      <Panel className="p-6">
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">{label}</AnimatedShinyText>
         <h1 className="mt-2 text-2xl font-semibold">
           {current.order}. {current.title}
         </h1>
@@ -68,7 +72,7 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
         <Link href="/academy/modules" className="mt-6 inline-flex min-h-11 items-center text-sm text-[#937DFF]">
           Back to modules
         </Link>
-      </section>
+      </Panel>
     );
   }
 
@@ -79,7 +83,7 @@ export default async function AcademyModulePage({ params }: { params: Promise<{ 
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">{label}</p>
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">{label}</AnimatedShinyText>
         <h1 className="mt-2 text-2xl font-semibold">
           {current.order}. {current.title}
         </h1>

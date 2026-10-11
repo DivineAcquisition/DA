@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import Panel from '@/app/academy/components/Panel';
 import { controlRpc } from '@/lib/ad/rpc';
 import { inApp } from '@/lib/academy/comms';
 import { beginSimulation } from '@/lib/academy/simActions';
@@ -58,7 +60,7 @@ export default async function SimulationPage({
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">Simulation</p>
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">Simulation</AnimatedShinyText>
         <h1 className="mt-2 text-2xl font-semibold">{data.title}</h1>
         <p className="mt-3 text-sm leading-relaxed text-neutral-300">{inApp.simulation.start}</p>
         {data.brief ? <p className="mt-3 text-sm leading-relaxed text-neutral-300">{data.brief}</p> : null}
@@ -89,7 +91,8 @@ export default async function SimulationPage({
       {started ? <p className="text-sm text-neutral-300">The clock started at {started}, when the lead wrote.</p> : null}
       {query.error ? <p className="text-sm text-white">{query.error}</p> : null}
       {session?.status === 'graded' || session?.status === 'needs_manual' ? (
-        <section className="space-y-2 rounded-3xl border border-white/10 p-4">
+        <Panel>
+        <section className="space-y-2 p-4">
           <h2 className="text-lg font-semibold">
             {session.status === 'needs_manual'
               ? inApp.simulation.manual
@@ -120,6 +123,7 @@ export default async function SimulationPage({
           </ul>
           {session.persona ? <p className="text-sm text-neutral-300">What was hidden: {session.persona}</p> : null}
         </section>
+        </Panel>
       ) : null}
       {session && session.status !== 'graded' && session.status !== 'needs_manual' ? (
         <SimChat

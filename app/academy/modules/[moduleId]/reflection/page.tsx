@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Panel from '@/app/academy/components/Panel';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { inApp } from '@/lib/academy/comms';
 import { gradeReflectionAttempt } from '@/lib/academy/simActions';
@@ -69,7 +70,8 @@ export default async function ReflectionPage({
       </p>
       {query.error ? <p className="text-sm text-white">{query.error}</p> : null}
       {latest ? (
-        <section className="space-y-2 rounded-3xl border border-white/10 p-4 text-sm text-neutral-200">
+        <Panel>
+        <section className="space-y-2 p-4 text-sm text-neutral-200">
           <h2 className="text-lg font-semibold">
             {latest.status === 'needs_manual' ? inApp.simulation.manual : latest.passed ? inApp.reflection.passed : inApp.reflection.notYet}
           </h2>
@@ -85,6 +87,7 @@ export default async function ReflectionPage({
             ))}
           </ul>
         </section>
+        </Panel>
       ) : null}
       {open ? (
         <form action={submitReflection.bind(null, reflectionId, moduleId)} className="space-y-3">

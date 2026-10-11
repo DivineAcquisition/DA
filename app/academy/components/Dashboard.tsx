@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { inApp } from '@/lib/academy/comms';
 import { acknowledgePlan } from '@/lib/academy/holdActions';
 import { formatAcademyDate } from '@/lib/academy/paths';
@@ -17,7 +18,9 @@ export default function Dashboard({ shell, error, firstName }: { shell: AcademyS
   return (
     <div className="space-y-4">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#937DFF]">DA Operator Academy</p>
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
+          DA Operator Academy
+        </AnimatedShinyText>
         <h1 className="mt-2 text-2xl font-semibold">{inApp.dashboard.greeting(firstName)}</h1>
         {shell.program?.name ? <p className="mt-1 text-sm text-neutral-400">{shell.program.name}</p> : null}
         {shell.enrollment?.track ? <p className="mt-1 text-sm text-neutral-400">Track: {shell.enrollment.track}</p> : null}

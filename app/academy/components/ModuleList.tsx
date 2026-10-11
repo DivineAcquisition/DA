@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { inApp } from '@/lib/academy/comms';
 import { formatAcademyDate, moduleStatusLabel } from '@/lib/academy/paths';
 import type { AcademyModule } from '@/lib/academy/types';
@@ -76,7 +77,9 @@ export default function ModuleList({ modules }: { modules: AcademyModule[] }) {
   return (
     <div className="space-y-3">
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#c3b6fe]">Your program</p>
+        <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
+          Your program
+        </AnimatedShinyText>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Modules</h1>
       </div>
       <ol className="space-y-3">

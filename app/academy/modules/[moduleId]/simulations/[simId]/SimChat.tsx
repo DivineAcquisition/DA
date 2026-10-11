@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Panel from '@/app/academy/components/Panel';
 import { sendSimulationTurn, submitSimulationLog } from '@/lib/academy/simActions';
 
 type Message = { role?: string; body?: string; at?: string };
@@ -81,7 +82,8 @@ export default function SimChat({
         </form>
       ) : null}
       {status === 'open' || logging ? (
-        <form action={submitSimulationLog.bind(null, moduleId, simId)} className="space-y-3 rounded-3xl border border-white/10 p-4">
+        <Panel>
+        <form action={submitSimulationLog.bind(null, moduleId, simId)} className="space-y-3 p-4">
           <input type="hidden" name="session" value={sessionId} />
           {preview ? <input type="hidden" name="preview" value="1" /> : null}
           <p className="text-sm font-semibold">Interaction log</p>
@@ -93,6 +95,7 @@ export default function SimChat({
             Finish and submit
           </button>
         </form>
+        </Panel>
       ) : null}
     </div>
   );
