@@ -29,7 +29,6 @@ import {
   Target,
   TriangleAlert,
   Trophy,
-  UserCog,
   UserPlus,
   UsersRound,
   Wallet,
@@ -60,9 +59,13 @@ export type NavSection = { id: string; heading: string; tone: NavTone; items: Na
  * configuration screens are deliberately left out. They still open by URL for
  * the people who maintain them; Settings sits in the account menu.
  */
-const OPERATIONS: NavSection = {
-  id: 'operations',
-  heading: 'Operations',
+/**
+ * The rail stays short. Nested pages stay in the data so search and the
+ * active state still find them; the sidebar itself does not list them.
+ */
+const WORKSPACE: NavSection = {
+  id: 'workspace',
+  heading: 'Workspace',
   tone: 'violet',
   items: [
     { href: '/vistrial/ops', label: 'Overview', icon: Gauge },
@@ -78,66 +81,38 @@ const OPERATIONS: NavSection = {
     },
     {
       href: '/vistrial/admin/operators',
-      label: 'Operators',
-      icon: UserCog,
-      aliases: ['/workspace/ops/operators'],
+      label: 'People',
+      icon: UsersRound,
+      aliases: ['/workspace/ops/operators', '/vistrial/team/board'],
       children: [
         { href: '/vistrial/admin/payroll', label: 'Payroll', icon: Wallet, aliases: ['/workspace/ops/payroll'] },
         { href: '/vistrial/admin/view-as', label: 'View as', icon: Eye },
-      ],
-    },
-  ],
-};
-
-const TEAM: NavSection = {
-  id: 'team',
-  heading: 'Team',
-  tone: 'sky',
-  items: [
-    {
-      href: '/vistrial/team/board',
-      label: 'Team board',
-      icon: UsersRound,
-      children: [
         { href: '/vistrial/team/queues', label: 'Queues', icon: Inbox },
         { href: '/vistrial/team/scorecard', label: "DA's scorecard", icon: Trophy },
         { href: '/vistrial/team/matching', label: 'Availability', icon: CalendarRange },
         { href: '/vistrial/team', label: 'Roster & View As', icon: Contact, exact: true },
+        { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
       ],
     },
-    { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
-  ],
-};
-
-const SALES: NavSection = {
-  id: 'sales',
-  heading: 'Sales',
-  tone: 'emerald',
-  items: [
-    { href: '/workspace/overview', label: 'VA performance', icon: ChartNoAxesCombined },
-    { href: '/workspace/calls', label: 'Calls', icon: PhoneCall, aliases: ['/workspace/hs/calls'] },
-    { href: '/workspace/accounts', label: 'Accounts', icon: Stethoscope, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
-    { href: '/workspace/bookings', label: 'Prospect bookings', icon: CalendarCheck2 },
-    { href: '/workspace/booking-messages', label: 'Message problems', icon: TriangleAlert },
-    { href: '/workspace/calendar-links', label: 'Calendar links', icon: CalendarRange },
-  ],
-};
-
-const AGREEMENTS: NavSection = {
-  id: 'agreements',
-  heading: 'Agreements',
-  tone: 'amber',
-  items: [
-    { href: '/workspace/recipients', label: 'Recipients', icon: Contact },
-    { href: '/workspace/agreements', label: 'Agreements', icon: FileSignature },
-  ],
-};
-
-const GROWTH: NavSection = {
-  id: 'growth',
-  heading: 'Growth',
-  tone: 'fuchsia',
-  items: [
+    {
+      href: '/workspace/calls',
+      label: 'Sales',
+      icon: PhoneCall,
+      aliases: ['/workspace/hs/calls'],
+      children: [
+        { href: '/workspace/overview', label: 'VA performance', icon: ChartNoAxesCombined },
+        { href: '/workspace/accounts', label: 'Accounts', icon: Stethoscope, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
+        { href: '/workspace/bookings', label: 'Prospect bookings', icon: CalendarCheck2 },
+        { href: '/workspace/booking-messages', label: 'Message problems', icon: TriangleAlert },
+        { href: '/workspace/calendar-links', label: 'Calendar links', icon: CalendarRange },
+      ],
+    },
+    {
+      href: '/workspace/agreements',
+      label: 'Agreements',
+      icon: FileSignature,
+      children: [{ href: '/workspace/recipients', label: 'Recipients', icon: Contact }],
+    },
     {
       href: '/workspace/growth',
       label: 'Growth',
@@ -149,9 +124,9 @@ const GROWTH: NavSection = {
         { href: '/workspace/growth/payouts', label: 'Payouts', icon: HandCoins, aliases: ['/da/payouts'] },
         { href: '/workspace/growth/margin', label: 'Margin', icon: Percent, aliases: ['/da/margin'] },
         { href: '/workspace/growth/messages', label: 'Messages', icon: MessageSquareText, aliases: ['/da/messages'] },
+        { href: '/admin', label: 'Assessments', icon: ClipboardCheck },
       ],
     },
-    { href: '/admin', label: 'Assessments', icon: ClipboardCheck },
   ],
 };
 
@@ -190,15 +165,12 @@ export function buildNav({
   showHolds: boolean;
   holdsOnly: boolean;
 }): NavSection[] {
-  if (holdsOnly) return [{ id: 'academy', heading: 'Academy', tone: 'rose', items: [HOLDS_ITEM] }];
-  const academyItems = [...(showAcademy ? [ACADEMY_ITEM] : []), ...(showHolds ? [HOLDS_ITEM] : [])];
+  if (holdsOnly) return [{ id: 'workspace', heading: 'Workspace', tone: 'violet', items: [HOLDS_ITEM] }];
   return [
-    OPERATIONS,
-    TEAM,
-    SALES,
-    AGREEMENTS,
-    GROWTH,
-    ...(academyItems.length ? [{ id: 'academy', heading: 'Academy', tone: 'rose' as const, items: academyItems }] : []),
+    {
+      ...WORKSPACE,
+      items: [...WORKSPACE.items, ...(showAcademy ? [ACADEMY_ITEM] : []), ...(showHolds ? [HOLDS_ITEM] : [])],
+    },
   ];
 }
 
