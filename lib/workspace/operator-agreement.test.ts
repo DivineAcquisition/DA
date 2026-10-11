@@ -115,9 +115,10 @@ describe('sales operator placement agreement', () => {
       },
       company,
     );
-    expect(values.Operator).toBe('A Sannie');
+    expect(values['Operator Name']).toBe('A Sannie');
     expect(values['Operator initials']).toBe('AS');
-    expect(values.Address).toBe('1 Main Street');
+    expect(values['Operator Address']).toBe('1 Main Street');
+    expect(values.Operator).toBeUndefined();
     expect(values['Contractor Name']).toBeUndefined();
   });
 
@@ -136,13 +137,14 @@ describe('sales operator placement agreement', () => {
       buildSalesOperatorSignerValues({
         fullName: 'A Sannie',
         email: 'asannie74@gmail.com',
+        address: '1 Main Street',
         now: new Date('2026-08-09T12:00:00Z'),
       }),
     ).toEqual({
-      Operator: 'A Sannie',
-      Name: 'A Sannie',
+      'Operator Name': 'A Sannie',
+      'Operator Address': '1 Main Street',
+      'Operator Date': '2026-08-09',
       'Effective Date': '2026-08-09',
-      Date: '2026-08-09',
       'Operator initials': 'AS',
     });
   });

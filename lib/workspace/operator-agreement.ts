@@ -261,8 +261,8 @@ export function initialsFromName(fullName: string): string {
 }
 
 /**
- * Exact signer values for the DA Sales Operator (Placement Role) template
- * (roles: Operator + Divine Acquisition).
+ * Exact signer values for DivineACQ™ - Sales Operator Placement Agreement
+ * (roles: Operator + Divine Acquisition). Field names match the live template.
  */
 export function buildSalesOperatorSignerValues(input: OperatorSignerInput): Record<string, string> {
   const now = input.now ?? new Date();
@@ -270,11 +270,23 @@ export function buildSalesOperatorSignerValues(input: OperatorSignerInput): Reco
   const name = input.fullName.trim();
   const address = (input.address ?? '').trim();
   return compact({
-    Operator: name,
-    Name: name,
-    Address: address || undefined,
+    'Operator Name': name,
+    'Operator Address': address || undefined,
+    'Operator Date': date,
     'Effective Date': date,
-    Date: date,
     'Operator initials': initialsFromName(name) || undefined,
+  });
+}
+
+/** Company countersign values on that same template. The signature line stays for DocuSeal. */
+export function buildSalesOperatorCompanyValues(
+  company: CompanyInfo,
+  now: Date = new Date(),
+): Record<string, string> {
+  const date = todayIso(now);
+  return compact({
+    'Divine Acquisition Name': company.rep,
+    'Divine Acquisition Title': company.title,
+    'Divine Acquisition Date': date,
   });
 }

@@ -22,10 +22,12 @@ import {
 import {
   applyOperatorExactMappings,
   buildOperatorCompanyValues,
+  buildSalesOperatorCompanyValues,
   companyInfoFromSettings,
   fieldNamesForRole,
   filterKnownFields,
   inferOperatorVariant,
+  isSalesOperatorPlacementTemplate,
   operatorSignerExactValues,
   resolveCompanyRoleName,
   resolveOperatorSignerRoleName,
@@ -522,7 +524,8 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
   const signerRole = isOperator ? resolveOperatorSignerRoleName(submitters) : undefined;
 
   if (isOperator) {
-    const variant = inferOperatorVariant(String(template.name ?? ''));
+    const templateName = String(template.name ?? '');
+    const variant = inferOperatorVariant(templateName);
     const catalogue = templateFieldCatalogue(template);
     const companyRole = resolveCompanyRoleName(submitters);
     const companyNames = fieldNamesForRole(
@@ -533,9 +536,12 @@ export async function sendAgreementAction(formData: FormData): Promise<ActionRes
       submitters,
       companyRole,
     );
+    const companySource = isSalesOperatorPlacementTemplate(templateName)
+      ? buildSalesOperatorCompanyValues(company)
+      : buildOperatorCompanyValues(company, variant);
     const companyValues = filterKnownFields(
-      buildOperatorCompanyValues(company, variant),
-      companyNames.size > 0 ? companyNames : Object.keys(buildOperatorCompanyValues(company, variant)),
+      companySource,
+      companyNames.size > 0 ? companyNames : Object.keys(companySource),
     );
     if (Object.keys(companyValues).length > 0) {
       companySubmitter = {
