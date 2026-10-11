@@ -22,11 +22,11 @@ import {
 import {
   applyOperatorExactMappings,
   buildOperatorCompanyValues,
-  buildOperatorSignerValues,
   companyInfoFromSettings,
   fieldNamesForRole,
   filterKnownFields,
   inferOperatorVariant,
+  operatorSignerExactValues,
   resolveCompanyRoleName,
   resolveOperatorSignerRoleName,
 } from './operator-agreement';
@@ -394,8 +394,9 @@ async function resolveAgreementFields(input: {
     input.template.recipient_type === 'operator' || input.recipient.recipient_type === 'operator';
   if (!isOperator) return mapped;
 
-  const variant = inferOperatorVariant(input.template.name ?? '');
-  const exact = buildOperatorSignerValues(
+  const templateName = input.template.name ?? '';
+  const exact = operatorSignerExactValues(
+    templateName,
     {
       fullName: input.recipient.full_name,
       legalName: input.recipient.full_name,
@@ -404,7 +405,6 @@ async function resolveAgreementFields(input: {
       address: submitted['Full Address'] || submitted['Address'] || null,
     },
     company,
-    variant,
   );
   const known = new Set(catalogue.map((field) => field.name));
   mapped = applyOperatorExactMappings(mapped, filterKnownFields(exact, known));

@@ -8,10 +8,9 @@ import {
 } from './field-mapping';
 import {
   applyOperatorExactMappings,
-  buildOperatorSignerValues,
   companyInfoFromSettings,
   filterKnownFields,
-  inferOperatorVariant,
+  operatorSignerExactValues,
 } from './operator-agreement';
 import { loadFieldOverrides, loadSubmittedValues, overridesFor } from './sync';
 import type {
@@ -341,8 +340,8 @@ export async function listTemplateFieldMappings(): Promise<TemplateFieldMapping[
     });
 
     if (template.recipient_type === 'operator' && recipient) {
-      const variant = inferOperatorVariant(template.name);
-      const exact = buildOperatorSignerValues(
+      const exact = operatorSignerExactValues(
+        template.name,
         {
           fullName: recipient.full_name,
           legalName: recipient.full_name,
@@ -351,7 +350,6 @@ export async function listTemplateFieldMappings(): Promise<TemplateFieldMapping[
           address: submitted['Full Address'] || submitted['Address'] || null,
         },
         company,
-        variant,
       );
       fields = applyOperatorExactMappings(
         fields,

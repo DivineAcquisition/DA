@@ -23,10 +23,10 @@ import {
 } from './field-mapping';
 import {
   applyOperatorExactMappings,
-  buildOperatorSignerValues,
   companyInfoFromSettings,
   filterKnownFields,
-  inferOperatorVariant,
+  isSalesOperatorPlacementTemplate,
+  operatorSignerExactValues,
 } from './operator-agreement';
 import { publicSigningUrl } from './paths';
 import { createToken } from './tokens';
@@ -299,11 +299,14 @@ export async function syncDocuSeal(
     };
 
     const existing = templateByDocuSealId.get(docusealId);
+    const remoteName = (template.name ?? '').trim();
     if (existing) {
-      // The local name and recipient type are an administrator's to set.
+      // A local name is the administrator's, except when DocuSeal itself was
+      // renamed to the Sales Operator Placement Agreement.
+      const name = isSalesOperatorPlacementTemplate(remoteName) ? remoteName : existing.name;
       const { data: updated } = await supabase
         .from('da_agreement_template')
-        .update({ ...payload, name: existing.name })
+        .update({ ...payload, name })
         .eq('id', existing.id)
         .select('*')
         .single();
@@ -313,7 +316,9 @@ export async function syncDocuSeal(
         .from('da_agreement_template')
         .insert({
           ...payload,
-          description: `Pulled from DocuSeal${template.folder_name ? ` · ${template.folder_name}` : ''}`,
+          description: isSalesOperatorPlacementTemplate(remoteName)
+            ? ''
+            : `Pulled from DocuSeal${template.folder_name ? ` · ${template.folder_name}` : ''}`,
           recipient_type: inferRecipientType(template),
         })
         .select('*')
@@ -463,8 +468,8 @@ export async function syncDocuSeal(
     });
 
     if (template.recipient_type === 'operator') {
-      const variant = inferOperatorVariant(template.name ?? '');
-      const exact = buildOperatorSignerValues(
+      const exact = operatorSignerExactValues(
+        template.name ?? '',
         {
           fullName: recipient.full_name,
           legalName: recipient.full_name,
@@ -473,7 +478,6 @@ export async function syncDocuSeal(
           address: submitted['Full Address'] || submitted['Address'] || null,
         },
         company,
-        variant,
       );
       mapped = applyOperatorExactMappings(
         mapped,

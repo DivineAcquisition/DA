@@ -55,34 +55,41 @@ export async function loadSigningCatalogue(token: string): Promise<SigningCatalo
 }
 
 /** Prefer the live template so a signature lands on the fields DocuSeal has now. */
-async function resolveCatalogueFields(catalogue: SigningCatalogue, timeoutMs: number): Promise<SigningCatalogue> {
+async function resolveCatalogueFields(
+  catalogue: SigningCatalogue,
+  timeoutMs: number,
+): Promise<{ catalogue: SigningCatalogue; templateName: string | null }> {
   const apiKey = await readDocuSealApiKey();
-  if (!apiKey || !catalogue.templateId) return catalogue;
+  if (!apiKey || !catalogue.templateId) return { catalogue, templateName: null };
 
   try {
     const live = await withTimeout(getDocuSealTemplate(apiKey, catalogue.templateId), timeoutMs);
-    if (!live.ok || !live.data.fields?.length) return catalogue;
+    const templateName = live.ok ? live.data.name?.trim() || null : null;
+    if (!live.ok || !live.data.fields?.length) return { catalogue, templateName };
     const fields = parseTemplateFields(live.data.fields);
     const submitters = live.data.submitters?.length ? parseSubmitters(live.data.submitters) : catalogue.submitters;
     const slots = collectSignFields({ fields, submitters, recipientType: catalogue.recipientType });
-    if (slots.signature.length === 0) return catalogue;
-    return { ...catalogue, fields, submitters };
+    if (slots.signature.length === 0) return { catalogue, templateName };
+    return { catalogue: { ...catalogue, fields, submitters }, templateName };
   } catch (error) {
     console.error('[agreement-sign] template fields', error instanceof Error ? error.message : error);
-    return catalogue;
+    return { catalogue, templateName: null };
   }
 }
 
-/** Names of the lines the signature pad will fill. Empty when the template has none yet. */
-export async function loadSignerSignFields(token: string): Promise<SignSlots> {
+/** Names of the lines the signature pad will fill, plus the live template name. */
+export async function loadSignerSignFields(
+  token: string,
+): Promise<SignSlots & { templateName: string | null }> {
+  const empty = { ...EMPTY_SLOTS, templateName: null };
   try {
     const catalogue = await loadCatalogue(token);
-    if (!catalogue) return EMPTY_SLOTS;
+    if (!catalogue) return empty;
     const resolved = await resolveCatalogueFields(catalogue, 8000);
-    return collectSignFields(resolved);
+    return { ...collectSignFields(resolved.catalogue), templateName: resolved.templateName };
   } catch (error) {
     console.error('[agreement-sign] signature fields', error instanceof Error ? error.message : error);
-    return EMPTY_SLOTS;
+    return empty;
   }
 }
 
@@ -181,9 +188,9 @@ export async function applyAgreementSignature(input: {
 
   const resolved = await resolveCatalogueFields(catalogue, 12000);
   const plan = planSignaturePlacement({
-    fields: resolved.fields,
-    submitters: resolved.submitters,
-    recipientType: resolved.recipientType,
+    fields: resolved.catalogue.fields,
+    submitters: resolved.catalogue.submitters,
+    recipientType: resolved.catalogue.recipientType,
     signatureImage: input.signature,
     initialsImage: input.initials,
     consentIds: input.consentIds,
@@ -191,18 +198,18 @@ export async function applyAgreementSignature(input: {
   if (!plan.ok) {
     if (plan.error === SIGNATURE_FIELD_MISSING) {
       console.error('[agreement-sign] no signature field', {
-        templateId: resolved.templateId,
-        fields: resolved.fields.map((field) => `${field.name}:${field.type ?? ''}`),
+        templateId: resolved.catalogue.templateId,
+        fields: resolved.catalogue.fields.map((field) => `${field.name}:${field.type ?? ''}`),
       });
     }
     return { ok: false, error: plan.error, status: 400 };
   }
 
-  const placed = await placeSignature(apiKey, resolved.submitterId, plan.fields);
+  const placed = await placeSignature(apiKey, resolved.catalogue.submitterId, plan.fields);
   if (!placed.ok) return { ok: false, error: placed.error, status: 502 };
 
-  if (resolved.submissionId) {
-    const finished = await finishedSubmission(apiKey, resolved.submissionId);
+  if (resolved.catalogue.submissionId) {
+    const finished = await finishedSubmission(apiKey, resolved.catalogue.submissionId);
     if (finished.completed) await recordSigned(input.token, plan.stored, finished.url);
   }
 
