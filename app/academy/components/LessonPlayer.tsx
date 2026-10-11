@@ -319,7 +319,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
         <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
           {lesson.code} · {lesson.moduleTitle}
         </AnimatedShinyText>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">{lesson.title}</h1>
+        <h1 className="mt-2 text-xl font-semibold tracking-tight">{lesson.title}</h1>
         <p className="mt-1 text-sm text-neutral-400">
           Lesson {lesson.position} of {lesson.total}
         </p>
@@ -344,7 +344,7 @@ export default function LessonPlayer({ lesson }: { lesson: LessonView }) {
       {html.trim() ? (
         <LessonSurface>
           <div
-            className="lesson-body space-y-3 p-5 text-base leading-7 text-neutral-100 sm:p-6"
+            className="lesson-body space-y-2 p-4 text-sm leading-6 text-neutral-200 sm:p-5"
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </LessonSurface>

@@ -11,6 +11,9 @@ const nextConfig = {
       bodySizeLimit: '100mb',
     },
   },
+  outputFileTracingIncludes: {
+    '/s/pdf-worker': ['./node_modules/pdfjs-dist/build/pdf.worker.min.mjs'],
+  },
   async rewrites() {
     return [
       { source: '/roofing', destination: '/acq/roofing' },

@@ -58,5 +58,14 @@ describe('lesson video view', () => {
         hasDocument: false,
       }),
     ).toEqual(['Stay on the page long enough to read the lesson.', 'Scroll to the end of the lesson.']);
+    expect(
+      studentStartGaps({
+        video: null,
+        body: 'Read this lesson.',
+        watchPercent: 90,
+        hasDocument: false,
+        hasQuiz: true,
+      }),
+    ).toContain('Pass the lesson quiz.');
   });
 });

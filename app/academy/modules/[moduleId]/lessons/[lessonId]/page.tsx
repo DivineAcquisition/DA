@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import Panel from '@/app/academy/components/Panel';
 import LessonPlayer from '@/app/academy/components/LessonPlayer';
-import LessonQuiz, { type LessonQuizPack } from '@/app/academy/components/LessonQuiz';
+import LessonQuiz from '@/app/academy/components/LessonQuiz';
+import { type LessonQuizState } from '@/lib/academy/quizActions';
 import { controlRpc } from '@/lib/ad/rpc';
 import { lessonView } from '@/lib/academy/lessonView';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -28,14 +29,11 @@ export default async function AcademyLessonPage({ params }: { params: Promise<{ 
   const lesson = lessonView(data);
   if (!lesson) return null;
   await controlRpc(supabase, 'academy_record_lesson_open', { p_lesson_id: lessonId });
-  const [{ data: pack }, { data: quizState }] = await Promise.all([
-    controlRpc<LessonQuizPack>(supabase, 'academy_lesson_quiz', { p_lesson_id: lessonId }),
-    controlRpc<{ can_start?: boolean }>(supabase, 'academy_quiz_state', { p_module_id: moduleId }),
-  ]);
+  const { data: quiz } = await controlRpc<LessonQuizState>(supabase, 'academy_lesson_quiz_state', { p_lesson_id: lessonId });
   return (
     <div className="space-y-8">
       <LessonPlayer lesson={lesson} />
-      <LessonQuiz moduleId={moduleId} pack={pack ?? {}} scoredOpen={Boolean(quizState?.can_start)} />
+      {quiz?.has_quiz ? <LessonQuiz lessonId={lessonId} initial={quiz} /> : null}
     </div>
   );
 }

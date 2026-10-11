@@ -10,9 +10,10 @@ type Props = {
   url: string;
   title?: string;
   className?: string;
+  onError?: () => void;
 };
 
-export default function AgreementPdf({ url, title = 'Agreement', className }: Props) {
+export default function AgreementPdf({ url, title = 'Agreement', className, onError }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [pagesDone, setPagesDone] = useState(0);
@@ -28,9 +29,15 @@ export default function AgreementPdf({ url, title = 'Agreement', className }: Pr
     const render = async () => {
       try {
         const pdfjs = await import('pdfjs-dist');
-        pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
+        pdfjs.GlobalWorkerOptions.workerSrc = '/s/pdf-worker';
 
-        const doc = await pdfjs.getDocument({ url }).promise;
+        const response = await fetch(url, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`preview ${response.status}`);
+        const data = await response.arrayBuffer();
+        const head = new TextDecoder().decode(data.slice(0, 5));
+        if (head !== '%PDF-') throw new Error('preview is not a pdf');
+
+        const doc = await pdfjs.getDocument({ data }).promise;
         if (cancelled) return;
         setNumPages(doc.numPages);
 
@@ -78,7 +85,10 @@ export default function AgreementPdf({ url, title = 'Agreement', className }: Pr
         if (!cancelled) setState('ready');
       } catch (error) {
         console.warn('[agreement-pdf]', error instanceof Error ? error.message : error);
-        if (!cancelled) setState('error');
+        if (!cancelled) {
+          setState('error');
+          onError?.();
+        }
       }
     };
 
@@ -86,7 +96,7 @@ export default function AgreementPdf({ url, title = 'Agreement', className }: Pr
     return () => {
       cancelled = true;
     };
-  }, [url, title]);
+  }, [url, title, onError]);
 
   if (state === 'error') {
     return (

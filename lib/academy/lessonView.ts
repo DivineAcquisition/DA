@@ -68,6 +68,7 @@ export function studentStartGaps(input: {
   body: string;
   watchPercent: number;
   hasDocument: boolean;
+  hasQuiz?: boolean;
 }): string[] {
   const gaps: string[] = [];
   if (input.video) {
@@ -80,6 +81,7 @@ export function studentStartGaps(input: {
     gaps.push('This lesson has no video or written lesson.');
   }
   if (input.hasDocument) gaps.push('Open the companion document.');
+  if (input.hasQuiz) gaps.push('Pass the lesson quiz.');
   return gaps;
 }
 
