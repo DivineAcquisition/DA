@@ -59,6 +59,30 @@
   color: #fff;
 }
 
+/* Public signing room. Plus Jakarta is set on the layout; this only applies it. */
+.da-sign {
+  font-family: var(--font-plus-jakarta), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+.da-sign .prose-da {
+  color: #d5d1dc;
+  font-size: 15px;
+}
+
+.da-sign .prose-da li,
+.da-sign .prose-da p {
+  color: #d5d1dc;
+}
+
+.da-sign .prose-da ul {
+  list-style: disc;
+}
+
+.da-sign .prose-da ol {
+  list-style: decimal;
+}
+
 /* Admin shell: Inter Display (the opsz 32 cut) for chrome and headings, text cut for body copy. */
 .da-admin-shell {
   font-family: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;

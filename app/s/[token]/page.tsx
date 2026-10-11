@@ -27,9 +27,9 @@ export default async function AgreementPage({ params }: { params: Promise<{ toke
   }
 
   return (
-    <div className="da-workspace relative min-h-screen">
+    <div className="da-workspace da-sign relative min-h-screen">
       <Backdrop />
-      <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-10">
+      <div className="relative z-10 px-5 py-8 sm:px-8 sm:py-16">
         <AgreementView token={token} initial={page} signFields={signFields} />
       </div>
     </div>
