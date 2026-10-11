@@ -152,7 +152,7 @@ export default function QuizRunner({ moduleId, initial }: { moduleId: string; in
       ) : null}
 
       {state.phase === 'held' ? (
-        <p className="text-sm leading-relaxed text-neutral-300">This program is on hold. The quiz is closed.</p>
+        <p className="text-sm leading-relaxed text-neutral-300">{inApp.quiz.flagged}</p>
       ) : null}
 
       {state.phase === 'start' || state.phase === 'fail' ? (

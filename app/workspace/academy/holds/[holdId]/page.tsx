@@ -60,6 +60,7 @@ type Detail = {
   reviewer_name: string | null;
   quiz_kind: string;
   quiz_label: string;
+  reason: string | null;
   module_title: string | null;
   attempts_used: number;
   concepts: Concept[];
@@ -190,7 +191,7 @@ export default async function HoldReviewPage({
           {` · manager ${data.manager_name}`}
         </p>
         <p className="mt-1 text-sm text-neutral-300">
-          {data.quiz_label}
+          {data.quiz_label || data.reason || 'Quiz'}
           {data.module_title ? ` · ${data.module_title}` : ''} · {data.attempts_used} attempts · opened{' '}
           {new Date(data.opened_at).toLocaleString()} · {data.days_open} days open
           {data.reviewer_name ? ` · reviewer ${data.reviewer_name}` : ''}
