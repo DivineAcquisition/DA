@@ -1,23 +1,25 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DocusealForm } from '@docuseal/react';
 import Logo from '@/app/components/Logo';
+import { AGREEMENT_UNAVAILABLE } from '@/lib/workspace/agreement-copy';
 import type { AgreementPageState } from '@/lib/workspace/agreement-page';
+import AgreementSign from './AgreementSign';
 
-type Props = { token: string; initial: AgreementPageState };
+type SignFieldNames = { signature: string[]; initials: string[] };
 
-// One message for every failure, so the page cannot be used to tell a real
-// token from a guessed or expired one.
-const INVALID_MESSAGE =
-  "This link isn't valid or has expired. If you're expecting an agreement from Divine Acquisition, reply to the email it came in and we'll send you a fresh one.";
+type Props = {
+  token: string;
+  initial: AgreementPageState;
+  signFields?: SignFieldNames;
+};
 
 const POLL_EVERY_MS = 3000;
 const POLL_FOR_MS = 60000;
 
 type Finalizing = 'idle' | 'waiting' | 'slow';
 
-export default function AgreementView({ token, initial }: Props) {
+export default function AgreementView({ token, initial, signFields = { signature: [], initials: [] } }: Props) {
   const [page, setPage] = useState<AgreementPageState>(initial);
   const [finalizing, setFinalizing] = useState<Finalizing>('idle');
   const startedAt = useRef<number>(0);
@@ -37,8 +39,8 @@ export default function AgreementView({ token, initial }: Props) {
     return false;
   }, [token]);
 
-  // The embed saying "done" is not the record. The DocuSeal webhook moving the
-  // agreement to completed is, so wait for that.
+  // Placing the signature is not the record by itself. The agreement moves to
+  // completed when DocuSeal finishes the submission, so wait for that.
   useEffect(() => {
     if (finalizing !== 'waiting') return;
     let cancelled = false;
@@ -98,7 +100,7 @@ export default function AgreementView({ token, initial }: Props) {
       return (
         <Shell>
           <Card>
-            <p className="text-sm leading-relaxed text-[var(--ws-body)]">{INVALID_MESSAGE}</p>
+            <p className="text-sm leading-relaxed text-[var(--ws-body)]">{AGREEMENT_UNAVAILABLE}</p>
           </Card>
         </Shell>
       );
@@ -186,7 +188,8 @@ export default function AgreementView({ token, initial }: Props) {
               <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">{page.templateDescription}</p>
             )}
             <p className="mt-4 text-sm text-[var(--ws-body)]">
-              Review it below and sign at the bottom. Takes a few minutes.
+              Review it below, then sign in the signature box. Your signature is placed on each signature line in
+              the agreement.
             </p>
           </section>
 
@@ -200,23 +203,14 @@ export default function AgreementView({ token, initial }: Props) {
             </article>
           ))}
 
-          <section className="mt-4 overflow-hidden rounded-2xl border border-[var(--ws-border)] bg-white">
-            {page.embedSrc ? (
-              <DocusealForm
-                src={page.embedSrc}
-                withTitle={false}
-                withDecline
-                withDownloadButton={false}
-                backgroundColor="#ffffff"
-                onComplete={startFinalizing}
-                onDecline={startFinalizing}
-              />
-            ) : (
-              <p className="px-5 py-10 text-center text-sm text-neutral-600">
-                Your agreement is still being prepared. Check back in a few minutes.
-              </p>
-            )}
-          </section>
+          <AgreementSign
+            token={token}
+            embedSrc={page.embedSrc}
+            recipientName={page.recipientName}
+            recipientType={page.recipientType}
+            signFields={signFields}
+            onDone={startFinalizing}
+          />
 
           <p className="mt-6 text-center text-xs text-[var(--ws-dim)]">
             Sent by Divine Acquisition. This link is private to you; please don&apos;t forward it.
