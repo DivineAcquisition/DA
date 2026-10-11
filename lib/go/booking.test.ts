@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { civilToday, slotsForDate } from '@/lib/calendar/slots';
+import { civilToday } from '@/lib/calendar/slots';
+import { goSlotsForDate } from '@/lib/go/slots';
 import { parseGoBooking, normalizeBookingPhone } from './booking';
 import { goPrecallHref } from './config';
 import { BOOKING } from './copy';
@@ -11,7 +12,7 @@ function openSlot() {
     const [year, month, dayOfMonth] = date.split('-').map(Number);
     const next = new Date(Date.UTC(year, month - 1, dayOfMonth + 1));
     date = next.toISOString().slice(0, 10);
-    const slots = slotsForDate(date, timeZone);
+    const slots = goSlotsForDate(date, timeZone);
     if (slots[0]) return { startsAt: slots[0], timeZone };
   }
   throw new Error('no open slot');

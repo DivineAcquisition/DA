@@ -324,8 +324,6 @@ export default function CleaningFunnelPage() {
             <p className="lx-lead">{CALENDAR.body}</p>
           </div>
           <div className="go-calendar-frame">
-            <ShineBorder shineColor={['#9A88FC', '#F87171']} borderWidth={1} duration={16} />
-            <BorderBeam size={120} duration={10} colorFrom="#9A88FC" colorTo="#F87171" borderWidth={1} />
             <StrategyCalendar />
           </div>
         </div>

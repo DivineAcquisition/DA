@@ -26,7 +26,7 @@ export const CALENDAR = {
   titleBefore: 'Book your ',
   titleAccent: 'strategy session',
   titleAfter: ' here',
-  body: "Choose a weekday. We'll confirm by email, remind you the day before and two hours out, and text you the Google Meet link 15 minutes before we start.",
+  body: "Sunday, Monday, Wednesday, or Thursday. The open times are 6:00 AM, 7:00 AM, and 6:00 PM. We'll confirm by email, remind you the day before and two hours out, and text you the Google Meet link 15 minutes before we start.",
 } as const;
 
 export const BOOKING = {

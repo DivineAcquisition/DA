@@ -1,4 +1,4 @@
-import { isOfferedSlot } from '@/lib/calendar/slots';
+import { isGoOfferedSlot } from '@/lib/go/slots';
 import { BOOKING } from './copy';
 
 export type GoBookingInput = {
@@ -59,7 +59,7 @@ export function parseGoBooking(
     return { ok: false, error: 'Check both boxes so we can send the confirmation and reminders.' };
   }
 
-  if (!isOfferedSlot(input.startsAt, input.timeZone)) {
+  if (!isGoOfferedSlot(input.startsAt, input.timeZone)) {
     return { ok: false, error: 'Pick one of the open times.' };
   }
 

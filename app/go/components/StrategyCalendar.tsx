@@ -7,10 +7,9 @@ import {
   SCHEDULE_TIME_ZONES,
   civilToday,
   formatSlotTime,
-  isWeekendDate,
   monthMatrix,
-  slotsForDate,
 } from '@/lib/calendar/slots';
+import { goSlotsForDate, isGoOpenDate } from '@/lib/go/slots';
 import { bookGoStrategyAction } from '@/lib/go/book';
 import { goPrecallHref } from '@/lib/go/config';
 import { BOOKING, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/go/copy';
@@ -41,7 +40,7 @@ export function StrategyCalendar() {
     () => monthMatrix(cursor.year, cursor.monthIndex),
     [cursor.year, cursor.monthIndex],
   );
-  const slots = selectedDate ? slotsForDate(selectedDate, timeZone) : [];
+  const slots = selectedDate ? goSlotsForDate(selectedDate, timeZone) : [];
   const monthLabel = new Date(Date.UTC(cursor.year, cursor.monthIndex, 1)).toLocaleString('en-US', {
     month: 'long',
     year: 'numeric',
@@ -180,7 +179,7 @@ export function StrategyCalendar() {
             <div className="go-cal-days">
               {weeks.flat().map((date, index) => {
                 if (!date) return <span key={`pad-${index}`} />;
-                const disabled = isWeekendDate(date) || date < today || slotsForDate(date, timeZone).length === 0;
+                const disabled = !isGoOpenDate(date) || date < today || goSlotsForDate(date, timeZone).length === 0;
                 const selected = date === selectedDate;
                 return (
                   <button

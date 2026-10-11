@@ -1,7 +1,22 @@
 import { isoDateInTimeZone, localDateTimeToIso } from '@/lib/datetime/local';
 
-/** Weekday slots applicants can book. 9:00 through 16:30, every 30 minutes. */
+/** Default applicant slots: weekdays, 9:00 through 16:30, every 30 minutes. */
 export const SLOT_MINUTES = 30;
+
+export type SlotOffer = {
+  /** JS weekday: 0 Sunday through 6 Saturday. */
+  days: readonly number[];
+  /** Local times as HH:MM. */
+  times: readonly string[];
+};
+
+export const WEEKDAY_HOURS: SlotOffer = {
+  days: [1, 2, 3, 4, 5],
+  times: Array.from({ length: 16 }, (_, index) => {
+    const minutes = 9 * 60 + index * 30;
+    return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  }),
+};
 export const SLOT_LEAD_MS = 15 * 60_000;
 export const SLOT_HORIZON_MS = 60 * 24 * 60 * 60 * 1000;
 
@@ -17,11 +32,20 @@ export const SCHEDULE_TIME_ZONES = [
 
 export const DEFAULT_TIME_ZONE = 'America/New_York';
 
-export function isWeekendDate(isoDate: string): boolean {
+export function weekdayOf(isoDate: string): number | null {
   const [year, month, day] = isoDate.split('-').map(Number);
-  if (!year || !month || !day) return true;
-  const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay();
-  return weekday === 0 || weekday === 6;
+  if (!year || !month || !day) return null;
+  return new Date(Date.UTC(year, month - 1, day)).getUTCDay();
+}
+
+export function isWeekendDate(isoDate: string): boolean {
+  const weekday = weekdayOf(isoDate);
+  return weekday === null || weekday === 0 || weekday === 6;
+}
+
+export function isOfferedDate(isoDate: string, offer: SlotOffer = WEEKDAY_HOURS): boolean {
+  const weekday = weekdayOf(isoDate);
+  return weekday !== null && offer.days.includes(weekday);
 }
 
 export function civilToday(timeZone: string, now = new Date()): string {
@@ -48,15 +72,18 @@ export function monthMatrix(year: number, monthIndex: number): (string | null)[]
   return weeks;
 }
 
-export function slotsForDate(isoDate: string, timeZone: string, now = new Date()): string[] {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate) || isWeekendDate(isoDate)) return [];
+export function slotsForDate(
+  isoDate: string,
+  timeZone: string,
+  now = new Date(),
+  offer: SlotOffer = WEEKDAY_HOURS,
+): string[] {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate) || !isOfferedDate(isoDate, offer)) return [];
   const earliest = now.getTime() + SLOT_LEAD_MS;
   const latest = now.getTime() + SLOT_HORIZON_MS;
   const slots: string[] = [];
-  for (let minutes = 9 * 60; minutes <= 16 * 60 + 30; minutes += SLOT_MINUTES) {
-    const hour = String(Math.floor(minutes / 60)).padStart(2, '0');
-    const minute = String(minutes % 60).padStart(2, '0');
-    const iso = localDateTimeToIso(`${isoDate}T${hour}:${minute}`, timeZone);
+  for (const time of offer.times) {
+    const iso = localDateTimeToIso(`${isoDate}T${time}`, timeZone);
     if (!iso) continue;
     const at = new Date(iso).getTime();
     if (at < earliest || at > latest) continue;
@@ -65,11 +92,16 @@ export function slotsForDate(isoDate: string, timeZone: string, now = new Date()
   return slots;
 }
 
-export function isOfferedSlot(iso: string, timeZone: string, now = new Date()): boolean {
+export function isOfferedSlot(
+  iso: string,
+  timeZone: string,
+  now = new Date(),
+  offer: SlotOffer = WEEKDAY_HOURS,
+): boolean {
   const at = new Date(iso);
   if (Number.isNaN(at.getTime())) return false;
   const date = isoDateInTimeZone(at.toISOString(), timeZone);
-  return slotsForDate(date, timeZone, now).some((slot) => new Date(slot).getTime() === at.getTime());
+  return slotsForDate(date, timeZone, now, offer).some((slot) => new Date(slot).getTime() === at.getTime());
 }
 
 export function formatSlotTime(iso: string, timeZone: string): string {
