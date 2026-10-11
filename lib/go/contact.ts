@@ -1,12 +1,13 @@
-import { ACQ_GHL_LOCATION_ID, GHL_PIT_TOKEN } from '@/lib/acq/config';
+import { ACQ_GHL_LOCATION_ID } from '@/lib/acq/config';
+import { ghlPit } from '@/lib/ghl/pit';
 import { SOURCE_TAGS, TAGS, legacyNamesFor } from '@/lib/ghl/tags';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const CONTACT_TAGS = [SOURCE_TAGS.cleaning, TAGS.smsConsent];
 
-function headers(): HeadersInit {
+function headers(pit: string): HeadersInit {
   return {
-    Authorization: `Bearer ${GHL_PIT_TOKEN}`,
+    Authorization: `Bearer ${pit}`,
     Version: '2021-07-28',
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -25,10 +26,11 @@ function splitName(fullName: string): { firstName: string; lastName?: string } {
 }
 
 async function ghl<T>(path: string, init: RequestInit): Promise<T> {
-  if (!GHL_PIT_TOKEN || !ACQ_GHL_LOCATION_ID) {
+  const pit = await ghlPit();
+  if (!pit || !ACQ_GHL_LOCATION_ID) {
     throw new Error('GHL contact is not configured');
   }
-  const response = await fetch(`${GHL_API}${path}`, { ...init, headers: headers() });
+  const response = await fetch(`${GHL_API}${path}`, { ...init, headers: headers(pit) });
   const text = await response.text();
   if (!response.ok) {
     throw new Error(`ghl_contact_failed: ${response.status} ${text}`);

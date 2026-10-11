@@ -6,18 +6,18 @@ import {
   ACQ_GHL_LOCATION_ID,
   ACQ_GHL_WEBHOOK_URL,
   ACQ_PUBLIC_ORIGIN,
-  GHL_PIT_TOKEN,
   qualificationSchedulePath,
   qualificationThankYouPath,
 } from './config';
 import { markLeadAirtable, upsertLeadFromQualification } from './leads';
 import {
-  ghlConfigured,
+  ghlReady,
   logPipelineFailure,
   upsertAirtableLead,
   upsertGhlContact,
   writeScoreToGhl,
 } from './pipeline';
+import { ghlPit } from '@/lib/ghl/pit';
 import { moveGhlLead } from './ghl-lifecycle';
 import { sendRoofingCapi } from './meta-capi';
 import { nichePixelEvent, parseRoofingLead, roofingNotYetPath, roofingVisitorPath } from './niche-lead';
@@ -66,12 +66,13 @@ async function postWebhook(payload: QualificationPayload): Promise<void> {
 }
 
 async function postForm(payload: QualificationPayload): Promise<void> {
-  if (!ACQ_GHL_FORM_ID || !GHL_PIT_TOKEN || !ACQ_GHL_LOCATION_ID) return;
+  const pit = await ghlPit();
+  if (!ACQ_GHL_FORM_ID || !pit || !ACQ_GHL_LOCATION_ID) return;
 
   const response = await fetch(`${GHL_API}/forms/${ACQ_GHL_FORM_ID}/submissions`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${GHL_PIT_TOKEN}`,
+      Authorization: `Bearer ${pit}`,
       Version: '2021-07-28',
       'Content-Type': 'application/json',
       Accept: 'application/json',
@@ -122,7 +123,7 @@ export async function submitLead(
   payload.stage = stageForQualification(score.qualificationResult);
 
   let contactId = '';
-  if (ghlConfigured()) {
+  if (await ghlReady()) {
     try {
       const contact = await upsertGhlContact(payload);
       contactId = contact.contactId;

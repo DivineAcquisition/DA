@@ -1,12 +1,13 @@
 import type { BookingStatus } from '@/lib/booking-messages/types';
 import { redact } from '@/lib/ghl/rules';
 import { APPOINTMENT_TAGS, STAGE_TAGS, exclusiveTagChange } from '@/lib/ghl/tags';
-import { ACQ_GHL_LOCATION_ID, ACQ_GHL_PIPELINE_ID, ACQ_GHL_PIPELINE_NAME, GHL_PIT_TOKEN } from './config';
+import { ghlPitSync } from '@/lib/ghl/pit';
+import { ACQ_GHL_LOCATION_ID, ACQ_GHL_PIPELINE_ID, ACQ_GHL_PIPELINE_NAME } from './config';
 import type { GhlFieldValues } from './ghl-fields';
 import {
   addGhlTags,
   customFieldEntries,
-  ghlConfigured,
+  ghlReady,
   ghlFetch,
   removeGhlTags,
   resolveGhlCustomFields,
@@ -38,7 +39,7 @@ export function pickPipeline(pipelines: GhlPipeline[], wanted: { id?: string; na
     const byName = pipelines.find((pipeline) => key(pipeline.name) === key(wanted.name ?? ''));
     if (byName) return byName;
   }
-  return pipelines.length === 1 ? pipelines[0] : null;
+  return null;
 }
 
 export function pipelineStageId(pipeline: GhlPipeline, stage: LeadStage): string | null {
@@ -51,6 +52,10 @@ export function pipelineStageId(pipeline: GhlPipeline, stage: LeadStage): string
 }
 
 let pipelineCache: { at: number; pipeline: GhlPipeline | null } | null = null;
+
+export function forgetGhlPipeline(): void {
+  pipelineCache = null;
+}
 
 async function leadPipeline(): Promise<GhlPipeline | null> {
   if (pipelineCache && Date.now() - pipelineCache.at < 10 * 60 * 1000) return pipelineCache.pipeline;
@@ -67,7 +72,7 @@ async function leadPipeline(): Promise<GhlPipeline | null> {
 async function moveOpportunity(contactId: string, stage: LeadStage, name: string): Promise<void> {
   const pipeline = await leadPipeline();
   if (!pipeline) {
-    console.error('[acq:ghl-opportunity] no lead pipeline on the location; set ACQ_GHL_PIPELINE_ID');
+    console.error('[acq:ghl-opportunity] no lead pipeline on the location; run Build in GHL from Workspace settings');
     return;
   }
   const stageId = pipelineStageId(pipeline, stage);
@@ -119,12 +124,12 @@ export async function moveGhlLead(input: {
   appointment?: BookingStatus;
   fields?: GhlFieldValues;
 }): Promise<void> {
-  if (!input.contactId || !ghlConfigured()) return;
+  if (!input.contactId || !(await ghlReady())) return;
   const step = async (label: string, run: () => Promise<void>) => {
     try {
       await run();
     } catch (error) {
-      console.error(`[acq:${label}]`, redact(error instanceof Error ? error.message : String(error), [GHL_PIT_TOKEN]));
+      console.error(`[acq:${label}]`, redact(error instanceof Error ? error.message : String(error), [ghlPitSync()]));
     }
   };
 

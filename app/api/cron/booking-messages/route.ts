@@ -17,7 +17,10 @@ export async function GET(request: NextRequest) {
   const settings = readBookingMessageConfig();
   const header = request.headers.get('authorization') ?? '';
   const provided = header.toLowerCase().startsWith('bearer ') ? header.slice(7).trim() : '';
-  if (!secretsMatch(provided, settings.schedulerSecret)) {
+  // Without a secret on the deploy Vercel sends no Authorization header. The run
+  // only sends what is already due, so the cron's user agent is accepted then.
+  const fromCron = !settings.schedulerSecret && (request.headers.get('user-agent') ?? '').startsWith('vercel-cron/');
+  if (!fromCron && !secretsMatch(provided, settings.schedulerSecret)) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
   const summary = await runDueMessages();

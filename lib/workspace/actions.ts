@@ -9,6 +9,7 @@ import {
   createDocuSealSubmission,
   fetchSignedDocumentUrl,
 } from './docuseal';
+import { forgetGhlPit } from '@/lib/ghl/pit';
 import { requireAdmin, workspaceClient } from './db';
 import { sendAgreementInviteEmail } from './email';
 import {
@@ -71,11 +72,13 @@ function omitBackendSecrets(row: Record<string, unknown>): Record<string, unknow
   const {
     pipeline_airtable_pat: _airtablePat,
     pipeline_call_webhook_secret: _callSecret,
+    ghl_pit_token: _ghlPit,
     ...safe
   } = row;
   return {
     ...safe,
     pipeline_airtable_pat_set: Boolean(String(_airtablePat ?? '').trim()),
+    ghl_pit_token_set: Boolean(String(_ghlPit ?? '').trim()),
   };
 }
 
@@ -92,6 +95,7 @@ function withSettingsDefaults(row: Record<string, unknown> | null): DaSettings |
     company_title: String(safe.company_title ?? ''),
     last_synced_at: (safe.last_synced_at as string | null) ?? null,
     pipeline_airtable_pat_set: Boolean(safe.pipeline_airtable_pat_set),
+    ghl_pit_token_set: Boolean(safe.ghl_pit_token_set),
   };
 }
 
@@ -914,15 +918,20 @@ export async function saveSettingsAction(formData: FormData): Promise<ActionResu
     company_email: String(formData.get('company_email') ?? '').trim(),
     company_title: String(formData.get('company_title') ?? '').trim(),
     pipeline_airtable_pat: keepIfBlank('pipeline_airtable_pat', current?.pipeline_airtable_pat_set ? 'keep' : ''),
+    ghl_pit_token: keepIfBlank('ghl_pit_token', current?.ghl_pit_token_set ? 'keep' : ''),
     updated_at: new Date().toISOString(),
   };
 
   if (payload.pipeline_airtable_pat === 'keep') {
     delete (payload as { pipeline_airtable_pat?: string }).pipeline_airtable_pat;
   }
+  if (payload.ghl_pit_token === 'keep') {
+    delete (payload as { ghl_pit_token?: string }).ghl_pit_token;
+  }
 
   const { error } = await supabase.from('da_settings').upsert({ id: 1, ...payload });
   if (error) return { ok: false, error: error.message };
+  forgetGhlPit();
   revalidateWorkspace();
   return { ok: true, message: 'Settings saved.' };
 }

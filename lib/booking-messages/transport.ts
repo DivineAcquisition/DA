@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createRecord, tables, updateRecord } from '@/lib/calls/airtable';
 import { resolveAirtableApiKey } from '@/lib/acq/airtable-key';
 import { moveGhlLead } from '@/lib/acq/ghl-lifecycle';
+import { ghlPit, ghlPitSync } from '@/lib/ghl/pit';
 import { isLeadStage, stageAfterBooking, type LeadStage } from '@/lib/acq/stages';
 import { DO_NOT_CONTACT_TAG } from './copy';
 import { readBookingMessageConfig, type BookingMessageConfig } from './config';
@@ -42,14 +43,15 @@ function config(): BookingMessageConfig {
 
 async function ghl(path: string, init: RequestInit, version: string): Promise<{ ok: boolean; data: unknown; error: string }> {
   const settings = config();
-  if (!settings.pit || !settings.locationId) {
+  const pit = settings.pit || (await ghlPit());
+  if (!pit || !settings.locationId) {
     return { ok: false, data: null, error: 'ghl_not_configured' };
   }
   try {
     const response = await fetch(`${GHL_API}${path}`, {
       ...init,
       headers: {
-        Authorization: `Bearer ${settings.pit}`,
+        Authorization: `Bearer ${pit}`,
         Version: version,
         Accept: 'application/json',
         ...(init.body ? { 'Content-Type': 'application/json' } : {}),
@@ -60,11 +62,11 @@ async function ghl(path: string, init: RequestInit, version: string): Promise<{ 
     const text = await response.text();
     const data = text ? JSON.parse(text) : {};
     if (!response.ok) {
-      return { ok: false, data, error: safeError(`${response.status} ${text}`, [settings.pit]) };
+      return { ok: false, data, error: safeError(`${response.status} ${text}`, [pit]) };
     }
     return { ok: true, data, error: '' };
   } catch (error) {
-    return { ok: false, data: null, error: safeError(error, [settings.pit]) };
+    return { ok: false, data: null, error: safeError(error, [pit]) };
   }
 }
 
@@ -86,7 +88,7 @@ async function readContact(contactId: string): Promise<ContactSnapshot> {
 async function ensureContact(person: Person): Promise<string> {
   if (person.ghlContactId) return person.ghlContactId;
   const settings = config();
-  if (!settings.pit || !settings.locationId) return '';
+  if (!(settings.pit || (await ghlPit())) || !settings.locationId) return '';
   if (person.email) {
     const found = await ghl(
       `/contacts/search/duplicate?locationId=${encodeURIComponent(settings.locationId)}&email=${encodeURIComponent(person.email)}`,
@@ -465,12 +467,30 @@ export async function recordBookingEvent(event: NormalizedEvent): Promise<
     if (outcome.unmatched) {
       console.error('[booking-messages] unmatched booking', event.bookingId || event.email || 'unknown');
     }
+    const sent = await runDueMessages();
+    if (sent.error) console.error('[booking-messages] immediate send failed', sent.error);
     return { ok: true, duplicate: false, unmatched: outcome.unmatched };
   } catch (error) {
-    const message = safeError(error, [config().pit]);
+    const message = safeError(error, [config().pit || ghlPitSync()]);
     console.error('[booking-messages] record failed', message);
     return { ok: false, error: message };
   }
+}
+
+/**
+ * Leases a message for two minutes so a second runner (the minute cron and the
+ * send right after a booking) skips it. A run that dies leaves it to retry.
+ */
+async function claim(db: Db, message: QueuedMessage, now: Date): Promise<boolean> {
+  const lease = new Date(now.getTime() + 2 * 60_000).toISOString();
+  let query = db
+    .from('booking_message_messages')
+    .update({ next_attempt_at: lease })
+    .eq('id', message.id)
+    .eq('status', 'pending');
+  query = message.nextAttemptAt ? query.eq('next_attempt_at', message.nextAttemptAt) : query.is('next_attempt_at', null);
+  const { data, error } = await query.select('id');
+  return !error && Array.isArray(data) && data.length === 1;
 }
 
 export async function runDueMessages(): Promise<{
@@ -490,12 +510,13 @@ export async function runDueMessages(): Promise<{
     .lte('scheduled_for', now.toISOString())
     .order('scheduled_for', { ascending: true })
     .limit(settings.batchSize);
-  if (error) return { ok: false, claimed: 0, results: [], error: safeError(error.message, [settings.pit]) };
+  if (error) return { ok: false, claimed: 0, results: [], error: safeError(error.message, [settings.pit || ghlPitSync()]) };
 
   const results: { id: string; status: string; reason: string }[] = [];
   for (const row of data ?? []) {
     const message = messageFromRow(row);
     if (message.nextAttemptAt && new Date(message.nextAttemptAt).getTime() > now.getTime()) continue;
+    if (!(await claim(db, message, now))) continue;
     const { data: personRowData } = await db.from('booking_message_people').select('*').eq('id', message.personId).maybeSingle();
     if (!personRowData) {
       const failed = { ...message, status: 'failed' as const, reason: 'missing_person', final: true, flagged: true };

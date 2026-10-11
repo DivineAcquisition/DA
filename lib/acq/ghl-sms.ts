@@ -3,14 +3,14 @@ import {
   ACQ_GHL_CALENDAR_ID,
   ACQ_GHL_LOCATION_ID,
   FREE_SALES_OPS_AUDIT_CALENDAR_NAME,
-  GHL_PIT_TOKEN,
 } from './config';
+import { ghlPit, ghlPitSync } from '@/lib/ghl/pit';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 
-function headers(version: string): HeadersInit {
+async function headers(version: string): Promise<HeadersInit> {
   return {
-    Authorization: `Bearer ${GHL_PIT_TOKEN}`,
+    Authorization: `Bearer ${await ghlPit()}`,
     Version: version,
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -18,12 +18,12 @@ function headers(version: string): HeadersInit {
 }
 
 export async function updateGhlContactPhone(contactId: string, phone: string): Promise<void> {
-  if (!GHL_PIT_TOKEN || !contactId) {
+  if (!(await ghlPit()) || !contactId) {
     throw new Error('GHL contact phone update is not configured');
   }
   const response = await fetch(`${GHL_API}/contacts/${contactId}`, {
     method: 'PUT',
-    headers: headers('2021-07-28'),
+    headers: await headers('2021-07-28'),
     body: JSON.stringify({ phone }),
   });
   if (!response.ok) {
@@ -31,8 +31,8 @@ export async function updateGhlContactPhone(contactId: string, phone: string): P
   }
 }
 
-export function salesOpsCalendarReady(): boolean {
-  return Boolean(GHL_PIT_TOKEN && ACQ_GHL_LOCATION_ID && ACQ_GHL_CALENDAR_ID);
+export async function salesOpsCalendarReady(): Promise<boolean> {
+  return Boolean((await ghlPit()) && ACQ_GHL_LOCATION_ID && ACQ_GHL_CALENDAR_ID);
 }
 
 export type GhlAppointmentInput = {
@@ -89,18 +89,18 @@ function appointmentIdFrom(payload: unknown): string | null {
 }
 
 function safeGhlError(prefix: string, status: number, body: string): Error {
-  return new Error(redact(`${prefix}: ${status} ${body}`, [GHL_PIT_TOKEN]));
+  return new Error(redact(`${prefix}: ${status} ${body}`, [ghlPitSync()]));
 }
 
 export async function createSalesOpsAppointment(
   input: GhlAppointmentInput,
 ): Promise<{ id: string; meetingLink: string | null; calendarName: string }> {
-  if (!salesOpsCalendarReady()) throw new Error('ACQ GHL calendar is not configured');
+  if (!(await salesOpsCalendarReady())) throw new Error('ACQ GHL calendar is not configured');
   if (!input.contactId) throw new Error('GHL contact id is required');
 
   const response = await fetch(`${GHL_API}/calendars/events/appointments`, {
     method: 'POST',
-    headers: headers('2021-04-15'),
+    headers: await headers('2021-04-15'),
     body: JSON.stringify(salesOpsAppointmentBody(input)),
   });
   const text = await response.text();
@@ -112,10 +112,10 @@ export async function createSalesOpsAppointment(
 }
 
 export async function cancelSalesOpsAppointment(appointmentId: string): Promise<void> {
-  if (!GHL_PIT_TOKEN || !appointmentId) return;
+  if (!(await ghlPit()) || !appointmentId) return;
   const response = await fetch(`${GHL_API}/calendars/events/appointments/${encodeURIComponent(appointmentId)}`, {
     method: 'PUT',
-    headers: headers('2021-04-15'),
+    headers: await headers('2021-04-15'),
     body: JSON.stringify({ appointmentStatus: 'cancelled' }),
   });
   if (!response.ok && response.status !== 404) {
@@ -129,12 +129,12 @@ export async function createAcqGhlAppointment(input: GhlAppointmentInput): Promi
 }
 
 export async function sendGhlSms(contactId: string, message: string): Promise<void> {
-  if (!GHL_PIT_TOKEN || !contactId) {
+  if (!(await ghlPit()) || !contactId) {
     throw new Error('GHL SMS is not configured');
   }
   const response = await fetch(`${GHL_API}/conversations/messages`, {
     method: 'POST',
-    headers: headers('2021-04-15'),
+    headers: await headers('2021-04-15'),
     body: JSON.stringify({
       type: 'SMS',
       contactId,
