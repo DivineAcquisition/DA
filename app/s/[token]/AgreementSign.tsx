@@ -20,7 +20,11 @@ type Props = {
 
 const DocumentPreview = memo(function DocumentPreview({ src }: { src: string }) {
   return (
-    <section className="mt-4 overflow-hidden rounded-2xl border border-[var(--ws-border)] bg-white">
+    <section className="mt-10 overflow-hidden rounded-[28px] border border-white/10 bg-[#f4f0e8] shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+      <div className="flex items-center justify-between border-b border-black/[0.06] px-6 py-3.5 sm:px-8">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8c8378]">The agreement</p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8c8378]">Read only</p>
+      </div>
       <DocusealForm
         src={src}
         preview
@@ -28,7 +32,7 @@ const DocumentPreview = memo(function DocumentPreview({ src }: { src: string }) 
         withDecline={false}
         withDownloadButton={false}
         allowTypedSignature={false}
-        backgroundColor="#ffffff"
+        backgroundColor="#f4f0e8"
         customCss="#submit_form_button { display: none; }"
       />
     </section>
@@ -84,6 +88,8 @@ function InkPad({
   onChangeRef.current = onChange;
   const [mode, setMode] = useState<'draw' | 'type'>(startMode);
   const [typed, setTyped] = useState(typedDefault);
+  const [blank, setBlank] = useState(startMode === 'draw');
+  const height = tall ? 188 : 124;
 
   useEffect(() => {
     if (mode !== 'draw') return;
@@ -94,7 +100,7 @@ function InkPad({
     const fit = () => {
       const width = Math.floor(frame.clientWidth);
       if (width < 40) return;
-      const height = tall ? 168 : 112;
+      const height = tall ? 188 : 124;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const nextWidth = Math.floor(width * dpr);
       const nextHeight = Math.floor(height * dpr);
@@ -121,6 +127,7 @@ function InkPad({
     const ticket = ++generation.current;
     const text = value.trim().slice(0, maxLength);
     if (!text) {
+      setBlank(true);
       onChangeRef.current(null);
       return;
     }
@@ -146,6 +153,7 @@ function InkPad({
     ctx.textBaseline = 'middle';
     ctx.fillText(text, width / 2, height / 2);
     if (ticket !== generation.current) return;
+    setBlank(false);
     onChangeRef.current(canvas.toDataURL('image/png'));
   }
 
@@ -167,6 +175,7 @@ function InkPad({
     event.preventDefault();
     canvas.setPointerCapture(event.pointerId);
     drawing.current = true;
+    setBlank(false);
     const here = point(event);
     last.current = here;
     ctx.beginPath();
@@ -207,6 +216,7 @@ function InkPad({
       ctx.restore();
     }
     setTyped('');
+    setBlank(true);
     onChangeRef.current(null);
   }
 
@@ -215,41 +225,41 @@ function InkPad({
     generation.current += 1;
     drawing.current = false;
     onChangeRef.current(null);
+    setBlank(next === 'draw' || !typed.trim());
     setMode(next);
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-semibold text-neutral-900">{label}</span>
-        <div className="flex rounded-full bg-neutral-100 p-0.5 text-xs font-semibold">
-          {(['draw', 'type'] as const).map((option) => (
-            <button
-              key={option}
-              type="button"
-              aria-pressed={mode === option}
-              onClick={() => switchMode(option)}
-              className={
-                mode === option
-                  ? 'rounded-full bg-white px-3 py-1 text-neutral-900 shadow-sm'
-                  : 'rounded-full px-3 py-1 text-neutral-500'
-              }
-            >
-              {option === 'draw' ? 'Draw' : 'Type'}
-            </button>
+      <div className="flex items-end justify-between gap-4">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8c8378]">{label}</span>
+        <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.18em]">
+          {(['draw', 'type'] as const).map((option, index) => (
+            <span key={option} className="flex items-center gap-3">
+              {index > 0 ? <span className="text-[#d5cfc4]">/</span> : null}
+              <button
+                type="button"
+                aria-pressed={mode === option}
+                onClick={() => switchMode(option)}
+                className={
+                  mode === option
+                    ? 'border-b border-[#1c1915] pb-0.5 text-[#1c1915]'
+                    : 'pb-0.5 text-[#b3aa9e]'
+                }
+              >
+                {option === 'draw' ? 'Draw' : 'Type'}
+              </button>
+            </span>
           ))}
         </div>
       </div>
-      <div
-        className="relative mt-2 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50"
-        style={{ minHeight: tall ? 168 : 112 }}
-      >
+      <div className="relative mt-3 overflow-hidden" style={{ minHeight: height }}>
         {mode === 'draw' ? (
           <canvas
             ref={canvasRef}
             aria-label={label}
             className="block w-full touch-none cursor-crosshair"
-            style={{ height: tall ? 168 : 112 }}
+            style={{ height }}
             onPointerDown={startDraw}
             onPointerMove={moveDraw}
             onPointerUp={endDraw}
@@ -269,15 +279,24 @@ function InkPad({
               setTyped(next);
               void publishTyped(next);
             }}
-            className="block h-full w-full bg-transparent px-4 text-center text-neutral-900 outline-none placeholder:text-neutral-300"
-            style={{ fontFamily: script.style.fontFamily, fontSize: tall ? 44 : 36, height: tall ? 168 : 112 }}
+            className="block w-full bg-transparent px-2 text-center text-[#1c1915] outline-none placeholder:text-[#d5cfc4]"
+            style={{ fontFamily: script.style.fontFamily, fontSize: tall ? 52 : 40, height }}
           />
         )}
-        <div className="pointer-events-none absolute inset-x-6 bottom-6 border-b border-neutral-300" />
+        {mode === 'draw' && blank ? (
+          <p className="pointer-events-none absolute inset-x-0 top-8 text-center text-[10px] font-semibold uppercase tracking-[0.22em] text-[#c4bdb2]">
+            {tall ? 'Draw your signature' : 'Draw your initials'}
+          </p>
+        ) : null}
+        <div className="pointer-events-none absolute inset-x-2 bottom-7 border-b border-[#1c1915]/15" />
       </div>
-      <div className="mt-2 flex items-start justify-between gap-3">
-        <p className="text-xs leading-relaxed text-neutral-500">{hint}</p>
-        <button type="button" onClick={clear} className="shrink-0 text-xs font-semibold text-neutral-500">
+      <div className="mt-1 flex items-start justify-between gap-4">
+        <p className="text-[12px] leading-relaxed text-[#8c8378]">{hint}</p>
+        <button
+          type="button"
+          onClick={clear}
+          className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#8c8378]"
+        >
           Clear
         </button>
       </div>
@@ -343,10 +362,14 @@ export default function AgreementSign({
 
   if (declining && embedSrc) {
     return (
-      <section className="mt-4 overflow-hidden rounded-2xl border border-[var(--ws-border)] bg-white">
-        <div className="flex items-center justify-between gap-3 border-b border-neutral-200 px-5 py-4">
-          <p className="text-sm text-neutral-700">Use Decline in the form if you do not want to sign.</p>
-          <button type="button" onClick={() => setDeclining(false)} className="text-sm font-semibold text-neutral-900">
+      <section className="mt-10 overflow-hidden rounded-[28px] border border-white/10 bg-[#f4f0e8] text-[#1c1915] shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+        <div className="flex items-center justify-between gap-4 border-b border-black/[0.06] px-6 py-4 sm:px-8">
+          <p className="text-sm text-[#5c564e]">Decline in the form if you do not want to sign.</p>
+          <button
+            type="button"
+            onClick={() => setDeclining(false)}
+            className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1c1915]"
+          >
             Back to signing
           </button>
         </div>
@@ -355,7 +378,7 @@ export default function AgreementSign({
           withTitle={false}
           withDecline
           withDownloadButton={false}
-          backgroundColor="#ffffff"
+          backgroundColor="#f4f0e8"
           onComplete={onDone}
           onDecline={onDone}
         />
@@ -367,13 +390,16 @@ export default function AgreementSign({
     <>
       {embedSrc ? <DocumentPreview src={embedSrc} /> : null}
 
-      <section className="mt-4 rounded-2xl border border-[var(--ws-border)] bg-white p-5 sm:p-7">
-        <h2 className="text-lg font-semibold text-neutral-900">Your signature</h2>
-        <p className="mt-1 text-sm leading-relaxed text-neutral-600">
-          Sign once here. We place that signature on each signature line in the agreement.
-        </p>
+      <section className="mt-10 overflow-hidden rounded-[28px] bg-[#f4f0e8] text-[#1c1915] shadow-[0_40px_90px_rgba(0,0,0,0.4)]">
+        <div className="border-b border-black/[0.06] px-6 py-6 sm:px-10 sm:py-7">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8c8378]">Execute</p>
+          <h2 className="mt-2 text-[1.7rem] font-medium tracking-[-0.03em]">Your signature</h2>
+          <p className="mt-2 max-w-[42ch] text-sm leading-relaxed text-[#5c564e]">
+            Sign once. That signature is placed on each signature line in the agreement.
+          </p>
+        </div>
 
-        <div className="mt-5">
+        <div className="px-6 py-7 sm:px-10 sm:py-8">
           <InkPad
             label="Signature"
             hint={signatureHint}
@@ -384,63 +410,83 @@ export default function AgreementSign({
             maxLength={80}
             onChange={setSignature}
           />
-        </div>
 
-        {needsInitials ? (
-          <div className="mt-6">
-            <InkPad
-              label="Initials"
-              hint={initialsHint}
-              tall={false}
-              startMode="type"
-              typedDefault={initialsFrom(recipientName)}
-              placeholder="AB"
-              maxLength={8}
-              onChange={setInitials}
-            />
-          </div>
-        ) : null}
-
-        <fieldset className="mt-6 space-y-3">
-          <legend className="text-sm font-semibold text-neutral-900">Before you sign</legend>
-          {consents.map((consent) => (
-            <label key={consent.id} className="flex gap-3 text-sm leading-relaxed text-neutral-700">
-              <input
-                type="checkbox"
-                checked={Boolean(checked[consent.id])}
-                onChange={(event) => setChecked((current) => ({ ...current, [consent.id]: event.target.checked }))}
-                className="mt-1 h-4 w-4 shrink-0 accent-[var(--ws-accent)]"
+          {needsInitials ? (
+            <div className="mt-8 border-t border-black/[0.06] pt-8 sm:max-w-sm">
+              <InkPad
+                label="Initials"
+                hint={initialsHint}
+                tall={false}
+                startMode="type"
+                typedDefault={initialsFrom(recipientName)}
+                placeholder="AB"
+                maxLength={8}
+                onChange={setInitials}
               />
-              <span>{consent.label}</span>
-            </label>
-          ))}
-        </fieldset>
+            </div>
+          ) : null}
 
-        {error ? (
-          <p role="alert" className="mt-4 text-sm text-red-600">
-            {error}
-          </p>
-        ) : null}
+          <fieldset className="mt-8 space-y-2.5">
+            <legend className="mb-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#8c8378]">
+              Before you sign
+            </legend>
+            {consents.map((consent) => (
+              <label
+                key={consent.id}
+                className="group flex cursor-pointer gap-3.5 rounded-2xl border border-black/[0.06] bg-white/55 px-4 py-3.5 transition hover:border-black/15"
+              >
+                <input
+                  type="checkbox"
+                  checked={Boolean(checked[consent.id])}
+                  onChange={(event) => setChecked((current) => ({ ...current, [consent.id]: event.target.checked }))}
+                  className="peer sr-only"
+                />
+                <span
+                  aria-hidden
+                  className="mt-0.5 grid h-[18px] w-[18px] shrink-0 place-items-center rounded-[5px] border border-black/20 bg-white transition peer-checked:border-[#1c1915] peer-checked:bg-[#1c1915] peer-focus-visible:ring-2 peer-focus-visible:ring-[#9a88fc]"
+                >
+                  <svg viewBox="0 0 12 12" className="h-2.5 w-2.5 opacity-0 group-has-[:checked]:opacity-100">
+                    <path
+                      d="M2.2 6.2 4.7 8.7 9.8 3.4"
+                      fill="none"
+                      stroke="white"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span className="text-sm leading-relaxed text-[#3c3832]">{consent.label}</span>
+              </label>
+            ))}
+          </fieldset>
 
-        <button
-          type="button"
-          onClick={() => void submit()}
-          disabled={!canSubmit}
-          aria-busy={pending}
-          className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)] disabled:opacity-50"
-        >
-          {pending ? 'Placing signature…' : 'Sign agreement'}
-        </button>
+          {error ? (
+            <p role="alert" className="mt-5 rounded-2xl bg-[#f6e4df] px-4 py-3 text-sm leading-relaxed text-[#8c332c]">
+              {error}
+            </p>
+          ) : null}
 
-        {embedSrc ? (
           <button
             type="button"
-            onClick={() => setDeclining(true)}
-            className="mt-4 block w-full text-center text-sm text-neutral-500 underline-offset-2 hover:underline"
+            onClick={() => void submit()}
+            disabled={!canSubmit}
+            aria-busy={pending}
+            className="mt-8 inline-flex h-14 w-full items-center justify-center rounded-full bg-[#14121a] text-[12px] font-semibold tracking-[0.16em] text-[#f4f0e8] uppercase transition disabled:bg-[#ddd6cc] disabled:text-[#9a9288]"
           >
-            Decline this agreement
+            {pending ? 'Placing signature' : 'Sign agreement'}
           </button>
-        ) : null}
+
+          {embedSrc ? (
+            <button
+              type="button"
+              onClick={() => setDeclining(true)}
+              className="mt-5 block w-full text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-[#8c8378]"
+            >
+              Decline this agreement
+            </button>
+          ) : null}
+        </div>
       </section>
     </>
   );
