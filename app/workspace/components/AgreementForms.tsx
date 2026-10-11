@@ -9,6 +9,7 @@ import {
   voidAgreementAction,
 } from '@/lib/workspace/actions';
 import type { MappedField, mappingSummary } from '@/lib/workspace/field-mapping';
+import { isSalesOperatorPlacementTemplate } from '@/lib/workspace/operator-agreement';
 import type { DaAgreementTemplate, DaRecipient } from '@/lib/workspace/types';
 import { Button, CopyButton, Dialog, Field, Select, ws } from './ui';
 
@@ -64,8 +65,10 @@ export function SendAgreementButton({
   presetRecipientId?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const placementId = templates.find((template) => isSalesOperatorPlacementTemplate(template.name) && !template.archived)?.id ?? '';
+  const presetIsOperator = recipients.find((recipient) => recipient.id === presetRecipientId)?.recipient_type === 'operator';
   const [recipientId, setRecipientId] = useState(presetRecipientId ?? '');
-  const [templateId, setTemplateId] = useState('');
+  const [templateId, setTemplateId] = useState(presetIsOperator ? placementId : '');
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -132,8 +135,13 @@ export function SendAgreementButton({
               required
               value={recipientId}
               onChange={(event) => {
-                setRecipientId(event.target.value);
-                loadPreview(event.target.value, templateId);
+                const nextRecipientId = event.target.value;
+                const nextIsOperator =
+                  recipients.find((recipient) => recipient.id === nextRecipientId)?.recipient_type === 'operator';
+                const nextTemplateId = templateId || (nextIsOperator ? placementId : '');
+                setRecipientId(nextRecipientId);
+                setTemplateId(nextTemplateId);
+                loadPreview(nextRecipientId, nextTemplateId);
               }}
             >
               <option value="" disabled>

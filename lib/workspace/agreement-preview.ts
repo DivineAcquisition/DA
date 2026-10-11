@@ -1,10 +1,10 @@
 import 'server-only';
 import { loadAgreementPage } from './agreement-page';
-import { fetchTemplateDocuments } from './docuseal';
+import { getDocuSealTemplate } from './docuseal';
 import { readDocuSealApiKey } from './docuseal-key';
 import { loadSigningCatalogue } from './sign-agreement';
 
-import { agreementPdfFilename, previewDocumentUrl } from './agreement-preview-url';
+import { agreementPdfFilename, choosePreviewDocument, previewDocumentUrl } from './agreement-preview-url';
 
 /**
  * The agreement PDF, streamed through this origin. pdf.js cannot read
@@ -24,8 +24,22 @@ export async function streamAgreementPreview(token: string, client: string | nul
   if (!catalogue?.templateId) return unavailable;
 
   const apiKey = await readDocuSealApiKey();
-  const docs = apiKey ? await fetchTemplateDocuments(apiKey, catalogue.templateId) : [];
-  const url = previewDocumentUrl(docs[0]?.url ?? '');
+  const live = apiKey ? await getDocuSealTemplate(apiKey, catalogue.templateId).catch(() => null) : null;
+  const templateName =
+    live && live.ok && live.data.name?.trim() ? live.data.name.trim() : page.templateName;
+  const rawDocs =
+    live && live.ok
+      ? (
+          live.data as {
+            documents?: Array<{ name?: string; url?: string }>;
+          }
+        ).documents ?? []
+      : [];
+  const docs = rawDocs
+    .filter((doc): doc is { name?: string; url: string } => Boolean(doc.url))
+    .map((doc) => ({ name: doc.name?.trim() || 'Agreement', url: doc.url }));
+  const chosen = choosePreviewDocument(docs, templateName);
+  const url = chosen ? previewDocumentUrl(chosen.url) : null;
   if (!url) return unavailable;
 
   const upstream = await fetch(url, { cache: 'no-store' }).catch(() => null);
@@ -36,7 +50,7 @@ export async function streamAgreementPreview(token: string, client: string | nul
     );
   }
 
-  const filename = agreementPdfFilename(page.templateName || docs[0]?.name || 'Agreement');
+  const filename = agreementPdfFilename(templateName || chosen?.name || 'Agreement');
   return new Response(upstream.body, {
     status: 200,
     headers: {

@@ -8,6 +8,8 @@ import {
   filterKnownFields,
   initialsFromName,
   inferOperatorVariant,
+  isSalesOperatorPlacementTemplate,
+  operatorSignerExactValues,
   resolveCompanyRoleName,
   resolveOperatorSignerRoleName,
 } from './operator-agreement';
@@ -95,7 +97,30 @@ describe('buildOperatorCompanyValues', () => {
   });
 });
 
-describe('sales operator / role resolution', () => {
+describe('sales operator placement agreement', () => {
+  it('recognizes the updated DivineACQ template name', () => {
+    expect(isSalesOperatorPlacementTemplate('DivineACQ™ - Sales Operator Placement Agreement')).toBe(true);
+    expect(isSalesOperatorPlacementTemplate('VA Independent Contractor Agreement')).toBe(false);
+    expect(isSalesOperatorPlacementTemplate('VA Independent Contractor Agreement — V2 Hourly')).toBe(false);
+  });
+
+  it('fills the placement fields instead of the VA contractor fields', () => {
+    const values = operatorSignerExactValues(
+      'DivineACQ™ - Sales Operator Placement Agreement',
+      {
+        fullName: 'A Sannie',
+        email: 'asannie74@gmail.com',
+        address: '1 Main Street',
+        now: new Date('2026-08-09T12:00:00Z'),
+      },
+      company,
+    );
+    expect(values.Operator).toBe('A Sannie');
+    expect(values['Operator initials']).toBe('AS');
+    expect(values.Address).toBe('1 Main Street');
+    expect(values['Contractor Name']).toBeUndefined();
+  });
+
   it('prefers Operator and Divine Acquisition roles when present', () => {
     const submitters = [
       { name: 'Operator', uuid: 'a' },
