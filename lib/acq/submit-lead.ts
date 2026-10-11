@@ -1,3 +1,5 @@
+import { ACQ_SMS_CONSENT_VERSION } from '@/lib/booking-messages/copy';
+import { recordBookingEvent } from '@/lib/booking-messages/transport';
 import { sendApplicationAlertEmail } from './application-email';
 import {
   ACQ_GHL_FORM_ID,
@@ -106,6 +108,7 @@ export async function submitLead(
   let payload: QualificationPayload;
   try {
     payload = input.niche === 'roofing' ? parseRoofingLead(input) : parseQualification(input);
+    payload.consentPageUrl = meta?.eventSourceUrl;
   } catch (error) {
     if (error instanceof QualificationError) {
       return { ok: false, error: error.message, field: error.field };
@@ -191,6 +194,27 @@ export async function submitLead(
     });
   } catch (error) {
     await logPipelineFailure('application-email', payload.email, error);
+  }
+
+  if (process.env.VITEST !== 'true' && schedulePath) {
+    const recorded = await recordBookingEvent({
+      type: 'application',
+      email: payload.email,
+      phone: payload.phone,
+      fullName: payload.fullName,
+      firstName: payload.firstName,
+      smsConsent: payload.smsConsent,
+      smsConsentAt: payload.smsConsent ? new Date().toISOString() : null,
+      smsConsentWordingVersion: payload.smsConsent ? ACQ_SMS_CONSENT_VERSION : null,
+      smsConsentPageUrl: payload.consentPageUrl,
+      ghlContactId: contactId || undefined,
+      airtableRecordId: writtenAirtableId || undefined,
+      daLeadId: leadId || undefined,
+      bookingLink: `${ACQ_PUBLIC_ORIGIN}${schedulePath}`,
+    });
+    if (!recorded.ok) {
+      await logPipelineFailure('booking-message', payload.email, new Error(recorded.error));
+    }
   }
 
   if (payload.niche === 'roofing') {

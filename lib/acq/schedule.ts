@@ -9,6 +9,9 @@ import {
 import { createClient, supabaseConfigured } from '@/lib/supabase/server';
 import { headers } from 'next/headers';
 import { isOfferedSlot } from '@/lib/calendar/slots';
+import { bookingMessagesOwnDelivery } from '@/lib/booking-messages/config';
+import { recordBookingEvent } from '@/lib/booking-messages/transport';
+import { ACQ_PUBLIC_ORIGIN } from './config';
 import { createAcqGhlAppointment, updateGhlContactPhone } from './ghl-sms';
 import { acqPublicClients } from './public-db';
 import { sendRoofingCapi } from './meta-capi';
@@ -139,6 +142,7 @@ export async function bookAcqAuditAction(
       endsAt,
       timeZone: data.time_zone,
       attendeeEmails: [data.email || '', 'malik@divineacquisition.io'],
+      notifyAttendees: !bookingMessagesOwnDelivery(),
     });
     eventId = event.eventId;
     meetUrl = event.meetUrl;
@@ -185,7 +189,7 @@ export async function bookAcqAuditAction(
   }
 
   let confirmationId: string | null = null;
-  if (data.email) {
+  if (data.email && !bookingMessagesOwnDelivery()) {
     try {
       const sent = await sendAcqAuditEmail({
         to: data.email,
@@ -227,6 +231,22 @@ export async function bookAcqAuditAction(
       customData: { content_name: 'Lead Leak Audit', content_category: 'roofing' },
     });
   }
+
+  const recorded = await recordBookingEvent({
+    type: 'booked',
+    email: data.email,
+    phone: phone.trim(),
+    fullName: name,
+    timeZone: data.time_zone,
+    startsAt: data.scheduled_for,
+    endsAt,
+    bookingId: data.email || token,
+    meetingLink: meetUrl ?? undefined,
+    ghlContactId: data.ghl_contact_id,
+    bookingLink: `${ACQ_PUBLIC_ORIGIN}/schedule/${token}`,
+    rescheduleLink: `${ACQ_PUBLIC_ORIGIN}/schedule/${token}`,
+  });
+  if (!recorded.ok) console.error('[booking-messages]', recorded.error);
 
   return {
     ok: true,

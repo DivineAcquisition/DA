@@ -10,7 +10,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function GoPrecallPage() {
+export default async function GoPrecallPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ booked?: string }>;
+}) {
+  const params = await searchParams;
+  const booked = params.booked === '1';
   return (
     <div className="acq-coaches min-h-screen antialiased">
       <section className="lx-hero">
@@ -20,7 +26,7 @@ export default function GoPrecallPage() {
             {PRECALL.titleBefore}
             <span className="lx-accent">{PRECALL.titleAccent}</span>
           </h1>
-          <p className="lx-lead">{PRECALL.body}</p>
+          <p className="lx-lead">{booked ? 'Your time is locked. ' : ''}{PRECALL.body}</p>
           <div className="lx-video-wrap">
             <div className="lx-video-shell">
               <GoWistia mediaId={GO_PRECALL_MEDIA_ID} />

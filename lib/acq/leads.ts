@@ -4,6 +4,7 @@ import { supabaseConfigured } from '@/lib/supabase/server';
 import { acqPublicClients } from './public-db';
 import { closedStagesPostgrestIn, isClosedStage } from './stages';
 import { storedAttribution } from './niche-lead';
+import { ACQ_SMS_CONSENT_VERSION } from '@/lib/booking-messages/copy';
 import { ghlContactNote, type QualificationPayload } from './qualify';
 import { scoreQualification, type WorkspaceScore } from './score';
 
@@ -142,12 +143,19 @@ export function leadWriteFromQualification(
         : {}),
     ghl_contact_id:
       extras.ghlContactId?.trim() || extras.existing?.ghl_contact_id?.trim() || '',
+    sms_consent: payload.smsConsent,
+    sms_consent_at: payload.smsConsent ? new Date().toISOString() : null,
+    sms_consent_wording_version: payload.smsConsent ? ACQ_SMS_CONSENT_VERSION : null,
+    sms_consent_page_url: payload.consentPageUrl || null,
     payload: {
       ...(extras.existing?.payload ?? {}),
       tracking: storedAttribution(payload),
       source: payload.source,
       tags: payload.tags,
       offer: payload.coachingNiche,
+      smsConsent: payload.smsConsent,
+      smsConsentWordingVersion: payload.smsConsent ? ACQ_SMS_CONSENT_VERSION : null,
+      smsConsentPageUrl: payload.consentPageUrl || null,
       inquiriesPerMonth: payload.inquiriesPerMonth,
       ...(payload.niche
         ? {
@@ -294,6 +302,10 @@ async function captureApplication(
     tracking: storedAttribution(payload),
     tags: payload.tags,
     scheduleToken,
+    smsConsent: payload.smsConsent,
+    smsConsentAt: payload.smsConsent ? new Date().toISOString() : '',
+    smsConsentWordingVersion: payload.smsConsent ? ACQ_SMS_CONSENT_VERSION : '',
+    smsConsentPageUrl: payload.consentPageUrl ?? '',
     niche: payload.niche ?? '',
     spendBand: payload.spendBand ?? '',
     qualified: payload.nicheQualified == null ? '' : payload.nicheQualified ? 'yes' : 'no',

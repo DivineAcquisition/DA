@@ -68,6 +68,8 @@ export type QualificationPayload = {
   headlineVariant?: HeadlineVariant;
   /** Visit values that are not already keys on `tracking`. */
   attribution?: Record<string, string>;
+  /** Page that showed the SMS box. Set by the server, not the form. */
+  consentPageUrl?: string;
 };
 
 export type QualificationResult = 'Qualified' | 'Manual Review' | 'Disqualified';

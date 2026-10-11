@@ -7,7 +7,11 @@ import {
 } from '@/lib/assessment/calendar';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { acqPublicClients } from '@/lib/acq/public-db';
+import { bookingMessagesOwnDelivery } from '@/lib/booking-messages/config';
+import { GO_SMS_CONSENT_VERSION } from '@/lib/booking-messages/copy';
+import { recordBookingEvent } from '@/lib/booking-messages/transport';
 import { parseGoBooking, type GoBookingInput } from './booking';
+import { GO_PUBLIC_ORIGIN } from './config';
 import { upsertStrategyContact } from './contact';
 import { sendGoSessionEmail } from './reminders';
 
@@ -84,6 +88,7 @@ export async function bookGoStrategyAction(input: GoBookingInput): Promise<GoBoo
       endsAt,
       timeZone: data.time_zone,
       attendeeEmails: [value.email, 'malik@divineacquisition.io'],
+      notifyAttendees: !bookingMessagesOwnDelivery(),
     });
     eventId = event.eventId;
     meetUrl = event.meetUrl;
@@ -125,24 +130,46 @@ export async function bookGoStrategyAction(input: GoBookingInput): Promise<GoBoo
   }
 
   let confirmationId: string | null = null;
-  try {
-    const sent = await sendGoSessionEmail({
-      to: value.email,
-      fullName: value.fullName,
-      startsAt: data.scheduled_for,
-      timeZone: data.time_zone,
-      meetUrl,
-      kind: 'confirmation',
-      bookingId: data.id,
-    });
-    confirmationId = sent.id;
-    await controlRpc(supabase as never, 'go_attach_strategy_booking', {
-      p_id: data.id,
-      p_confirmation_email_id: confirmationId,
-    });
-  } catch (emailError) {
-    console.error('[go] confirmation email failed', emailError);
+  if (!bookingMessagesOwnDelivery()) {
+    try {
+      const sent = await sendGoSessionEmail({
+        to: value.email,
+        fullName: value.fullName,
+        startsAt: data.scheduled_for,
+        timeZone: data.time_zone,
+        meetUrl,
+        kind: 'confirmation',
+        bookingId: data.id,
+      });
+      confirmationId = sent.id;
+      await controlRpc(supabase as never, 'go_attach_strategy_booking', {
+        p_id: data.id,
+        p_confirmation_email_id: confirmationId,
+      });
+    } catch (emailError) {
+      console.error('[go] confirmation email failed', emailError);
+    }
   }
+
+  const recorded = await recordBookingEvent({
+    type: 'booked',
+    email: value.email,
+    phone: value.phone,
+    fullName: value.fullName,
+    timeZone: data.time_zone,
+    startsAt: data.scheduled_for,
+    endsAt,
+    bookingId: data.id,
+    meetingLink: meetUrl ?? undefined,
+    bookingLink: GO_PUBLIC_ORIGIN,
+    rescheduleLink: GO_PUBLIC_ORIGIN,
+    smsConsent: true,
+    smsConsentAt: new Date().toISOString(),
+    smsConsentWordingVersion: GO_SMS_CONSENT_VERSION,
+    smsConsentPageUrl: GO_PUBLIC_ORIGIN,
+    ghlContactId: contactId ?? undefined,
+  });
+  if (!recorded.ok) console.error('[booking-messages]', recorded.error);
 
   return {
     ok: true,

@@ -1,6 +1,7 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { sendGhlSms } from '@/lib/acq/ghl-sms';
+import { bookingMessagesOwnDelivery, textingEnabled } from '@/lib/booking-messages/config';
 import { upsertStrategyContact } from '@/lib/go/contact';
 import {
   formatSessionWhen,
@@ -36,6 +37,9 @@ export async function GET(request: NextRequest) {
   if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
+  if (bookingMessagesOwnDelivery()) {
+    return NextResponse.json({ ok: true, skipped: 'booking-messages' });
+  }
 
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || '';
@@ -67,6 +71,10 @@ export async function GET(request: NextRequest) {
           kind,
           bookingId: row.id,
         });
+      } else if (!textingEnabled()) {
+        await supabase.rpc('release_go_reminder', { p_id: row.id, p_kind: row.kind });
+        results.push({ id: row.id, kind: row.kind, ok: true, error: 'texting_off' });
+        continue;
       } else {
         let contactId = row.ghl_contact_id;
         if (!contactId) {

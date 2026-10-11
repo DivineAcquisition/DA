@@ -1,6 +1,7 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 import { sendGhlSms } from '@/lib/acq/ghl-sms';
+import { bookingMessagesOwnDelivery, textingEnabled } from '@/lib/booking-messages/config';
 import { sendAcqAuditEmail, type AcqEmailKind } from '@/lib/acq/schedule-email';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,9 @@ export async function GET(request: NextRequest) {
   if (!secret || auth !== `Bearer ${secret}`) {
     return NextResponse.json({ ok: false, error: 'unauthorized' }, { status: 401 });
   }
+  if (bookingMessagesOwnDelivery()) {
+    return NextResponse.json({ ok: true, skipped: 'booking-messages' });
+  }
 
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || process.env.SUPABASE_URL?.trim() || '';
@@ -50,6 +54,11 @@ export async function GET(request: NextRequest) {
   for (const row of due) {
     try {
       if (row.kind === 'sms') {
+        if (!textingEnabled()) {
+          await supabase.rpc('release_acq_reminder', { p_id: row.id, p_kind: row.kind });
+          results.push({ id: row.id, kind: row.kind, ok: true, error: 'texting_off' });
+          continue;
+        }
         if (!row.ghl_contact_id) throw new Error('missing GoHighLevel contact');
         const when = row.meet_url ? ` Join: ${row.meet_url}` : ' Check your email for the meeting link.';
         await sendGhlSms(
