@@ -90,6 +90,8 @@ export type AcademyShell = {
     openedAt: string;
     reviewStartedAt: string | null;
     status: string;
+    quizName: string | null;
+    attemptsUsed: number | null;
   } | null;
   remediation: {
     holdId: string;
