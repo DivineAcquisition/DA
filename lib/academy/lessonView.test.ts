@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lessonVideo, lessonView } from './lessonView';
+import { lessonVideo, lessonView, studentStartGaps } from './lessonView';
 
 const base = {
   id: '6b9d3a70-0000-4000-8000-000000000001',
@@ -39,5 +39,24 @@ describe('lesson video view', () => {
 
   it('ignores a host the player does not know', () => {
     expect(lessonVideo({ provider: 'youtube', provider_id: 'abcdefghijk' })).toBeNull();
+  });
+
+  it('lists the checklist a trainee sees before they start', () => {
+    expect(
+      studentStartGaps({
+        video: { provider: 'vimeo', id: '123456789', url: null, duration: 40 },
+        body: '',
+        watchPercent: 90,
+        hasDocument: true,
+      }),
+    ).toEqual(['Watch 90% of the video.', 'Open the companion document.']);
+    expect(
+      studentStartGaps({
+        video: null,
+        body: 'Read this lesson.',
+        watchPercent: 90,
+        hasDocument: false,
+      }),
+    ).toEqual(['Stay on the page long enough to read the lesson.', 'Scroll to the end of the lesson.']);
   });
 });

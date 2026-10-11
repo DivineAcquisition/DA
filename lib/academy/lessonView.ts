@@ -1,3 +1,5 @@
+import { countWords } from '@/lib/academy/markdown';
+
 export type LessonVideo = {
   provider: 'vimeo' | 'mux' | 'file';
   id: string;
@@ -59,6 +61,27 @@ type RawLesson = {
   next_id?: string | null;
   next_open?: boolean;
 };
+
+/** The checklist a trainee sees before they have watched, read, or opened anything. */
+export function studentStartGaps(input: {
+  video: LessonVideo | null;
+  body: string;
+  watchPercent: number;
+  hasDocument: boolean;
+}): string[] {
+  const gaps: string[] = [];
+  if (input.video) {
+    if (!input.video.duration || input.video.duration <= 0) gaps.push('This video has no duration yet.');
+    else gaps.push(`Watch ${input.watchPercent}% of the video.`);
+  } else if (countWords(input.body) > 0) {
+    gaps.push('Stay on the page long enough to read the lesson.');
+    gaps.push('Scroll to the end of the lesson.');
+  } else {
+    gaps.push('This lesson has no video or written lesson.');
+  }
+  if (input.hasDocument) gaps.push('Open the companion document.');
+  return gaps;
+}
 
 export function lessonVideo(raw: RawLesson['video']): LessonVideo | null {
   const provider = raw?.provider === 'vimeo' || raw?.provider === 'mux' || raw?.provider === 'file' ? raw.provider : null;
