@@ -1,7 +1,8 @@
 import { ACQ_GHL_LOCATION_ID, GHL_PIT_TOKEN } from '@/lib/acq/config';
+import { SOURCE_TAGS, TAGS, legacyNamesFor } from '@/lib/ghl/tags';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
-const TAG = 'Cleaning Strategy Session';
+const CONTACT_TAGS = [SOURCE_TAGS.cleaning, TAGS.smsConsent];
 
 function headers(): HeadersInit {
   return {
@@ -82,14 +83,18 @@ export async function upsertStrategyContact(input: {
       })
     : await ghl<{ contact?: { id?: string }; id?: string }>('/contacts/', {
         method: 'POST',
-        body: JSON.stringify({ ...body, locationId: ACQ_GHL_LOCATION_ID, tags: [TAG] }),
+        body: JSON.stringify({ ...body, locationId: ACQ_GHL_LOCATION_ID, tags: CONTACT_TAGS }),
       });
   const contactId = contactIdFrom(payload) ?? existingId;
   if (!contactId) throw new Error('ghl_contact_failed: response missing contact id');
 
   await ghl(`/contacts/${contactId}/tags`, {
     method: 'POST',
-    body: JSON.stringify({ tags: [TAG] }),
+    body: JSON.stringify({ tags: CONTACT_TAGS }),
   });
+  await ghl(`/contacts/${contactId}/tags`, {
+    method: 'DELETE',
+    body: JSON.stringify({ tags: legacyNamesFor(CONTACT_TAGS) }),
+  }).catch(() => undefined);
   return contactId;
 }

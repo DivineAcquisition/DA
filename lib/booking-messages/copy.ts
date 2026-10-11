@@ -1,3 +1,4 @@
+import { APPOINTMENT_TAGS, TAGS } from '@/lib/ghl/tags';
 import type { Channel, MessageType } from './types';
 
 export const EMAIL_FOOTER = 'Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706';
@@ -6,8 +7,8 @@ export const EMAIL_FOOTER = 'Divine Acquisition LLC, 7404 Executive Place, Lanha
 export const ACQ_SMS_CONSENT_VERSION = 'acq-audit-2026-10-11';
 export const GO_SMS_CONSENT_VERSION = 'go-strategy-2026-10-11';
 
-export const DO_NOT_CONTACT_TAG = 'da-do-not-contact';
-export const HELD_TAG = 'da-audit-held';
+export const DO_NOT_CONTACT_TAG = TAGS.doNotContact;
+export const HELD_TAG = APPOINTMENT_TAGS.held;
 
 type Template = {
   subject?: string;

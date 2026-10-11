@@ -8,6 +8,7 @@ import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { workspaceClient } from '@/lib/workspace/db';
 import { WORKSPACE_AGREEMENT_CC } from '@/lib/workspace/email';
 import { applyBookingToLead, markLeadAirtable, upsertLeadFromQualification } from './leads';
+import { moveGhlLead } from './ghl-lifecycle';
 import { airtableReady } from './pipeline';
 import { sendProspectCallConfirmationEmail } from './booking-email';
 import {
@@ -25,7 +26,7 @@ import {
   QualificationError,
 } from './qualify';
 import { scoreQualification } from './score';
-import { isClosedStage } from './stages';
+import { isClosedStage, isLeadStage } from './stages';
 
 export type ProspectSearchResult =
   | { ok: true; prospects: ProspectRecord[] }
@@ -247,6 +248,14 @@ export async function scheduleProspectCallAction(
           : 'Meet was created, but the workspace lead did not update.',
     };
   }
+
+  await moveGhlLead({
+    contactId: booked.ghlContactId,
+    stage: isLeadStage(booked.stage) ? booked.stage : null,
+    name: booked.companyName ? `${booked.fullName} - ${booked.companyName}` : booked.fullName,
+    appointment: 'booked',
+    fields: { auditDate: dateStamp, meetingLink: meetUrl, workspaceLeadId: booked.recordId },
+  });
 
   let airtableWarning: string | null = null;
   let airtableRecordId = booked.airtableRecordId;

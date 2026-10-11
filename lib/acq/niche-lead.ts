@@ -20,10 +20,11 @@ import {
   type QualificationInput,
   type QualificationPayload,
 } from './qualify';
+import { SOURCE_TAGS, SPEND_QUALIFIED_TAGS, TAGS, headlineTag, nicheTag } from '@/lib/ghl/tags';
 
 export type { HeadlineVariant, NicheVisit };
 
-/** Custom fields the roofing lead can fill once they exist on the GHL location. */
+/** Attribution fields. Part of GHL_CONTACT_FIELDS in ghl-fields.ts. */
 export const GHL_FIELDS_TO_CREATE = [
   { key: 'niche', name: 'DA - Niche', aliases: ['DA - Niche', 'Niche'] },
   { key: 'spendBand', name: 'DA - Spend Band', aliases: ['DA - Spend Band', 'Spend Band'] },
@@ -83,7 +84,6 @@ export function storedAttribution(payload: Pick<QualificationPayload, 'tracking'
 export function nicheGhlValues(
   payload: QualificationPayload,
 ): Partial<Record<NicheGhlFieldKey, string>> {
-  if (!payload.niche) return {};
   const visit = storedAttribution(payload);
   const values: Partial<Record<NicheGhlFieldKey, string>> = {
     niche: payload.niche,
@@ -201,11 +201,13 @@ export function parseRoofingLead(input: QualificationInput): QualificationPayloa
     stage: 'Step 1 Captured',
     source: 'Roofing Lead Leak Audit',
     tags: [
+      SOURCE_TAGS.roofing,
       APP_COMPLETE_TAG,
-      `niche-${content.id}`,
+      TAGS.smsConsent,
+      nicheTag(content.id),
       option.tag,
-      qualified ? 'qualified-yes' : 'qualified-no',
-      `headline-${headlineVariant}`,
+      qualified ? SPEND_QUALIFIED_TAGS.yes : SPEND_QUALIFIED_TAGS.no,
+      headlineTag(headlineVariant),
     ],
     tracking,
     niche: content.id,

@@ -143,8 +143,8 @@ describe('roofing lead payload', () => {
     expect(spendQualifies(ROOFING.form.options[1]!, ROOFING.qualificationCutoff)).toBe(true);
     const low = parseRoofingLead({ ...valid, spendBand: 'Under $2,000', headlineVariant: 'default' });
     expect(low.nicheQualified).toBe(false);
-    expect(low.tags).toContain('qualified-no');
-    expect(low.tags).toContain('niche-roofing');
+    expect(low.tags).toContain('fit - spend not qualified');
+    expect(low.tags).toContain('niche - roofing');
     expect(low.monthlyAdSpend).toBe('');
   });
 

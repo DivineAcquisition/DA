@@ -165,8 +165,10 @@ describe('booking message rules', () => {
     expect(slice.messages.find((message) => message.type === 'booking_confirmation')?.reason).toBe('do_not_contact');
 
     const tagged = ingest(withPerson(person()), booked(), NOW, config()).slice;
-    const blocked = deliver(tagged, NOW, config(), { ...emptyContact(), tags: ['da-do-not-contact'] });
+    const blocked = deliver(tagged, NOW, config(), { ...emptyContact(), tags: ['consent - do not contact'] });
     expect(blocked.sent).toEqual([]);
+    const legacy = deliver(tagged, NOW, config(), { ...emptyContact(), tags: ['da-do-not-contact'] });
+    expect(legacy.sent).toEqual([]);
   });
 
   it('4. STOP cancels every pending message and tags the lead', () => {
@@ -177,7 +179,7 @@ describe('booking message rules', () => {
       NOW,
       config(),
     );
-    expect(stopped.flags).toContain('da-do-not-contact');
+    expect(stopped.flags).toContain('consent - do not contact');
     expect(stopped.slice.people[0].doNotContact).toBe(true);
     expect(stopped.slice.messages.every((message) => message.status === 'cancelled' && message.reason === 'stop')).toBe(
       true,

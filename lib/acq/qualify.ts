@@ -1,5 +1,7 @@
 import { TRACKING_PARAM_KEYS, type TrackingParamKey } from './config';
 import type { HeadlineVariant } from './niche-tracking';
+import type { LeadStage } from './stages';
+import { QUALIFICATION_TAGS, SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 
 export const AD_SPEND_OPTIONS = ['$0', 'Under $2k', '$2-5k', '$5k+'] as const;
 export const PROGRAM_PRICE_OPTIONS = ['Under $2k', '$2-5k', '$5k+'] as const;
@@ -57,7 +59,7 @@ export type QualificationPayload = {
   emailConsent: boolean;
   leadSource: 'Paid Ad';
   entryPoint: 'Audit Booking' | 'Landing Page';
-  stage: 'Step 1 Captured';
+  stage: LeadStage;
   source: string;
   tags: string[];
   tracking: Partial<Record<TrackingParamKey, string>>;
@@ -74,13 +76,9 @@ export type QualificationPayload = {
 
 export type QualificationResult = 'Qualified' | 'Manual Review' | 'Disqualified';
 
-export const QUALIFICATION_RESULT_TAGS = {
-  Qualified: 'da-qualified',
-  'Manual Review': 'da-manual-review',
-  Disqualified: 'da-disqualified',
-} as const;
+export const QUALIFICATION_RESULT_TAGS = QUALIFICATION_TAGS;
 
-export const APP_COMPLETE_TAG = 'da-app-complete';
+export const APP_COMPLETE_TAG = TAGS.applicationComplete;
 export const RESULT_TAGS = Object.values(QUALIFICATION_RESULT_TAGS);
 
 export type QualifyErrorField =
@@ -261,7 +259,7 @@ export function parseQualification(input: QualificationInput): QualificationPayl
     entryPoint: 'Audit Booking',
     stage: 'Step 1 Captured',
     source: 'Founding Install Qualification',
-    tags: ['founding-install', 'acq-qualify', APP_COMPLETE_TAG],
+    tags: [SOURCE_TAGS.foundingInstall, APP_COMPLETE_TAG, TAGS.smsConsent],
     tracking: cleanTracking(input.tracking),
   };
 }

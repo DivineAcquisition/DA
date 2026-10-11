@@ -1,3 +1,4 @@
+import { SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 import { GHL_CALENDAR_ID, GHL_LOCATION_ID, GHL_PIT_TOKEN } from './config';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
@@ -37,7 +38,7 @@ export async function upsertTalentContact(input: {
     name: input.fullName,
     locationId: GHL_LOCATION_ID,
     source: input.source ?? 'Assessment Invite',
-    tags: input.tags ?? ['assessment-invite', 'talent-pipeline'],
+    tags: input.tags ?? [SOURCE_TAGS.talent, TAGS.talentCandidate, TAGS.assessmentInvited],
   };
 
   if (input.companyName) body.companyName = input.companyName;
@@ -176,7 +177,7 @@ export async function bookAssessmentInGhl(input: {
     companyName: input.companyName,
     note: input.note,
     source: 'Assessment Booking',
-    tags: ['assessment-booking', 'talent-pipeline'],
+    tags: [SOURCE_TAGS.talent, TAGS.talentCandidate, TAGS.assessmentBooked],
   });
 
   if (!contactId) {

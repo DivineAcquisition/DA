@@ -5,24 +5,25 @@ import {
   AIRTABLE_BASE_ID,
   AIRTABLE_ENTRY_POINT,
   AIRTABLE_LEADS_TABLE_ID,
-  GHL_FIELD_AD_SPEND,
-  GHL_FIELD_COMPANY_NAME,
-  GHL_FIELD_FOLLOW_UP,
-  GHL_FIELD_PROGRAM_PRICE,
-  GHL_FIELD_QUAL_RESULT,
-  GHL_FIELD_READINESS,
   GHL_PIT_TOKEN,
 } from './config';
-import { GHL_FIELDS_TO_CREATE, nicheGhlValues, type NicheGhlFieldKey } from './niche-lead';
 import {
-  APP_COMPLETE_TAG,
-  RESULT_TAGS,
+  GHL_CONTACT_FIELDS,
+  applicationFieldValues,
+  scoreFieldValues,
+  type GhlFieldKey,
+  type GhlFieldValues,
+} from './ghl-fields';
+import {
   airtableFieldsFromPayload,
   ghlContactNote,
   qualificationResultTag,
   type QualificationPayload,
   type QualificationResult,
 } from './qualify';
+import type { LeadStage } from './stages';
+import { ACQ_SMS_CONSENT_VERSION } from '@/lib/booking-messages/copy';
+import { QUALIFICATION_TAGS, exclusiveTagChange, legacyNamesFor } from '@/lib/ghl/tags';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 const REQUEST_MS = 20_000;
@@ -52,15 +53,7 @@ type GhlCustomField = {
   key?: string;
 };
 
-type ResolvedGhlFields = {
-  companyName?: string;
-  adSpend?: string;
-  followUp?: string;
-  programPrice?: string;
-  inquiries?: string;
-  readiness?: string;
-  qualification?: string;
-} & Partial<Record<NicheGhlFieldKey, string>>;
+type ResolvedGhlFields = Partial<Record<GhlFieldKey, string>>;
 
 function ghlHeaders(): HeadersInit {
   return {
@@ -79,7 +72,7 @@ async function readBody(response: Response): Promise<string> {
   }
 }
 
-async function ghlFetch<T>(path: string, init: RequestInit, step: string): Promise<T> {
+export async function ghlFetch<T>(path: string, init: RequestInit, step: string): Promise<T> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_MS);
   try {
@@ -123,19 +116,15 @@ function pickField(fields: GhlCustomField[], aliases: string[], fallbackId?: str
 
 let customFieldCache: { at: number; fields: ResolvedGhlFields } | null = null;
 
-async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
+export async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
   if (customFieldCache && Date.now() - customFieldCache.at < 10 * 60 * 1000) {
     return customFieldCache.fields;
   }
 
-  const resolved: ResolvedGhlFields = {
-    companyName: GHL_FIELD_COMPANY_NAME || undefined,
-    adSpend: GHL_FIELD_AD_SPEND || undefined,
-    followUp: GHL_FIELD_FOLLOW_UP || undefined,
-    programPrice: GHL_FIELD_PROGRAM_PRICE || undefined,
-    readiness: GHL_FIELD_READINESS || undefined,
-    qualification: GHL_FIELD_QUAL_RESULT || undefined,
-  };
+  const resolved: ResolvedGhlFields = {};
+  for (const spec of GHL_CONTACT_FIELDS) {
+    if ('envId' in spec && spec.envId) resolved[spec.key] = spec.envId;
+  }
 
   if (!GHL_PIT_TOKEN || !ACQ_GHL_LOCATION_ID) return resolved;
 
@@ -146,45 +135,8 @@ async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
       'ghl-custom-fields',
     );
     const fields = payload.customFields ?? [];
-    resolved.companyName = pickField(fields, ['DA - Company Name', 'Company Name', 'company_name'], resolved.companyName);
-    resolved.adSpend = pickField(
-      fields,
-      ['DA - Monthly Ad Spend', 'Monthly Ad Spend', 'monthly_ad_spend', 'da_monthly_ad_spend'],
-      resolved.adSpend,
-    );
-    resolved.followUp = pickField(
-      fields,
-      ['DA - Follow-Up Owner', 'Follow-Up Owner', 'follow_up_owner', 'da_follow_up_owner'],
-      resolved.followUp,
-    );
-    resolved.programPrice = pickField(
-      fields,
-      ['DA - Program Price', 'Program Price', 'program_price', 'da_program_price'],
-      resolved.programPrice,
-    );
-    resolved.inquiries = pickField(
-      fields,
-      [
-        'DA - Inquiries Per Month',
-        'Inquiries Per Month',
-        'Inquiries',
-        'inquiries_per_month',
-        'da_inquiries_per_month',
-      ],
-      resolved.inquiries,
-    );
-    resolved.readiness = pickField(
-      fields,
-      ['DA - Readiness Score', 'Readiness Score', 'readiness_score', 'da_readiness_score'],
-      resolved.readiness,
-    );
-    resolved.qualification = pickField(
-      fields,
-      ['DA - Qualification Result', 'Qualification Result', 'qualification_result', 'da_qualification_result'],
-      resolved.qualification,
-    );
-    for (const spec of GHL_FIELDS_TO_CREATE) {
-      resolved[spec.key] = pickField(fields, [...spec.aliases], resolved[spec.key]);
+    for (const spec of GHL_CONTACT_FIELDS) {
+      resolved[spec.key] = pickField(fields, [spec.name, ...spec.aliases], resolved[spec.key]);
     }
     customFieldCache = { at: Date.now(), fields: resolved };
   } catch (error) {
@@ -194,12 +146,12 @@ async function resolveGhlCustomFields(): Promise<ResolvedGhlFields> {
   return resolved;
 }
 
-function customFieldEntries(
+export function customFieldEntries(
   ids: ResolvedGhlFields,
-  values: Partial<Record<keyof ResolvedGhlFields, string | number | null | undefined>>,
+  values: GhlFieldValues,
 ): Array<{ id: string; field_value: string | number }> {
   const entries: Array<{ id: string; field_value: string | number }> = [];
-  for (const key of Object.keys(values) as Array<keyof ResolvedGhlFields>) {
+  for (const key of Object.keys(values) as GhlFieldKey[]) {
     const id = ids[key];
     const value = values[key];
     if (!id || value == null || value === '') continue;
@@ -238,7 +190,7 @@ async function searchGhlContact(email: string): Promise<string | null> {
   return match?.id ?? null;
 }
 
-async function addGhlTags(contactId: string, tags: string[], step: string): Promise<void> {
+export async function addGhlTags(contactId: string, tags: string[], step: string): Promise<void> {
   if (!tags.length) return;
   await ghlFetch(`/contacts/${contactId}/tags`, {
     method: 'POST',
@@ -246,7 +198,7 @@ async function addGhlTags(contactId: string, tags: string[], step: string): Prom
   }, step);
 }
 
-async function removeGhlTags(contactId: string, tags: string[], step: string): Promise<void> {
+export async function removeGhlTags(contactId: string, tags: string[], step: string): Promise<void> {
   if (!tags.length) return;
   try {
     await ghlFetch(`/contacts/${contactId}/tags`, {
@@ -270,7 +222,10 @@ export async function airtableReady(): Promise<boolean> {
   return Boolean(AIRTABLE_BASE_ID && AIRTABLE_LEADS_TABLE_ID && (await resolveAirtableApiKey()));
 }
 
-export async function upsertGhlContact(payload: QualificationPayload): Promise<GhlContactRef> {
+export async function upsertGhlContact(
+  payload: QualificationPayload,
+  extras: { stage?: LeadStage } = {},
+): Promise<GhlContactRef> {
   if (!ghlConfigured()) {
     throw new PipelineStepError(
       'ghl-contact',
@@ -279,14 +234,10 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
   }
 
   const fields = await resolveGhlCustomFields();
-  const customFields = customFieldEntries(fields, {
-    companyName: payload.companyName,
-    adSpend: payload.monthlyAdSpend,
-    followUp: payload.followUpOwner,
-    programPrice: payload.programPrice,
-    inquiries: payload.inquiriesPerMonth,
-    ...nicheGhlValues(payload),
-  });
+  const customFields = customFieldEntries(
+    fields,
+    applicationFieldValues(payload, { stage: extras.stage, smsConsentVersion: ACQ_SMS_CONSENT_VERSION }),
+  );
 
   const body: Record<string, unknown> = {
     email: payload.email,
@@ -317,7 +268,7 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
         body: JSON.stringify({
           ...body,
           locationId: ACQ_GHL_LOCATION_ID,
-          tags: [APP_COMPLETE_TAG],
+          tags: payload.tags,
         }),
       },
       'ghl-contact',
@@ -329,11 +280,8 @@ export async function upsertGhlContact(payload: QualificationPayload): Promise<G
     throw new PipelineStepError('ghl-contact', 'GHL contact create/update returned no id');
   }
 
-  await addGhlTags(contactId, [APP_COMPLETE_TAG], 'ghl-contact');
-  if (payload.niche) {
-    const nicheTags = payload.tags.filter((tag) => tag !== APP_COMPLETE_TAG);
-    await addGhlTags(contactId, nicheTags, 'ghl-niche');
-  }
+  await addGhlTags(contactId, payload.tags, 'ghl-contact');
+  await removeGhlTags(contactId, legacyNamesFor(payload.tags), 'ghl-contact');
   try {
     await ghlFetch(
       `/contacts/${contactId}/notes`,
@@ -355,10 +303,7 @@ export async function writeScoreToGhl(
   }
 
   const fields = await resolveGhlCustomFields();
-  const customFields = customFieldEntries(fields, {
-    readiness: score.readinessScore,
-    qualification: score.qualificationResult,
-  });
+  const customFields = customFieldEntries(fields, scoreFieldValues(score));
 
   if (customFields.length) {
     await ghlFetch(
@@ -369,13 +314,9 @@ export async function writeScoreToGhl(
   }
 
   if (score.qualificationResult) {
-    const keep = qualificationResultTag(score.qualificationResult);
-    await removeGhlTags(
-      contactId,
-      RESULT_TAGS.filter((tag) => tag !== keep),
-      'ghl-score',
-    );
-    await addGhlTags(contactId, [keep], 'ghl-score');
+    const change = exclusiveTagChange(QUALIFICATION_TAGS, qualificationResultTag(score.qualificationResult));
+    await removeGhlTags(contactId, change.remove, 'ghl-score');
+    await addGhlTags(contactId, change.add, 'ghl-score');
   }
 }
 

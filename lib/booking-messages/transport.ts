@@ -1,12 +1,15 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createRecord, tables, updateRecord } from '@/lib/calls/airtable';
 import { resolveAirtableApiKey } from '@/lib/acq/airtable-key';
+import { moveGhlLead } from '@/lib/acq/ghl-lifecycle';
+import { isLeadStage, stageAfterBooking, type LeadStage } from '@/lib/acq/stages';
 import { DO_NOT_CONTACT_TAG } from './copy';
 import { readBookingMessageConfig, type BookingMessageConfig } from './config';
 import {
   afterFailedSend,
   airtableLeadPatch,
   applyDecision,
+  bookingDay,
   contactFromGhl,
   emptyContact,
   emptySlice,
@@ -20,7 +23,7 @@ import {
   shouldWriteTouch,
   touchFields,
 } from './logic';
-import type { Booking, ContactSnapshot, NormalizedEvent, Person, QueuedMessage, Slice } from './types';
+import type { Booking, BookingStatus, ContactSnapshot, NormalizedEvent, Person, QueuedMessage, Slice } from './types';
 
 const GHL_API = 'https://services.leadconnectorhq.com';
 
@@ -349,10 +352,60 @@ async function saveSlice(db: Db, before: Slice, after: Slice, keys: string[], ev
   }
 }
 
-async function syncAirtable(booking: Booking | undefined, person: Person | undefined) {
+const BOOKING_STATUSES: readonly string[] = ['booked', 'rescheduled', 'cancelled', 'held', 'no_show'] satisfies BookingStatus[];
+
+type LeadRef = { id: string; stage: string; ghl_contact_id: string | null; full_name: string | null; company_name: string | null };
+
+async function findLead(db: Db, person: Person): Promise<LeadRef | null> {
+  const columns = 'id, stage, ghl_contact_id, full_name, company_name';
+  const query = person.daLeadId
+    ? db.from('da_leads').select(columns).eq('id', person.daLeadId)
+    : person.email
+      ? db.from('da_leads').select(columns).eq('email', person.email.toLowerCase())
+      : null;
+  if (!query) return null;
+  const { data } = await query.limit(1).maybeSingle();
+  return (data as LeadRef | null) ?? null;
+}
+
+/**
+ * Moves the lead for a booking status: the workspace stage first, then the
+ * GHL tags, fields and opportunity. Returns the stage Airtable should show.
+ */
+async function moveLead(db: Db, booking: Booking, person: Person): Promise<LeadStage | null> {
+  let lead: LeadRef | null = null;
+  try {
+    lead = await findLead(db, person);
+  } catch (error) {
+    console.error('[booking-messages] lead lookup failed', safeError(error));
+  }
+  const current = lead?.stage?.trim() ?? '';
+  const next = stageAfterBooking(current, booking.status);
+  const stage = next ?? (isLeadStage(current) ? current : null);
+  if (lead && next) {
+    const { error } = await db.from('da_leads').update({ stage: next }).eq('id', lead.id);
+    if (error) console.error('[booking-messages] lead stage update failed', safeError(error.message));
+  }
+  const name = person.fullName || lead?.full_name || person.firstName;
+  await moveGhlLead({
+    contactId: person.ghlContactId || lead?.ghl_contact_id || '',
+    stage,
+    name: lead?.company_name ? `${name} - ${lead.company_name}` : name,
+    appointment: booking.status,
+    fields: {
+      auditDate: booking.status === 'cancelled' ? undefined : bookingDay(booking),
+      meetingLink: booking.meetingLink,
+      workspaceLeadId: lead?.id,
+      airtableRecordId: person.airtableRecordId,
+    },
+  });
+  return stage;
+}
+
+async function syncAirtable(booking: Booking | undefined, person: Person | undefined, stage: LeadStage | null) {
   if (!booking || !person?.airtableRecordId) return;
   try {
-    await updateRecord(tables.leads, person.airtableRecordId, airtableLeadPatch(booking));
+    await updateRecord(tables.leads, person.airtableRecordId, airtableLeadPatch(booking, stage));
   } catch (error) {
     console.error('[booking-messages] airtable lead update failed', safeError(error));
   }
@@ -405,7 +458,10 @@ export async function recordBookingEvent(event: NormalizedEvent): Promise<
       await tagDoNotContact(contactId);
     }
     const booking = outcome.slice.bookings.find((item) => item.externalId === event.bookingId) ?? outcome.slice.bookings.at(-1);
-    await syncAirtable(booking, person);
+    if (booking && person && BOOKING_STATUSES.includes(event.type)) {
+      const stage = await moveLead(db, booking, person);
+      await syncAirtable(booking, person, stage);
+    }
     if (outcome.unmatched) {
       console.error('[booking-messages] unmatched booking', event.bookingId || event.email || 'unknown');
     }

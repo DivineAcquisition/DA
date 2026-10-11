@@ -61,8 +61,8 @@ describe('parseQualification', () => {
     expect(payload.leadSource).toBe('Paid Ad');
     expect(payload.entryPoint).toBe('Audit Booking');
     expect(payload.stage).toBe('Step 1 Captured');
-    expect(payload.tags).toContain('founding-install');
-    expect(payload.tags).toContain('da-app-complete');
+    expect(payload.tags).toContain('source - founding install application');
+    expect(payload.tags).toContain('application - complete');
     expect(payload.tracking).toEqual({ utm_source: 'facebook', fbclid: 'abc.123' });
   });
 
@@ -416,9 +416,9 @@ describe('founding landing media', () => {
 
 describe('qualification scoring helpers', () => {
   it('maps Airtable results onto GHL tags', () => {
-    expect(qualificationResultTag('Qualified')).toBe('da-qualified');
-    expect(qualificationResultTag('Manual Review')).toBe('da-manual-review');
-    expect(qualificationResultTag('Disqualified')).toBe('da-disqualified');
+    expect(qualificationResultTag('Qualified')).toBe('qualification - qualified');
+    expect(qualificationResultTag('Manual Review')).toBe('qualification - manual review');
+    expect(qualificationResultTag('Disqualified')).toBe('qualification - disqualified');
     expect(normalizeQualificationResult(' manual-review ')).toBe('Manual Review');
     expect(normalizeQualificationResult('nope')).toBeNull();
   });

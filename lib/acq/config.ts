@@ -53,6 +53,13 @@ export const ACQ_GHL_LOCATION_ID =
 export const GHL_PIT_TOKEN =
   process.env.GHL_PIT_TOKEN?.trim() || process.env.GHL_PIT_KEY?.trim() || '';
 
+/**
+ * The GHL pipeline leads move through. An id wins; otherwise the pipeline is
+ * matched by name, or used when it is the only one on the location.
+ */
+export const ACQ_GHL_PIPELINE_ID = process.env.ACQ_GHL_PIPELINE_ID?.trim() || '';
+export const ACQ_GHL_PIPELINE_NAME = process.env.ACQ_GHL_PIPELINE_NAME?.trim() || 'DivineACQ Sales Pipeline';
+
 /** Optional GHL custom-field ids when the location uses non-standard names. */
 export const GHL_FIELD_COMPANY_NAME = process.env.GHL_FIELD_COMPANY_NAME?.trim() || '';
 export const GHL_FIELD_AD_SPEND = process.env.GHL_FIELD_AD_SPEND?.trim() || '';

@@ -18,9 +18,11 @@ import {
   upsertGhlContact,
   writeScoreToGhl,
 } from './pipeline';
+import { moveGhlLead } from './ghl-lifecycle';
 import { sendRoofingCapi } from './meta-capi';
 import { nichePixelEvent, parseRoofingLead, roofingNotYetPath, roofingVisitorPath } from './niche-lead';
 import { scoreQualification } from './score';
+import { isLeadStage, stageForQualification } from './stages';
 import {
   ghlWebhookBody,
   isHoneypot,
@@ -116,6 +118,9 @@ export async function submitLead(
     return { ok: false, error: 'Check the form and try again.' };
   }
 
+  const score = scoreQualification(payload);
+  payload.stage = stageForQualification(score.qualificationResult);
+
   let contactId = '';
   if (ghlConfigured()) {
     try {
@@ -135,8 +140,6 @@ export async function submitLead(
     console.error('[acq:ghl-form]', error);
   });
 
-  const score = scoreQualification(payload);
-
   let leadId = '';
   let scheduleToken = '';
   let airtableRecordId: string | null = null;
@@ -145,6 +148,7 @@ export async function submitLead(
     leadId = lead.id;
     scheduleToken = lead.schedule_token;
     airtableRecordId = lead.airtable_record_id;
+    if (isLeadStage(lead.stage)) payload.stage = lead.stage;
   } catch (error) {
     await logPipelineFailure('workspace-lead', payload.email, error);
   }
@@ -178,6 +182,13 @@ export async function submitLead(
       );
     }
   }
+
+  await moveGhlLead({
+    contactId,
+    stage: payload.stage,
+    name: payload.companyName ? `${payload.fullName} - ${payload.companyName}` : payload.fullName,
+    fields: { workspaceLeadId: leadId, airtableRecordId: writtenAirtableId },
+  });
 
   const schedulePath =
     payload.nicheQualified === false

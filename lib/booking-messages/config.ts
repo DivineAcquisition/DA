@@ -6,10 +6,13 @@ import type { MessageType } from './types';
  *
  * - contacts.readonly — read the contact, tags, and Do Not Disturb at send time
  * - contacts.write — create a missing contact with the same fields the landing
- *   page uses, and add da-do-not-contact when someone replies STOP
+ *   page uses, add `consent - do not contact` when someone replies STOP, and
+ *   swap the `lead - ...` and `appointment - ...` tags as a booking changes
  * - conversations.readonly — read the conversation the message lands in
  * - conversations/message.readonly — read an inbound reply so STOP can be seen
  * - conversations/message.write — send the email or the text
+ * - opportunities.readonly — find the lead pipeline and the contact's opportunity
+ * - opportunities.write — create the opportunity and move it between stages
  *
  * contacts.write is the extra scope beyond "read contacts". Without it a
  * missing contact cannot be created and STOP cannot be tagged.
@@ -20,6 +23,8 @@ export const GHL_BOOKING_SCOPES = [
   'conversations.readonly',
   'conversations/message.readonly',
   'conversations/message.write',
+  'opportunities.readonly',
+  'opportunities.write',
 ] as const;
 
 export type SendMode = 'live' | 'test' | 'dry-run';

@@ -1,5 +1,7 @@
 import { localDateTimeToIso } from '@/lib/datetime/local';
 import { redact } from '@/lib/ghl/rules';
+import type { LeadStage } from '@/lib/acq/stages';
+import { hasTag } from '@/lib/ghl/tags';
 import { EMAIL_FOOTER, DO_NOT_CONTACT_TAG, HELD_TAG, MESSAGE_CHANNELS, isImmediate, isNoShow, isReminder, templateFor } from './copy';
 import type { BookingMessageConfig } from './config';
 import type {
@@ -253,7 +255,7 @@ export function contactFromGhl(raw: unknown): ContactSnapshot {
 
 export function channelBlocked(contact: ContactSnapshot, channel: Channel): boolean {
   if (contact.dndAll) return true;
-  if (contact.tags.some((tag) => tag.toLowerCase() === DO_NOT_CONTACT_TAG)) return true;
+  if (hasTag(contact.tags, DO_NOT_CONTACT_TAG)) return true;
   return channel === 'email' ? contact.dndEmail : contact.dndSms;
 }
 
@@ -579,7 +581,7 @@ export function prepareSend(input: {
 }): SendDecision {
   const { message, person, booking, contact, config, now } = input;
   const blocked =
-    person.doNotContact || contact.tags.some((tag) => tag.toLowerCase() === DO_NOT_CONTACT_TAG);
+    person.doNotContact || hasTag(contact.tags, DO_NOT_CONTACT_TAG);
   if (blocked) return { action: 'skip', status: 'skipped', reason: 'do_not_contact', flagged: true };
 
   if (message.channel === 'sms' && !person.smsConsent) {
@@ -592,7 +594,7 @@ export function prepareSend(input: {
   }
 
   if (isNoShow(message.type)) {
-    const held = booking?.status === 'held' || contact.tags.some((tag) => tag.toLowerCase() === HELD_TAG);
+    const held = booking?.status === 'held' || hasTag(contact.tags, HELD_TAG);
     if (held) return { action: 'skip', status: 'cancelled', reason: 'held', flagged: false };
   }
 
@@ -743,23 +745,25 @@ export function dueMessages(slice: Slice, now: Date): QueuedMessage[] {
   });
 }
 
-export function airtableLeadPatch(booking: Booking): Record<string, string> {
-  const when = booking.startsAt
-    ? new Intl.DateTimeFormat('en-CA', {
-        timeZone: booking.timeZone || 'America/New_York',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).format(new Date(booking.startsAt))
-    : '';
+/** The audit day in the booking's own zone, as Airtable and GHL date fields take it. */
+export function bookingDay(booking: Booking): string {
+  if (!booking.startsAt) return '';
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: booking.timeZone || 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date(booking.startsAt));
+}
+
+export function airtableLeadPatch(booking: Booking, stage: LeadStage | null): Record<string, string> {
+  const when = bookingDay(booking);
   const fields: Record<string, string> = {
     Notes: `Booking status: ${booking.status}`,
   };
   if (when && booking.status !== 'cancelled') fields['Audit Booked Date'] = when;
   if (booking.meetingLink) fields['Google Meet URL'] = booking.meetingLink;
-  if (booking.status === 'booked' || booking.status === 'rescheduled' || booking.status === 'held') {
-    fields.Stage = 'Audit Booked';
-  }
+  if (stage) fields.Stage = stage;
   return fields;
 }
 
