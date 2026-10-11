@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Great_Vibes } from 'next/font/google';
 import { DocusealForm } from '@docuseal/react';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
@@ -333,6 +333,8 @@ export default function AgreementSign({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [declining, setDeclining] = useState(false);
+  const [documentFailed, setDocumentFailed] = useState(false);
+  const markDocumentFailed = useCallback(() => setDocumentFailed(true), []);
 
   const consentsDone = consents.every((consent) => checked[consent.id]);
   const canSubmit = Boolean(signature) && (!needsInitials || Boolean(initials)) && consentsDone && !pending;
@@ -412,11 +414,25 @@ export default function AgreementSign({
             Open
           </a>
         </div>
-        <AgreementPdf
-          url={`/s/${encodeURIComponent(token)}/preview`}
-          title={documentTitle}
-          className="max-h-[70vh] overflow-y-auto"
-        />
+        {documentFailed && embedSrc ? (
+          <DocusealForm
+            src={embedSrc}
+            preview
+            withTitle={false}
+            withDecline={false}
+            withDownloadButton={false}
+            allowTypedSignature={false}
+            backgroundColor="#0b0a11"
+            customCss="#submit_form_button { display: none; }"
+          />
+        ) : (
+          <AgreementPdf
+            url={`/s/${encodeURIComponent(token)}/preview`}
+            title={documentTitle}
+            className="max-h-[70vh] overflow-y-auto"
+            onError={markDocumentFailed}
+          />
+        )}
       </Panel>
 
       <Panel as="section" className="relative mt-10 overflow-hidden rounded-[28px] p-0">
