@@ -1,135 +1,255 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
-import { checkLessonAnswer } from '@/lib/academy/quizActions';
+import {
+  answerLessonQuiz,
+  checkLessonAnswer,
+  startLessonQuiz,
+  submitLessonQuiz,
+  type LessonQuizState,
+} from '@/lib/academy/quizActions';
 import { LessonSurface } from './LessonSurface';
 
-export type LessonQuizQuestion = {
+type Question = {
   id: string;
   prompt: string;
   scenario?: string | null;
   options: { id: string; text: string }[];
 };
 
-export type LessonQuizPack = {
-  lesson_id?: string;
-  module_id?: string;
-  questions_per_attempt?: number | null;
-  pass_mark_label?: string | null;
-  questions?: LessonQuizQuestion[];
-};
+export default function LessonQuiz({ lessonId, initial }: { lessonId: string; initial: LessonQuizState }) {
+  const router = useRouter();
+  const [state, setState] = useState(initial);
+  const [open, setOpen] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [previewAnswers, setPreviewAnswers] = useState<Record<string, string>>({});
+  const [previewResult, setPreviewResult] = useState<{ score: number; total: number; percent: number; passed: boolean } | null>(null);
 
-type Mark = { correct: boolean; explanation: string; correctText: string };
+  const liveQuestions = state.attempt?.questions ?? [];
+  const previewQuestions = state.questions ?? [];
+  const questions = (state.preview ? previewQuestions : liveQuestions) as Question[];
+  const question = questions[index];
+  const result = previewResult ?? state.result;
 
-export default function LessonQuiz({
-  moduleId,
-  pack,
-  scoredOpen,
-}: {
-  moduleId: string;
-  pack: LessonQuizPack;
-  scoredOpen: boolean;
-}) {
-  const questions = pack.questions ?? [];
-  const [picks, setPicks] = useState<Record<string, string>>({});
-  const [marks, setMarks] = useState<Record<string, Mark>>({});
-  const [pending, setPending] = useState<string | null>(null);
-
-  async function choose(questionId: string, optionId: string) {
-    if (marks[questionId] || pending) return;
-    setPicks((current) => ({ ...current, [questionId]: optionId }));
-    setPending(questionId);
-    const result = await checkLessonAnswer(questionId, optionId);
-    setPending(null);
-    if (!result.ok) return;
-    setMarks((current) => ({
-      ...current,
-      [questionId]: { correct: result.correct, explanation: result.explanation, correctText: result.correctText },
-    }));
+  async function openQuiz() {
+    setError(null);
+    setPreviewResult(null);
+    if (state.preview) {
+      setIndex(0);
+      setSelected(null);
+      setPreviewAnswers({});
+      setOpen(true);
+      return;
+    }
+    setPending(true);
+    const started = await startLessonQuiz(lessonId);
+    setPending(false);
+    if (!started.ok) {
+      setError(started.error);
+      return;
+    }
+    setState(started.state);
+    const first = started.state.attempt?.questions?.[0];
+    const saved = first ? started.state.attempt?.answers?.[first.id] : null;
+    setIndex(0);
+    setSelected(saved ?? null);
+    setOpen(true);
   }
 
+  async function continueQuiz() {
+    if (!question || !selected) return;
+    setPending(true);
+    setError(null);
+    let nextAnswers = previewAnswers;
+    if (!state.preview && state.attempt?.id) {
+      const saved = await answerLessonQuiz(state.attempt.id, question.id, selected);
+      setPending(false);
+      if (!saved.ok) {
+        setError(saved.error);
+        return;
+      }
+      setState(saved.state);
+      nextAnswers = saved.state.attempt?.answers ?? {};
+    } else {
+      nextAnswers = { ...previewAnswers, [question.id]: selected };
+      setPreviewAnswers(nextAnswers);
+      setPending(false);
+    }
+    if (index < questions.length - 1) {
+      const next = questions[index + 1];
+      setIndex(index + 1);
+      setSelected(nextAnswers[next.id] ?? null);
+      return;
+    }
+    await finish(nextAnswers);
+  }
+
+  async function finish(answers?: Record<string, string>) {
+    setPending(true);
+    if (state.preview) {
+      let score = 0;
+      const entries = Object.entries(answers ?? previewAnswers);
+      for (const [questionId, optionId] of entries) {
+        const checked = await checkLessonAnswer(questionId, optionId);
+        if (checked.ok && checked.correct) score += 1;
+      }
+      const total = questions.length;
+      const percent = total === 0 ? 0 : Math.round((score / total) * 1000) / 10;
+      setPreviewResult({ score, total, percent, passed: total > 0 && (score / total) * 100 >= 85 });
+      setPending(false);
+      setIndex(questions.length);
+      return;
+    }
+    if (!state.attempt?.id) {
+      setPending(false);
+      return;
+    }
+    const submitted = await submitLessonQuiz(state.attempt.id);
+    setPending(false);
+    if (!submitted.ok) {
+      setError(submitted.error);
+      return;
+    }
+    setState(submitted.state);
+    setIndex(questions.length);
+    if (submitted.state.result?.passed || submitted.state.passed) router.refresh();
+  }
+
+  if (!state.has_quiz) return null;
+
+  const progress = questions.length === 0 ? 0 : Math.round(((Math.min(index, questions.length - 1) + (result ? 1 : 0)) / questions.length) * 100);
+
   return (
-    <LessonSurface beam>
-      <section className="space-y-5 p-5 sm:p-6">
-        <div>
+    <>
+      <LessonSurface beam>
+        <section className="space-y-3 p-5 sm:p-6">
           <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
             Lesson quiz
           </AnimatedShinyText>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight">Check this lesson</h2>
-          <p className="mt-2 text-sm leading-relaxed text-neutral-300">
-            {questions.length} questions from this lesson.
-            {pack.questions_per_attempt && pack.pass_mark_label
-              ? ` The scored attempt draws ${pack.questions_per_attempt} and passes at ${pack.pass_mark_label}.`
-              : ''}
+          <h2 className="text-2xl font-semibold tracking-tight">Pass this quiz to finish the lesson</h2>
+          <p className="text-sm leading-relaxed text-neutral-300">
+            One question at a time. You need {state.pass_percent ?? 85} percent. {state.attempts_remaining ?? 3} of{' '}
+            {state.attempts_allowed ?? 3} attempts left.
+            {state.preview ? ' This preview does not record an attempt.' : ''}
           </p>
-        </div>
-
-        {questions.length === 0 ? (
-          <p className="text-sm text-neutral-300">This lesson does not have quiz questions yet.</p>
-        ) : (
-          <ol className="space-y-4">
-            {questions.map((question, index) => {
-              const mark = marks[question.id];
-              return (
-                <li key={question.id} className="rounded-2xl border border-white/10 bg-black/20 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">Question {index + 1}</p>
-                  {question.scenario ? <p className="mt-2 text-sm leading-relaxed text-neutral-300">{question.scenario}</p> : null}
-                  <p className="mt-2 text-base font-semibold leading-snug">{question.prompt}</p>
-                  <div className="mt-3 space-y-2">
-                    {question.options.map((option) => {
-                      const selected = picks[question.id] === option.id;
-                      const revealed = Boolean(mark);
-                      const tone = !revealed
-                        ? selected
-                          ? 'border-[#937DFF] bg-[#6A00FF]/20'
-                          : 'border-white/10 hover:border-white/25'
-                        : selected && mark?.correct
-                          ? 'border-emerald-300/50 bg-emerald-400/10'
-                          : selected
-                            ? 'border-red-300/40 bg-red-400/10'
-                            : 'border-white/10 opacity-70';
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          disabled={revealed || pending === question.id}
-                          onClick={() => void choose(question.id, option.id)}
-                          className={`min-h-11 w-full rounded-xl border px-4 py-3 text-left text-sm transition ${tone}`}
-                        >
-                          {option.text}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  {mark ? (
-                    <p className="mt-3 text-sm leading-relaxed text-neutral-200">
-                      {mark.correct ? 'Correct. ' : `The answer is ${mark.correctText}. `}
-                      {mark.explanation}
-                    </p>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ol>
-        )}
-
-        <div className="border-t border-white/10 pt-4">
-          {scoredOpen ? (
-            <Link
-              href={`/academy/modules/${moduleId}/quiz`}
-              className="inline-flex min-h-11 items-center rounded-full bg-[#9A88FC] px-5 text-sm font-semibold text-[#07070b]"
+          {state.passed ? <p className="text-sm font-semibold text-[#C3B6FE]">Passed. You can mark the lesson complete.</p> : null}
+          {!state.passed && (state.attempts_remaining ?? 1) === 0 ? (
+            <p className="text-sm text-neutral-200">No attempts left on this lesson quiz.</p>
+          ) : null}
+          {error ? <p className="text-sm text-red-200">{error}</p> : null}
+          {!state.passed && (state.preview || (state.attempts_remaining ?? 0) > 0) ? (
+            <button
+              type="button"
+              disabled={pending}
+              onClick={() => void openQuiz()}
+              className="inline-flex min-h-11 items-center rounded-full bg-[#9A88FC] px-5 text-sm font-semibold text-[#07070b] disabled:opacity-40"
             >
-              Start the scored quiz
-            </Link>
-          ) : (
-            <p className="text-sm leading-relaxed text-neutral-300">
-              Mark this lesson complete to open the scored quiz. You can check the questions above before that.
-            </p>
-          )}
-        </div>
-      </section>
-    </LessonSurface>
+              {state.attempt ? 'Continue the quiz' : 'Start the quiz'}
+            </button>
+          ) : null}
+        </section>
+      </LessonSurface>
+
+      {open && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-3 sm:items-center sm:p-6">
+              <div className="w-full max-w-xl">
+                <LessonSurface beam>
+                  <div className="space-y-5 p-5 sm:p-7">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C3B6FE]">
+                        {result ? 'Result' : `Question ${index + 1} of ${questions.length}`}
+                      </p>
+                      <button type="button" className="text-sm text-neutral-400" onClick={() => setOpen(false)}>
+                        Close
+                      </button>
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                      <div className="h-full rounded-full bg-[#9A88FC]" style={{ width: `${result ? 100 : progress}%` }} />
+                    </div>
+                    {result ? (
+                      <div className="space-y-3">
+                        <h2 className="text-3xl font-semibold tracking-tight">{result.passed ? 'Passed' : 'Not yet'}</h2>
+                        <p className="text-sm leading-relaxed text-neutral-200">
+                          {result.score} of {result.total}. {result.percent} percent. You need {state.pass_percent ?? 85} percent.
+                        </p>
+                        {result.passed ? (
+                          <p className="text-sm text-neutral-300">You can mark this lesson complete.</p>
+                        ) : (
+                          <p className="text-sm text-neutral-300">
+                            {(state.attempts_remaining ?? 0) > 0
+                              ? `${state.attempts_remaining} attempts left.`
+                              : 'No attempts left.'}
+                          </p>
+                        )}
+                        <button
+                          type="button"
+                          className="inline-flex min-h-11 items-center rounded-full bg-[#9A88FC] px-5 text-sm font-semibold text-[#07070b]"
+                          onClick={() => setOpen(false)}
+                        >
+                          Back to the lesson
+                        </button>
+                      </div>
+                    ) : question ? (
+                      <div className="space-y-4">
+                        {question.scenario ? <p className="text-sm leading-relaxed text-neutral-300">{question.scenario}</p> : null}
+                        <h2 className="text-2xl font-semibold leading-snug tracking-tight">{question.prompt}</h2>
+                        <div className="space-y-2">
+                          {question.options.map((option) => (
+                            <button
+                              key={option.id}
+                              type="button"
+                              onClick={() => setSelected(option.id)}
+                              className={`min-h-14 w-full rounded-2xl border px-4 py-3 text-left text-base transition ${
+                                selected === option.id ? 'border-[#C3B6FE] bg-[#6A00FF]/25' : 'border-white/10 hover:border-white/30'
+                              }`}
+                            >
+                              {option.text}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <button
+                            type="button"
+                            disabled={index === 0 || pending}
+                            className="min-h-11 text-sm text-[#C3B6FE] disabled:opacity-40"
+                            onClick={() => {
+                              const previous = questions[index - 1];
+                              setIndex(index - 1);
+                              setSelected(
+                                (state.preview ? previewAnswers[previous.id] : state.attempt?.answers?.[previous.id]) ?? null,
+                              );
+                            }}
+                          >
+                            Back
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!selected || pending}
+                            onClick={() => void continueQuiz()}
+                            className="inline-flex min-h-11 items-center rounded-full bg-[#9A88FC] px-5 text-sm font-semibold text-[#07070b] disabled:opacity-40"
+                          >
+                            {pending ? 'Saving…' : index === questions.length - 1 ? 'Submit' : 'Next'}
+                          </button>
+                        </div>
+                        {error ? <p className="text-sm text-red-200">{error}</p> : null}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-neutral-300">This lesson has no quiz questions yet.</p>
+                    )}
+                  </div>
+                </LessonSurface>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }

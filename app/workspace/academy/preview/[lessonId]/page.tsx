@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import Chrome from '@/app/academy/components/Chrome';
 import LessonPlayer from '@/app/academy/components/LessonPlayer';
-import LessonQuiz, { type LessonQuizPack } from '@/app/academy/components/LessonQuiz';
+import LessonQuiz from '@/app/academy/components/LessonQuiz';
+import { type LessonQuizState } from '@/lib/academy/quizActions';
 import '@/app/academy/academy.css';
 import { controlRpc } from '@/lib/ad/rpc';
 import { academyAdminSession } from '@/lib/academy/access';
@@ -60,7 +61,7 @@ export default async function PreviewLessonPage({ params }: { params: Promise<{ 
   );
   if (!lesson) notFound();
   const live = data.status === 'live';
-  const { data: pack } = await controlRpc<LessonQuizPack>(supabase, 'academy_lesson_quiz', { p_lesson_id: lessonId });
+  const { data: quiz } = await controlRpc<LessonQuizState>(supabase, 'academy_lesson_quiz_state', { p_lesson_id: lessonId });
   return (
     <div className={`${plusJakarta.variable} academy min-h-dvh text-white`}>
       <div className="border-b border-white/10 bg-[#07070b]/90">
@@ -76,8 +77,8 @@ export default async function PreviewLessonPage({ params }: { params: Promise<{ 
       </div>
       <Chrome nav signedIn preview>
         <div className="space-y-8">
-          <LessonPlayer lesson={{ ...lesson, missing: studentStartGaps(lesson) }} />
-          <LessonQuiz moduleId={String(data.module_id)} pack={pack ?? {}} scoredOpen={false} />
+          <LessonPlayer lesson={{ ...lesson, missing: studentStartGaps({ ...lesson, hasQuiz: Boolean(quiz?.has_quiz) }) }} />
+          {quiz?.has_quiz ? <LessonQuiz lessonId={lesson.id} initial={quiz} /> : null}
         </div>
       </Chrome>
     </div>
