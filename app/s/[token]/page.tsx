@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Backdrop from '@/app/components/Backdrop';
 import { clientFromHeaders, loadAgreementPage } from '@/lib/workspace/agreement-page';
+import { loadSignerSignFields } from '@/lib/workspace/sign-agreement';
 import AgreementView from './AgreementView';
 
 export const dynamic = 'force-dynamic';
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
 export default async function AgreementPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
   const page = await loadAgreementPage(token, clientFromHeaders(await headers()));
+  const signFields = page.state === 'open' ? await loadSignerSignFields(token) : { signature: [], initials: [] };
 
   // A newer version for the same person that is still open: go straight there.
   if (page.state === 'superseded' && page.redirectToken) {
@@ -28,7 +30,7 @@ export default async function AgreementPage({ params }: { params: Promise<{ toke
     <div className="da-workspace relative min-h-screen">
       <Backdrop />
       <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-10">
-        <AgreementView token={token} initial={page} />
+        <AgreementView token={token} initial={page} signFields={signFields} />
       </div>
     </div>
   );

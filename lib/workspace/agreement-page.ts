@@ -31,6 +31,7 @@ export type AgreementPageState =
       templateDescription: string | null;
       embedSrc: string | null;
       email: string;
+      recipientType: 'client' | 'operator';
       pages: Array<{ title: string; html: string }>;
     };
 
@@ -113,6 +114,7 @@ export async function loadAgreementPage(
         templateDescription: raw.template_description ?? null,
         embedSrc: safeEmbedSrc(raw.embed_src),
         email: raw.email ?? '',
+        recipientType: raw.recipient_type === 'operator' ? 'operator' : 'client',
         pages: (raw.pages ?? []).map((page) => ({
           title: renderTitle(page.title ?? '', values),
           html: renderMarkdown(page.body_markdown ?? '', values),

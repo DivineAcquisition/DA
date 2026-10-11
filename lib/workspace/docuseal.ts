@@ -8,7 +8,8 @@ const MAX_PAGES = 40;
 
 export type DocuSealFieldInput = {
   name: string;
-  default_value: string;
+  /** A signature or initials field takes a PNG data URL. A checkbox takes true. */
+  default_value: string | boolean;
   readonly?: boolean;
 };
 
@@ -163,6 +164,24 @@ export async function getDocuSealTemplate(
   const response = await docusealFetch(`/templates/${encodeURIComponent(String(templateId))}`, apiKey);
   if (!response.ok) return { ok: false, error: await failure(response, 'template read') };
   return { ok: true, data: (await response.json()) as DocuSealTemplate };
+}
+
+export async function getDocuSealSubmitter(
+  apiKey: string,
+  submitterId: string,
+): Promise<DocuSealResult<DocuSealSubmitter>> {
+  const response = await docusealFetch(`/submitters/${encodeURIComponent(submitterId)}`, apiKey);
+  if (!response.ok) return { ok: false, error: await failure(response, 'submitter read') };
+  return { ok: true, data: (await response.json()) as DocuSealSubmitter };
+}
+
+export async function getDocuSealSubmission(
+  apiKey: string,
+  submissionId: string,
+): Promise<DocuSealResult<DocuSealSubmission>> {
+  const response = await docusealFetch(`/submissions/${encodeURIComponent(submissionId)}`, apiKey);
+  if (!response.ok) return { ok: false, error: await failure(response, 'submission read') };
+  return { ok: true, data: (await response.json()) as DocuSealSubmission };
 }
 
 /** Cheap credential check used by Settings to show whether the key works. */
