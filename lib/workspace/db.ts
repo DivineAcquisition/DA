@@ -32,6 +32,16 @@ export function serviceClient(): UntypedClient | null {
   }) as unknown as UntypedClient;
 }
 
+/** Service role only. Unlike serviceClient(), this never falls back to the anon key. */
+export function serviceRoleClient(): UntypedClient | null {
+  const serviceKey =
+    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() || process.env.SUPABASE_SECRET_KEY?.trim();
+  if (!SUPABASE_URL || !serviceKey) return null;
+  return createSupabaseClient(SUPABASE_URL, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  }) as unknown as UntypedClient;
+}
+
 export async function requireAdmin() {
   const session = await getSessionContext();
   if (!session?.isAdmin) return null;
