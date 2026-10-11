@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Great_Vibes } from 'next/font/google';
 import { DocusealForm } from '@docuseal/react';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
@@ -9,6 +9,7 @@ import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Panel } from '@/components/ui/panel';
 import { consentsForRecipientType } from '@/lib/workspace/consents';
+import AgreementPdf from './AgreementPdf';
 
 const script = Great_Vibes({ weight: '400', subsets: ['latin'], display: 'swap' });
 
@@ -43,30 +44,10 @@ type Props = {
   embedSrc: string | null;
   recipientName: string;
   recipientType: string;
+  documentTitle: string;
   signFields: SignFieldNames;
   onDone: () => void;
 };
-
-const DocumentPreview = memo(function DocumentPreview({ src }: { src: string }) {
-  return (
-    <Panel as="section" className="relative mt-10 overflow-hidden rounded-[28px] p-0">
-      <div className="flex items-center justify-between border-b border-white/10 px-6 py-3.5 sm:px-8">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">The agreement</p>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/35">Read only</p>
-      </div>
-      <DocusealForm
-        src={src}
-        preview
-        withTitle={false}
-        withDecline={false}
-        withDownloadButton={false}
-        allowTypedSignature={false}
-        backgroundColor="#0b0a11"
-        customCss="#submit_form_button { display: none; }"
-      />
-    </Panel>
-  );
-});
 
 function joinNames(names: string[]): string {
   if (names.length === 0) return '';
@@ -339,6 +320,7 @@ export default function AgreementSign({
   embedSrc,
   recipientName,
   recipientType,
+  documentTitle,
   signFields,
   onDone,
 }: Props) {
@@ -418,7 +400,24 @@ export default function AgreementSign({
 
   return (
     <>
-      {embedSrc ? <DocumentPreview src={embedSrc} /> : null}
+      <Panel as="section" className="relative mt-10 overflow-hidden rounded-[28px] p-0">
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-3.5 sm:px-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45">The agreement</p>
+          <a
+            href={`/s/${encodeURIComponent(token)}/preview`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#c3b6fe]"
+          >
+            Open
+          </a>
+        </div>
+        <AgreementPdf
+          url={`/s/${encodeURIComponent(token)}/preview`}
+          title={documentTitle}
+          className="max-h-[70vh] overflow-y-auto"
+        />
+      </Panel>
 
       <Panel as="section" className="relative mt-10 overflow-hidden rounded-[28px] p-0">
         <BorderBeam size={140} duration={12} borderWidth={1} />

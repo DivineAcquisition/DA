@@ -210,6 +210,7 @@ export default function AgreementView({ token, initial, signFields = { signature
             embedSrc={page.embedSrc}
             recipientName={page.recipientName}
             recipientType={page.recipientType}
+            documentTitle={page.templateName}
             signFields={signFields}
             onDone={startFinalizing}
           />
