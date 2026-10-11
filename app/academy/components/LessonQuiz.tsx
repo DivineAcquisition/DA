@@ -132,7 +132,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
           <AnimatedShinyText className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#C3B6FE]">
             Lesson quiz
           </AnimatedShinyText>
-          <h2 className="text-2xl font-semibold tracking-tight">Pass this quiz to finish the lesson</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Pass this quiz to finish the lesson</h2>
           <p className="text-sm leading-relaxed text-neutral-300">
             One question at a time. You need {state.pass_percent ?? 85} percent. {state.attempts_remaining ?? 3} of{' '}
             {state.attempts_allowed ?? 3} attempts left.
@@ -158,9 +158,13 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
 
       {open && typeof document !== 'undefined'
         ? createPortal(
-            <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-3 sm:items-center sm:p-6">
-              <div className="w-full max-w-xl">
-                <LessonSurface beam>
+            <div className="fixed inset-0 z-[80] overflow-y-auto bg-[#07070b]">
+              <div className="flex min-h-full items-end justify-center p-3 sm:items-center sm:p-6">
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  className="my-6 w-full max-w-xl rounded-3xl border border-white/10 bg-[#14131c] shadow-[0_24px_80px_-24px_rgba(0,0,0,0.9)]"
+                >
                   <div className="space-y-5 p-5 sm:p-7">
                     <div className="flex items-center justify-between gap-3">
                       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#C3B6FE]">
@@ -175,7 +179,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                     </div>
                     {result ? (
                       <div className="space-y-3">
-                        <h2 className="text-3xl font-semibold tracking-tight">{result.passed ? 'Passed' : 'Not yet'}</h2>
+                        <h2 className="text-xl font-semibold tracking-tight">{result.passed ? 'Passed' : 'Not yet'}</h2>
                         <p className="text-sm leading-relaxed text-neutral-200">
                           {result.score} of {result.total}. {result.percent} percent. You need {state.pass_percent ?? 85} percent.
                         </p>
@@ -199,15 +203,17 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                     ) : question ? (
                       <div className="space-y-4">
                         {question.scenario ? <p className="text-sm leading-relaxed text-neutral-300">{question.scenario}</p> : null}
-                        <h2 className="text-2xl font-semibold leading-snug tracking-tight">{question.prompt}</h2>
+                        <h2 className="text-lg font-semibold leading-snug tracking-tight">{question.prompt}</h2>
                         <div className="space-y-2">
                           {question.options.map((option) => (
                             <button
                               key={option.id}
                               type="button"
                               onClick={() => setSelected(option.id)}
-                              className={`min-h-14 w-full rounded-2xl border px-4 py-3 text-left text-base transition ${
-                                selected === option.id ? 'border-[#C3B6FE] bg-[#6A00FF]/25' : 'border-white/10 hover:border-white/30'
+                              className={`min-h-12 w-full rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                                selected === option.id
+                                  ? 'border-[#C3B6FE] bg-[#2c2454] text-white'
+                                  : 'border-white/10 bg-[#1e1d28] text-neutral-100 hover:border-white/25'
                               }`}
                             >
                               {option.text}
@@ -244,7 +250,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                       <p className="text-sm text-neutral-300">This lesson has no quiz questions yet.</p>
                     )}
                   </div>
-                </LessonSurface>
+                </div>
               </div>
             </div>,
             document.body,
