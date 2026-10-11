@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { agreementPdfFilename, previewDocumentUrl } from './agreement-preview-url';
+import { agreementPdfFilename, choosePreviewDocument, previewDocumentUrl } from './agreement-preview-url';
 
 describe('agreement preview', () => {
   it('names the download from the template', () => {
@@ -8,6 +8,17 @@ describe('agreement preview', () => {
     );
     expect(agreementPdfFilename('Already.pdf')).toBe('Already.pdf');
     expect(agreementPdfFilename('  bad/name  ')).toBe('badname.pdf');
+  });
+
+  it('prefers the Sales Operator Placement file when the template has several', () => {
+    const chosen = choosePreviewDocument(
+      [
+        { name: 'Old draft', url: 'https://docuseal.com/file/old.pdf' },
+        { name: 'DivineACQ™ - Sales Operator Placement Agreement', url: 'https://docuseal.com/file/placement.pdf' },
+      ],
+      'DivineACQ™ - Sales Operator Placement Agreement',
+    );
+    expect(chosen?.url).toBe('https://docuseal.com/file/placement.pdf');
   });
 
   it('only fetches an https document', () => {

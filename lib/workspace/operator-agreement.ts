@@ -40,6 +40,32 @@ export function inferOperatorVariant(templateName: string): OperatorAgreementVar
   return /\bhourly\b/i.test(templateName) ? 'hourly' : 'standard';
 }
 
+/**
+ * DivineACQ™ - Sales Operator Placement Agreement, including the trademark
+ * mark and any extra spacing DocuSeal stores in the name.
+ */
+export function isSalesOperatorPlacementTemplate(templateName: string): boolean {
+  const normalized = templateName
+    .toLowerCase()
+    .replace(/[™®]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return normalized.includes('sales operator placement');
+}
+
+/** Signer-side values for the template we are actually sending. */
+export function operatorSignerExactValues(
+  templateName: string,
+  input: OperatorSignerInput,
+  company: CompanyInfo,
+): Record<string, string> {
+  if (isSalesOperatorPlacementTemplate(templateName)) {
+    return buildSalesOperatorSignerValues(input);
+  }
+  return buildOperatorSignerValues(input, company, inferOperatorVariant(templateName));
+}
+
 export function companyInfoFromSettings(settings: {
   company_name?: string | null;
   company_rep?: string | null;

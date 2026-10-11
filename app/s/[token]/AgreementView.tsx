@@ -12,6 +12,8 @@ type Props = {
   token: string;
   initial: AgreementPageState;
   signFields?: SignFieldNames;
+  /** Live name from DocuSeal, when the template was renamed after it was stored. */
+  liveTemplateName?: string | null;
 };
 
 const POLL_EVERY_MS = 3000;
@@ -19,7 +21,12 @@ const POLL_FOR_MS = 60000;
 
 type Finalizing = 'idle' | 'waiting' | 'slow';
 
-export default function AgreementView({ token, initial, signFields = { signature: [], initials: [] } }: Props) {
+export default function AgreementView({
+  token,
+  initial,
+  signFields = { signature: [], initials: [] },
+  liveTemplateName = null,
+}: Props) {
   const [page, setPage] = useState<AgreementPageState>(initial);
   const [finalizing, setFinalizing] = useState<Finalizing>('idle');
   const startedAt = useRef<number>(0);
@@ -183,7 +190,7 @@ export default function AgreementView({ token, initial, signFields = { signature
               {page.businessName ? ` · ${page.businessName}` : ''}
             </p>
             <h1 className="mt-4 max-w-[16ch] text-[2.4rem] font-medium leading-[1.02] tracking-[-0.04em] text-white sm:text-[3.35rem]">
-              {page.templateName}
+              {liveTemplateName || page.templateName}
             </h1>
             {page.templateDescription && (
               <p className="mt-5 max-w-[46ch] text-[15px] leading-7 text-white/60">{page.templateDescription}</p>
@@ -210,7 +217,7 @@ export default function AgreementView({ token, initial, signFields = { signature
             embedSrc={page.embedSrc}
             recipientName={page.recipientName}
             recipientType={page.recipientType}
-            documentTitle={page.templateName}
+            documentTitle={liveTemplateName || page.templateName}
             signFields={signFields}
             onDone={startFinalizing}
           />
