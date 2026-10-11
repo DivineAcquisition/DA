@@ -82,6 +82,11 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (isLogin) redirect('/workspace/overview');
 
   const academy = await academyAdminSession();
+  const studentPreview = pathname.includes('/workspace/academy/preview/');
+
+  if (studentPreview) {
+    return <RequireAdminMfa email={session.email}>{children}</RequireAdminMfa>;
+  }
 
   return (
     <RequireAdminMfa email={session.email}>

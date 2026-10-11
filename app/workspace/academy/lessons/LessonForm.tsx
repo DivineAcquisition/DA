@@ -37,6 +37,7 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
   const [overrideError, setOverrideError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [pendingLabel, setPendingLabel] = useState('Saving…');
+  const previewAfter = useRef(false);
 
   function wrap(before: string, after = before) {
     const node = bodyRef.current;
@@ -108,7 +109,10 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
               setPendingLabel('Saving…');
             }
             const result = await saveLesson(formData);
+            const viewStudent = previewAfter.current;
+            previewAfter.current = false;
             if (!result.ok) setError(result.error ?? 'The lesson was not saved.');
+            else if (viewStudent && result.id) router.push(`/workspace/academy/preview/${result.id}`);
             else if (result.id) router.push(`/workspace/academy/lessons/${result.id}`);
             else router.refresh();
           });
@@ -248,12 +252,28 @@ export default function LessonForm({ lesson }: { lesson: LessonFields }) {
           </p>
         ) : null}
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={pending}>
+          <Button
+            type="submit"
+            disabled={pending}
+            onClick={() => {
+              previewAfter.current = false;
+            }}
+          >
             {pending ? pendingLabel : 'Save lesson'}
           </Button>
+          <Button
+            type="submit"
+            variant="secondary"
+            disabled={pending}
+            onClick={() => {
+              previewAfter.current = true;
+            }}
+          >
+            Save and view as student
+          </Button>
           {lesson.id ? (
-            <a href={`/workspace/academy/preview/${lesson.id}`} className="inline-flex items-center rounded-full border border-white/15 px-4 py-2 text-sm text-white">
-              Preview
+            <a href={`/workspace/academy/preview/${lesson.id}`} className="inline-flex min-h-11 items-center rounded-full border border-white/15 px-4 text-sm text-white">
+              Open saved student view
             </a>
           ) : null}
         </div>
