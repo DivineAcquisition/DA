@@ -62,7 +62,9 @@ export default async function HoldsPage({
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-white">Holds</h1>
-          <p className="mt-1 text-sm text-neutral-400">Reviews opened when a trainee uses the last allowed attempt.</p>
+          <p className="mt-1 text-sm text-neutral-400">
+            A trainee who fails the last attempt is flagged here, and the reviewer is notified.
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/workspace/academy/holds/practicals" className="rounded-full border border-white/15 px-4 py-2 text-sm text-white">

@@ -35,6 +35,8 @@ export type RawAcademyShell = {
     opened_at?: string;
     review_started_at?: string | null;
     status?: string;
+    quiz_name?: string | null;
+    attempts_used?: number | null;
   } | null;
   remediation?: {
     hold_id?: string;
@@ -208,6 +210,8 @@ export function parseAcademyShell(raw: RawAcademyShell | null): AcademyShell | n
             openedAt: raw.hold.opened_at,
             reviewStartedAt: raw.hold.review_started_at ?? null,
             status: raw.hold.status ?? 'open',
+            quizName: raw.hold.quiz_name ?? null,
+            attemptsUsed: raw.hold.attempts_used ?? null,
           }
         : null,
     remediation:

@@ -11,6 +11,7 @@ import {
   submitLessonQuiz,
   type LessonQuizState,
 } from '@/lib/academy/quizActions';
+import { inApp } from '@/lib/academy/comms';
 import { LessonSurface } from './LessonSurface';
 
 type Question = {
@@ -118,7 +119,7 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
     }
     setState(submitted.state);
     setIndex(questions.length);
-    if (submitted.state.result?.passed || submitted.state.passed) router.refresh();
+    if (submitted.state.flagged || submitted.state.result?.passed || submitted.state.passed) router.refresh();
   }
 
   if (!state.has_quiz) return null;
@@ -139,8 +140,8 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
             {state.preview ? ' This preview does not record an attempt.' : ''}
           </p>
           {state.passed ? <p className="text-sm font-semibold text-[#C3B6FE]">Passed. You can mark the lesson complete.</p> : null}
-          {!state.passed && (state.attempts_remaining ?? 1) === 0 ? (
-            <p className="text-sm text-neutral-200">No attempts left on this lesson quiz.</p>
+          {!state.passed && (state.flagged || (state.attempts_remaining ?? 1) === 0) ? (
+            <p className="text-sm text-neutral-200">{inApp.quiz.flagged}</p>
           ) : null}
           {error ? <p className="text-sm text-red-200">{error}</p> : null}
           {!state.passed && (state.preview || (state.attempts_remaining ?? 0) > 0) ? (
@@ -185,12 +186,10 @@ export default function LessonQuiz({ lessonId, initial }: { lessonId: string; in
                         </p>
                         {result.passed ? (
                           <p className="text-sm text-neutral-300">You can mark this lesson complete.</p>
+                        ) : state.flagged || (state.attempts_remaining ?? 0) === 0 ? (
+                          <p className="text-sm text-neutral-300">{inApp.quiz.flagged}</p>
                         ) : (
-                          <p className="text-sm text-neutral-300">
-                            {(state.attempts_remaining ?? 0) > 0
-                              ? `${state.attempts_remaining} attempts left.`
-                              : 'No attempts left.'}
-                          </p>
+                          <p className="text-sm text-neutral-300">{state.attempts_remaining} attempts left.</p>
                         )}
                         <button
                           type="button"

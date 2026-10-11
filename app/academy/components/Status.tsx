@@ -38,8 +38,8 @@ export function OnHold({ shell }: { shell: AcademyShell }) {
       <p className="text-sm leading-relaxed text-neutral-300">
         {inApp.hold.body({
           managerName: manager,
-          quizName: held ? `${held.title} quiz` : undefined,
-          attemptsMax: held?.quiz?.attemptsAllowed,
+          quizName: shell.hold?.quizName ?? (held ? `${held.title} quiz` : undefined),
+          attemptsMax: shell.hold?.attemptsUsed ?? held?.quiz?.attemptsAllowed,
         })}
       </p>
     </Panel>

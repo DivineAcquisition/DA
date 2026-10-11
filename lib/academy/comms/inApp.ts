@@ -75,6 +75,8 @@ export const inApp = {
     pass: (score: number, total: number) => `Passed. You scored ${score} of ${total}. Your full review is unlocked.`,
     finalPass: 'You passed the Final Quiz. Here is your score by module.',
     lockedAfterPass: 'You already passed this quiz. You can review your answers anytime.',
+    flagged:
+      'You used every attempt. You are flagged for review, and your manager has been notified. Your program stays on review until that is finished.',
   },
   simulation: {
     start: "This is a practice conversation with an AI playing a fictional person. Everything in it is made up. Your timer starts when the lead's first message arrives.",
