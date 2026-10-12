@@ -98,7 +98,7 @@
 }
 
 .acq-coaches .go-field span,
-.acq-coaches .go-question legend,
+.acq-coaches .go-question-title,
 .acq-coaches .go-times-label {
   color: #fff;
   font-size: 0.95rem;
@@ -219,8 +219,13 @@
   padding: 0.7rem 0.4rem;
 }
 
-.acq-coaches .go-question legend {
-  margin-bottom: 0.35rem;
+.acq-coaches .go-question {
+  margin-inline: 0;
+  min-inline-size: 0;
+}
+
+.acq-coaches .go-question-title {
+  margin: 0;
   line-height: 1.45;
 }
 

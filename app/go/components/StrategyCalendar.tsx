@@ -223,8 +223,10 @@ export function StrategyCalendar() {
         </div>
       </div>
 
-      <fieldset className="go-question">
-        <legend>{BOOKING.showUpPrompt}</legend>
+      <fieldset className="go-question" aria-labelledby="go-show-up">
+        <p id="go-show-up" className="go-question-title">
+          {BOOKING.showUpPrompt}
+        </p>
         <p className="go-question-note">{BOOKING.showUpNote}</p>
         <label>
           <input
