@@ -92,6 +92,7 @@ const WORKSPACE: NavSection = {
         { href: '/vistrial/team/matching', label: 'Availability', icon: CalendarRange },
         { href: '/vistrial/team', label: 'Roster & View As', icon: Contact, exact: true },
         { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
+        { href: '/workspace/onboarding', label: 'Onboarding', icon: ClipboardList },
       ],
     },
     {

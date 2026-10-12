@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { StartOnboardingForm } from '../../components/StartOnboardingForm';
 import { notFound } from 'next/navigation';
 import { AgreementActions, SendAgreementButton } from '../../components/AgreementForms';
 import { CreateCalendarLinkButton, CalendarLinkActions } from '../../components/CalendarForms';
@@ -92,6 +93,19 @@ export default async function RecipientDetailPage({
           </Link>
         </div>
       </section>
+
+      {recipient.recipient_type === 'operator' && (
+        <section className={`${ws.card} space-y-4 p-5 sm:p-6`}>
+          <h2 className={`${ws.heading} text-lg font-semibold`}>Onboarding</h2>
+          <p className="text-sm text-[var(--ws-dim)]">
+            Starts the sales operator form for {recipient.full_name}. The link opens the form immediately.
+          </p>
+          <StartOnboardingForm
+            operators={[{ id: recipient.id, full_name: recipient.full_name, email: recipient.email }]}
+            presetRecipientId={recipient.id}
+          />
+        </section>
+      )}
 
       <section>
         <div className="mb-3.5 flex flex-wrap items-end justify-between gap-3">

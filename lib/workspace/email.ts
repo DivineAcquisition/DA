@@ -129,3 +129,56 @@ export async function sendAgreementInviteEmail(input: {
 
   return { id: data.id };
 }
+
+export function buildOnboardingEmail(input: {
+  recipientName: string;
+  url: string;
+}): { subject: string; html: string; text: string } {
+  const name = greetingName(input.recipientName);
+  const subject = 'Your Divine Acquisition onboarding';
+  const body =
+    'This is the sales operator onboarding. It takes about five minutes: who you are, your shift, bank details, and four confirmations. Your answers save as you go.';
+  const footer = {
+    reason: 'You received this because Divine Acquisition started your sales operator onboarding.',
+  };
+  return {
+    subject,
+    text: [`Hi ${name},`, '', body, '', input.url, '', ...textFooter(footer)].join('\n'),
+    html: renderEmailHtml({
+      subject,
+      preheader: 'Your sales operator onboarding is ready.',
+      eyebrow: 'Onboarding',
+      title: 'Your onboarding is ready',
+      greeting: name,
+      paragraphs: [body],
+      cta: { href: input.url, label: 'Start onboarding' },
+      showFallbackLink: true,
+      footer,
+    }),
+  };
+}
+
+export async function sendOnboardingEmail(input: {
+  to: string;
+  recipientName: string;
+  url: string;
+}): Promise<{ id: string }> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
+  const content = buildOnboardingEmail(input);
+  const resend = new Resend(apiKey);
+  const { data, error } = await resend.emails.send({
+    from: WORKSPACE_RESEND_FROM,
+    to: [input.to],
+    subject: content.subject,
+    html: content.html,
+    text: content.text,
+    ...(WORKSPACE_RESEND_REPLY_TO ? { replyTo: WORKSPACE_RESEND_REPLY_TO } : {}),
+    tags: [
+      { name: 'surface', value: 'workspace' },
+      { name: 'type', value: 'operator_onboarding' },
+    ],
+  });
+  if (error || !data?.id) throw new Error(error?.message ?? 'Resend did not return an email id');
+  return { id: data.id };
+}

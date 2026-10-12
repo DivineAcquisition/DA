@@ -1,4 +1,6 @@
 import { requireAdmin, workspaceClient } from './db';
+import type { OnboardingStep } from './onboarding-steps';
+import { VA_SALES_OPERATOR_ONBOARDING_KEY } from './onboarding-protocol';
 import { docusealApiKey, pingDocuSeal } from './docuseal';
 import {
   buildProfile,
@@ -447,4 +449,115 @@ export async function listPageTokensForTemplate(pageTemplateId: string): Promise
     resolved_values: (row.resolved_values ?? {}) as Record<string, string>,
     recipient_name: row.da_recipient?.full_name ?? '—',
   }));
+}
+
+export type SalesOperatorProtocol = {
+  name: string;
+  intro: string | null;
+  steps: OnboardingStep[];
+};
+
+export type SalesOperatorOnboardingRun = {
+  id: string;
+  recipientId: string;
+  recipientName: string;
+  email: string;
+  status: string;
+  token: string;
+  agreementId: string | null;
+  openedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+};
+
+function asChoices(value: unknown): OnboardingStep['choices'] {
+  if (!Array.isArray(value)) return null;
+  const choices = value.flatMap((item) => {
+    if (!item || typeof item !== 'object') return [];
+    const row = item as { value?: unknown; label?: unknown };
+    if (typeof row.value !== 'string' || typeof row.label !== 'string') return [];
+    return [{ value: row.value, label: row.label }];
+  });
+  return choices.length ? choices : null;
+}
+
+function asStep(row: Record<string, unknown>): OnboardingStep {
+  const show = row.show_when;
+  const showWhen =
+    show && typeof show === 'object' && !Array.isArray(show)
+      ? {
+          step: String((show as { step?: unknown }).step ?? ''),
+          values: Array.isArray((show as { values?: unknown }).values)
+            ? (show as { values: unknown[] }).values.map(String)
+            : [],
+        }
+      : null;
+  return {
+    key: String(row.key ?? ''),
+    label: String(row.label ?? ''),
+    kind: (row.kind as OnboardingStep['kind']) ?? 'form_question',
+    help: typeof row.help === 'string' ? row.help : null,
+    required: Boolean(row.required),
+    section_key: typeof row.section_key === 'string' ? row.section_key : null,
+    section_title: typeof row.section_title === 'string' ? row.section_title : null,
+    section_intro: typeof row.section_intro === 'string' ? row.section_intro : null,
+    input_type: (row.input_type as OnboardingStep['input_type']) ?? null,
+    placeholder: typeof row.placeholder === 'string' ? row.placeholder : null,
+    choices: asChoices(row.choices),
+    show_when: showWhen?.step ? showWhen : null,
+    link_url: typeof row.link_url === 'string' ? row.link_url : null,
+    link_label: typeof row.link_label === 'string' ? row.link_label : null,
+    prefill: (row.prefill as OnboardingStep['prefill']) ?? null,
+    no_paste: Boolean(row.no_paste),
+    tools: Array.isArray(row.options) ? row.options.map(String) : null,
+    asset: null,
+  };
+}
+
+export async function loadSalesOperatorProtocol(): Promise<SalesOperatorProtocol | null> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return null;
+  const [{ data: protocol }, { data: steps }] = await Promise.all([
+    supabase.from('da_onboarding_protocol').select('name, intro').eq('key', VA_SALES_OPERATOR_ONBOARDING_KEY).maybeSingle(),
+    supabase
+      .from('da_onboarding_protocol_step')
+      .select('*')
+      .eq('protocol_key', VA_SALES_OPERATOR_ONBOARDING_KEY)
+      .order('sort_order', { ascending: true }),
+  ]);
+  if (!protocol) return null;
+  return {
+    name: String(protocol.name ?? 'Sales operator onboarding'),
+    intro: typeof protocol.intro === 'string' ? protocol.intro : null,
+    steps: ((steps as Record<string, unknown>[] | null) ?? []).map(asStep),
+  };
+}
+
+export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboardingRun[]> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase) return [];
+  const { data } = await supabase
+    .from('da_onboarding_submission')
+    .select('id, recipient_id, status, access_token, agreement_id, opened_at, completed_at, created_at, da_recipient(full_name, email)')
+    .eq('protocol_key', VA_SALES_OPERATOR_ONBOARDING_KEY)
+    .order('created_at', { ascending: false })
+    .limit(50);
+  return ((data as Array<Record<string, unknown>> | null) ?? []).map((row) => {
+    const recipient = row.da_recipient as { full_name?: string; email?: string } | { full_name?: string; email?: string }[] | null;
+    const person = Array.isArray(recipient) ? recipient[0] : recipient;
+    return {
+      id: String(row.id),
+      recipientId: String(row.recipient_id),
+      recipientName: person?.full_name ?? 'Operator',
+      email: person?.email ?? '',
+      status: String(row.status ?? 'pending'),
+      token: String(row.access_token ?? ''),
+      agreementId: typeof row.agreement_id === 'string' ? row.agreement_id : null,
+      openedAt: typeof row.opened_at === 'string' ? row.opened_at : null,
+      completedAt: typeof row.completed_at === 'string' ? row.completed_at : null,
+      createdAt: String(row.created_at ?? ''),
+    };
+  });
 }

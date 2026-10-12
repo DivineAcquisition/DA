@@ -13,7 +13,7 @@ import {
   type OnboardingStep,
 } from '@/lib/workspace/onboarding-steps';
 
-type Props = { token: string; initial: OnboardingPageState };
+type Props = { token: string; initial: OnboardingPageState; preview?: boolean };
 
 const INVALID_MESSAGE =
   "This link isn't valid or has expired. If you're expecting onboarding from Divine Acquisition, reply to the email it came in and we'll send you a fresh one.";
@@ -23,7 +23,7 @@ type SaveStatus = { state: 'saving' } | { state: 'saved' } | { state: 'error'; m
 const inputClass =
   'w-full rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] px-3.5 py-3 text-base text-white outline-none focus:border-[var(--ws-accent)] sm:text-sm';
 
-export default function OnboardingView({ token, initial }: Props) {
+export default function OnboardingView({ token, initial, preview = false }: Props) {
   switch (initial.state) {
     case 'invalid':
       return (
@@ -69,7 +69,7 @@ export default function OnboardingView({ token, initial }: Props) {
     case 'completed':
       return <Completed page={initial} />;
     case 'open':
-      return <Steps token={token} page={initial} />;
+      return <Steps token={token} page={initial} preview={preview} />;
   }
 }
 
@@ -118,7 +118,28 @@ function Completed({ page }: { page: Extract<OnboardingPageState, { state: 'comp
   );
 }
 
-function Steps({ token, page }: { token: string; page: Extract<OnboardingPageState, { state: 'open' }> }) {
+function previewAnswer(step: OnboardingStep, input: Record<string, unknown>): OnboardingAnswer | null {
+  if (step.kind === 'form_question') {
+    const value = String(input.value ?? '').trim();
+    return value ? { kind: step.kind, value } : null;
+  }
+  if (step.kind === 'acknowledgment' || step.kind === 'material_review') {
+    return input.confirmed ? { kind: step.kind, confirmed_at: new Date().toISOString() } : null;
+  }
+  const access = input.access === 'received' || input.access === 'not_received' ? input.access : null;
+  return access ? { kind: step.kind, access } : null;
+}
+
+function Steps({
+  token,
+  page,
+  preview = false,
+}: {
+  token: string;
+  page: Extract<OnboardingPageState, { state: 'open' }>;
+  preview?: boolean;
+}) {
+  const [previewDone, setPreviewDone] = useState(false);
   const [answers, setAnswers] = useState<Record<string, OnboardingAnswer>>(page.answers);
   const [drafts, setDrafts] = useState<Record<string, string>>(() => {
     const initialDrafts: Record<string, string> = {};
@@ -147,6 +168,17 @@ function Steps({ token, page }: { token: string; page: Extract<OnboardingPageSta
     async (step: OnboardingStep, input: Record<string, unknown>): Promise<boolean> => {
       lastInput.current[step.key] = input;
       setStatus((prev) => ({ ...prev, [step.key]: { state: 'saving' } }));
+      if (preview) {
+        const answer = previewAnswer(step, input);
+        setAnswers((prev) => {
+          const next = { ...prev };
+          if (answer) next[step.key] = answer;
+          else delete next[step.key];
+          return next;
+        });
+        setStatus((prev) => ({ ...prev, [step.key]: { state: 'saved' } }));
+        return true;
+      }
       const request = (async () => {
         try {
           const response = await fetch(`/o/${encodeURIComponent(token)}/save`, {
@@ -184,7 +216,7 @@ function Steps({ token, page }: { token: string; page: Extract<OnboardingPageSta
       inflight.current[step.key] = request;
       return request;
     },
-    [token],
+    [preview, token],
   );
 
   const retry = useCallback(
@@ -261,6 +293,11 @@ function Steps({ token, page }: { token: string; page: Extract<OnboardingPageSta
   async function finish() {
     if (finishing) return;
     setFinishError(null);
+    if (preview) {
+      setPreviewDone(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setFinishing(true);
     try {
       await flushPending();
@@ -285,6 +322,23 @@ function Steps({ token, page }: { token: string; page: Extract<OnboardingPageSta
   }
 
   const percent = count.total ? Math.round((count.done / count.total) * 100) : 0;
+
+  if (previewDone) {
+    return (
+      <Completed
+        page={{
+          state: 'completed',
+          recipientName: page.recipientName,
+          recipientType: page.recipientType,
+          protocolName: page.protocolName,
+          completedAt: null,
+          nextSteps: 'Next up is training. Divine Acquisition sends the schedule and the shift.',
+          hasOpenAccessIssue: false,
+          contactEmail: null,
+        }}
+      />
+    );
+  }
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -395,7 +449,9 @@ function Steps({ token, page }: { token: string; page: Extract<OnboardingPageSta
         )}
       </nav>
       <p className="mt-4 text-center text-xs text-[var(--ws-dim)]">
-        Everything saves as you go. You can close this and come back any time.
+        {preview
+          ? 'Preview only. Nothing on this page is saved.'
+          : 'Everything saves as you go. You can close this and come back any time.'}
       </p>
     </div>
   );
