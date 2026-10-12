@@ -404,6 +404,7 @@ a.acq-button:active {
 }
 
 .acq-coaches .lx-video-shell {
+  position: relative;
   overflow: hidden;
   border: 4px solid rgba(154, 136, 252, 0.45);
   border-radius: 24px;
@@ -532,6 +533,54 @@ a.acq-button:active {
 .acq-coaches .lx-featured {
   border-color: rgba(154, 136, 252, 0.7);
   box-shadow: inset 0 0 38px rgba(154, 136, 252, 0.08);
+}
+
+.acq-coaches .lx-not-fit {
+  border-color: rgba(248, 113, 113, 0.7);
+  background:
+    radial-gradient(circle at 100% 0, rgba(248, 113, 113, 0.2), transparent 58%),
+    rgba(0, 0, 0, 0.86);
+  box-shadow: inset 0 0 32px rgba(248, 113, 113, 0.1);
+}
+
+.acq-coaches .lx-not-fit h3,
+.acq-coaches .lx-not-fit p {
+  color: #fecaca;
+}
+
+.acq-coaches .lx-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.acq-coaches .lx-saas-icon {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 12px;
+  background: rgba(154, 136, 252, 0.14);
+  color: #c3b6fe;
+}
+
+.acq-coaches .lx-saas-icon svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.acq-coaches .lx-saas-icon-red {
+  border-color: rgba(248, 113, 113, 0.5);
+  background: rgba(248, 113, 113, 0.14);
+  color: #fca5a5;
+}
+
+.acq-coaches .lx-magic {
+  position: relative;
+  overflow: hidden;
 }
 
 .acq-coaches .lx-callout {
