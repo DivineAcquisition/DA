@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
+    "We'll install the system that raises your show rate and sales from the same ad spend. Done for you, live in 14 days, or you get 75% back.",
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
     title: 'Divine Acquisition | Founding Install',
     description:
-      "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
+      "We'll install the system that raises your show rate and sales from the same ad spend. Done for you, live in 14 days, or you get 75% back.",
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Divine Acquisition | Founding Install',
     description:
-      "We'll build and run your sales operation systems to turn the demand you are generating into booked calls. Completely done for you in the next 14 days to increase show rate.",
+      "We'll install the system that raises your show rate and sales from the same ad spend. Done for you, live in 14 days, or you get 75% back.",
   },
   robots: {
     index: true,

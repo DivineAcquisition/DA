@@ -3,23 +3,26 @@
 export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
 
 export const HEADLINE_BEFORE =
-  "We'll Build & Run Your Sales Operation Systems To Help Turn The Demand You Are Generating Into Booked Calls. ";
+  "WE'LL INSTALL THE SYSTEM THAT RAISES YOUR SHOW RATE AND SALES FROM THE SAME AD SPEND. ";
 
-export const HEADLINE_ACCENT = 'Completely Done For You In The Next 14 Days';
+export const HEADLINE_ACCENT = 'DONE FOR YOU, LIVE IN 14 DAYS';
 
-export const HEADLINE_AFTER = ' To Increase Show Rate';
+export const HEADLINE_AFTER = ' (OR YOU GET 75% BACK)';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'Not more ads, and not a new offer. A first reply, a booking path, reminders before the call, and a follow-up for people who need to think about it. The 30-minute audit is free, and you keep what we find.';
+  'Done for you in 3 months, built around your numbers: intake, buying-intent scoring, nurture sequences, AI workflows for your setters and closers, and call protection. No retainer, and you keep everything we build.';
 
-export const LANDING_QUALIFIER =
-  'You already get inquiries. If you do not, this is not the install.';
+export const LANDING_QUALIFIER = 'You need to be spending at least $5K/month on ads.';
 
-export const LANDING_TRUST = ['30-minute audit, free', 'You keep the findings', 'You own what we install'] as const;
+export const LANDING_TRUST = [
+  '$6,500 for 3 months',
+  'No retainers',
+  '75% back if we miss your targets',
+] as const;
 
-export const CTA_LABEL = 'Book the free 30-minute audit';
+export const CTA_LABEL = 'See if you qualify';
 export const SUBMIT_LABEL = 'Book the free 30-minute audit';
 
 export const PROBLEM = {

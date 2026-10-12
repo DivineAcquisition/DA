@@ -48,10 +48,10 @@ export default async function AcqLandingPage({
               {HEADLINE_AFTER}
             </h1>
             <p className="lx-lead">{SUBHEADLINE}</p>
-            <p className="lx-requirement">{LANDING_QUALIFIER}</p>
+            <p className="lx-qualifier">{LANDING_QUALIFIER}</p>
             <HeroVideo shell />
             <QualifyButton />
-            <ul className="lx-trust">
+            <ul className="lx-trust lx-trust-cols">
               {LANDING_TRUST.map((item) => (
                 <li key={item}>
                   <Check />

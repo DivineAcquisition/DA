@@ -308,9 +308,9 @@ describe('founding landing media', () => {
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
-    expect(copy.HEADLINE_ACCENT).toBe('Completely Done For You In The Next 14 Days');
-    expect(copy.HEADLINE).toContain('To Increase Show Rate');
-    expect(copy.HEADLINE_BEFORE).toContain("We'll Build");
+    expect(copy.HEADLINE_ACCENT).toBe('DONE FOR YOU, LIVE IN 14 DAYS');
+    expect(copy.HEADLINE).toContain('SHOW RATE');
+    expect(copy.HEADLINE_BEFORE).toContain("WE'LL INSTALL");
     expect(
       copy.HEADLINE.split(/\s+/)
         .filter(Boolean)
@@ -319,8 +319,8 @@ describe('founding landing media', () => {
           return !letter || letter[0] === letter[0].toUpperCase();
         }),
     ).toBe(true);
-    expect(copy.SUBHEADLINE).toContain('30-minute audit is free');
-    expect(copy.LANDING_QUALIFIER.toLowerCase()).toContain('inquiries');
+    expect(copy.SUBHEADLINE).toContain('No retainer');
+    expect(copy.LANDING_QUALIFIER).toContain('$5K/month');
     expect(copy.LANDING_TRUST).toHaveLength(3);
     expect(copy.HEADLINE.toLowerCase()).not.toContain('med spa');
     expect(copy.PROBLEM.body).toContain("don't have a lead problem");
@@ -341,11 +341,11 @@ describe('founding landing media', () => {
     expect(copy.FAQ.items[4].answer).toContain('$4,875');
     expect(copy.FAQ.items[5].question).toBe('How do you set the target?');
     expect(copy.CLOSING.title).toBe('Find out where your leads are leaking.');
-    expect(copy.CLOSING.cta).toBe('Book the free 30-minute audit');
+    expect(copy.CLOSING.cta).toBe('See if you qualify');
     expect(copy.AUDIENCE.notFit.toLowerCase()).toContain('get-rich-quick');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
     expect(copy.PILL_BANNER).toBe('For coaches and consultants whose inquiries already come in');
-    expect(copy.CTA_LABEL).toBe('Book the free 30-minute audit');
+    expect(copy.CTA_LABEL).toBe('See if you qualify');
     expect(copy.FORM_LABELS.offer).toBe('What you sell');
     expect(copy.FORM_LABELS.inquiries).toBe('Inquiries per month');
     expect(copy.FORM_LABELS.programPrice).toBe('Price of your main offer');
