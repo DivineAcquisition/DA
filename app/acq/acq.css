@@ -780,6 +780,184 @@ a.acq-button:active {
 .acq-coaches .lx-scene-chart span:nth-child(3) i { animation-delay: 0.3s; }
 .acq-coaches .lx-scene-chart span:nth-child(4) i { animation-delay: 0.45s; }
 
+.acq-coaches .lx-scene-audit,
+.acq-coaches .lx-scene-install,
+.acq-coaches .lx-scene-review {
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.55rem;
+  padding: 0 0.75rem;
+}
+
+.acq-coaches .lx-scene-timer,
+.acq-coaches .lx-scene-outcome,
+.acq-coaches .lx-scene-build,
+.acq-coaches .lx-scene-week {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.acq-coaches .lx-scene-timer,
+.acq-coaches .lx-scene-outcome,
+.acq-coaches .lx-scene-build {
+  grid-template-columns: 1fr 1fr;
+}
+
+.acq-coaches .lx-scene-build {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.acq-coaches .lx-scene-week {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.acq-coaches .lx-scene-timer span,
+.acq-coaches .lx-scene-timer b,
+.acq-coaches .lx-scene-outcome span,
+.acq-coaches .lx-scene-build span,
+.acq-coaches .lx-scene-week span,
+.acq-coaches .lx-scene-rewrite {
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 10px;
+  background: rgba(154, 136, 252, 0.1);
+}
+
+.acq-coaches .lx-scene-timer span,
+.acq-coaches .lx-scene-timer b,
+.acq-coaches .lx-scene-outcome span,
+.acq-coaches .lx-scene-build span {
+  display: grid;
+  place-items: center;
+  min-height: 2.1rem;
+  padding: 0.3rem;
+  color: #fff;
+  text-align: center;
+}
+
+.acq-coaches .lx-scene-timer b {
+  position: relative;
+  color: #c3b6fe;
+}
+
+.acq-coaches .lx-scene-timer i {
+  position: absolute;
+  font-style: normal;
+  opacity: 0;
+  animation: lx-minutes 3.6s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-timer i:nth-child(2) { animation-delay: 1.2s; }
+.acq-coaches .lx-scene-timer i:nth-child(3) { animation-delay: 2.4s; }
+
+.acq-coaches .lx-scene-outcome span:first-child {
+  animation: lx-ready 3.8s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-outcome span:last-child {
+  animation: lx-quiet 3.8s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-days {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(154, 136, 252, 0.16);
+}
+
+.acq-coaches .lx-scene-days i {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6d5bd0, #c3b6fe);
+  transform-origin: left;
+  animation: lx-fill 3.6s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-daylabel {
+  justify-self: end;
+  color: #a3a3a3;
+  font-style: normal;
+}
+
+.acq-coaches .lx-scene-build span {
+  opacity: 0.3;
+  animation: lx-step-on 3.9s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-build span:nth-child(2) { animation-delay: 0.45s; }
+.acq-coaches .lx-scene-build span:nth-child(3) { animation-delay: 0.9s; }
+
+.acq-coaches .lx-scene-week span {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.35rem 0.15rem;
+  color: #a3a3a3;
+  text-align: center;
+}
+
+.acq-coaches .lx-scene-week b {
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.acq-coaches .lx-scene-week span:nth-child(3) {
+  animation: lx-dip 4s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-rewrite {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  min-height: 2rem;
+  overflow: hidden;
+}
+
+.acq-coaches .lx-scene-rewrite s {
+  color: #a3a3a3;
+  animation: lx-old-line 4s ease-in-out infinite;
+}
+
+.acq-coaches .lx-scene-rewrite em {
+  color: #fff;
+  font-style: normal;
+  opacity: 0;
+  animation: lx-new-line 4s ease-in-out infinite;
+}
+
+@keyframes lx-minutes {
+  0%, 8% { opacity: 0; }
+  16%, 30% { opacity: 1; }
+  40%, 100% { opacity: 0; }
+}
+
+@keyframes lx-quiet {
+  0%, 35% { opacity: 1; color: #fff; }
+  55%, 100% { opacity: 0.35; color: #fca5a5; }
+}
+
+@keyframes lx-fill {
+  0%, 100% { transform: scaleX(0.12); }
+  70% { transform: scaleX(1); }
+}
+
+@keyframes lx-dip {
+  0%, 40% { color: #a3a3a3; box-shadow: none; }
+  55%, 75% { color: #fecaca; box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.7); }
+  100% { color: #a3a3a3; box-shadow: none; }
+}
+
+@keyframes lx-old-line {
+  0%, 40% { opacity: 1; }
+  55%, 100% { opacity: 0.25; }
+}
+
+@keyframes lx-new-line {
+  0%, 45% { opacity: 0; }
+  60%, 85% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @keyframes lx-intake-in {
   0%, 100% { transform: translateX(0); opacity: 0.45; }
   55% { transform: translateX(18px); opacity: 1; }

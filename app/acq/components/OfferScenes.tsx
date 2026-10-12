@@ -5,6 +5,9 @@ const KINDS = {
   'AI workflows for setters and closers': 'brief',
   'Call protection': 'protect',
   'Tracking, reporting, and weekly tuning': 'report',
+  'Free audit, 30 minutes': 'audit',
+  'Install in 14 days': 'install',
+  'Weekly review': 'review',
 } as const;
 
 type Kind = (typeof KINDS)[keyof typeof KINDS];
@@ -20,6 +23,9 @@ export function OfferScene({ title }: { title: string }) {
       {kind === 'brief' && <Brief />}
       {kind === 'protect' && <Protect />}
       {kind === 'report' && <Report />}
+      {kind === 'audit' && <Audit />}
+      {kind === 'install' && <Install />}
+      {kind === 'review' && <Review />}
     </div>
   );
 }
@@ -89,6 +95,66 @@ function Protect() {
       <span>15m</span>
       <span>On the call</span>
     </div>
+  );
+}
+
+function Audit() {
+  return (
+    <>
+      <div className="lx-scene-timer">
+        <span>New inquiry</span>
+        <b>
+          <i>18 min</i>
+          <i>9 min</i>
+          <i>4 min</i>
+        </b>
+      </div>
+      <div className="lx-scene-outcome">
+        <span>Showed</span>
+        <span>Not yet</span>
+      </div>
+    </>
+  );
+}
+
+function Install() {
+  return (
+    <>
+      <div className="lx-scene-days">
+        <i />
+      </div>
+      <em className="lx-scene-daylabel">Live in 14 days</em>
+      <div className="lx-scene-build">
+        <span>Reply</span>
+        <span>Reminders</span>
+        <span>Not yet</span>
+      </div>
+    </>
+  );
+}
+
+function Review() {
+  return (
+    <>
+      <div className="lx-scene-week">
+        <span>
+          Inquiries<b>40</b>
+        </span>
+        <span>
+          Booked<b>18</b>
+        </span>
+        <span>
+          Shows<b>9</b>
+        </span>
+        <span>
+          Closes<b>4</b>
+        </span>
+      </div>
+      <div className="lx-scene-rewrite">
+        <s>Old line</s>
+        <em>New line</em>
+      </div>
+    </>
   );
 }
 

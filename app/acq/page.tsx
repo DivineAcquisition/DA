@@ -149,9 +149,9 @@ export default async function AcqLandingPage({
           <div className="lx-wrap">
             <h2 className="lx-heading">{HOW_IT_WORKS.eyebrow}</h2>
             <ol className="lx-steps">
-              {HOW_IT_WORKS.steps.map((step, index) => (
+              {HOW_IT_WORKS.steps.map((step) => (
                 <li key={step.label} className="lx-card">
-                  <span className="lx-num lx-num-brand">{String(index + 1).padStart(2, '0')}</span>
+                  <OfferScene title={step.label} />
                   <h3>{step.label}</h3>
                   <p>{step.body}</p>
                 </li>
