@@ -19,7 +19,7 @@ const interDisplay = Inter({
 
 const title = 'Divine Acquisition | Grow Your Residential & Remote Cleaning Business On Autopilot';
 const description =
-  'Missed-call booking, quote follow-up, and recurring conversion for remote residential cleaning companies. $397/month. Live in 14 days.';
+  'Missed-call booking, quote follow-up, and recurring conversion for remote residential cleaning companies. Live in 14 days.';
 
 export const metadata: Metadata = {
   title: { absolute: title },

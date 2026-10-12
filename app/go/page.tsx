@@ -43,7 +43,6 @@ import {
   MATH_HEADLINE,
   MATH_LEAD,
   PILL_BANNER,
-  PRICING_LINE,
   PROBLEMS,
   PROBLEMS_HEADLINE,
   PROCESS,
@@ -102,7 +101,6 @@ export default function CleaningFunnelPage() {
             {HEADLINE_AFTER}
           </h1>
           <p className="lx-lead">{SUBHEADLINE}</p>
-          <p className="lx-requirement">{PRICING_LINE}</p>
           <p className="lx-requirement">{VIDEO_LABEL}</p>
           <div className="lx-video-wrap go-magic">
             <div className="lx-video-shell">

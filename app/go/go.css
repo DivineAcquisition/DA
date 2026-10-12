@@ -219,10 +219,6 @@
   padding: 0.7rem 0.4rem;
 }
 
-.acq-coaches .go-question {
-  border: 0;
-}
-
 .acq-coaches .go-question legend {
   margin-bottom: 0.35rem;
   line-height: 1.45;
@@ -427,8 +423,10 @@
 .acq-coaches .go-calendar-frame {
   width: min(980px, 100%);
   margin: 0 auto;
-  padding: 0.35rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 28px;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .acq-coaches .go-saas-icon {

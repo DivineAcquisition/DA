@@ -11,14 +11,13 @@ export const SUBHEADLINE =
   "We'll install AI-powered booking, follow-up, and retention so you stop chasing leads and start building a business that grows on autopilot.";
 
 export const CTA_LABEL = 'Book a strategy session';
-export const PRICING_LINE = 'Billed monthly. $397/month. 90-day engagement.';
 export const DEMO_LABEL = 'AI booking layer live';
 export const VIDEO_LABEL = 'Watch this 3-min breakdown (important)';
 
 export const LANDING_TRUST = [
   'Live in 14 days',
   'Keep Jobber, Housecall Pro, or ServiceTitan',
-  '$397/month for 90 days',
+  'Booking, follow-up, and retention',
 ] as const;
 
 export const CALENDAR = {
@@ -26,7 +25,7 @@ export const CALENDAR = {
   titleBefore: 'Book your ',
   titleAccent: 'strategy session',
   titleAfter: ' here',
-  body: "Sunday, Monday, Wednesday, or Thursday. The open times are 6:00 AM, 7:00 AM, and 6:00 PM. We'll confirm by email, remind you the day before and two hours out, and text you the Google Meet link 15 minutes before we start.",
+  body: 'We hold this time for a short audit, not a tour of the offer. On the call we find where jobs leak after the lead comes in: missed calls, quotes that go quiet, and first cleans that never become recurring work. You leave knowing whether booking, follow-up, and retention on the tools you already run is the fix.',
 } as const;
 
 export const BOOKING = {
@@ -202,7 +201,7 @@ export const MATH = [
     from: '$14k',
     to: '$96k',
     caption:
-      'Includes recurring conversion — not just one-off first cleans. The $397/month engagement is a rounding error against that.',
+      'Includes recurring conversion, not just one-off first cleans.',
   },
 ] as const;
 
@@ -274,8 +273,8 @@ export const TESTIMONIALS = [
 
 export const FOUNDING_OFFER = {
   eyebrow: 'The engagement',
-  lead: '$397/month. 90 days.',
-  body: 'Missed-call booking, quote follow-up, and retention — installed on your current ops stack, not a course and not a social retainer. When this tier closes, it returns to standard pricing.',
+  lead: '90 days, installed on your stack.',
+  body: 'Missed-call booking, quote follow-up, and retention. Built on Jobber, Housecall Pro, or ServiceTitan. Not a course, and not a social retainer.',
 } as const;
 
 export const FINAL_CTA = {
@@ -308,7 +307,7 @@ export const FAQ = {
     {
       question: "What's the investment?",
       answer:
-        '$397/month for 90 days. We confirm fit and exact scope on the strategy session — including whether your volume and stack are a match.',
+        'We confirm fit and exact scope on the strategy session, including whether your volume and stack are a match.',
     },
     {
       question: "How do we know it's working?",
