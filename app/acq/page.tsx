@@ -21,31 +21,12 @@ import {
   SUBHEADLINE,
   WHY_US,
 } from '@/lib/acq/copy';
-import {
-  Bot,
-  CalendarCheck,
-  CircleCheck,
-  ClipboardCheck,
-  Clock3,
-  Inbox,
-  LineChart,
-  type LucideIcon,
-  MessageCircle,
-  MessagesSquare,
-  Phone,
-  Target,
-  UserRoundCheck,
-  Wrench,
-  X,
-} from 'lucide-react';
+import { CircleCheck, X } from 'lucide-react';
 import HeroVideo from './components/HeroVideo';
+import { OfferScene } from './components/OfferScenes';
 import { QualifyButton, QualifyProvider } from './components/QualifyGate';
 
-const BUILD_ICONS = [Inbox, Target, MessagesSquare, Bot, Phone, LineChart] as const;
-const QUESTION_ICONS = [Clock3, UserRoundCheck, MessageCircle] as const;
-const STEP_ICONS = [ClipboardCheck, Wrench, CalendarCheck] as const;
-
-function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: LucideIcon; tone?: 'brand' | 'red' }) {
+function Mark({ icon: Icon, tone = 'brand' }: { icon: typeof CircleCheck; tone?: 'brand' | 'red' }) {
   return (
     <span className={tone === 'red' ? 'lx-saas-icon lx-saas-icon-red' : 'lx-saas-icon'}>
       <Icon aria-hidden />
@@ -113,12 +94,10 @@ export default async function AcqLandingPage({
             <h2 className="lx-heading">{BUILD.eyebrow}</h2>
             <p className="lx-intro">{BUILD.note}</p>
             <ul className="lx-offer">
-              {BUILD.items.map((item, index) => (
+              {BUILD.items.map((item) => (
                 <li key={item.title} className="lx-card">
-                  <div className="lx-card-title">
-                    <SaasIcon icon={BUILD_ICONS[index] ?? Inbox} />
-                    <h3>{item.title}</h3>
-                  </div>
+                  <OfferScene title={item.title} />
+                  <h3>{item.title}</h3>
                   <ul>
                     {item.points.map((point) => (
                       <li key={point}>{point}</li>
@@ -146,10 +125,7 @@ export default async function AcqLandingPage({
             <ul className="lx-patterns">
               {QUESTIONS.items.map((question, index) => (
                 <li key={question} className="lx-card lx-pattern">
-                  <div className="lx-card-title">
-                    <SaasIcon icon={QUESTION_ICONS[index] ?? Clock3} />
-                    <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
-                  </div>
+                  <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
                   <h3>{question}</h3>
                 </li>
               ))}
@@ -175,12 +151,7 @@ export default async function AcqLandingPage({
             <ol className="lx-steps">
               {HOW_IT_WORKS.steps.map((step, index) => (
                 <li key={step.label} className="lx-card">
-                  <div className="lx-card-title">
-                    <SaasIcon icon={STEP_ICONS[index] ?? ClipboardCheck} />
-                    <span className="lx-num lx-num-brand">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                  </div>
+                  <span className="lx-num lx-num-brand">{String(index + 1).padStart(2, '0')}</span>
                   <h3>{step.label}</h3>
                   <p>{step.body}</p>
                 </li>
@@ -197,14 +168,14 @@ export default async function AcqLandingPage({
                 <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={14} />
                 <BorderBeam size={80} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
                 <div className="lx-card-title">
-                  <SaasIcon icon={CircleCheck} />
+                  <Mark icon={CircleCheck} />
                   <h3>A fit</h3>
                 </div>
                 <p>{AUDIENCE.fit}</p>
               </li>
               <li className="lx-card lx-not-fit">
                 <div className="lx-card-title">
-                  <SaasIcon icon={X} tone="red" />
+                  <Mark icon={X} tone="red" />
                   <h3>Not a fit</h3>
                 </div>
                 <p>{AUDIENCE.notFit}</p>
