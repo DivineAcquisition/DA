@@ -1,6 +1,6 @@
 /** Landing + qualification copy for the coach and consultant acq surface. */
 
-export const PILL_BANNER = 'For coaches and consultants whose inquiries already come in';
+export const PILL_BANNER = 'Are you spending 5K+ on Meta paying for leads that never become calls?';
 
 export const HEADLINE_BEFORE =
   "WE'LL INSTALL THE SYSTEM THAT RAISES YOUR SHOW RATE AND SALES FROM THE SAME AD SPEND. ";

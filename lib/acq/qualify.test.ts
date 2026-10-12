@@ -344,7 +344,7 @@ describe('founding landing media', () => {
     expect(copy.CLOSING.cta).toBe('See if you qualify');
     expect(copy.AUDIENCE.notFit.toLowerCase()).toContain('get-rich-quick');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
-    expect(copy.PILL_BANNER).toBe('For coaches and consultants whose inquiries already come in');
+    expect(copy.PILL_BANNER).toBe('Are you spending 5K+ on Meta paying for leads that never become calls?');
     expect(copy.CTA_LABEL).toBe('See if you qualify');
     expect(copy.FORM_LABELS.offer).toBe('What you sell');
     expect(copy.FORM_LABELS.inquiries).toBe('Inquiries per month');
