@@ -2,24 +2,7 @@ import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { GO_VSL_MEDIA_ID, wistiaAspectRatio } from '@/lib/go/config';
-import {
-  Bell,
-  CalendarCheck,
-  CalendarDays,
-  CircleCheck,
-  FileWarning,
-  ListChecks,
-  Moon,
-  Phone,
-  PhoneMissed,
-  RefreshCw,
-  Repeat,
-  Star,
-  UserRoundX,
-  Wrench,
-  X,
-  Zap,
-} from 'lucide-react';
+import { CircleCheck, FileWarning, Moon, PhoneMissed, UserRoundX, X } from 'lucide-react';
 import {
   CALENDAR,
   CTA_LABEL,
@@ -57,6 +40,7 @@ import {
   VIDEO_LABEL,
 } from '@/lib/go/copy';
 import { DemoLink } from './components/DemoLink';
+import { GoScene } from './components/GoScenes';
 import { StrategyCalendar } from './components/StrategyCalendar';
 import { GoWistia } from './components/GoWistia';
 
@@ -69,11 +53,8 @@ function Check() {
 }
 
 const PROBLEM_ICONS = [PhoneMissed, Moon, FileWarning, UserRoundX] as const;
-const INCLUDED_ICONS = [Phone, Zap, ListChecks, Bell, RefreshCw, Star] as const;
-const SYSTEM_ICONS = [Phone, ListChecks, Repeat] as const;
-const PROCESS_ICONS = [CalendarCheck, Wrench, CalendarDays] as const;
 
-function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: typeof Phone; tone?: 'brand' | 'red' }) {
+function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: typeof PhoneMissed; tone?: 'brand' | 'red' }) {
   return (
     <span className={tone === 'red' ? 'go-saas-icon go-saas-icon-red' : 'go-saas-icon'}>
       <Icon aria-hidden />
@@ -163,9 +144,9 @@ export default function CleaningFunnelPage() {
         <div className="lx-wrap">
           <h2 className="lx-heading">{INCLUDED_TITLE}</h2>
           <ul className="lx-offer">
-            {INCLUDED.map((item, index) => (
+            {INCLUDED.map((item) => (
               <li key={item.title} className="lx-card go-saas-card">
-                <SaasIcon icon={INCLUDED_ICONS[index] ?? Phone} />
+                <GoScene title={item.title} />
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
               </li>
@@ -201,9 +182,9 @@ export default function CleaningFunnelPage() {
           <h2 className="lx-heading">{SYSTEMS_HEADLINE}</h2>
           <p className="lx-intro">{SYSTEMS_LEAD}</p>
           <ol className="lx-steps">
-            {SYSTEMS.map((system, index) => (
+            {SYSTEMS.map((system) => (
               <li key={system.key} className="lx-card go-saas-card">
-                <SaasIcon icon={SYSTEM_ICONS[index] ?? Phone} />
+                <GoScene title={system.title} />
                 <h3>{system.title}</h3>
                 <p>{system.description}</p>
               </li>
@@ -216,9 +197,9 @@ export default function CleaningFunnelPage() {
         <div className="lx-wrap">
           <h2 className="lx-heading">{PROCESS_HEADLINE}</h2>
           <ol className="lx-steps">
-            {PROCESS.map((step, index) => (
+            {PROCESS.map((step) => (
               <li key={step.title} className="lx-card go-saas-card">
-                <SaasIcon icon={PROCESS_ICONS[index] ?? CalendarCheck} />
+                <GoScene title={step.title} />
                 <h3>{step.title}</h3>
                 <p>{step.description}</p>
               </li>

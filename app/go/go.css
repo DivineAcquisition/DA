@@ -1,5 +1,118 @@
 /* Extras for the cleaning funnel. Shared layout lives in the coaches stylesheet. */
 
+.acq-coaches .go-scene-missed,
+.acq-coaches .go-scene-speed,
+.acq-coaches .go-scene-show,
+.acq-coaches .go-scene-reviews,
+.acq-coaches .go-scene-recur,
+.acq-coaches .go-scene-fills {
+  align-content: center;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+
+.acq-coaches .go-scene-row,
+.acq-coaches .go-scene-flip {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.acq-coaches .go-scene-missed .go-scene-row,
+.acq-coaches .go-scene-reviews .go-scene-row {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.acq-coaches .go-scene-speed .go-scene-row,
+.acq-coaches .go-scene-flip {
+  grid-template-columns: 1fr 1fr;
+}
+
+.acq-coaches .go-scene-show .go-scene-row {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.acq-coaches .go-scene-row span,
+.acq-coaches .go-scene-flip span,
+.acq-coaches .go-scene-ping {
+  display: grid;
+  place-items: center;
+  min-height: 2.15rem;
+  padding: 0.3rem 0.35rem;
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 10px;
+  background: rgba(154, 136, 252, 0.1);
+  color: #fff;
+  text-align: center;
+}
+
+.acq-coaches .go-scene-row span {
+  opacity: 0.35;
+  animation: lx-step-on 3.8s ease-in-out infinite;
+}
+
+.acq-coaches .go-scene-row span:nth-child(2) { animation-delay: 0.45s; }
+.acq-coaches .go-scene-row span:nth-child(3) { animation-delay: 0.9s; }
+.acq-coaches .go-scene-row span:nth-child(4) { animation-delay: 1.35s; }
+
+.acq-coaches .go-scene-show .go-scene-row span:nth-child(3) {
+  animation-name: lx-dip;
+}
+
+.acq-coaches .go-scene-ping {
+  grid-template-columns: 1fr auto;
+  padding: 0.45rem 0.7rem;
+}
+
+.acq-coaches .go-scene-ping b {
+  position: relative;
+  min-width: 3.2rem;
+  color: #c3b6fe;
+}
+
+.acq-coaches .go-scene-ping i {
+  font-style: normal;
+  animation: lx-minutes 2.4s ease-in-out infinite;
+}
+
+.acq-coaches .go-scene-flip span:first-child {
+  animation: lx-old-line 3.8s ease-in-out infinite;
+}
+
+.acq-coaches .go-scene-flip span:last-child {
+  opacity: 0;
+  animation: lx-new-line 3.8s ease-in-out infinite;
+}
+
+.acq-coaches .go-scene-cal {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.acq-coaches .go-scene-cal span {
+  min-height: 2rem;
+  border: 1px solid rgba(154, 136, 252, 0.28);
+  border-radius: 8px;
+  background: rgba(154, 136, 252, 0.06);
+  color: #07070b;
+  font-size: 0.62rem;
+  text-align: center;
+  animation: lx-fill-cell 4.2s ease-in-out infinite;
+}
+
+.acq-coaches .go-scene-cal span:nth-child(2) { animation-delay: 0.2s; }
+.acq-coaches .go-scene-cal span:nth-child(3) { animation-delay: 0.4s; }
+.acq-coaches .go-scene-cal span:nth-child(4) { animation-delay: 0.6s; }
+.acq-coaches .go-scene-cal span:nth-child(5) { animation-delay: 0.8s; }
+.acq-coaches .go-scene-cal span:nth-child(6) { animation-delay: 1s; }
+.acq-coaches .go-scene-cal span:nth-child(7) { animation-delay: 1.2s; }
+.acq-coaches .go-scene-cal span:nth-child(8) { animation-delay: 1.4s; }
+
+@keyframes lx-fill-cell {
+  0%, 100% { background: rgba(154, 136, 252, 0.06); color: transparent; }
+  40%, 70% { background: #9a88fc; color: #07070b; }
+}
+
 /* Italic accent glyphs run into the next word. Keep a real gap after the accent. */
 .acq-coaches .lx-heading .lx-accent {
   margin-right: 0.28em;
