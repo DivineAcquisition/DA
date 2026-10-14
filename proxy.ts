@@ -15,7 +15,7 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *                                       /ad (control)
  *                                       /admin (assessment)
  *                                       /vistrial (ops)
- *   da.divineacquisition.io         -> /da   (legacy alias during cutover)
+ *   da.divineacquisition.io         -> redirects to the admin workspace (legacy)
  *   ad.divineacquisition.io         -> /ad
  *   acct.divineacquisition.io       -> /acct
  *   team.divineacquisition.io       -> /vistrial, VA and SDR pages only (the portal,
@@ -325,6 +325,30 @@ export async function proxy(request: NextRequest) {
     }
     if (!isTeamAppPath(internal)) {
       return new NextResponse('Not found', { status: 404, headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
+    }
+  }
+
+  // The old growth host (da.) and control host (ad.) were a second admin,
+  // with their own Vistrial shells. One admin workspace lives on admin.
+  if (!local && !isServicePath && !WORKSPACE_HOSTS.includes(host)) {
+    const search = request.nextUrl.search;
+    if (ADMIN_HOSTS.includes(host)) {
+      const growthPath =
+        pathname === '/' || pathname === ADMIN_PREFIX
+          ? '/workspace/growth'
+          : pathname.startsWith(`${ADMIN_PREFIX}/`)
+            ? `/workspace/growth${pathname.slice(ADMIN_PREFIX.length)}`
+            : '/workspace/growth';
+      return NextResponse.redirect(`${ADMIN_PORTAL_ORIGIN}${growthPath}${search}`, 308);
+    }
+    if (CONTROL_HOSTS.includes(host)) {
+      const controlPath =
+        pathname === '/' || pathname === CONTROL_PREFIX
+          ? CONTROL_PREFIX
+          : pathname.startsWith(`${CONTROL_PREFIX}/`)
+            ? pathname
+            : `${CONTROL_PREFIX}${pathname}`;
+      return NextResponse.redirect(`${ADMIN_PORTAL_ORIGIN}${controlPath}${search}`, 308);
     }
   }
 

@@ -7,14 +7,11 @@ import { currentApp } from '@/lib/appsServer';
 import { adminMfaState } from '@/lib/auth/mfa';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import NotConfigured from '@/app/da/components/NotConfigured';
-import UnifiedAdminChrome, {
-  isUnifiedAdminRequest,
-} from '@/app/workspace/components/UnifiedAdminChrome';
+import UnifiedAdminChrome from '@/app/workspace/components/UnifiedAdminChrome';
 import { loadOpsData } from '@/lib/vistrial/load';
 import { OpsProvider } from '@/lib/vistrial/store';
 import type { Actor } from '@/lib/vistrial/types';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
-import AppShell from './components/AppShell';
 import { ManagerShell, OperatorGate } from './components/Gates';
 import HubSignIn from './components/HubSignIn';
 
@@ -87,15 +84,10 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   const actor: Actor = { role: 'admin', id: session.userId, name: session.fullName ?? session.email };
 
   const data = await loadOpsData();
-  const unified = session.isAdmin && (await isUnifiedAdminRequest());
 
   return (
     <OpsProvider data={data} actor={actor}>
-      {unified ? (
-        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
-      ) : (
-        <AppShell>{children}</AppShell>
-      )}
+      <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
     </OpsProvider>
   );
 }

@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
-import UnifiedAdminChrome, {
-  isUnifiedAdminRequest,
-} from '@/app/workspace/components/UnifiedAdminChrome';
+import UnifiedAdminChrome from '@/app/workspace/components/UnifiedAdminChrome';
 import AdminSignIn from './components/AdminSignIn';
 import NotConfigured from './components/NotConfigured';
 import RequireAdminMfa from '@/app/components/RequireAdminMfa';
@@ -23,13 +21,9 @@ export default async function AssessmentAdminLayout({ children }: { children: Re
   if (!session) return <AdminSignIn />;
   if (!session.isAdmin) return <AdminSignIn refusedFor={session.email} />;
 
-  if (await isUnifiedAdminRequest()) {
-    return (
-      <RequireAdminMfa email={session.email}>
-        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
-      </RequireAdminMfa>
-    );
-  }
-
-  return <RequireAdminMfa email={session.email}>{children}</RequireAdminMfa>;
+  return (
+    <RequireAdminMfa email={session.email}>
+      <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
+    </RequireAdminMfa>
+  );
 }
