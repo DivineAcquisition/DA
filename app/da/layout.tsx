@@ -1,9 +1,6 @@
 import type { Metadata } from 'next';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
-import UnifiedAdminChrome, {
-  isUnifiedAdminRequest,
-} from '@/app/workspace/components/UnifiedAdminChrome';
-import AdminShell from './components/AdminShell';
+import UnifiedAdminChrome from '@/app/workspace/components/UnifiedAdminChrome';
 import NotConfigured from './components/NotConfigured';
 import SignIn from './components/SignIn';
 import RequireAdminMfa from '@/app/components/RequireAdminMfa';
@@ -25,17 +22,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session) return <SignIn />;
   if (!session.isAdmin) return <SignIn refusedFor={session.email} />;
 
-  if (await isUnifiedAdminRequest()) {
-    return (
-      <RequireAdminMfa email={session.email}>
-        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
-      </RequireAdminMfa>
-    );
-  }
-
   return (
     <RequireAdminMfa email={session.email}>
-      <AdminShell session={session}>{children}</AdminShell>
+      <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
     </RequireAdminMfa>
   );
 }
