@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import OnboardingView from '@/app/o/[token]/OnboardingView';
-import { appUrl } from '@/lib/apps';
 import { formatDateTime } from '@/lib/workspace/format';
 import { publicOnboardingUrl } from '@/lib/workspace/paths';
 import { filePendingOperatorPackets, VA_BASE_ID, VA_TABLE_ID } from '@/lib/workspace/placement-packet';
@@ -116,14 +115,13 @@ export default async function OnboardingAdminPage() {
         <div>
           <h2 className={`${ws.heading} text-lg font-semibold`}>What they see</h2>
           <p className="mt-1 max-w-2xl text-sm text-[var(--ws-dim)]">
-            The same screens, with nothing saved. Four pages: who they are, the shift, bank details, then the confirmations.
+            The same screens, with nothing saved. After they finish, they are told their Divine Acquisition email is being created and that an Academy invite will follow.
           </p>
         </div>
         {protocol && protocol.steps.length > 0 ? (
           <div className="rounded-3xl border border-white/10 bg-ink-950 p-4 sm:p-6">
             <OnboardingView
               preview
-              academyUrl={appUrl('training')}
               token="preview"
               initial={{
                 state: 'open',

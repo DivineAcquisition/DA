@@ -7,10 +7,12 @@ set search_path = public;
 \echo '== operator protocols point at the Academy =='
 do $$
 begin
-  assert (select next_steps from public.da_onboarding_protocol where key = 'va_sales_operator') ilike '%Academy%',
-    'sales operator onboarding names the Academy';
-  assert (select next_steps from public.da_onboarding_protocol where key = 'standard_operator') ilike '%Academy%',
-    'standard operator onboarding names the Academy';
+  assert (select next_steps from public.da_onboarding_protocol where key = 'va_sales_operator')
+    = 'Your Divine Acquisition email is being created. An Academy invite will be sent to you shortly.',
+    'sales operator onboarding does not send them into training';
+  assert (select next_steps from public.da_onboarding_protocol where key = 'standard_operator')
+    = 'Your Divine Acquisition email is being created. An Academy invite will be sent to you shortly.',
+    'operator onboarding does not send them into training';
   assert position('record_kind' in pg_get_viewdef('public.v_case_file_health'::regclass)) > 0,
     'client health leaves operator profiles out';
 end $$;

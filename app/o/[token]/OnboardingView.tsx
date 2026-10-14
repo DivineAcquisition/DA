@@ -13,7 +13,7 @@ import {
 } from '@/lib/workspace/onboarding-steps';
 import { MultiSelectField, PasswordFields, PayoutFields, ScheduleFields, loginSuffix } from './OnboardingFields';
 
-type Props = { token: string; initial: OnboardingPageState; preview?: boolean; academyUrl?: string };
+type Props = { token: string; initial: OnboardingPageState; preview?: boolean };
 
 const INVALID_MESSAGE =
   "This link isn't valid or has expired. If you're expecting onboarding from Divine Acquisition, reply to the email it came in and we'll send you a fresh one.";
@@ -23,7 +23,7 @@ type SaveStatus = { state: 'saving' } | { state: 'saved' } | { state: 'error'; m
 const inputClass =
   'w-full rounded-xl border border-white/[0.07] bg-ink-800 px-3.5 py-3 text-base text-white outline-none focus:border-brand-400 sm:text-sm';
 
-export default function OnboardingView({ token, initial, preview = false, academyUrl }: Props) {
+export default function OnboardingView({ token, initial, preview = false }: Props) {
   switch (initial.state) {
     case 'invalid':
       return (
@@ -67,26 +67,22 @@ export default function OnboardingView({ token, initial, preview = false, academ
         </Shell>
       );
     case 'completed':
-      return <Completed page={initial} academyUrl={academyUrl} />;
+      return <Completed page={initial} />;
     case 'open':
-      return <Steps token={token} page={initial} preview={preview} academyUrl={academyUrl} />;
+      return <Steps token={token} page={initial} preview={preview} />;
   }
 }
 
-function Completed({
-  page,
-  academyUrl,
-}: {
-  page: Extract<OnboardingPageState, { state: 'completed' }>;
-  academyUrl?: string;
-}) {
+const OPERATOR_DONE =
+  'Your Divine Acquisition email is being created. An Academy invite will be sent to you shortly.';
+
+function Completed({ page }: { page: Extract<OnboardingPageState, { state: 'completed' }> }) {
   const firstName = page.recipientName.split(/\s+/)[0] || 'there';
-  const academyHref = (academyUrl || 'https://training.divineacquisition.io').replace(/\/+$/, '');
   const next =
     page.nextSteps ??
     (page.recipientType === 'client'
       ? 'Next up is your kickoff. Divine Acquisition will reach out to schedule it.'
-      : 'You are enrolled in the DA Operator Academy. Open it next and start there. Your profile is open: every end-of-day report you file, and the metrics you log, are kept on that case file.');
+      : OPERATOR_DONE);
   return (
     <Shell>
       <Card>
@@ -104,14 +100,6 @@ function Completed({
             </p>
           )}
         </div>
-        {page.recipientType !== 'client' && (
-          <a
-            href={academyHref}
-            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)]"
-          >
-            Go to the Academy
-          </a>
-        )}
         {page.contactEmail && (
           <p className="mt-5 text-sm text-neutral-400">
             Questions? Email{' '}
@@ -153,12 +141,10 @@ function Steps({
   token,
   page,
   preview = false,
-  academyUrl,
 }: {
   token: string;
   page: Extract<OnboardingPageState, { state: 'open' }>;
   preview?: boolean;
-  academyUrl?: string;
 }) {
   const [previewDone, setPreviewDone] = useState(false);
   const [answers, setAnswers] = useState<Record<string, OnboardingAnswer>>(page.answers);
@@ -359,15 +345,13 @@ function Steps({
   if (previewDone) {
     return (
       <Completed
-        academyUrl={academyUrl}
         page={{
           state: 'completed',
           recipientName: page.recipientName,
           recipientType: page.recipientType,
           protocolName: page.protocolName,
           completedAt: null,
-          nextSteps:
-            'You are enrolled in the DA Operator Academy. Open it next and start there. Your profile is open: every end-of-day report you file, and the metrics you log, are kept on that case file.',
+          nextSteps: page.recipientType === 'client' ? null : OPERATOR_DONE,
           hasOpenAccessIssue: false,
           contactEmail: null,
         }}
