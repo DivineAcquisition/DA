@@ -45,4 +45,39 @@ describe('airtable operator fields', () => {
     expect(fields.notes).toContain('ending 6655');
     expect(fields.notes).not.toContain('9988776655');
   });
+
+  it('prints the payout method and last four, not the payout reference', () => {
+    const reference = 'remitly|bank|Philippines|Ana Cruz|+639171112233|BPI|9988776655';
+    const sections = onboardingSections({
+      da_login: { value: 'ana.cruz@divineacquisition.io' },
+      payout: { value: 'remitly', last4: '6655' },
+      weekly_hours: { value: 'part_time_4_5' },
+      work_schedule: { value: '{"days":[{"day":"mon","start":"09:00","end":"13:00"}]}' },
+      has_computer: { value: 'yes' },
+      apploye_download: { confirmed_at: '2026-10-14T00:00:00Z' },
+      years_sales: { value: 'y3_5' },
+      roles_held: { value: 'sdr,closer' },
+      verticals_interest: { value: 'med_spa' },
+    });
+    const flat = JSON.stringify(sections);
+    expect(flat).toContain('Remitly');
+    expect(flat).toContain('ending 6655');
+    expect(flat).toContain('ana.cruz@divineacquisition.io');
+    expect(flat).toContain('Mon 09:00-13:00');
+    expect(flat).toContain('inactivity');
+    expect(flat).not.toContain(reference);
+    expect(flat).not.toContain('9988776655');
+    const fields = airtableOperatorFields({
+      name: 'Ana',
+      email: 'ana.work@operators.test',
+      answers: {
+        payout: { value: 'remitly', last4: '6655' },
+        da_password: { value: 'saved' },
+      },
+    });
+    expect(fields.notes).toContain('Remitly');
+    expect(fields.notes).toContain('ending 6655');
+    expect(fields.notes).not.toContain(reference);
+    expect(fields.notes).not.toContain('saved');
+  });
 });

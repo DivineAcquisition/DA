@@ -8502,6 +8502,7 @@ export type Database = {
         | "bank_transfer"
         | "paypal"
         | "crypto_usdc"
+        | "remitly"
       payout_status: "pending" | "sent" | "confirmed" | "failed" | "returned"
       permission_effect: "grant" | "deny"
       placement_status: "draft" | "active" | "ended" | "renewed"
@@ -8760,6 +8761,7 @@ export const Constants = {
         "bank_transfer",
         "paypal",
         "crypto_usdc",
+        "remitly",
       ],
       payout_status: ["pending", "sent", "confirmed", "failed", "returned"],
       permission_effect: ["grant", "deny"],
