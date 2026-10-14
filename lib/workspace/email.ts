@@ -137,7 +137,7 @@ export function buildOnboardingEmail(input: {
   const name = greetingName(input.recipientName);
   const subject = 'Your Divine Acquisition onboarding';
   const body =
-    'This is the sales operator onboarding. It takes about five minutes: who you are, your shift, bank details, and four confirmations. Your answers save as you go.';
+    'This is the sales operator onboarding. It covers who you are, your Divine Acquisition account, how you get paid, your equipment, and when you can work. Your answers save as you go.';
   const footer = {
     reason: 'You received this because Divine Acquisition started your sales operator onboarding.',
   };

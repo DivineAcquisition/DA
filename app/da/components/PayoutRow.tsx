@@ -119,6 +119,7 @@ export default function PayoutRow({
                 className={selectClass}
               >
                 <option value="wise">Wise</option>
+                <option value="remitly">Remitly</option>
                 <option value="payoneer">Payoneer</option>
                 <option value="bank_transfer">Bank transfer</option>
                 <option value="paypal">PayPal</option>

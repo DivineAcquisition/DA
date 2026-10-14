@@ -26,6 +26,8 @@ declare
   v_profile uuid;
   v_client_case uuid := 'f95f95f9-0000-4000-8000-0000000000c1';
   v_placement uuid := 'f95f95f9-0000-4000-8000-0000000000d1';
+  v_leaked boolean;
+  v_table text;
 begin
   insert into public.da_recipient (id, full_name, email, recipient_type)
   values (v_recipient, 'Ana Cruz', 'ana.cruz@operators.test', 'operator');
@@ -49,6 +51,20 @@ begin
       'bank_name', jsonb_build_object('kind', 'form_question', 'value', 'Bank of the Philippine Islands'),
       'account_number', jsonb_build_object('kind', 'form_question', 'value', '9988776655'),
       'account_number_confirm', jsonb_build_object('kind', 'form_question', 'value', '9988-7766-55'),
+      'da_login', jsonb_build_object('kind', 'form_question', 'value', 'ana.cruz@divineacquisition.io'),
+      'da_password', jsonb_build_object('kind', 'form_question', 'value', 'saved'),
+      'payout', jsonb_build_object('kind', 'form_question', 'value', 'wise', 'last4', '4412'),
+      'has_computer', jsonb_build_object('kind', 'form_question', 'value', 'yes'),
+      'has_internet', jsonb_build_object('kind', 'form_question', 'value', 'yes'),
+      'has_headset', jsonb_build_object('kind', 'form_question', 'value', 'yes'),
+      'has_quiet_workspace', jsonb_build_object('kind', 'form_question', 'value', 'yes'),
+      'apploye_download', jsonb_build_object('kind', 'acknowledgment', 'confirmed_at', now()),
+      'weekly_hours', jsonb_build_object('kind', 'form_question', 'value', 'part_time_4_5'),
+      'work_schedule', jsonb_build_object('kind', 'form_question', 'value', '{"days":[{"day":"mon","start":"09:00","end":"13:00"}]}'),
+      'years_sales', jsonb_build_object('kind', 'form_question', 'value', 'y3_5'),
+      'roles_held', jsonb_build_object('kind', 'form_question', 'value', 'sdr,appointment_setter'),
+      'industries_sold', jsonb_build_object('kind', 'form_question', 'value', 'med_spa,home_services'),
+      'verticals_interest', jsonb_build_object('kind', 'form_question', 'value', 'med_spa'),
       'confirm_training_unpaid', jsonb_build_object('kind', 'acknowledgment', 'confirmed_at', now()),
       'confirm_shift_commitment', jsonb_build_object('kind', 'acknowledgment', 'confirmed_at', now()),
       'confirm_agreement_read', jsonb_build_object('kind', 'acknowledgment', 'confirmed_at', now()),
@@ -56,19 +72,33 @@ begin
     )
   );
 
+  insert into app.onboarding_credential (submission_id, login_email, password_hash, payout_method, payout_reference)
+  select s.id,
+         'ana.cruz@divineacquisition.io',
+         extensions.crypt('Correct-horse-1', extensions.gen_salt('bf')),
+         'wise',
+         'wise|USD|Ana Cruz|ana@wise.com'
+    from public.da_onboarding_submission s
+   where s.access_token = v_token;
+
   v_result := public.da_onboarding_finish(v_token, 'suite');
   assert v_result ->> 'ok' = 'true', v_result::text;
 
   select o.id, o.profile_id into v_operator, v_profile
     from public.operator o
-   where lower(o.email) = 'ana.cruz@operators.test';
+   where lower(o.email) = 'ana.cruz@divineacquisition.io';
 
   assert v_operator is not null, 'an operator row is opened';
   assert (select name from public.operator where id = v_operator) = 'Ana', 'preferred name is the profile name';
   assert (select status from public.operator where id = v_operator) = 'in_training';
   assert (select time_zone from public.operator where id = v_operator) = 'Asia/Manila';
   assert (select handle from public.operator where id = v_operator) = 'ana.cruz';
-  assert (select payout_reference from public.operator where id = v_operator) is null;
+  assert (select payout_method::text from public.operator where id = v_operator) = 'wise';
+  assert (select payout_reference from public.operator where id = v_operator) = 'wise|USD|Ana Cruz|ana@wise.com';
+  assert (select extensions.crypt('Correct-horse-1', encrypted_password) = encrypted_password
+            from auth.users where id = v_profile),
+    'the Divine Acquisition password is the login password';
+  assert (select email from public.profile where id = v_profile) = 'ana.cruz@divineacquisition.io';
   assert (select state from public.profile where id = v_profile) = 'active';
   assert (select role from public.profile where id = v_profile) = 'operator';
 
@@ -82,8 +112,33 @@ begin
   assert (select case_file_id from public.da_onboarding_submission where access_token = v_token) = v_case;
   assert position('9988776655' in (select notes from public.client_case_file where id = v_case)) = 0,
     'the bank account number stays off the case file';
-  assert (select notes from public.client_case_file where id = v_case) ilike '%9AM%';
+  assert (select notes from public.client_case_file where id = v_case) ilike '%Mon 09:00-13:00%';
+  assert position('ana@wise.com' in (select notes from public.client_case_file where id = v_case)) = 0,
+    'the payout reference stays off the case file';
+  assert position('Correct-horse-1' in (select notes from public.client_case_file where id = v_case)) = 0;
+  assert position('ana@wise.com' in (select answers::text from public.da_onboarding_submission where access_token = v_token)) = 0;
+  assert position('Correct-horse-1' in (select answers::text from public.da_onboarding_submission where access_token = v_token)) = 0;
+  assert position('9988776655' in (select payout_reference from public.operator where id = v_operator)) = 0;
   assert (select contact_email from public.client_case_file where id = v_case) = 'ana.work@operators.test';
+  assert not exists (
+    select 1 from information_schema.columns
+     where table_schema = 'public' and table_name like 'academy%' and column_name ilike '%payout%'
+  ), 'Academy tables do not have payout columns';
+  for v_table in
+    select table_name from information_schema.tables
+     where table_schema = 'public' and table_name like 'academy%' and table_type = 'BASE TABLE'
+  loop
+    execute format(
+      'select exists (select 1 from public.%I t where row_to_json(t)::text like %L)',
+      v_table, '%ana@wise.com%'
+    ) into v_leaked;
+    assert not coalesce(v_leaked, false), v_table;
+    execute format(
+      'select exists (select 1 from public.%I t where row_to_json(t)::text like %L)',
+      v_table, '%Correct-horse-1%'
+    ) into v_leaked;
+    assert not coalesce(v_leaked, false), v_table;
+  end loop;
 
   assert (select e.status from public.academy_enrollment e
             join public.academy_program p on p.id = e.program_id

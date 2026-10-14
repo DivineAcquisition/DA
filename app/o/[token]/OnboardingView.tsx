@@ -11,6 +11,7 @@ import {
   type OnboardingAnswer,
   type OnboardingStep,
 } from '@/lib/workspace/onboarding-steps';
+import { MultiSelectField, PasswordFields, PayoutFields, ScheduleFields, loginSuffix } from './OnboardingFields';
 
 type Props = { token: string; initial: OnboardingPageState; preview?: boolean; academyUrl?: string };
 
@@ -126,7 +127,19 @@ function Completed({
 
 function previewAnswer(step: OnboardingStep, input: Record<string, unknown>): OnboardingAnswer | null {
   if (step.kind === 'form_question') {
+    if (step.input_type === 'password') {
+      const password = String(input.password ?? '');
+      const confirm = String(input.confirm ?? '');
+      return password.length >= 12 && password === confirm ? { kind: step.kind, value: 'saved' } : null;
+    }
+    if (step.input_type === 'payout') {
+      const method = String(input.method ?? '').trim();
+      return method ? { kind: step.kind, value: method, last4: 'saved', answered_at: new Date().toISOString() } : null;
+    }
     const value = String(input.value ?? '').trim();
+    if (step.input_type === 'da_login' && value && !value.includes('@')) {
+      return { kind: step.kind, value: `${value.toLowerCase()}@divineacquisition.io` };
+    }
     return value ? { kind: step.kind, value } : null;
   }
   if (step.kind === 'acknowledgment' || step.kind === 'material_review') {
@@ -153,7 +166,9 @@ function Steps({
     const initialDrafts: Record<string, string> = {};
     for (const step of page.steps) {
       if (step.kind !== 'form_question') continue;
-      initialDrafts[step.key] = page.answers[step.key]?.value ?? '';
+      const value = page.answers[step.key]?.value ?? '';
+      initialDrafts[step.key] =
+        step.input_type === 'da_login' ? value.replace(/@divineacquisition\.io$/i, '') : step.input_type === 'password' ? '' : value;
     }
     return initialDrafts;
   });
@@ -250,7 +265,17 @@ function Steps({
   // Details we already know are filled in and saved, so they count as answered.
   useEffect(() => {
     for (const step of page.steps) {
-      if (step.kind !== 'form_question' || !step.prefill || page.answers[step.key]) continue;
+      if (step.kind !== 'form_question' || page.answers[step.key]) continue;
+      if (step.input_type === 'da_login') {
+        const source = page.prefill.recipient_email ?? '';
+        const local = source.split('@')[0]?.toLowerCase().replace(/[^a-z0-9._-]+/g, '').replace(/^[._-]+|[._-]+$/g, '') ?? '';
+        if (/^[a-z0-9][a-z0-9._-]{1,30}[a-z0-9]$/.test(local) && !/[._-]{2}/.test(local)) {
+          setDrafts((prev) => ({ ...prev, [step.key]: prev[step.key] || local }));
+          void save(step, { value: local });
+        }
+        continue;
+      }
+      if (!step.prefill) continue;
       const known = page.prefill[step.prefill];
       if (known) {
         setDrafts((prev) => ({ ...prev, [step.key]: known }));
@@ -398,6 +423,7 @@ function Steps({
                   key={step.key}
                   step={step}
                   answer={answers[step.key]}
+                  answers={answers}
                   draft={drafts[step.key] ?? ''}
                   status={status[step.key]}
                   highlighted={highlight === step.key && !isDone(step, answers[step.key])}
@@ -409,6 +435,14 @@ function Steps({
                   onChoose={(value) => {
                     setDrafts((prev) => ({ ...prev, [step.key]: value }));
                     void save(step, { value });
+                    if (step.key === 'weekly_hours' && answers.weekly_hours?.value && answers.weekly_hours.value !== value) {
+                      setAnswers((prev) => {
+                        const next = { ...prev };
+                        delete next.work_schedule;
+                        return next;
+                      });
+                      setDrafts((prev) => ({ ...prev, work_schedule: '' }));
+                    }
                   }}
                   onSave={(input) => void save(step, input)}
                   onRetry={() => retry(step)}
@@ -470,6 +504,7 @@ function Steps({
 type StepProps = {
   step: OnboardingStep;
   answer: OnboardingAnswer | undefined;
+  answers: Record<string, OnboardingAnswer>;
   draft: string;
   status: SaveStatus | undefined;
   highlighted: boolean;
@@ -480,14 +515,35 @@ type StepProps = {
   onRetry: () => void;
 };
 
-function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurText, onChoose, onSave, onRetry }: StepProps) {
+function StepBlock({ step, answer, answers, draft, status, highlighted, onDraft, onBlurText, onChoose, onSave, onRetry }: StepProps) {
   const ring = highlighted ? 'rounded-xl ring-2 ring-flag-warning ring-offset-4 ring-offset-ink-900' : '';
   return (
     <div id={`step-${step.key}`} className={ring}>
       {step.kind === 'form_question' && (
-        <FormQuestion step={step} draft={draft} onDraft={onDraft} onBlur={onBlurText} onChoose={onChoose} />
+        <FormQuestion
+          step={step}
+          draft={draft}
+          answer={answer}
+          answers={answers}
+          onDraft={onDraft}
+          onBlur={onBlurText}
+          onChoose={onChoose}
+          onSave={onSave}
+        />
       )}
       {step.kind === 'acknowledgment' && (
+        <div>
+          {step.help && <p className="mb-3 text-xs leading-relaxed text-neutral-400">{step.help}</p>}
+          {step.link_url && (
+            <a
+              href={step.link_url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mb-3 inline-flex rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-ink-950"
+            >
+              {step.link_label ?? 'Open link'}
+            </a>
+          )}
         <label className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-ink-800 p-4 text-sm leading-relaxed text-white">
           <input
             type="checkbox"
@@ -497,12 +553,12 @@ function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurTe
           />
           <span>
             {step.label}
-            {step.help && <span className="mt-1 block text-xs text-neutral-500">{step.help}</span>}
             {answer?.confirmed_at && (
               <span className="mt-1 block text-xs text-flag-good">Confirmed {formatWhen(answer.confirmed_at)}</span>
             )}
           </span>
         </label>
+        </div>
       )}
       {step.kind === 'credential_handoff' && <CredentialHandoff step={step} answer={answer} onSave={onSave} />}
       {step.kind === 'material_review' && <MaterialReview step={step} answer={answer} onSave={onSave} />}
@@ -514,15 +570,21 @@ function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurTe
 function FormQuestion({
   step,
   draft,
+  answer,
+  answers,
   onDraft,
   onBlur,
   onChoose,
+  onSave,
 }: {
   step: OnboardingStep;
   draft: string;
+  answer: OnboardingAnswer | undefined;
+  answers: Record<string, OnboardingAnswer>;
   onDraft: (value: string) => void;
   onBlur: () => void;
   onChoose: (value: string) => void;
+  onSave: (input: Record<string, unknown>) => void;
 }) {
   const id = `input-${step.key}`;
   return (
@@ -570,6 +632,34 @@ function FormQuestion({
               </option>
             ))}
           </select>
+        ) : step.input_type === 'multi_select' ? (
+          <MultiSelectField step={step} draft={draft} onDraft={onDraft} />
+        ) : step.input_type === 'schedule' ? (
+          <ScheduleFields
+            key={answers.weekly_hours?.value ?? 'hours'}
+            weekly={answers.weekly_hours?.value ?? ''}
+            answer={answer}
+            onSave={onSave}
+          />
+        ) : step.input_type === 'payout' ? (
+          <PayoutFields step={step} answer={answer} onSave={onSave} />
+        ) : step.input_type === 'password' ? (
+          <PasswordFields step={step} saved={answer?.value === 'saved'} onSave={onSave} />
+        ) : step.input_type === 'da_login' ? (
+          <div className="flex items-center gap-2">
+            <input
+              id={id}
+              className={inputClass}
+              value={draft}
+              placeholder={step.placeholder ?? undefined}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              onChange={(event) => onDraft(event.target.value.replace(/@divineacquisition\.io$/i, ''))}
+              onBlur={onBlur}
+            />
+            <span className="shrink-0 text-sm text-neutral-400">{loginSuffix()}</span>
+          </div>
         ) : step.input_type === 'textarea' ? (
           <textarea
             id={id}
