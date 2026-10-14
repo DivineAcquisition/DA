@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
+import { engagementBase, engagementPath, newEngagementPath } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -20,6 +22,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function AdminHome() {
   const caseFiles = await listCaseFiles();
+  const base = engagementBase((await headers()).get('x-pathname') ?? '');
 
   const missingBaseline = caseFiles.filter((row) => !row.has_baseline);
   const overdue = caseFiles.filter((row) => row.snapshot_overdue);
@@ -34,7 +37,7 @@ export default async function AdminHome() {
         actions={
           <>
             <RunSnapshotsButton />
-            <Link href="/da/new" className={`${btnPrimary} ${btnSizeSm}`}>
+            <Link href={newEngagementPath(base)} className={`${btnPrimary} ${btnSizeSm}`}>
               New case file
             </Link>
           </>
@@ -83,7 +86,7 @@ export default async function AdminHome() {
             title="No engagements yet"
             detail="Create a case file to start recording an engagement."
             action={
-              <Link href="/da/new" className={`${btnPrimary} ${btnSizeSm}`}>
+              <Link href={newEngagementPath(base)} className={`${btnPrimary} ${btnSizeSm}`}>
                 New case file
               </Link>
             }
@@ -96,7 +99,7 @@ export default async function AdminHome() {
 
               return (
                 <li key={row.id}>
-                  <Link href={`/da/${row.slug}`} className="panel panel-hover block rounded-2xl px-5 py-4">
+                  <Link href={engagementPath(base, row.slug ?? '')} className="panel panel-hover block rounded-2xl px-5 py-4">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">

@@ -217,6 +217,70 @@ export type IndustryTemplate = {
  * The industry templates. Rows rather than a list in the application, so adding a
  * sixth industry is an insert and not a deploy.
  */
+export type SalesOperatorChoice = { full_name: string; email: string };
+
+/** Sales operators who can be placed on a client. Recipients, not the operator ledger. */
+export async function listSalesOperators(): Promise<SalesOperatorChoice[]> {
+  const supabase = await createClient();
+  const { data, error } = await (
+    supabase as unknown as {
+      from: (table: string) => {
+        select: (columns: string) => {
+          eq: (column: string, value: string) => {
+            eq: (column: string, value: string) => {
+              order: (column: string) => PromiseLike<{ data: unknown; error: { message: string } | null }>;
+            };
+          };
+        };
+      };
+    }
+  )
+    .from('da_recipient')
+    .select('full_name, email')
+    .eq('recipient_type', 'operator')
+    .eq('status', 'active')
+    .order('full_name');
+
+  if (error) {
+    console.error('listSalesOperators', error.message);
+    return [];
+  }
+  return ((data ?? []) as SalesOperatorChoice[]).filter((row) => row.email && row.full_name);
+}
+
+export async function listPlacements(caseFileId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('placement')
+    .select('*, operator(name, email, status)')
+    .eq('case_file_id', caseFileId)
+    .order('start_date', { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function listCaseInvoices(caseFileId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('invoice')
+    .select('id, number, status, total, paid_at, notes, processor, currency')
+    .eq('case_file_id', caseFileId)
+    .order('paid_at', { ascending: false, nullsFirst: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function listCaseSubscriptions(caseFileId: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('subscription')
+    .select('id, amount, status, started_on, cancelled_on, processor_subscription_id, charge_type')
+    .eq('case_file_id', caseFileId)
+    .order('started_on', { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function listIndustryTemplates(): Promise<IndustryTemplate[]> {
   const supabase = await createClient();
   const { data, error } = await (

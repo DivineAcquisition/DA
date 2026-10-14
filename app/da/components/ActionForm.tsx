@@ -70,12 +70,14 @@ export function Disclosure({
   label,
   children,
   tone = 'brand',
+  startOpen = false,
 }: {
   label: string;
   children: React.ReactNode;
   tone?: 'brand' | 'neutral';
+  startOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(startOpen);
 
   return (
     <div>

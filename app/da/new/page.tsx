@@ -1,5 +1,7 @@
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { engagementBase, engagementsHome } from '@/lib/da/paths';
 import { PageHeader, Panel, inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
 import { createCaseFileAction } from '@/lib/da/actions';
 import { listIndustryTemplates } from '@/lib/da/queries';
@@ -11,6 +13,7 @@ export const dynamic = 'force-dynamic';
 export default async function NewCaseFilePage() {
   const drive = driveConfigured();
   const templates = await listIndustryTemplates();
+  const home = engagementsHome(engagementBase((await headers()).get('x-pathname') ?? ''));
 
   return (
     <div className="mx-auto max-w-2xl space-y-7">
@@ -19,7 +22,7 @@ export default async function NewCaseFilePage() {
         title="Create a case file"
         description="The container for the baseline, every snapshot, the effort log, and the evidence vault."
         actions={
-          <Link href="/da" className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={home} className={`${btnSecondary} ${btnSizeSm}`}>
             Cancel
           </Link>
         }
@@ -83,6 +86,56 @@ export default async function NewCaseFilePage() {
               </label>
               <input id="contact_channel" name="contact_channel" className={inputClass} placeholder="WhatsApp" />
             </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className={labelClass} htmlFor="phone">
+                Phone
+              </label>
+              <input id="phone" name="phone" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="billing_email">
+                Billing email
+              </label>
+              <input id="billing_email" name="billing_email" type="email" className={inputClass} />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="offer">
+              Offer
+            </label>
+            <textarea id="offer" name="offer" rows={3} className={inputClass} placeholder="What this engagement installs." />
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className={labelClass} htmlFor="monthly_ad_spend">
+                Monthly ad spend
+              </label>
+              <input id="monthly_ad_spend" name="monthly_ad_spend" type="number" min="0" step="0.01" className={inputClass} />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="crm_stack">
+                CRM / stack
+              </label>
+              <input id="crm_stack" name="crm_stack" className={inputClass} placeholder="GoHighLevel" />
+            </div>
+            <div>
+              <label className={labelClass} htmlFor="time_zone">
+                Time zone
+              </label>
+              <input id="time_zone" name="time_zone" className={inputClass} placeholder="America/Los_Angeles" />
+            </div>
+          </div>
+
+          <div>
+            <label className={labelClass} htmlFor="notes">
+              Notes
+            </label>
+            <textarea id="notes" name="notes" rows={2} className={inputClass} />
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
