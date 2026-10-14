@@ -280,12 +280,17 @@ export async function listSalesOperators(): Promise<SalesOperatorChoice[]> {
 export async function listPlacements(caseFileId: string) {
   const supabase = await adminDb();
   if (!supabase) return [];
+  // `productive_time` also links placement and operator, so a bare `operator(...)`
+  // embed is ambiguous and PostgREST answers 300. Name the foreign key.
   const { data, error } = await supabase
     .from('placement')
-    .select('*, operator(name, email, status)')
+    .select('*, operator!placement_operator_id_fkey(name, email, status)')
     .eq('case_file_id', caseFileId)
     .order('start_date', { ascending: false });
-  if (error) throw error;
+  if (error) {
+    console.error('listPlacements', error.message);
+    return [];
+  }
   return data ?? [];
 }
 
