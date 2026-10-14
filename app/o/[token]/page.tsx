@@ -20,9 +20,9 @@ export default async function OnboardingPage({ params }: { params: Promise<{ tok
   const page = await loadOnboardingPage(token, clientFromHeaders(await headers()));
 
   return (
-    <div className="da-workspace relative min-h-screen">
+    <div className="da-sign relative min-h-screen bg-ink-950 text-white antialiased">
       <Backdrop />
-      <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-10">
+      <div className="relative z-10 px-4 py-8 sm:px-6 sm:py-12">
         <OnboardingView token={token} initial={page} academyUrl={appUrl('training')} />
       </div>
     </div>

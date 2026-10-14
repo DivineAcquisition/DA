@@ -11,6 +11,7 @@ import {
   type OnboardingAnswer,
   type OnboardingStep,
 } from '@/lib/workspace/onboarding-steps';
+import { MultiSelectField, PasswordFields, PayoutFields, ScheduleFields, loginSuffix } from './OnboardingFields';
 
 type Props = { token: string; initial: OnboardingPageState; preview?: boolean; academyUrl?: string };
 
@@ -20,7 +21,7 @@ const INVALID_MESSAGE =
 type SaveStatus = { state: 'saving' } | { state: 'saved' } | { state: 'error'; message: string };
 
 const inputClass =
-  'w-full rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] px-3.5 py-3 text-base text-white outline-none focus:border-[var(--ws-accent)] sm:text-sm';
+  'w-full rounded-xl border border-white/[0.07] bg-ink-800 px-3.5 py-3 text-base text-white outline-none focus:border-brand-400 sm:text-sm';
 
 export default function OnboardingView({ token, initial, preview = false, academyUrl }: Props) {
   switch (initial.state) {
@@ -28,7 +29,7 @@ export default function OnboardingView({ token, initial, preview = false, academ
       return (
         <Shell>
           <Card>
-            <p className="text-sm leading-relaxed text-[var(--ws-body)]">{INVALID_MESSAGE}</p>
+            <p className="text-sm leading-relaxed text-neutral-400">{INVALID_MESSAGE}</p>
           </Card>
         </Shell>
       );
@@ -37,24 +38,24 @@ export default function OnboardingView({ token, initial, preview = false, academ
         <Shell>
           <Card>
             <h1 className="text-xl font-semibold text-white">Sign your agreement first</h1>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">
+            <p className="mt-2 text-sm leading-relaxed text-neutral-400">
               Onboarding opens once your agreement is signed. It only takes a few minutes, and you&apos;ll come
               straight back here.
             </p>
             {initial.agreementToken ? (
               <a
                 href={`/s/${encodeURIComponent(initial.agreementToken)}`}
-                className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
+                className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)]"
               >
                 Go to my agreement
               </a>
             ) : (
-              <p className="mt-4 text-sm text-[var(--ws-body)]">
+              <p className="mt-4 text-sm text-neutral-400">
                 Reach out to Divine Acquisition
                 {initial.contactEmail ? (
                   <>
                     {' '}at{' '}
-                    <a className="text-[var(--ws-accent)] underline" href={`mailto:${initial.contactEmail}`}>
+                    <a className="text-brand-300 underline" href={`mailto:${initial.contactEmail}`}>
                       {initial.contactEmail}
                     </a>
                   </>
@@ -89,16 +90,16 @@ function Completed({
   return (
     <Shell>
       <Card>
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--ws-success)]/15 text-2xl text-[var(--ws-success)]">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-flag-good/15 text-2xl text-flag-good">
           ✓
         </div>
         <h1 className="mt-5 text-2xl font-semibold text-white">You&apos;re all set, {firstName}!</h1>
-        <p className="mt-2 text-sm text-[var(--ws-body)]">{page.protocolName} is complete. Welcome aboard.</p>
-        <div className="mt-6 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] p-4 text-left">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--ws-accent)]">What happens next</p>
+        <p className="mt-2 text-sm text-neutral-400">{page.protocolName} is complete. Welcome aboard.</p>
+        <div className="mt-6 rounded-xl border border-white/[0.07] bg-ink-800 p-4 text-left">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">What happens next</p>
           <p className="mt-2 text-sm leading-relaxed text-white">{next}</p>
           {page.hasOpenAccessIssue && (
-            <p className="mt-3 text-sm leading-relaxed text-[var(--ws-pending)]">
+            <p className="mt-3 text-sm leading-relaxed text-flag-warning">
               You told us some tool access hasn&apos;t arrived yet. We&apos;re on it and will get you set up.
             </p>
           )}
@@ -106,15 +107,15 @@ function Completed({
         {page.recipientType !== 'client' && (
           <a
             href={academyHref}
-            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[var(--ws-btn)] px-6 py-3 text-sm font-semibold text-[var(--ws-page)]"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)]"
           >
             Go to the Academy
           </a>
         )}
         {page.contactEmail && (
-          <p className="mt-5 text-sm text-[var(--ws-body)]">
+          <p className="mt-5 text-sm text-neutral-400">
             Questions? Email{' '}
-            <a className="text-[var(--ws-accent)] underline" href={`mailto:${page.contactEmail}`}>
+            <a className="text-brand-300 underline" href={`mailto:${page.contactEmail}`}>
               {page.contactEmail}
             </a>
           </p>
@@ -126,7 +127,19 @@ function Completed({
 
 function previewAnswer(step: OnboardingStep, input: Record<string, unknown>): OnboardingAnswer | null {
   if (step.kind === 'form_question') {
+    if (step.input_type === 'password') {
+      const password = String(input.password ?? '');
+      const confirm = String(input.confirm ?? '');
+      return password.length >= 12 && password === confirm ? { kind: step.kind, value: 'saved' } : null;
+    }
+    if (step.input_type === 'payout') {
+      const method = String(input.method ?? '').trim();
+      return method ? { kind: step.kind, value: method, last4: 'saved', answered_at: new Date().toISOString() } : null;
+    }
     const value = String(input.value ?? '').trim();
+    if (step.input_type === 'da_login' && value && !value.includes('@')) {
+      return { kind: step.kind, value: `${value.toLowerCase()}@divineacquisition.io` };
+    }
     return value ? { kind: step.kind, value } : null;
   }
   if (step.kind === 'acknowledgment' || step.kind === 'material_review') {
@@ -153,7 +166,9 @@ function Steps({
     const initialDrafts: Record<string, string> = {};
     for (const step of page.steps) {
       if (step.kind !== 'form_question') continue;
-      initialDrafts[step.key] = page.answers[step.key]?.value ?? '';
+      const value = page.answers[step.key]?.value ?? '';
+      initialDrafts[step.key] =
+        step.input_type === 'da_login' ? value.replace(/@divineacquisition\.io$/i, '') : step.input_type === 'password' ? '' : value;
     }
     return initialDrafts;
   });
@@ -250,7 +265,17 @@ function Steps({
   // Details we already know are filled in and saved, so they count as answered.
   useEffect(() => {
     for (const step of page.steps) {
-      if (step.kind !== 'form_question' || !step.prefill || page.answers[step.key]) continue;
+      if (step.kind !== 'form_question' || page.answers[step.key]) continue;
+      if (step.input_type === 'da_login') {
+        const source = page.prefill.recipient_email ?? '';
+        const local = source.split('@')[0]?.toLowerCase().replace(/[^a-z0-9._-]+/g, '').replace(/^[._-]+|[._-]+$/g, '') ?? '';
+        if (/^[a-z0-9][a-z0-9._-]{1,30}[a-z0-9]$/.test(local) && !/[._-]{2}/.test(local)) {
+          setDrafts((prev) => ({ ...prev, [step.key]: prev[step.key] || local }));
+          void save(step, { value: local });
+        }
+        continue;
+      }
+      if (!step.prefill) continue;
       const known = page.prefill[step.prefill];
       if (known) {
         setDrafts((prev) => ({ ...prev, [step.key]: known }));
@@ -354,19 +379,19 @@ function Steps({
     <div className="mx-auto w-full max-w-2xl">
       <header className="mb-5 flex items-center justify-between gap-4">
         <Logo className="h-7 w-auto" />
-        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-dim)]">Onboarding</span>
+        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Onboarding</span>
       </header>
 
-      <section className="rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-5 sm:p-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--ws-accent)]">
+      <section className="panel rounded-3xl p-5 sm:p-6">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">
           Welcome, {page.recipientName}
         </p>
         <h1 className="mt-2 text-2xl font-semibold leading-tight text-white">{page.protocolName}</h1>
         {groupIndex === 0 && page.protocolIntro && (
-          <p className="mt-2 text-sm leading-relaxed text-[var(--ws-body)]">{page.protocolIntro}</p>
+          <p className="mt-2 text-sm leading-relaxed text-neutral-400">{page.protocolIntro}</p>
         )}
         <div className="mt-4">
-          <div className="flex items-center justify-between text-xs text-[var(--ws-body)]">
+          <div className="flex items-center justify-between text-xs text-neutral-400">
             <span>
               {count.done} of {count.total} done
             </span>
@@ -374,22 +399,22 @@ function Steps({
               Page {groupIndex + 1} of {groups.length}
             </span>
           </div>
-          <div className="mt-2 h-2 overflow-hidden rounded-full bg-[var(--ws-panel)]" aria-hidden>
-            <div className="h-full rounded-full bg-[var(--ws-accent)] transition-all" style={{ width: `${percent}%` }} />
+          <div className="mt-2 h-2 overflow-hidden rounded-full bg-ink-800" aria-hidden>
+            <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${percent}%` }} />
           </div>
         </div>
       </section>
 
       {lockedMessage && (
-        <p className="mt-4 rounded-xl border border-[var(--ws-error)]/40 bg-[var(--ws-error)]/10 p-3 text-sm text-white">
+        <p className="mt-4 rounded-xl border border-flag-critical/40 bg-flag-critical/10 p-3 text-sm text-white">
           {lockedMessage}
         </p>
       )}
 
       {group && (
-        <section className="animate-rise mt-4 rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-5 sm:p-6">
+        <section className="panel animate-rise mt-4 rounded-3xl p-5 sm:p-6">
           {group.title && <h2 className="text-lg font-semibold text-white">{group.title}</h2>}
-          {group.intro && <p className="mt-1 text-sm text-[var(--ws-body)]">{group.intro}</p>}
+          {group.intro && <p className="mt-1 text-sm text-neutral-400">{group.intro}</p>}
           <div className={group.title ? 'mt-5 space-y-6' : 'space-y-6'}>
             {group.steps
               .filter((step) => isVisible(step, answers))
@@ -398,6 +423,7 @@ function Steps({
                   key={step.key}
                   step={step}
                   answer={answers[step.key]}
+                  answers={answers}
                   draft={drafts[step.key] ?? ''}
                   status={status[step.key]}
                   highlighted={highlight === step.key && !isDone(step, answers[step.key])}
@@ -409,6 +435,14 @@ function Steps({
                   onChoose={(value) => {
                     setDrafts((prev) => ({ ...prev, [step.key]: value }));
                     void save(step, { value });
+                    if (step.key === 'weekly_hours' && answers.weekly_hours?.value && answers.weekly_hours.value !== value) {
+                      setAnswers((prev) => {
+                        const next = { ...prev };
+                        delete next.work_schedule;
+                        return next;
+                      });
+                      setDrafts((prev) => ({ ...prev, work_schedule: '' }));
+                    }
                   }}
                   onSave={(input) => void save(step, input)}
                   onRetry={() => retry(step)}
@@ -419,7 +453,7 @@ function Steps({
       )}
 
       {finishError && (
-        <p role="alert" className="mt-4 rounded-xl border border-[var(--ws-pending)]/40 bg-[var(--ws-pending)]/10 p-3 text-sm text-white">
+        <p role="alert" className="mt-4 rounded-xl border border-flag-warning/40 bg-flag-warning/10 p-3 text-sm text-white">
           {finishError}
         </p>
       )}
@@ -432,7 +466,7 @@ function Steps({
             goTo(groupIndex - 1);
           }}
           disabled={groupIndex === 0}
-          className="flex-1 rounded-xl border border-[var(--ws-border)] px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
+          className="flex-1 rounded-full border border-white/[0.12] bg-white/[0.03] px-5 py-3 text-sm font-semibold text-white disabled:opacity-40"
         >
           Back
         </button>
@@ -441,7 +475,7 @@ function Steps({
             type="button"
             onClick={() => void finish()}
             disabled={finishing}
-            className="flex-[2] rounded-xl bg-[var(--ws-btn)] px-5 py-3 text-sm font-semibold text-[var(--ws-page)] disabled:opacity-60"
+            className="flex-[2] rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)] disabled:opacity-60"
           >
             {finishing ? 'Finishing…' : 'Finish onboarding'}
           </button>
@@ -452,13 +486,13 @@ function Steps({
               setFinishError(null);
               goTo(groupIndex + 1);
             }}
-            className="flex-[2] rounded-xl bg-[var(--ws-btn)] px-5 py-3 text-sm font-semibold text-[var(--ws-page)]"
+            className="flex-[2] rounded-full bg-brand-500 px-5 py-3 text-sm font-semibold text-ink-950 shadow-[0_12px_34px_-14px_rgba(154,136,252,0.9)]"
           >
             Next
           </button>
         )}
       </nav>
-      <p className="mt-4 text-center text-xs text-[var(--ws-dim)]">
+      <p className="mt-4 text-center text-xs text-neutral-500">
         {preview
           ? 'Preview only. Nothing on this page is saved.'
           : 'Everything saves as you go. You can close this and come back any time.'}
@@ -470,6 +504,7 @@ function Steps({
 type StepProps = {
   step: OnboardingStep;
   answer: OnboardingAnswer | undefined;
+  answers: Record<string, OnboardingAnswer>;
   draft: string;
   status: SaveStatus | undefined;
   highlighted: boolean;
@@ -480,15 +515,36 @@ type StepProps = {
   onRetry: () => void;
 };
 
-function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurText, onChoose, onSave, onRetry }: StepProps) {
-  const ring = highlighted ? 'rounded-xl ring-2 ring-[var(--ws-pending)] ring-offset-4 ring-offset-[var(--ws-card)]' : '';
+function StepBlock({ step, answer, answers, draft, status, highlighted, onDraft, onBlurText, onChoose, onSave, onRetry }: StepProps) {
+  const ring = highlighted ? 'rounded-xl ring-2 ring-flag-warning ring-offset-4 ring-offset-ink-900' : '';
   return (
     <div id={`step-${step.key}`} className={ring}>
       {step.kind === 'form_question' && (
-        <FormQuestion step={step} draft={draft} onDraft={onDraft} onBlur={onBlurText} onChoose={onChoose} />
+        <FormQuestion
+          step={step}
+          draft={draft}
+          answer={answer}
+          answers={answers}
+          onDraft={onDraft}
+          onBlur={onBlurText}
+          onChoose={onChoose}
+          onSave={onSave}
+        />
       )}
       {step.kind === 'acknowledgment' && (
-        <label className="flex items-start gap-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] p-4 text-sm leading-relaxed text-white">
+        <div>
+          {step.help && <p className="mb-3 text-xs leading-relaxed text-neutral-400">{step.help}</p>}
+          {step.link_url && (
+            <a
+              href={step.link_url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mb-3 inline-flex rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-ink-950"
+            >
+              {step.link_label ?? 'Open link'}
+            </a>
+          )}
+        <label className="flex items-start gap-3 rounded-xl border border-white/[0.07] bg-ink-800 p-4 text-sm leading-relaxed text-white">
           <input
             type="checkbox"
             className="mt-0.5 h-5 w-5 shrink-0"
@@ -497,12 +553,12 @@ function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurTe
           />
           <span>
             {step.label}
-            {step.help && <span className="mt-1 block text-xs text-[var(--ws-dim)]">{step.help}</span>}
             {answer?.confirmed_at && (
-              <span className="mt-1 block text-xs text-[var(--ws-success)]">Confirmed {formatWhen(answer.confirmed_at)}</span>
+              <span className="mt-1 block text-xs text-flag-good">Confirmed {formatWhen(answer.confirmed_at)}</span>
             )}
           </span>
         </label>
+        </div>
       )}
       {step.kind === 'credential_handoff' && <CredentialHandoff step={step} answer={answer} onSave={onSave} />}
       {step.kind === 'material_review' && <MaterialReview step={step} answer={answer} onSave={onSave} />}
@@ -514,30 +570,36 @@ function StepBlock({ step, answer, draft, status, highlighted, onDraft, onBlurTe
 function FormQuestion({
   step,
   draft,
+  answer,
+  answers,
   onDraft,
   onBlur,
   onChoose,
+  onSave,
 }: {
   step: OnboardingStep;
   draft: string;
+  answer: OnboardingAnswer | undefined;
+  answers: Record<string, OnboardingAnswer>;
   onDraft: (value: string) => void;
   onBlur: () => void;
   onChoose: (value: string) => void;
+  onSave: (input: Record<string, unknown>) => void;
 }) {
   const id = `input-${step.key}`;
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-white">
         {step.label}
-        {step.required ? '' : <span className="text-[var(--ws-dim)]"> (optional)</span>}
+        {step.required ? '' : <span className="text-neutral-500"> (optional)</span>}
       </label>
-      {step.help && <p className="mt-1 text-xs leading-relaxed text-[var(--ws-body)]">{step.help}</p>}
+      {step.help && <p className="mt-1 text-xs leading-relaxed text-neutral-400">{step.help}</p>}
       {step.link_url && (
         <a
           href={step.link_url}
           target="_blank"
           rel="noreferrer noopener"
-          className="mt-1 inline-block text-xs font-medium text-[var(--ws-accent)] underline"
+          className="mt-1 inline-block text-xs font-medium text-brand-300 underline"
         >
           {step.link_label ?? 'Open link'}
         </a>
@@ -548,7 +610,7 @@ function FormQuestion({
             {(step.choices ?? []).map((choice) => (
               <label
                 key={choice.value}
-                className="flex items-center gap-3 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] px-4 py-3 text-sm text-white"
+                className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-ink-800 px-4 py-3 text-sm text-white"
               >
                 <input
                   type="radio"
@@ -570,6 +632,34 @@ function FormQuestion({
               </option>
             ))}
           </select>
+        ) : step.input_type === 'multi_select' ? (
+          <MultiSelectField step={step} draft={draft} onDraft={onDraft} />
+        ) : step.input_type === 'schedule' ? (
+          <ScheduleFields
+            key={answers.weekly_hours?.value ?? 'hours'}
+            weekly={answers.weekly_hours?.value ?? ''}
+            answer={answer}
+            onSave={onSave}
+          />
+        ) : step.input_type === 'payout' ? (
+          <PayoutFields step={step} answer={answer} onSave={onSave} />
+        ) : step.input_type === 'password' ? (
+          <PasswordFields step={step} saved={answer?.value === 'saved'} onSave={onSave} />
+        ) : step.input_type === 'da_login' ? (
+          <div className="flex items-center gap-2">
+            <input
+              id={id}
+              className={inputClass}
+              value={draft}
+              placeholder={step.placeholder ?? undefined}
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              onChange={(event) => onDraft(event.target.value.replace(/@divineacquisition\.io$/i, ''))}
+              onBlur={onBlur}
+            />
+            <span className="shrink-0 text-sm text-neutral-400">{loginSuffix()}</span>
+          </div>
         ) : step.input_type === 'textarea' ? (
           <textarea
             id={id}
@@ -615,8 +705,8 @@ function CredentialHandoff({
       onClick={() => onSave({ access: value })}
       className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium ${
         choice === value
-          ? 'border-[var(--ws-accent)] bg-[var(--ws-accent)]/15 text-white'
-          : 'border-[var(--ws-border)] bg-[var(--ws-panel)] text-white'
+          ? 'border-brand-400 bg-brand-500/15 text-white'
+          : 'border-white/[0.07] bg-ink-800 text-white'
       }`}
       aria-pressed={choice === value}
     >
@@ -629,13 +719,13 @@ function CredentialHandoff({
       {step.tools && step.tools.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {step.tools.map((tool) => (
-            <span key={tool} className="rounded-full border border-[var(--ws-border)] px-3 py-1 text-xs text-[var(--ws-body)]">
+            <span key={tool} className="rounded-full border border-white/[0.07] px-3 py-1 text-xs text-neutral-400">
               {tool}
             </span>
           ))}
         </div>
       )}
-      <p className="mt-2 text-xs text-[var(--ws-body)]">
+      <p className="mt-2 text-xs text-neutral-400">
         Just confirm it worked. Never type a password or login here.
       </p>
       <div className="mt-3 space-y-2">
@@ -643,7 +733,7 @@ function CredentialHandoff({
         {option('not_received', "I haven't received access yet")}
       </div>
       {choice === 'not_received' && (
-        <p className="mt-2 text-xs leading-relaxed text-[var(--ws-pending)]">
+        <p className="mt-2 text-xs leading-relaxed text-flag-warning">
           Got it. We&apos;ve flagged this for Divine Acquisition. You can still finish everything else.
         </p>
       )}
@@ -664,10 +754,10 @@ function MaterialReview({
   return (
     <div>
       <p className="text-sm font-medium text-white">{step.label}</p>
-      <div className="mt-2 rounded-xl border border-[var(--ws-border)] bg-[var(--ws-panel)] p-4">
+      <div className="mt-2 rounded-xl border border-white/[0.07] bg-ink-800 p-4">
         <p className="text-sm font-semibold text-white">{step.asset?.title ?? 'Material'}</p>
         {step.asset?.description && (
-          <p className="mt-1 text-xs leading-relaxed text-[var(--ws-body)]">{step.asset.description}</p>
+          <p className="mt-1 text-xs leading-relaxed text-neutral-400">{step.asset.description}</p>
         )}
         {step.asset?.url ? (
           <a
@@ -675,15 +765,15 @@ function MaterialReview({
             target="_blank"
             rel="noreferrer noopener"
             onClick={() => onSave({ action: 'opened' })}
-            className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-[var(--ws-accent)] px-4 py-2.5 text-sm font-semibold text-[var(--ws-accent)] sm:w-auto"
+            className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-brand-400 px-4 py-2.5 text-sm font-semibold text-brand-300 sm:w-auto"
           >
             {opened ? 'Open again' : 'Open material'}
           </a>
         ) : (
-          <p className="mt-2 text-xs text-[var(--ws-pending)]">This material isn&apos;t available right now.</p>
+          <p className="mt-2 text-xs text-flag-warning">This material isn&apos;t available right now.</p>
         )}
       </div>
-      <label className={`mt-3 flex items-start gap-3 text-sm ${opened ? 'text-white' : 'text-[var(--ws-dim)]'}`}>
+      <label className={`mt-3 flex items-start gap-3 text-sm ${opened ? 'text-white' : 'text-neutral-500'}`}>
         <input
           type="checkbox"
           className="mt-0.5 h-5 w-5 shrink-0"
@@ -695,7 +785,7 @@ function MaterialReview({
           I&apos;ve reviewed it
           {!opened && <span className="block text-xs">Open the material first.</span>}
           {answer?.confirmed_at && (
-            <span className="block text-xs text-[var(--ws-success)]">Reviewed {formatWhen(answer.confirmed_at)}</span>
+            <span className="block text-xs text-flag-good">Reviewed {formatWhen(answer.confirmed_at)}</span>
           )}
         </span>
       </label>
@@ -705,10 +795,10 @@ function MaterialReview({
 
 function SaveLine({ status, onRetry }: { status: SaveStatus | undefined; onRetry: () => void }) {
   if (!status) return null;
-  if (status.state === 'saving') return <p className="mt-1.5 text-xs text-[var(--ws-dim)]">Saving…</p>;
-  if (status.state === 'saved') return <p className="mt-1.5 text-xs text-[var(--ws-success)]">Saved</p>;
+  if (status.state === 'saving') return <p className="mt-1.5 text-xs text-neutral-500">Saving…</p>;
+  if (status.state === 'saved') return <p className="mt-1.5 text-xs text-flag-good">Saved</p>;
   return (
-    <p role="alert" className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-[var(--ws-error)]">
+    <p role="alert" className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-flag-critical">
       {status.message}
       <button type="button" onClick={onRetry} className="font-semibold text-white underline">
         Retry
@@ -727,11 +817,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 function Card({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="w-full animate-rise rounded-2xl border border-[var(--ws-border)] bg-[var(--ws-card)] p-7 text-center">
-      {children}
-    </div>
-  );
+  return <div className="panel w-full animate-rise rounded-3xl p-7 text-center sm:p-8">{children}</div>;
 }
 
 function formatWhen(iso: string): string {

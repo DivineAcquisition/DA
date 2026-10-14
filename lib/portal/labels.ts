@@ -118,6 +118,7 @@ export const payoutStatus = (value: string): Label =>
 
 export const PAYOUT_METHOD: Record<string, string> = {
   wise: 'Wise',
+  remitly: 'Remitly',
   payoneer: 'Payoneer',
   bank_transfer: 'Bank transfer',
   paypal: 'PayPal',

@@ -16,7 +16,19 @@ export type OnboardingStep = {
   section_key: string | null;
   section_title: string | null;
   section_intro: string | null;
-  input_type: 'text' | 'email' | 'phone' | 'textarea' | 'select' | 'single_select' | null;
+  input_type:
+    | 'text'
+    | 'email'
+    | 'phone'
+    | 'textarea'
+    | 'select'
+    | 'single_select'
+    | 'da_login'
+    | 'password'
+    | 'payout'
+    | 'multi_select'
+    | 'schedule'
+    | null;
   placeholder: string | null;
   choices: Array<{ value: string; label: string }> | null;
   show_when: { step: string; values: string[] } | null;
@@ -33,6 +45,7 @@ export type OnboardingAnswer = {
   kind?: OnboardingStepKind;
   label?: string;
   value?: string;
+  last4?: string;
   answered_at?: string;
   confirmed_at?: string;
   access?: 'received' | 'not_received';

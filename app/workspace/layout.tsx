@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import { filePendingOperatorPackets } from '@/lib/workspace/placement-packet';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
@@ -80,6 +81,10 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   }
 
   if (isLogin) redirect('/workspace/overview');
+
+  // A placement queues the packet. Filing it needs Drive, Airtable, and the
+  // PDF builder, so it runs here the next time an admin opens the workspace.
+  await filePendingOperatorPackets().catch(() => ({ filed: 0, failed: 0 }));
 
   const academy = await academyAdminSession();
   const studentPreview = pathname.includes('/workspace/academy/preview/');

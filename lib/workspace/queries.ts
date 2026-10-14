@@ -464,6 +464,7 @@ export type SalesOperatorOnboardingRun = {
   email: string;
   status: string;
   token: string;
+  operatorId: string | null;
   agreementId: string | null;
   caseFileId: string | null;
   openedAt: string | null;
@@ -541,12 +542,15 @@ export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboar
   if (!session || !supabase) return [];
   const { data } = await supabase
     .from('da_onboarding_submission')
-    .select('id, recipient_id, status, access_token, agreement_id, case_file_id, opened_at, completed_at, created_at, da_recipient(full_name, email)')
+    .select('id, recipient_id, status, access_token, agreement_id, case_file_id, opened_at, completed_at, created_at, da_recipient(full_name, email, operator_id)')
     .eq('protocol_key', VA_SALES_OPERATOR_ONBOARDING_KEY)
     .order('created_at', { ascending: false })
     .limit(50);
   return ((data as Array<Record<string, unknown>> | null) ?? []).map((row) => {
-    const recipient = row.da_recipient as { full_name?: string; email?: string } | { full_name?: string; email?: string }[] | null;
+    const recipient = row.da_recipient as
+      | { full_name?: string; email?: string; operator_id?: string | null }
+      | { full_name?: string; email?: string; operator_id?: string | null }[]
+      | null;
     const person = Array.isArray(recipient) ? recipient[0] : recipient;
     return {
       id: String(row.id),
@@ -555,6 +559,7 @@ export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboar
       email: person?.email ?? '',
       status: String(row.status ?? 'pending'),
       token: String(row.access_token ?? ''),
+      operatorId: typeof person?.operator_id === 'string' ? person.operator_id : null,
       agreementId: typeof row.agreement_id === 'string' ? row.agreement_id : null,
       caseFileId: typeof row.case_file_id === 'string' ? row.case_file_id : null,
       openedAt: typeof row.opened_at === 'string' ? row.opened_at : null,
@@ -562,4 +567,29 @@ export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboar
       createdAt: String(row.created_at ?? ''),
     };
   });
+}
+
+export type OperatorPacketSummary = {
+  operatorId: string;
+  status: string;
+  driveFolderUrl: string | null;
+  airtableRecordId: string | null;
+  hasAgreement: boolean;
+};
+
+export async function listOperatorPackets(operatorIds: string[]): Promise<OperatorPacketSummary[]> {
+  const session = await requireAdmin();
+  const supabase = await workspaceClient();
+  if (!session || !supabase || operatorIds.length === 0) return [];
+  const { data } = await supabase
+    .from('operator_packet')
+    .select('operator_id, status, drive_folder_url, airtable_record_id, agreement_filename')
+    .in('operator_id', operatorIds);
+  return ((data as Array<Record<string, unknown>> | null) ?? []).map((row) => ({
+    operatorId: String(row.operator_id),
+    status: String(row.status ?? 'pending'),
+    driveFolderUrl: typeof row.drive_folder_url === 'string' ? row.drive_folder_url : null,
+    airtableRecordId: typeof row.airtable_record_id === 'string' ? row.airtable_record_id : null,
+    hasAgreement: typeof row.agreement_filename === 'string' && row.agreement_filename.length > 0,
+  }));
 }
