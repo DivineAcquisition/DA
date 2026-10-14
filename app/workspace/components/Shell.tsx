@@ -694,7 +694,7 @@ export default function Shell({
 
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-40 hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
+            'fixed inset-y-0 left-0 z-40 hidden bg-ink-900 text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
             collapsed ? 'w-[72px]' : 'w-[272px]',
           )}
         >
@@ -719,7 +719,7 @@ export default function Shell({
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-2xl"
+              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] bg-ink-900 text-sidebar-foreground shadow-2xl"
             >
               <button
                 type="button"

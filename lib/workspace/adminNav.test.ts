@@ -24,8 +24,8 @@ describe('normalizePath', () => {
 
 describe('findActive', () => {
   it('picks one entry: team sub-pages no longer also light up the roster', () => {
-    expect(activeLabels('/vistrial/team/queues')).toEqual(['Workspace', 'People', 'Queues']);
-    expect(activeLabels('/vistrial/team')).toEqual(['Workspace', 'People', 'Roster & View As']);
+    expect(activeLabels('/vistrial/team/queues')).toEqual(['Workspace', 'Sales operators', 'Queues']);
+    expect(activeLabels('/vistrial/team')).toEqual(['Workspace', 'Sales operators', 'Roster & View As']);
   });
 
   it('separates Holds from the Academy it lives under', () => {
@@ -36,9 +36,9 @@ describe('findActive', () => {
 
   it('follows aliases and mirrored routes', () => {
     expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Workspace', 'Sales']);
-    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Workspace', 'People', 'Payroll']);
+    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Workspace', 'Sales operators', 'Payroll']);
     expect(activeLabels('/da/margin')).toEqual(['Workspace', 'Growth', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['Workspace', 'People', 'Invites']);
+    expect(activeLabels('/ad/invite')).toEqual(['Workspace', 'Sales operators', 'Invites']);
     expect(activeLabels('/accounts/123')).toEqual(['Workspace', 'Sales', 'Accounts']);
   });
 
@@ -80,14 +80,14 @@ describe('findActive', () => {
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
     const labels = full.flatMap((section) => section.items.map((item) => item.label));
-    expect(labels).toEqual(['Overview', 'Clients', 'People', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
+    expect(labels).toEqual(['Overview', 'Clients', 'Sales operators', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
   });
 });
 
 describe('searchNav', () => {
   it('finds sub-pages by their parent or section name', () => {
     expect(searchNav(full, 'payroll').map((hit) => hit.leaf.label)).toEqual(['Payroll']);
-    expect(searchNav(full, 'people').map((hit) => hit.leaf.label)).toContain('View as');
+    expect(searchNav(full, 'sales operators').map((hit) => hit.leaf.label)).toContain('View as');
     expect(searchNav(full, 'credentials')).toEqual([]);
     expect(searchNav(full, '  ')).toEqual([]);
   });
