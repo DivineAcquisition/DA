@@ -17,7 +17,7 @@ export default function ClientsPage() {
 
 function CaseFileList() {
   const { gateway } = useOps();
-  const clients = gateway.allClients();
+  const clients = gateway.allClients().filter((client) => client.recordKind !== 'operator');
 
   return (
     <div>

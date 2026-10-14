@@ -54,6 +54,8 @@ function Profile() {
     );
   }
 
+  const profileFile = gateway.operatorCaseFile(operatorId);
+  const profileReports = gateway.reportsForOperator(operatorId);
   const placements = gateway
     .placementsForOperator(operatorId)
     .sort((a, b) => Date.parse(b.startDate) - Date.parse(a.startDate));
@@ -124,6 +126,29 @@ function Profile() {
             </p>
           </div>
         </div>
+      </Panel>
+
+      <Panel className="p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold text-white">Case file</p>
+            <p className="mt-1 text-xs text-neutral-500">
+              {profileFile
+                ? `End-of-day reports and the metrics ${operator.name.split(' ')[0]} logs are filed on this profile.`
+                : 'The profile opens when they finish onboarding. Reports and metrics filed after that are kept there.'}
+            </p>
+          </div>
+          {profileFile && (
+            <Link href={`/vistrial/admin/clients/${profileFile.id}`} className={`${btnSecondary} ${btnSizeSm}`}>
+              Open case file
+            </Link>
+          )}
+        </div>
+        {profileFile && (
+          <p className="mt-3 text-xs text-neutral-500">
+            {profileReports.length} EOD report{profileReports.length === 1 ? '' : 's'} on file
+          </p>
+        )}
       </Panel>
 
       {metrics && live ? (

@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { formatDateTime, formatDay, formatMoney, orGap } from '@/lib/vistrial/format';
 import { EOD_CORE_FIELDS } from '@/lib/vistrial/eodCore';
+import { loggedMetrics } from '@/lib/vistrial/rules/eod';
 import { PLACEMENT_STATUS_LABELS } from '@/lib/vistrial/rules/lifecycle';
 import { useOps } from '@/lib/vistrial/store';
 import type { EodReport } from '@/lib/vistrial/types';
@@ -63,7 +64,11 @@ function CaseFile() {
   const placements = gateway.placementsForClient(clientId);
   const live = placements.find((placement) => placement.status === 'active');
   const past = placements.filter((placement) => placement.status !== 'active');
-  const reports = placements.flatMap((placement) => gateway.reportsFor(placement.id));
+  const operatorProfile = client.recordKind === 'operator';
+  const reports = operatorProfile && client.operatorId
+    ? gateway.reportsForOperator(client.operatorId)
+    : placements.flatMap((placement) => gateway.reportsFor(placement.id));
+  const metrics = loggedMetrics(reports);
   const bookings = placements.flatMap((placement) => gateway.bookingsFor(placement.id));
   const escalations = placements.flatMap((placement) => gateway.escalationsFor(placement.id));
   const notes = gateway.adminNotesFor(clientId);
@@ -156,9 +161,13 @@ function CaseFile() {
   return (
     <div className="space-y-8">
       <PageHeader
-        eyebrow="Case file"
+        eyebrow={operatorProfile ? 'Operator profile' : 'Case file'}
         title={client.name}
-        description={`${client.vertical} · ${config.industryName} template · onboarded ${formatDay(client.onboardedOn)}`}
+        description={
+          operatorProfile
+            ? 'Every end-of-day report this sales operator files, and the metrics they log, are kept here.'
+            : `${client.vertical} · ${config.industryName} template · onboarded ${formatDay(client.onboardedOn)}`
+        }
         actions={
           live && (
             <button
@@ -173,12 +182,25 @@ function CaseFile() {
       />
 
       <StatGrid>
-        <StatTile label="EOD reports" value={String(reports.length)} hint="Every version retained" />
-        <StatTile label="Bookings" value={String(bookings.length)} hint={`${bookings.filter((b) => b.state === 'pending-review').length} awaiting review`} />
-        <StatTile label="Escalations" value={String(escalations.length)} hint={`${escalations.filter((e) => e.status === 'open').length} open`} />
-        <StatTile label="Placements" value={String(placements.length)} hint={`${past.length} closed`} />
+        {operatorProfile ? (
+          <>
+            <StatTile label="EOD reports" value={String(reports.length)} hint="Every version, from every placement" />
+            <StatTile label="Conversations logged" value={String(metrics.conversations)} hint="Current versions" />
+            <StatTile label="Appointments logged" value={String(metrics.appointments)} hint="Current versions" />
+            <StatTile label="Follow-ups logged" value={String(metrics.followUps)} hint="Current versions" />
+          </>
+        ) : (
+          <>
+            <StatTile label="EOD reports" value={String(reports.length)} hint="Every version retained" />
+            <StatTile label="Bookings" value={String(bookings.length)} hint={`${bookings.filter((b) => b.state === 'pending-review').length} awaiting review`} />
+            <StatTile label="Escalations" value={String(escalations.length)} hint={`${escalations.filter((e) => e.status === 'open').length} open`} />
+            <StatTile label="Placements" value={String(placements.length)} hint={`${past.length} closed`} />
+          </>
+        )}
       </StatGrid>
 
+      {!operatorProfile && (
+      <>
       {/* Configuration */}
       <section>
         <SectionHeader
@@ -328,6 +350,8 @@ function CaseFile() {
           })}
         </ul>
       </section>
+      </>
+      )}
 
       {/* Scope requests */}
       {scopeRequests.length > 0 && (
@@ -365,7 +389,11 @@ function CaseFile() {
       <section>
         <SectionHeader
           title="Log"
-          hint="Reverse chronological, filterable by type."
+          hint={
+            operatorProfile
+              ? 'End-of-day reports from every placement, including ones filed for a client.'
+              : 'Reverse chronological, filterable by type.'
+          }
           actions={
             <div className="flex gap-1 overflow-x-auto">
               {FILTERS.map((option) => (

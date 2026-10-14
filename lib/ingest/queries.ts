@@ -210,6 +210,7 @@ export async function listCaseFileOptions(): Promise<{ id: string; name: string 
   const { data, error } = await supabase
     .from('client_case_file')
     .select('id, name')
+    .eq('record_kind', 'client')
     .order('name');
 
   if (error) {

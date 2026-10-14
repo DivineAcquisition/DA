@@ -119,6 +119,13 @@ export type Client = {
   vertical: string;
   onboardedOn: string;
   config: CaseFileConfig;
+  /**
+   * Client engagements are the default. An operator profile is the case file
+   * opened when a sales operator finishes onboarding.
+   */
+  recordKind?: 'client' | 'operator';
+  /** Set on an operator profile. The operator whose reports and metrics file here. */
+  operatorId?: string | null;
 };
 
 // ---------------------------------------------------------------------------

@@ -19,7 +19,7 @@ import {
   summarise,
   wouldDoubleCredit,
 } from './bookings';
-import { assertConfiguredFieldsDoNotShadowCore, correctEod, currentVersions } from './eod';
+import { assertConfiguredFieldsDoNotShadowCore, correctEod, currentVersions, loggedMetrics } from './eod';
 import { buildExceptionQueue, EXCEPTION_RANK } from './exceptions';
 import { canTransitionOperator, endPlacement, isPlacementLive, placementStatus } from './lifecycle';
 import { deliver, resolveChannels } from './notifications';
@@ -459,6 +459,12 @@ describe('EOD', () => {
     expect(correction.version).toBe(2);
     expect(correction.correctionReason).toBe('Undercounted follow-ups.');
     expect(currentVersions([superseded, correction])).toEqual([correction]);
+    expect(loggedMetrics([superseded, correction])).toEqual({
+      conversations: 12,
+      appointments: 3,
+      followUps: 7,
+      escalations: 0,
+    });
   });
 
   it('rejects a configured field that shadows a locked core key', () => {

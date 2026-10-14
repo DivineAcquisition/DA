@@ -971,6 +971,8 @@ export type Database = {
           logo_url: string | null
           name: string
           notes: string | null
+          operator_id: string | null
+          record_kind: string
           retainer_amount: number | null
           revenue_goal_monthly: number | null
           slug: string
@@ -992,6 +994,8 @@ export type Database = {
           logo_url?: string | null
           name: string
           notes?: string | null
+          operator_id?: string | null
+          record_kind?: string
           retainer_amount?: number | null
           revenue_goal_monthly?: number | null
           slug: string
@@ -1013,6 +1017,8 @@ export type Database = {
           logo_url?: string | null
           name?: string
           notes?: string | null
+          operator_id?: string | null
+          record_kind?: string
           retainer_amount?: number | null
           revenue_goal_monthly?: number | null
           slug?: string

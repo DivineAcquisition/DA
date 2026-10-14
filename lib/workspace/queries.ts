@@ -465,6 +465,7 @@ export type SalesOperatorOnboardingRun = {
   status: string;
   token: string;
   agreementId: string | null;
+  caseFileId: string | null;
   openedAt: string | null;
   completedAt: string | null;
   createdAt: string;
@@ -540,7 +541,7 @@ export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboar
   if (!session || !supabase) return [];
   const { data } = await supabase
     .from('da_onboarding_submission')
-    .select('id, recipient_id, status, access_token, agreement_id, opened_at, completed_at, created_at, da_recipient(full_name, email)')
+    .select('id, recipient_id, status, access_token, agreement_id, case_file_id, opened_at, completed_at, created_at, da_recipient(full_name, email)')
     .eq('protocol_key', VA_SALES_OPERATOR_ONBOARDING_KEY)
     .order('created_at', { ascending: false })
     .limit(50);
@@ -555,6 +556,7 @@ export async function listSalesOperatorOnboarding(): Promise<SalesOperatorOnboar
       status: String(row.status ?? 'pending'),
       token: String(row.access_token ?? ''),
       agreementId: typeof row.agreement_id === 'string' ? row.agreement_id : null,
+      caseFileId: typeof row.case_file_id === 'string' ? row.case_file_id : null,
       openedAt: typeof row.opened_at === 'string' ? row.opened_at : null,
       completedAt: typeof row.completed_at === 'string' ? row.completed_at : null,
       createdAt: String(row.created_at ?? ''),

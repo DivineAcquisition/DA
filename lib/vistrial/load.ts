@@ -209,6 +209,8 @@ export async function loadOpsData(): Promise<OpsData> {
             : null,
           qualifiedBookingDefinition: config.qualified_booking_definition,
         },
+        recordKind: row.record_kind === 'operator' ? 'operator' : 'client',
+        operatorId: row.operator_id,
       };
     }),
 

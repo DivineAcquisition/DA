@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import Backdrop from '@/app/components/Backdrop';
+import { appUrl } from '@/lib/apps';
 import { clientFromHeaders } from '@/lib/workspace/agreement-page';
 import { loadOnboardingPage } from '@/lib/workspace/onboarding';
 import OnboardingView from './OnboardingView';
@@ -22,7 +23,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ tok
     <div className="da-workspace relative min-h-screen">
       <Backdrop />
       <div className="relative z-10 px-4 py-6 sm:px-6 sm:py-10">
-        <OnboardingView token={token} initial={page} />
+        <OnboardingView token={token} initial={page} academyUrl={appUrl('training')} />
       </div>
     </div>
   );

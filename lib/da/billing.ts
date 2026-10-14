@@ -111,6 +111,7 @@ export async function listCaseFilesForBilling() {
   const { data, error } = await supabase
     .from('client_case_file')
     .select('id, name, slug, status')
+    .eq('record_kind', 'client')
     .order('name');
   if (error) throw error;
   return data ?? [];
