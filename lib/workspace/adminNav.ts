@@ -81,7 +81,7 @@ const WORKSPACE: NavSection = {
     },
     {
       href: '/vistrial/admin/operators',
-      label: 'People',
+      label: 'Sales operators',
       icon: UsersRound,
       aliases: ['/workspace/ops/operators', '/vistrial/team/board'],
       children: [
