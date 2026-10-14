@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import OnboardingView from '@/app/o/[token]/OnboardingView';
+import { appUrl } from '@/lib/apps';
 import { formatDateTime } from '@/lib/workspace/format';
 import { publicOnboardingUrl } from '@/lib/workspace/paths';
 import {
@@ -28,7 +29,7 @@ export default async function OnboardingAdminPage() {
     <div className="animate-rise space-y-10">
       <PageHeader
         title="Sales operator onboarding"
-        description="The form an operator fills after you start it: who they are, their shift, bank details, and four confirmations. It takes about five minutes and saves as they go."
+        description="The form an operator fills after you start it: who they are, their shift, bank details, and four confirmations. Finishing enrolls them in the Academy and opens the case file their end-of-day reports and metrics are filed on."
       />
 
       <section className={`${ws.card} space-y-4 p-5 sm:p-6`}>
@@ -63,7 +64,7 @@ export default async function OnboardingAdminPage() {
         {runs.length === 0 ? (
           <EmptyState title="No onboarding yet" description="Started runs show up here with their link." />
         ) : (
-          <DataTable headers={['Operator', 'Status', 'Opened', 'Finished', 'Link']}>
+          <DataTable headers={['Operator', 'Status', 'Opened', 'Finished', 'Case file', 'Link']}>
             {runs.map((run) => (
               <tr key={run.id}>
                 <td className="px-4 py-3 text-white">
@@ -77,6 +78,15 @@ export default async function OnboardingAdminPage() {
                 </td>
                 <td className="px-4 py-3 text-[var(--ws-dim)]">{formatDateTime(run.openedAt)}</td>
                 <td className="px-4 py-3 text-[var(--ws-dim)]">{formatDateTime(run.completedAt)}</td>
+                <td className="px-4 py-3">
+                  {run.caseFileId ? (
+                    <Link href={`/vistrial/admin/clients/${run.caseFileId}`} className="text-sm text-[var(--ws-accent)] hover:underline">
+                      Profile
+                    </Link>
+                  ) : (
+                    <span className="text-[var(--ws-dim)]">—</span>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <a
                     className="text-sm text-[var(--ws-accent)] hover:underline"
@@ -104,6 +114,7 @@ export default async function OnboardingAdminPage() {
           <div className="rounded-3xl border border-white/10 bg-ink-950 p-4 sm:p-6">
             <OnboardingView
               preview
+              academyUrl={appUrl('training')}
               token="preview"
               initial={{
                 state: 'open',

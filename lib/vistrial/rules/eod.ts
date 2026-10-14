@@ -126,6 +126,28 @@ export function currentVersions(reports: EodReport[]): EodReport[] {
   return reports.filter((report) => report.supersededById === null);
 }
 
+/**
+ * Totals from the reports currently in force. A correction replaces the
+ * version it supersedes, so the older numbers are not added again.
+ */
+export function loggedMetrics(reports: EodReport[]): {
+  conversations: number;
+  appointments: number;
+  followUps: number;
+  escalations: number;
+} {
+  const current = currentVersions(reports);
+  const sum = (
+    key: 'conversationsHandled' | 'appointmentsBooked' | 'followUpsCompleted' | 'escalationsRaised',
+  ) => current.reduce((total, report) => total + report.core[key], 0);
+  return {
+    conversations: sum('conversationsHandled'),
+    appointments: sum('appointmentsBooked'),
+    followUps: sum('followUpsCompleted'),
+    escalations: sum('escalationsRaised'),
+  };
+}
+
 export function versionChain(reports: EodReport[], shiftDate: string, placementId: string): EodReport[] {
   return reports
     .filter((report) => report.shiftDate === shiftDate && report.placementId === placementId)

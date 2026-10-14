@@ -92,6 +92,16 @@ export function createGateway(data: OpsData, actor: Actor) {
       assertCanReadPlacement(actor, placementId, data);
       return data.eodReports.filter((report) => report.placementId === placementId);
     },
+    reportsForOperator: (operatorId: string): EodReport[] => {
+      assertAdmin(actor, 'operator reports');
+      return data.eodReports.filter((report) => report.operatorId === operatorId);
+    },
+    operatorCaseFile: (operatorId: string): Client | undefined => {
+      assertAdmin(actor, 'the operator case file');
+      return data.clients.find(
+        (client) => client.recordKind === 'operator' && client.operatorId === operatorId,
+      );
+    },
     currentReportsFor: (placementId: string) => {
       assertCanReadPlacement(actor, placementId, data);
       return currentVersions(data.eodReports.filter((report) => report.placementId === placementId));
