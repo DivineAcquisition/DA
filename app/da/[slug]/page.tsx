@@ -205,6 +205,8 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
         </Panel>
       )}
 
+      {caseFile.record_kind !== 'operator' && (
+      <>
       <section>
         <SectionHeader
           title="Client details"
@@ -353,6 +355,8 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
           <RefreshStripeButton caseFileId={caseFile.id} slug={slug} />
         </div>
       </section>
+      </>
+      )}
 
       <section>
         <SectionHeader
