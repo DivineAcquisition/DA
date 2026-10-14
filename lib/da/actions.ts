@@ -6,6 +6,7 @@ import { createCaseFileFolders, driveConfigured } from '@/lib/drive/client';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
+import { pullStripeRevenue } from '@/lib/da/stripeClient';
 
 /**
  * Writes. Every one goes through a database function so the rules live in one
@@ -57,6 +58,18 @@ export async function createCaseFileAction(formData: FormData): Promise<ActionRe
   if (error || !data) return { ok: false, error: readable(error) };
 
   const caseFile = data;
+  const spend = String(formData.get('monthly_ad_spend') ?? '').trim();
+  const details = await controlRpc(supabase, 'save_engagement_details', {
+    p_case_file_id: caseFile.id,
+    p_phone: (formData.get('phone') as string) || null,
+    p_billing_email: (formData.get('billing_email') as string) || null,
+    p_offer: (formData.get('offer') as string) || null,
+    p_monthly_ad_spend: spend === '' ? null : Number(spend),
+    p_crm_stack: (formData.get('crm_stack') as string) || null,
+    p_time_zone: (formData.get('time_zone') as string) || null,
+    p_notes: (formData.get('notes') as string) || null,
+  });
+  if (details.error) console.error('save engagement details', details.error.message);
 
   // The Drive folder set is created up front so evidence has somewhere to land.
   // Without credentials the case file still works; the vault records metadata
@@ -76,6 +89,7 @@ export async function createCaseFileAction(formData: FormData): Promise<ActionRe
   }
 
   revalidatePath('/da');
+  revalidatePath('/workspace/growth');
   redirect(path(caseFile.slug));
 }
 
@@ -495,5 +509,111 @@ export async function setOperatingConfigAction(
   if (error) return { ok: false, error: readable(error) };
 
   revalidatePath(path(slug));
+  revalidatePath(`/workspace/growth/${slug}`);
   return { ok: true, message: 'Operating configuration saved. The change is in the audit log.' };
+}
+
+function touchEngagement(slug: string) {
+  revalidatePath(path(slug));
+  revalidatePath(`/workspace/growth/${slug}`);
+  revalidatePath('/da');
+  revalidatePath('/workspace/growth');
+  revalidatePath('/da/billing');
+  revalidatePath('/workspace/growth/billing');
+}
+
+function optionalNumber(formData: FormData, key: string): number | null {
+  const raw = String(formData.get(key) ?? '').trim();
+  if (raw === '') return null;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : null;
+}
+
+export async function saveEngagementDetailsAction(
+  caseFileId: string,
+  slug: string,
+  formData: FormData,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await controlRpc(supabase, 'save_engagement_details', {
+    p_case_file_id: caseFileId,
+    p_phone: (formData.get('phone') as string) || null,
+    p_billing_email: (formData.get('billing_email') as string) || null,
+    p_offer: (formData.get('offer') as string) || null,
+    p_monthly_ad_spend: optionalNumber(formData, 'monthly_ad_spend'),
+    p_crm_stack: (formData.get('crm_stack') as string) || null,
+    p_time_zone: (formData.get('time_zone') as string) || null,
+    p_notes: (formData.get('notes') as string) || null,
+  });
+  if (error) return { ok: false, error: readable(error) };
+  touchEngagement(slug);
+  return { ok: true, message: 'Client details saved.' };
+}
+
+export async function placeSalesOperatorAction(
+  caseFileId: string,
+  slug: string,
+  formData: FormData,
+): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await controlRpc(supabase, 'place_sales_operator', {
+    p_case_file_id: caseFileId,
+    p_email: (formData.get('email') as string) || null,
+    p_start: (formData.get('start_date') as string) || null,
+    p_term_months: optionalNumber(formData, 'term_months') ?? 3,
+    p_quota: optionalNumber(formData, 'quota') ?? 0,
+    p_commission: optionalNumber(formData, 'commission') ?? 0,
+    p_client_rate: optionalNumber(formData, 'client_rate'),
+    p_time_zone: (formData.get('time_zone') as string) || null,
+  });
+  if (error) return { ok: false, error: readable(error) };
+  touchEngagement(slug);
+  return { ok: true, message: 'Sales operator placed on this client.' };
+}
+
+export async function endPlacementAction(placementId: string, slug: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { error } = await controlRpc(supabase, 'end_placement', { p_placement_id: placementId });
+  if (error) return { ok: false, error: readable(error) };
+  touchEngagement(slug);
+  return { ok: true, message: 'Placement ended. The operator is back on the bench if they have no other live client.' };
+}
+
+export async function syncStripeRevenueAction(caseFileId: string, slug: string): Promise<ActionResult> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from('client_case_file')
+    .select('*')
+    .eq('id', caseFileId)
+    .maybeSingle();
+  if (error) return { ok: false, error: readable(error) };
+  if (!data) return { ok: false, error: 'That engagement does not exist.' };
+
+  const row = data as typeof data & { stripe_customer_id?: string | null };
+  try {
+    const pulled = await pullStripeRevenue({
+      name: row.name,
+      email: row.contact_email,
+      stripeCustomerId: row.stripe_customer_id ?? null,
+    });
+    const saved = await controlRpc<number>(supabase, 'record_stripe_revenue', {
+      p_case_file_id: caseFileId,
+      p_customer_id: pulled.customerId,
+      p_subscription_id: pulled.subscriptionId,
+      p_amount: pulled.amount,
+      p_invoices: pulled.invoices,
+      p_subscription_status: pulled.status,
+      p_cancelled_on: pulled.cancelledOn,
+    });
+    if (saved.error) return { ok: false, error: readable(saved.error) };
+    touchEngagement(slug);
+    const total = Number(saved.data ?? 0);
+    return {
+      ok: true,
+      message: `Stripe refreshed. $${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} collected on this engagement.`,
+    };
+  } catch (pullError) {
+    const message = pullError instanceof Error ? pullError.message : 'Stripe could not be read.';
+    return { ok: false, error: message };
+  }
 }
