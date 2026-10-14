@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -18,6 +20,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function DecisionsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -32,7 +36,7 @@ export default async function DecisionsPage({ params }: { params: Promise<{ slug
         title="Decisions"
         description="Material choices made during the engagement. Short by design: this is not meeting notes, it is the decisions that would matter if the engagement went badly."
         actions={
-          <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
             Back to case file
           </Link>
         }

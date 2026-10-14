@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -11,7 +10,8 @@ import {
   SectionHeader,
 } from '@/app/vistrial/components/ui';
 import { formatMoney } from '@/lib/vistrial/format';
-import { engagementBase, engagementPath, engagementsHome } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
+import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';
 import {
   getBaseline,
   getCaseFileBySlug,
@@ -73,9 +73,10 @@ function operatorOf(
 
 export default async function CaseFileOverview({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
-  const base = engagementBase((await headers()).get('x-pathname') ?? '');
+  const base = await requestEngagementBase();
   const href = (section = '') => engagementPath(base, slug, section);
 
   const [health, baseline, growth, snapshots, milestones, evidence, effort, reports, templates, operators, placements, invoices, subscriptions] =

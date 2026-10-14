@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';
 import { Badge, EmptyState, PageHeader, Panel, SectionHeader, StatGrid, StatTile } from '@/app/vistrial/components/ui';
 import AdminGate from '../components/AdminGate';
 import { listClientMessages } from '@/lib/da/billing';
@@ -16,6 +17,7 @@ export default async function MessagesPage() {
 }
 
 async function Messages() {
+  const base = await requestEngagementBase();
   const messages = await listClientMessages();
 
   const open = messages.filter((message) => message.status === 'open');
@@ -30,7 +32,7 @@ async function Messages() {
         title="What clients have asked for"
         description="A request channel with a record. Each one carries a response window and is logged against the engagement."
         actions={
-          <Link href="/da" className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementsHome(base)} className={`${btnSecondary} ${btnSizeSm}`}>
             All engagements
           </Link>
         }
@@ -70,7 +72,7 @@ async function Messages() {
                             {overdueRow ? 'overdue' : message.status}
                           </Badge>
                           {client && (
-                            <Link href={`/da/${client.slug}`} className="text-xs text-neutral-400 hover:text-brand-200">
+                            <Link href={engagementPath(base, client.slug)} className="text-xs text-neutral-400 hover:text-brand-200">
                               {client.name}
                             </Link>
                           )}

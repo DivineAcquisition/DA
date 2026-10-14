@@ -1,5 +1,10 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, isAdminSession, supabaseConfigured } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
+
+async function adminDb() {
+  if (!supabaseConfigured || !(await isAdminSession())) return null;
+  return createClient();
+}
 
 /** Payments administration reads. Admin-only via RLS. */
 
@@ -9,7 +14,8 @@ export type Payout = Database['public']['Tables']['payout']['Row'];
 export type MarginRow = Database['public']['Views']['v_margin_by_client']['Row'];
 
 export async function listInvoices() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('invoice')
     .select(
@@ -21,7 +27,8 @@ export async function listInvoices() {
 }
 
 export async function listSubscriptions() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('subscription')
     .select('*, client_case_file(name, slug)')
@@ -32,7 +39,8 @@ export async function listSubscriptions() {
 
 /** Confirmed bookings in a period with no invoice line yet: what is billable. */
 export async function billableBookings(caseFileId: string, start: string, end: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('booking')
     .select('id, customer_name, scheduled_for, state, source, matched_booking_id')
@@ -45,7 +53,8 @@ export async function billableBookings(caseFileId: string, start: string, end: s
 }
 
 export async function listPayoutBatches() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('payout_batch')
     .select('*, pay_period(start_date, end_date, closes_month, status)')
@@ -55,7 +64,8 @@ export async function listPayoutBatches() {
 }
 
 export async function listPayouts(batchId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('payout')
     .select('*, operator(name, email, payout_method, payout_reference, tax_doc_status), placement(case_file_id)')
@@ -66,21 +76,24 @@ export async function listPayouts(batchId: string) {
 }
 
 export async function listPayPeriods() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.from('pay_period').select('*').order('start_date', { ascending: false });
   if (error) throw error;
   return data ?? [];
 }
 
 export async function listOperators() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.from('operator').select('*').order('name');
   if (error) throw error;
   return data ?? [];
 }
 
 export async function listMargin() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('v_margin_by_client')
     .select('*')
@@ -90,14 +103,16 @@ export async function listMargin() {
 }
 
 export async function listMonthlyMargin() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.from('v_monthly_margin').select('*').limit(12);
   if (error) throw error;
   return data ?? [];
 }
 
 export async function listOperatorMargin() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('v_margin_by_operator')
     .select('*')
@@ -107,7 +122,8 @@ export async function listOperatorMargin() {
 }
 
 export async function listCaseFilesForBilling() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('client_case_file')
     .select('id, name, slug, status')
@@ -118,7 +134,8 @@ export async function listCaseFilesForBilling() {
 }
 
 export async function listClientMessages() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('client_message')
     .select('*, client_case_file(name, slug)')

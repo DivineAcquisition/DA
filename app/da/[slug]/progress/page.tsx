@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -28,6 +30,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function ProgressPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -59,7 +63,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ slug:
         title="Progress"
         description="The same metrics as the baseline, measured again so every snapshot is directly comparable. Taken automatically each week; immutable once taken."
         actions={
-          <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
             Back to case file
           </Link>
         }
@@ -72,7 +76,7 @@ export default async function ProgressPage({ params }: { params: Promise<{ slug:
             Progress cannot be measured until the baseline is locked, because there would be nothing fixed to
             measure against.
           </p>
-          <Link href={`/da/${slug}/baseline`} className={`${btnSecondary} ${btnSizeSm} mt-4`}>
+          <Link href={engagementPath(base, slug, "baseline")} className={`${btnSecondary} ${btnSizeSm} mt-4`}>
             Go to the baseline
           </Link>
         </Panel>

@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { engagementBase, engagementPath, newEngagementPath } from '@/lib/da/paths';
+import { engagementPath, newEngagementPath, requestEngagementBase } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -11,6 +10,7 @@ import {
   StatGrid,
   StatTile,
 } from '@/app/vistrial/components/ui';
+import { growthReady } from '@/lib/da/guard';
 import { listCaseFiles } from '@/lib/da/queries';
 import RunSnapshotsButton from './components/RunSnapshotsButton';
 
@@ -21,8 +21,9 @@ export const dynamic = 'force-dynamic';
  * are missing a baseline or overdue a snapshot.
  */
 export default async function AdminHome() {
+  if (!(await growthReady())) return null;
   const caseFiles = await listCaseFiles();
-  const base = engagementBase((await headers()).get('x-pathname') ?? '');
+  const base = await requestEngagementBase();
 
   const missingBaseline = caseFiles.filter((row) => !row.has_baseline);
   const overdue = caseFiles.filter((row) => row.snapshot_overdue);

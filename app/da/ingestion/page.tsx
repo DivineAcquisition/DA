@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -57,6 +58,7 @@ export default async function IngestionPage() {
 }
 
 async function Ingestion() {
+  const base = await requestEngagementBase();
   const [endpoints, health, queue, sources, eventTypes, failures, rollup, caseFiles] =
     await Promise.all([
       listIngestEndpoints(),
@@ -86,7 +88,7 @@ async function Ingestion() {
         actions={
           <>
             <DrainBacklogButton />
-            <Link href="/da" className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={engagementsHome(base)} className={`${btnSecondary} ${btnSizeSm}`}>
               All engagements
             </Link>
           </>
@@ -234,7 +236,7 @@ async function Ingestion() {
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
-                          href={`/da/${client.slug}`}
+                          href={engagementPath(base, client.slug)}
                           className="text-sm font-medium text-white transition-colors hover:text-brand-200"
                         >
                           {client.name}

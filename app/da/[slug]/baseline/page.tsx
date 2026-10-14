@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -22,6 +24,8 @@ const LEAD_SOURCES = ['Meta Ads', 'Google Ads', 'Organic / referral', 'Walk-in',
 
 export default async function BaselinePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -37,7 +41,7 @@ export default async function BaselinePage({ params }: { params: Promise<{ slug:
         title="Baseline"
         description="The client's starting position across every metric the engagement will be judged on, captured during the audit before anything is installed."
         actions={
-          <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
             Back to case file
           </Link>
         }

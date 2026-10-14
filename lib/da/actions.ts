@@ -2,6 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { headers } from 'next/headers';
+import { engagementPath } from '@/lib/da/paths';
 import { createCaseFileFolders, driveConfigured } from '@/lib/drive/client';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
@@ -25,7 +27,18 @@ function readable(error: { message: string } | null): string {
   return match ? match[1] : error.message;
 }
 
-const path = (slug: string) => `/da/${slug}`;
+function revalidateCase(slug: string) {
+  revalidatePath(`/da/${slug}`);
+  revalidatePath(`/workspace/growth/${slug}`);
+}
+
+async function path(slug: string, section = '') {
+  const headerStore = await headers();
+  const referer = headerStore.get('referer') ?? '';
+  const pathname = headerStore.get('x-pathname') ?? '';
+  const onWorkspace = pathname.startsWith('/workspace') || referer.includes('/workspace/growth');
+  return engagementPath(onWorkspace ? 'workspace' : 'da', slug, section);
+}
 
 // ---------------------------------------------------------------------------
 // Case files
@@ -90,7 +103,7 @@ export async function createCaseFileAction(formData: FormData): Promise<ActionRe
 
   revalidatePath('/da');
   revalidatePath('/workspace/growth');
-  redirect(path(caseFile.slug));
+  redirect(await path(caseFile.slug));
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +153,7 @@ export async function captureBaselineAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Baseline saved. It stays editable until the install begins.' };
 }
 
@@ -150,7 +163,7 @@ export async function beginInstallAction(caseFileId: string, slug: string): Prom
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return {
     ok: true,
     message: 'Install started and the baseline is locked. From here it can only be annotated.',
@@ -179,7 +192,7 @@ export async function takeSnapshotAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Snapshot taken and locked. The numbers in it can no longer change.' };
 }
 
@@ -193,7 +206,7 @@ export async function annotateSnapshotAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Annotation added. The measurements themselves are untouched.' };
 }
 
@@ -228,7 +241,7 @@ export async function addMilestoneAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Milestone added to the timeline.' };
 }
 
@@ -238,7 +251,7 @@ export async function detectMilestonesAction(caseFileId: string, slug: string): 
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: `${data ?? 0} milestone${data === 1 ? '' : 's'} detected from tracking data.` };
 }
 
@@ -263,7 +276,7 @@ export async function logEffortAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Effort logged. It is immutable now; a change would create version 2.' };
 }
 
@@ -285,7 +298,7 @@ export async function correctEffortAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Correction filed. Both versions stay on the record.' };
 }
 
@@ -308,7 +321,7 @@ export async function logScopeRequestAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Request logged with its verdict.' };
 }
 
@@ -328,7 +341,7 @@ export async function quoteScopeAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Quote recorded against the request.' };
 }
 
@@ -348,7 +361,7 @@ export async function decideQuoteAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: `Quote marked ${status}.` };
 }
 
@@ -370,7 +383,7 @@ export async function logDecisionAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Decision recorded.' };
 }
 
@@ -398,7 +411,7 @@ export async function recordEvidenceAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return { ok: true, message: 'Evidence recorded against the case file.' };
 }
 
@@ -420,7 +433,7 @@ export async function shareEvidenceAction(
 
   const link = data as unknown as Database['public']['Tables']['evidence_share_link']['Row'];
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   return {
     ok: true,
     message: `Share link issued, expiring ${new Date(link.expires_at).toLocaleString('en-GB')}.`,
@@ -452,7 +465,7 @@ export async function generateReportAction(
 
   const report = data as unknown as Database['public']['Tables']['growth_report']['Row'];
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   redirect(`/da/${slug}/reports/${report.id}`);
 }
 
@@ -508,14 +521,13 @@ export async function setOperatingConfigAction(
 
   if (error) return { ok: false, error: readable(error) };
 
-  revalidatePath(path(slug));
+  revalidateCase(slug);
   revalidatePath(`/workspace/growth/${slug}`);
   return { ok: true, message: 'Operating configuration saved. The change is in the audit log.' };
 }
 
 function touchEngagement(slug: string) {
-  revalidatePath(path(slug));
-  revalidatePath(`/workspace/growth/${slug}`);
+  revalidateCase(slug);
   revalidatePath('/da');
   revalidatePath('/workspace/growth');
   revalidatePath('/da/billing');

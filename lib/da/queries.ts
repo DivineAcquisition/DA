@@ -1,5 +1,16 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, isAdminSession, supabaseConfigured } from '@/lib/supabase/server';
 import type { Database } from '@/lib/supabase/database.types';
+
+/**
+ * Growth pages render even when the layout is still deciding to send the
+ * visitor to sign-in. Querying then runs as the anonymous role and Postgres
+ * rejects the table, which surfaces as a broken page. Skip the read until an
+ * admin session is actually present.
+ */
+async function adminDb() {
+  if (!supabaseConfigured || !(await isAdminSession())) return null;
+  return createClient();
+}
 
 /**
  * Read helpers for the admin surface. RLS does the access control, so these are
@@ -22,14 +33,16 @@ export type GrowthRow = Database['public']['Functions']['growth_for_case_file'][
 export type SeriesPoint = Database['public']['Functions']['growth_series']['Returns'][number];
 
 export async function listCaseFiles() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.from('v_case_file_health').select('*').order('name');
   if (error) throw error;
   return data ?? [];
 }
 
 export async function getCaseFileBySlug(slug: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from('client_case_file')
     .select('*')
@@ -40,7 +53,8 @@ export async function getCaseFileBySlug(slug: string) {
 }
 
 export async function getHealth(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return null;
   const { data, error } = await supabase
     .from('v_case_file_health')
     .select('*')
@@ -51,14 +65,16 @@ export async function getHealth(caseFileId: string) {
 }
 
 export async function getGrowth(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.rpc('growth_for_case_file', { p_case_file_id: caseFileId });
   if (error) throw error;
   return data ?? [];
 }
 
 export async function getSeries(caseFileId: string, metricKey: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.rpc('growth_series', {
     p_case_file_id: caseFileId,
     p_metric_key: metricKey,
@@ -68,7 +84,8 @@ export async function getSeries(caseFileId: string, metricKey: string) {
 }
 
 export async function getBaseline(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return null;
 
   const { data: snapshot, error } = await supabase
     .from('snapshot')
@@ -98,7 +115,8 @@ export async function getBaseline(caseFileId: string) {
 }
 
 export async function listSnapshots(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('snapshot')
     .select('*, snapshot_annotation(id, body, created_at)')
@@ -110,14 +128,16 @@ export async function listSnapshots(caseFileId: string) {
 }
 
 export async function getMetricDefinitions() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.from('metric_definition').select('*').order('sort_order');
   if (error) throw error;
   return data ?? [];
 }
 
 export async function listMilestones(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('milestone')
     .select('*')
@@ -128,7 +148,8 @@ export async function listMilestones(caseFileId: string) {
 }
 
 export async function listEvidence(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('evidence_item')
     .select('*, evidence_share_link(id, expires_at, revoked_at, shared_with)')
@@ -139,7 +160,8 @@ export async function listEvidence(caseFileId: string) {
 }
 
 export async function listEffort(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('effort_entry')
     .select('*')
@@ -150,7 +172,8 @@ export async function listEffort(caseFileId: string) {
 }
 
 export async function listScope(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('scope_request')
     .select('*, scope_quote(*)')
@@ -161,7 +184,8 @@ export async function listScope(caseFileId: string) {
 }
 
 export async function listDecisions(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('decision')
     .select('*')
@@ -172,7 +196,8 @@ export async function listDecisions(caseFileId: string) {
 }
 
 export async function listReports(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('growth_report')
     .select('id, mode, period_start, period_end, generated_at, drive_url, included_evidence_ids')
@@ -183,21 +208,24 @@ export async function listReports(caseFileId: string) {
 }
 
 export async function getReport(reportId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return null;
   const { data, error } = await supabase.from('growth_report').select('*').eq('id', reportId).maybeSingle();
   if (error) throw error;
   return data;
 }
 
 export async function listSnapshotsDue() {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase.rpc('snapshots_due');
   if (error) throw error;
   return data ?? [];
 }
 
 export async function getDriveFolders(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('case_file_drive_folder')
     .select('*')
@@ -221,7 +249,8 @@ export type SalesOperatorChoice = { full_name: string; email: string };
 
 /** Sales operators who can be placed on a client. Recipients, not the operator ledger. */
 export async function listSalesOperators(): Promise<SalesOperatorChoice[]> {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await (
     supabase as unknown as {
       from: (table: string) => {
@@ -249,7 +278,8 @@ export async function listSalesOperators(): Promise<SalesOperatorChoice[]> {
 }
 
 export async function listPlacements(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('placement')
     .select('*, operator(name, email, status)')
@@ -260,7 +290,8 @@ export async function listPlacements(caseFileId: string) {
 }
 
 export async function listCaseInvoices(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('invoice')
     .select('id, number, status, total, paid_at, notes, processor, currency')
@@ -271,7 +302,8 @@ export async function listCaseInvoices(caseFileId: string) {
 }
 
 export async function listCaseSubscriptions(caseFileId: string) {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await supabase
     .from('subscription')
     .select('id, amount, status, started_on, cancelled_on, processor_subscription_id, charge_type')
@@ -282,7 +314,8 @@ export async function listCaseSubscriptions(caseFileId: string) {
 }
 
 export async function listIndustryTemplates(): Promise<IndustryTemplate[]> {
-  const supabase = await createClient();
+  const supabase = await adminDb();
+  if (!supabase) return [];
   const { data, error } = await (
     supabase as unknown as {
       from: (table: string) => {

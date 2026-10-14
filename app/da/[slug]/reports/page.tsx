@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -37,6 +39,8 @@ const MODES = [
 
 export default async function ReportsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -56,7 +60,7 @@ export default async function ReportsPage({ params }: { params: Promise<{ slug: 
         title="Growth report"
         description="The system's output. The baseline, the current numbers, the change for each metric, the milestones in the period, the effort delivered, and whichever evidence you include."
         actions={
-          <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
             Back to case file
           </Link>
         }
@@ -145,7 +149,7 @@ export default async function ReportsPage({ params }: { params: Promise<{ slug: 
             {reports.map((report) => (
               <li key={report.id}>
                 <Link
-                  href={`/da/${slug}/reports/${report.id}`}
+                  href={`${engagementPath(base, slug, "reports")}/${report.id}`}
                   className="panel panel-hover block rounded-2xl px-5 py-4"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
