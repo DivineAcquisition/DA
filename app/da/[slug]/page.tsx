@@ -40,6 +40,23 @@ import { GrowthTable, HeadlineDelta } from '../components/growth';
 
 export const dynamic = 'force-dynamic';
 
+function revenueGroup(notes: string | null): string {
+  const label = notes ?? 'Other';
+  if (label.includes('wallet') || label.includes('Twilio') || label.includes('SMS')) return 'Usage and wallet';
+  if (label.includes('Enablement') || label.includes('SDR')) return 'SDR Enablement';
+  if (
+    label.includes('Management') ||
+    label.includes('Growth System') ||
+    label.includes('Ascend')
+  ) {
+    return 'Management';
+  }
+  if (label.includes('Hosting') || label.includes('Web Application') || label.includes('Infrastructure') || label.includes('Booking')) {
+    return 'Hosting and infrastructure';
+  }
+  return label;
+}
+
 function money(value: number | string | null | undefined) {
   if (value === null || value === undefined || value === '') return null;
   const amount = Number(value);
@@ -100,9 +117,19 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
 
   const livePlacement = placements.find((placement) => placement.status === 'active') ?? null;
   const paidInvoices = invoices.filter((invoice) => invoice.status === 'paid');
-  const collected = paidInvoices.reduce((sum, invoice) => sum + Number(invoice.total), 0);
-  const subscription = subscriptions[0] ?? null;
-  const stripeProduct = paidInvoices.find((invoice) => invoice.notes)?.notes ?? null;
+  const vistrialInvoices = paidInvoices.filter((invoice) => (invoice.notes ?? '').startsWith('Vistrial account'));
+  const divineInvoices = paidInvoices.filter((invoice) => !(invoice.notes ?? '').startsWith('Vistrial account'));
+  const collected = divineInvoices.reduce((sum, invoice) => sum + Number(invoice.total), 0);
+  const vistrialCollected = vistrialInvoices.reduce((sum, invoice) => sum + Number(invoice.total), 0);
+  const subscription = subscriptions.find((row) => row.status === 'active') ?? subscriptions[0] ?? null;
+  const revenueGroups = new Map<string, { count: number; total: number }>();
+  for (const invoice of divineInvoices) {
+    const label = revenueGroup(invoice.notes);
+    const current = revenueGroups.get(label) ?? { count: 0, total: 0 };
+    current.count += 1;
+    current.total += Number(invoice.total);
+    revenueGroups.set(label, current);
+  }
   const detailsBlank = !config.phone && !config.billing_email && !config.offer && !config.crm_stack && !config.time_zone && !caseFile.notes && (config.monthly_ad_spend === null || config.monthly_ad_spend === undefined);
 
   const sections = [
@@ -302,7 +329,7 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
           title="Revenue from Stripe"
           hint={
             config.stripe_customer_id
-              ? `Customer ${config.stripe_customer_id}${stripeProduct ? ` · ${stripeProduct}` : ''}`
+              ? `Divine Acquisition · ${config.stripe_customer_id}`
               : 'Match a Stripe customer by the contact email, then save paid invoices on this engagement.'
           }
         />
@@ -312,12 +339,8 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Collected</p>
               <p className="mt-1 text-2xl font-semibold tabular-nums text-white">{formatMoney(collected)}</p>
               <p className="mt-1 text-xs text-neutral-500">
-                {paidInvoices.length} paid invoice{paidInvoices.length === 1 ? '' : 's'}
-                {subscription
-                  ? ` · ${money(subscription.amount)}/mo · ${subscription.status}${
-                      subscription.cancelled_on ? ` ${subscription.cancelled_on}` : ''
-                    }`
-                  : ''}
+                {divineInvoices.length} payments on Divine Acquisition
+                {subscription?.status === 'active' ? ' · SDR Enablement is still billing' : ''}
               </p>
             </div>
             {subscription && (
@@ -326,29 +349,49 @@ export default async function CaseFileOverview({ params }: { params: Promise<{ s
               </Badge>
             )}
           </div>
-          {caseFile.retainer_amount != null && (
-            <p className="mt-3 text-xs leading-relaxed text-neutral-500">
-              Retainer entered on this engagement: {money(caseFile.retainer_amount)}/mo.
-              {stripeProduct
-                ? ` Collected payments are ${stripeProduct} on the connected Stripe account.`
-                : ' Collected payments are the Stripe invoices matched to this contact.'}
-            </p>
-          )}
-          {paidInvoices.length > 0 && (
+          <p className="mt-3 text-xs leading-relaxed text-neutral-500">
+            Maurisa Alexis-Louis, admin1@bayareacleaningpros.com. Still billing: SDR Enablement at $480 every two
+            weeks, Selestial Management at $297 a month, and Twilio SMS at $25 every two weeks. A $297 duplicate
+            subscription from 7 March 2026 was refunded and is left out. The retainer entered on this engagement is{' '}
+            {money(caseFile.retainer_amount) ?? 'not set'}/mo.
+          </p>
+          {revenueGroups.size > 0 && (
             <ul className="mt-4 divide-y divide-white/[0.06] border-t border-white/[0.06]">
-              {paidInvoices.map((invoice) => (
-                <li key={invoice.id} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
+              {[...revenueGroups.entries()].map(([label, group]) => (
+                <li key={label} className="flex items-baseline justify-between gap-3 py-2.5 text-sm">
                   <span className="text-neutral-300">
-                    {invoice.number ?? 'Invoice'}
-                    {invoice.notes ? <span className="text-neutral-500"> · {invoice.notes}</span> : null}
+                    {label}
+                    <span className="text-neutral-500"> · {group.count}</span>
                   </span>
-                  <span className="shrink-0 tabular-nums text-white">
-                    {money(invoice.total)}
-                    <span className="ml-2 text-xs text-neutral-500">{invoice.paid_at?.slice(0, 10)}</span>
-                  </span>
+                  <span className="shrink-0 tabular-nums text-white">{formatMoney(group.total)}</span>
                 </li>
               ))}
             </ul>
+          )}
+          {divineInvoices.length > 0 && (
+            <details className="mt-4 border-t border-white/[0.06] pt-3">
+              <summary className="cursor-pointer text-xs font-semibold text-neutral-400">Every payment</summary>
+              <ul className="mt-2 divide-y divide-white/[0.06]">
+                {divineInvoices.map((invoice) => (
+                  <li key={invoice.id} className="flex items-baseline justify-between gap-3 py-2 text-sm">
+                    <span className="text-neutral-300">
+                      {invoice.number ?? 'Charge'}
+                      {invoice.notes ? <span className="text-neutral-500"> · {invoice.notes}</span> : null}
+                    </span>
+                    <span className="shrink-0 tabular-nums text-white">
+                      {money(invoice.total)}
+                      <span className="ml-2 text-xs text-neutral-500">{invoice.paid_at?.slice(0, 10)}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+          {vistrialInvoices.length > 0 && (
+            <p className="mt-4 text-xs leading-relaxed text-neutral-500">
+              The Vistrial account also has {formatMoney(vistrialCollected)} in Selestial Essential invoices for this
+              email. Those are a separate product and are not included above.
+            </p>
           )}
         </Panel>
         <div className="mt-3">
