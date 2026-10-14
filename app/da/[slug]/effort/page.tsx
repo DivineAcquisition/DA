@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -18,6 +20,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function EffortPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -37,7 +41,7 @@ export default async function EffortPage({ params }: { params: Promise<{ slug: s
         title="Effort log"
         description="Every piece of work performed, with the month's growth numbers beside it. This justifies the retainer in a quiet month and answers a dispute about whether work was delivered."
         actions={
-          <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
             Back to case file
           </Link>
         }

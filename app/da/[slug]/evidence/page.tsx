@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
+import { growthReady } from '@/lib/da/guard';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import {
@@ -28,6 +30,8 @@ const CATEGORIES = [
 
 export default async function EvidencePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const caseFile = await getCaseFileBySlug(slug);
   if (!caseFile) notFound();
 
@@ -55,7 +59,7 @@ export default async function EvidencePage({ params }: { params: Promise<{ slug:
                 Open Drive folder
               </a>
             )}
-            <Link href={`/da/${slug}`} className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={engagementPath(base, slug)} className={`${btnSecondary} ${btnSizeSm}`}>
               Back to case file
             </Link>
           </>

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { growthSection, requestEngagementBase } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -37,6 +38,7 @@ export default async function PayoutsPage() {
 }
 
 async function Payouts() {
+  const base = await requestEngagementBase();
   const [batches, periods, operators] = await Promise.all([
     listPayoutBatches(),
     listPayPeriods(),
@@ -61,10 +63,10 @@ async function Payouts() {
         description="Vistrial produces the batch. You execute the transfers through your provider and record each confirmation here. Automating cross-border execution adds real risk for a handful of monthly transfers."
         actions={
           <>
-            <Link href="/da/billing" className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={growthSection(base, 'billing')} className={`${btnSecondary} ${btnSizeSm}`}>
               Billing
             </Link>
-            <Link href="/da/margin" className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={growthSection(base, 'margin')} className={`${btnSecondary} ${btnSizeSm}`}>
               Margin
             </Link>
           </>

@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { headers } from 'next/headers';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { engagementBase, engagementsHome } from '@/lib/da/paths';
+import { engagementsHome, requestEngagementBase } from '@/lib/da/paths';
 import { PageHeader, Panel, inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
 import { createCaseFileAction } from '@/lib/da/actions';
 import { listIndustryTemplates } from '@/lib/da/queries';
@@ -13,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function NewCaseFilePage() {
   const drive = driveConfigured();
   const templates = await listIndustryTemplates();
-  const home = engagementsHome(engagementBase((await headers()).get('x-pathname') ?? ''));
+  const home = engagementsHome(await requestEngagementBase());
 
   return (
     <div className="mx-auto max-w-2xl space-y-7">

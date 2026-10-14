@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { growthReady } from '@/lib/da/guard';
+import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { Badge, PageHeader, Panel, SectionHeader } from '@/app/vistrial/components/ui';
 import { getReport } from '@/lib/da/queries';
@@ -48,6 +50,8 @@ export default async function ReportPage({
   params: Promise<{ slug: string; reportId: string }>;
 }) {
   const { slug, reportId } = await params;
+  if (!(await growthReady())) return null;
+  const base = await requestEngagementBase();
   const report = await getReport(reportId);
   if (!report) notFound();
 
@@ -73,7 +77,7 @@ export default async function ReportPage({
                 Open in Drive
               </a>
             )}
-            <Link href={`/da/${slug}/reports`} className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={engagementPath(base, slug, 'reports')} className={`${btnSecondary} ${btnSizeSm}`}>
               All reports
             </Link>
           </>

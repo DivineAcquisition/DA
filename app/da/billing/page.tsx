@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { engagementPath, growthSection, requestEngagementBase } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -39,6 +40,7 @@ export default async function BillingPage() {
 }
 
 async function Billing() {
+  const base = await requestEngagementBase();
   const [invoices, subscriptions, caseFiles] = await Promise.all([
     listInvoices(),
     listSubscriptions(),
@@ -60,10 +62,10 @@ async function Billing() {
         description="One-time fees, recurring retainers, and per-appointment charges computed from confirmed bookings. An invoice may only ever include a booking DA can evidence."
         actions={
           <>
-            <Link href="/da/payouts" className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={growthSection(base, 'payouts')} className={`${btnSecondary} ${btnSizeSm}`}>
               Payouts
             </Link>
-            <Link href="/da/margin" className={`${btnSecondary} ${btnSizeSm}`}>
+            <Link href={growthSection(base, 'margin')} className={`${btnSecondary} ${btnSizeSm}`}>
               Margin
             </Link>
           </>
@@ -198,7 +200,7 @@ async function Billing() {
                         </div>
                         <p className="mt-1.5 text-xs text-neutral-500">
                           {client && (
-                            <Link href={`/da/${client.slug}`} className="hover:text-brand-200">
+                            <Link href={engagementPath(base, client.slug)} className="hover:text-brand-200">
                               {client.name}
                             </Link>
                           )}

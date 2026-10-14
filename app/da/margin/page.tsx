@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
+import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';
 import {
   Badge,
   EmptyState,
@@ -26,6 +27,7 @@ export default async function MarginPage() {
 }
 
 async function Margin() {
+  const base = await requestEngagementBase();
   const [byClient, monthly, byOperator] = await Promise.all([
     listMargin(),
     listMonthlyMargin(),
@@ -52,7 +54,7 @@ async function Margin() {
         title="Which engagements actually make money"
         description="Revenue collected from each client, minus the operator cost attributable to their placements, minus direct pass-through. A client can look healthy on revenue and be unprofitable once the placed operator is paid for."
         actions={
-          <Link href="/da" className={`${btnSecondary} ${btnSizeSm}`}>
+          <Link href={engagementsHome(base)} className={`${btnSecondary} ${btnSizeSm}`}>
             All engagements
           </Link>
         }
@@ -109,7 +111,7 @@ async function Margin() {
                 >
                   <div className="col-span-2 sm:col-span-1">
                     <Link
-                      href={`/da/${row.slug}`}
+                      href={engagementPath(base, row.slug ?? '')}
                       className="text-[13px] font-medium text-white hover:text-brand-200"
                     >
                       {row.name}
