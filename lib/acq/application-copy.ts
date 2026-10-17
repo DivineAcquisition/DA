@@ -16,11 +16,12 @@ export const APPLY_SMS_CONSENT_VERSION = 'acq-reminders-2026-10-17b';
  * TCPA / CTIA: the sender is named, texts are appointment reminders only,
  * frequency and rates are disclosed, STOP and HELP are named, and the box
  * is optional and separate from submitting.
- * CAN-SPAM: legal name, postal address, and an email unsubscribe path.
+ * CAN-SPAM: the company is named, and email can be unsubscribed. The street
+ * address stays off this form.
  * The Meta line is the ad-platform disclaimer. Results are not guaranteed.
  */
 export const APPLY_LEGAL_FOOTER = {
-  company: 'Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706.',
+  company: 'Divine Acquisition LLC',
   lines: [
     'Submitting this form requests a free sales audit. It is not a purchase, and it does not start a client agreement.',
     'Appointment reminder texts are sent only if you check the box. Consent is optional, is not required to apply or to buy anything, and you can withdraw it by replying STOP. Reply HELP for help. Message frequency varies. Message and data rates may apply.',

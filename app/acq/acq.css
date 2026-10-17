@@ -1191,14 +1191,42 @@ dialog.acq-apply-dialog::backdrop {
   overflow: hidden;
 }
 
+.acq-apply-meter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.acq-apply-meter span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #9a88fc, #c3b6fe);
+  transition: width 0.35s ease;
+}
+
 .acq-apply-bar {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  padding: 1rem 1.25rem 0.35rem;
+  padding: 1.15rem 1.25rem 0.35rem;
+}
+
+.acq-apply-count {
+  margin: 0;
+  color: #9a9aaa;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.acq-apply-bar .acq-apply-close {
+  justify-self: end;
 }
 
 .acq-apply-logo {
@@ -1209,12 +1237,75 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-main {
   position: relative;
   z-index: 1;
+  display: flex;
   flex: 1;
+  align-items: center;
   min-height: 0;
   overflow: auto;
-  width: min(40rem, 100%);
+  width: min(42rem, 100%);
   margin: 0 auto;
-  padding: 0.5rem 1.25rem 1.5rem;
+  padding: 1.25rem 1.35rem 1.25rem;
+}
+
+.acq-apply-stage {
+  width: 100%;
+}
+
+.acq-apply-index {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  color: #c3b6fe;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.acq-typeform {
+  margin-top: 1.35rem;
+}
+
+.acq-typeform-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.acq-typeform-row .acq-button {
+  width: auto;
+  min-width: 5.5rem;
+}
+
+.acq-apply-enter {
+  margin: 0.85rem 0 0;
+  color: #8d8d9a;
+  font-size: 0.82rem;
+}
+
+.acq-apply-enter kbd {
+  display: inline-block;
+  margin-left: 0.2rem;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.78rem;
+}
+
+.acq-choice-key {
+  display: inline-flex;
+  width: 1.65rem;
+  height: 1.65rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.8rem;
+  border: 1px solid rgba(195, 182, 254, 0.45);
+  border-radius: 7px;
+  color: #c3b6fe;
+  font-size: 0.75rem;
+  font-weight: 700;
 }
 
 .acq-apply-legal {
@@ -1251,12 +1342,12 @@ dialog.acq-apply-dialog::backdrop {
 }
 
 .acq-coaches h2.acq-apply-title {
-  margin: 0.45rem 0 0;
+  margin: 0.55rem 0 0;
   color: #fff;
-  font-size: clamp(1.45rem, 4vw, 1.85rem);
-  font-weight: 750;
-  letter-spacing: -0.04em;
-  line-height: 1.12;
+  font-size: clamp(1.85rem, 4.6vw, 2.7rem);
+  font-weight: 650;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
   text-align: left;
   text-transform: none;
 }
@@ -1347,8 +1438,24 @@ dialog.acq-apply-dialog::backdrop {
 }
 
 .acq-choice {
+  display: flex;
+  align-items: center;
   border: 0;
   background: transparent;
+}
+
+.acq-apply-stage > .acq-apply-back,
+.acq-apply-stage .acq-apply-back {
+  display: inline-flex;
+  width: auto;
+  min-height: 0;
+  margin: 0 0 0.65rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c3b6fe;
+  font-size: 0.92rem;
+  text-align: left;
 }
 
 .acq-apply-back {
@@ -1381,7 +1488,17 @@ dialog.acq-apply-dialog::backdrop {
 
 @media (max-width: 700px) {
   .acq-apply-main {
-    padding-inline: 0.85rem;
+    align-items: flex-start;
+    padding: 1.25rem 0.85rem 1rem;
+  }
+
+  .acq-typeform-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .acq-typeform-row .acq-button {
+    width: 100%;
   }
 
   .acq-apply-legal {

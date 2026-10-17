@@ -14,8 +14,8 @@ export default function TermsPage() {
     <LegalShell title="Terms">
       <p>Last updated October 17, 2026.</p>
       <p>
-        These terms cover use of this site and the application run by Divine Acquisition LLC, 7404
-        Executive Place, Lanham, MD 20706. Questions go to malik@divineacquisition.io.
+        These terms cover use of this site and the application run by Divine Acquisition LLC.
+        Questions go to malik@divineacquisition.io.
       </p>
       <p>
         Submitting the form requests a free sales audit. It is not a purchase, and it does not start

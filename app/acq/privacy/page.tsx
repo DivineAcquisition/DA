@@ -14,8 +14,8 @@ export default function PrivacyPage() {
     <LegalShell title="Privacy Policy">
       <p>Last updated October 17, 2026.</p>
       <p>
-        Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706, operates this site. Questions
-        about this policy go to malik@divineacquisition.io.
+        Divine Acquisition LLC operates this site. Questions about this policy go to
+        malik@divineacquisition.io.
       </p>
       <p>
         When you submit the application, we collect the first name, email, phone number, and answers

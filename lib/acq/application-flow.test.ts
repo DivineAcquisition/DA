@@ -326,7 +326,8 @@ describe('application flow', () => {
     expect(popup).toContain('SMS_CONSENT_WORDING');
     expect(popup).toContain('APPLY_LEGAL_FOOTER');
     expect(popup).toContain('<Logo');
-    expect(copy).toContain('Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706.');
+    expect(copy).toContain('Divine Acquisition LLC');
+    expect(copy).not.toContain('7404 Executive Place');
     expect(copy).toContain(
       'Text me appointment reminders from Divine Acquisition LLC about my audit. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is not required to apply.',
     );
