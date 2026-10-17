@@ -322,7 +322,11 @@ a.acq-button:active {
 }
 
 .acq-coaches .lx-pill {
-  display: inline-flex;
+  display: inline-block;
+  box-sizing: border-box;
+  width: fit-content;
+  min-width: 0;
+  max-width: min(46rem, 100%);
   margin: 0;
   padding: 0.65rem 1.75rem;
   border: 1px solid rgba(154, 136, 252, 0.35);
@@ -331,8 +335,10 @@ a.acq-button:active {
   color: var(--lx-accent);
   font-size: 0.95rem;
   font-weight: 500;
+  line-height: 1.45;
   letter-spacing: 0.035em;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .acq-coaches h1,

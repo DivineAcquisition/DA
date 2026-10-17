@@ -308,9 +308,12 @@ describe('founding landing media', () => {
       `${copy.HEADLINE_BEFORE}${copy.HEADLINE_ACCENT}${copy.HEADLINE_AFTER}`,
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
-    expect(copy.HEADLINE_ACCENT).toBe('DONE FOR YOU, LIVE IN 14 DAYS');
-    expect(copy.HEADLINE).toContain('SHOW RATE');
-    expect(copy.HEADLINE_BEFORE).toContain("WE'LL INSTALL");
+    expect(copy.HEADLINE).toBe(
+      "TURN THE LEADS YOU'RE PAYING FOR INTO BOOKED, HELD CALLS (BUILT FOR YOU IN 14 DAYS)",
+    );
+    expect(copy.HEADLINE_ACCENT).toBe('(BUILT FOR YOU IN 14 DAYS)');
+    expect(copy.HEADLINE).toContain('BOOKED, HELD CALLS');
+    expect(copy.HEADLINE_BEFORE).toContain('TURN THE LEADS');
     expect(
       copy.HEADLINE.split(/\s+/)
         .filter(Boolean)
@@ -319,7 +322,9 @@ describe('founding landing media', () => {
           return !letter || letter[0] === letter[0].toUpperCase();
         }),
     ).toBe(true);
-    expect(copy.SUBHEADLINE).toContain('No retainer');
+    expect(copy.SUBHEADLINE).toBe(
+      'We rebuild the part between the click and the call: intake, scoring, follow-up, and call prep. Your team carries more leads without another hire.',
+    );
     expect(copy.LANDING_QUALIFIER).toContain('$5K/month');
     expect(copy.LANDING_TRUST).toHaveLength(3);
     expect(copy.HEADLINE.toLowerCase()).not.toContain('med spa');
@@ -344,7 +349,9 @@ describe('founding landing media', () => {
     expect(copy.CLOSING.cta).toBe('See if you qualify');
     expect(copy.AUDIENCE.notFit.toLowerCase()).toContain('get-rich-quick');
     expect(copy.SUBHEADLINE.toLowerCase()).not.toContain('case study');
-    expect(copy.PILL_BANNER).toBe('Are you spending 5K+ on Meta paying for leads that never become calls?');
+    expect(copy.PILL_BANNER).toBe(
+      'FOR COACHES, CONSULTANTS & COURSE TEAMS SPENDING $5K+/MO ON ADS',
+    );
     expect(copy.CTA_LABEL).toBe('See if you qualify');
     expect(copy.FORM_LABELS.offer).toBe('What you sell');
     expect(copy.FORM_LABELS.inquiries).toBe('Inquiries per month');

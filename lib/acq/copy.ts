@@ -1,18 +1,17 @@
 /** Landing + qualification copy for the coach and consultant acq surface. */
 
-export const PILL_BANNER = 'Are you spending 5K+ on Meta paying for leads that never become calls?';
+export const PILL_BANNER = 'FOR COACHES, CONSULTANTS & COURSE TEAMS SPENDING $5K+/MO ON ADS';
 
-export const HEADLINE_BEFORE =
-  "WE'LL INSTALL THE SYSTEM THAT RAISES YOUR SHOW RATE AND SALES FROM THE SAME AD SPEND. ";
+export const HEADLINE_BEFORE = "TURN THE LEADS YOU'RE PAYING FOR INTO BOOKED, HELD CALLS ";
 
-export const HEADLINE_ACCENT = 'DONE FOR YOU, LIVE IN 14 DAYS';
+export const HEADLINE_ACCENT = '(BUILT FOR YOU IN 14 DAYS)';
 
-export const HEADLINE_AFTER = ' (OR YOU GET 75% BACK)';
+export const HEADLINE_AFTER = '';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
 export const SUBHEADLINE =
-  'Done for you in 3 months, built around your numbers: intake, buying-intent scoring, nurture sequences, AI workflows for your setters and closers, and call protection. No retainer, and you keep everything we build.';
+  'We rebuild the part between the click and the call: intake, scoring, follow-up, and call prep. Your team carries more leads without another hire.';
 
 export const LANDING_QUALIFIER = 'You need to be spending at least $5K/month on ads.';
 
