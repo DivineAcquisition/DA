@@ -1211,9 +1211,9 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-bar {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
   padding: 1rem 1.25rem 0.35rem;
 }
@@ -1237,12 +1237,35 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-main {
   position: relative;
   z-index: 1;
+  display: flex;
   flex: 1;
+  align-items: center;
   min-height: 0;
   overflow: auto;
-  width: min(42rem, 100%);
+  width: min(40rem, 100%);
   margin: 0 auto;
-  padding: 0.5rem 1.25rem 1.25rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.acq-apply-control {
+  margin-top: 1.25rem;
+}
+
+.acq-apply-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.acq-apply-next.acq-button {
+  width: auto;
+  min-width: 5.25rem;
+  min-height: 2.35rem;
+  padding: 0.4rem 0.95rem;
+  border-radius: 0.65rem;
+  font-size: 0.85rem;
 }
 
 .acq-apply-fields {
@@ -1397,12 +1420,12 @@ dialog.acq-apply-dialog::backdrop {
 }
 
 .acq-coaches h2.acq-apply-title {
-  margin: 0.35rem 0 0;
+  margin: 0.4rem 0 0;
   color: #fff;
-  font-size: clamp(1.55rem, 3vw, 2rem);
+  font-size: clamp(1.75rem, 4vw, 2.45rem);
   font-weight: 650;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
   text-align: left;
   text-transform: none;
 }
@@ -1549,7 +1572,7 @@ dialog.acq-apply-dialog::backdrop {
 @media (max-width: 700px) {
   .acq-apply-main {
     align-items: flex-start;
-    padding: 1.25rem 0.85rem 1rem;
+    padding: 1.5rem 0.85rem 1rem;
   }
 
   .acq-typeform-row {

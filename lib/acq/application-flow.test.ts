@@ -326,6 +326,7 @@ describe('application flow', () => {
     expect(popup).toContain('SMS_CONSENT_WORDING');
     expect(popup).toContain('APPLY_LEGAL_FOOTER');
     expect(popup).toContain('APPLY_QUESTIONS.map');
+    expect(popup).toContain('NativeSelect');
     expect(popup).toContain('<Logo');
     expect(copy).toContain('Divine Acquisition LLC');
     expect(copy).not.toContain('7404 Executive Place');

@@ -6,11 +6,11 @@ import Logo from '@/app/components/Logo';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/select';
 import {
   APPLY_LEGAL_FOOTER,
   APPLY_QUESTIONS,
   APPLY_SCREENS,
-  APPLY_STEP_NOTE,
   SMS_CONSENT_WORDING,
   type ApplyAnswers,
   type ApplyQuestionKey,
@@ -26,7 +26,69 @@ const TOKEN_KEY = 'acq-apply-token';
 
 type FieldName = 'firstName' | 'email' | 'phone';
 
-type Phase = { name: 'form' } | { name: 'screen'; screen: ApplyScreen };
+type TextStep = {
+  kind: 'text';
+  key: FieldName;
+  prompt: string;
+  placeholder: string;
+  type: 'text' | 'email' | 'tel';
+  autoComplete: string;
+  inputMode: 'text' | 'email' | 'tel';
+};
+
+type ChoiceStep = {
+  kind: 'choice';
+  key: ApplyQuestionKey;
+  prompt: string;
+  options: readonly string[];
+};
+
+type SmsStep = { kind: 'sms'; prompt: string };
+
+type Step = TextStep | ChoiceStep | SmsStep;
+
+const STEPS: readonly Step[] = [
+  {
+    kind: 'text',
+    key: 'firstName',
+    prompt: 'What is your first name?',
+    placeholder: 'Jordan',
+    type: 'text',
+    autoComplete: 'given-name',
+    inputMode: 'text',
+  },
+  {
+    kind: 'text',
+    key: 'email',
+    prompt: 'What is your email?',
+    placeholder: 'you@company.com',
+    type: 'email',
+    autoComplete: 'email',
+    inputMode: 'email',
+  },
+  {
+    kind: 'text',
+    key: 'phone',
+    prompt: 'What is your phone number?',
+    placeholder: '(555) 201-8890',
+    type: 'tel',
+    autoComplete: 'tel',
+    inputMode: 'tel',
+  },
+  ...APPLY_QUESTIONS.map(
+    (question): ChoiceStep => ({
+      kind: 'choice',
+      key: question.key,
+      prompt: question.prompt,
+      options: question.options,
+    }),
+  ),
+  { kind: 'sms', prompt: 'Want a text reminder for your audit?' },
+];
+
+const TEXT_INDEX: Record<FieldName, number> = { firstName: 0, email: 1, phone: 2 };
+
+type Phase = { name: 'pages' } | { name: 'screen'; screen: ApplyScreen };
 
 async function postApply(body: Record<string, unknown>) {
   const response = await fetch('/api/acq/apply', {
@@ -46,7 +108,7 @@ async function postApply(body: Record<string, unknown>) {
   };
 }
 
-function selectAnswer(current: ApplyAnswers, key: ApplyQuestionKey, value: string): ApplyAnswers {
+function choose(current: ApplyAnswers, key: ApplyQuestionKey, value: string): ApplyAnswers {
   return { ...current, [key]: value } as ApplyAnswers;
 }
 
@@ -75,7 +137,8 @@ export function ApplyDialog({
   testMode: boolean;
 }) {
   const titleId = 'acq-apply-title';
-  const [phase, setPhase] = useState<Phase>({ name: 'form' });
+  const [phase, setPhase] = useState<Phase>({ name: 'pages' });
+  const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<ApplyAnswers>({});
   const [token, setToken] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -86,6 +149,7 @@ export function ApplyDialog({
   const [pending, setPending] = useState(false);
   const lock = useRef(false);
   const opened = useRef(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const websiteRef = useRef<HTMLInputElement | null>(null);
 
   const remember = (next: string) => {
@@ -111,6 +175,7 @@ export function ApplyDialog({
     setAnswers(result.answers ?? {});
     if (result.firstName) setFirstName(result.firstName);
     if (result.screen) setPhase({ name: 'screen', screen: result.screen });
+    else if (result.question) setIndex(TEXT_INDEX.phone + result.question);
   }, [testMode, tracking]);
 
   useEffect(() => {
@@ -133,36 +198,45 @@ export function ApplyDialog({
     };
   }, [dialogRef, restore, testMode, tracking]);
 
+  const step = STEPS[index];
+  const textStep = step?.kind === 'text';
+
+  useEffect(() => {
+    if (phase.name !== 'pages' || !textStep) return;
+    const frame = requestAnimationFrame(() => inputRef.current?.focus());
+    return () => cancelAnimationFrame(frame);
+  }, [index, phase.name, textStep]);
+
   const close = () => {
     if (pending) return;
     dialogRef.current?.close();
   };
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (lock.current) return;
-    setError(null);
-    if (firstName.trim().length < 2 || !/[A-Za-z]/.test(firstName)) {
-      setError('Enter your first name.');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      setError('Enter a valid email.');
-      return;
-    }
-    if (phone.replace(/\D/g, '').length < 10) {
-      setError('Enter a valid phone number.');
-      return;
-    }
-    const missing = APPLY_QUESTIONS.find((question) => !answers[question.key]);
-    if (missing) {
-      setError(missing.prompt);
-      document.getElementById(`apply-${missing.key}`)?.scrollIntoView({ block: 'center' });
-      return;
-    }
+  const textValue = (key: FieldName) => (key === 'firstName' ? firstName : key === 'email' ? email : phone);
 
+  const setTextValue = (key: FieldName, value: string) => {
+    if (key === 'firstName') setFirstName(value);
+    else if (key === 'email') setEmail(value);
+    else setPhone(value);
+  };
+
+  const validText = (key: FieldName) => {
+    if (key === 'firstName') return firstName.trim().length >= 2 && /[A-Za-z]/.test(firstName);
+    if (key === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    return phone.replace(/\D/g, '').length >= 10;
+  };
+
+  const textError = (key: FieldName) => {
+    if (key === 'firstName') return 'Enter your first name.';
+    if (key === 'email') return 'Enter a valid email.';
+    return 'Enter a valid phone number.';
+  };
+
+  const finish = async () => {
+    if (lock.current) return;
     lock.current = true;
     setPending(true);
+    setError(null);
     const started = await postApply({
       action: 'start',
       firstName,
@@ -177,6 +251,7 @@ export function ApplyDialog({
     if (!started.ok || !started.token) {
       lock.current = false;
       setPending(false);
+      if (started.field) setIndex(TEXT_INDEX[started.field]);
       setError(started.error || 'Try that once more.');
       return;
     }
@@ -184,14 +259,14 @@ export function ApplyDialog({
     trackPixel('Lead');
 
     let screen: ApplyScreen | undefined;
-    for (let index = 0; index < APPLY_QUESTIONS.length; index += 1) {
-      const question = APPLY_QUESTIONS[index];
+    for (let questionIndex = 0; questionIndex < APPLY_QUESTIONS.length; questionIndex += 1) {
+      const question = APPLY_QUESTIONS[questionIndex];
       const value = answers[question.key];
       if (!value) break;
       const result = await postApply({
         action: 'answer',
         token: started.token,
-        question: index + 1,
+        question: questionIndex + 1,
         value,
         tracking,
         test: testMode,
@@ -199,6 +274,7 @@ export function ApplyDialog({
       if (!result.ok) {
         lock.current = false;
         setPending(false);
+        setIndex(TEXT_INDEX.phone + questionIndex + 1);
         setError(result.error || 'Try that once more.');
         return;
       }
@@ -210,12 +286,53 @@ export function ApplyDialog({
     else setError('Try that once more.');
   };
 
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (pending || phase.name !== 'pages') return;
+    const current = STEPS[index];
+    setError(null);
+    if (current.kind === 'text') {
+      if (!validText(current.key)) {
+        setError(textError(current.key));
+        return;
+      }
+      setIndex(index + 1);
+      return;
+    }
+    if (current.kind === 'choice') {
+      if (!answers[current.key]) {
+        setError('Choose one.');
+        return;
+      }
+      setIndex(index + 1);
+      return;
+    }
+    await finish();
+  };
+
+  const back = () => {
+    if (pending || index === 0) return;
+    setError(null);
+    setIndex(index - 1);
+  };
+
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
+  const last = index === STEPS.length - 1;
 
   return (
     <div className="acq-apply-screen">
+      <div className="acq-apply-meter" aria-hidden>
+        <span style={{ width: `${((phase.name === 'screen' ? STEPS.length : index + 1) / STEPS.length) * 100}%` }} />
+      </div>
       <header className="acq-apply-bar">
         <Logo className="h-7 w-auto sm:h-8" title="Divine Acquisition" />
+        {phase.name === 'pages' ? (
+          <p className="acq-apply-count">
+            {index + 1} of {STEPS.length}
+          </p>
+        ) : (
+          <span />
+        )}
         <button type="button" onClick={close} className="acq-apply-close" aria-label="Close">
           <X className="size-5" aria-hidden />
         </button>
@@ -246,105 +363,103 @@ export function ApplyDialog({
           </div>
         ) : (
           <form onSubmit={onSubmit} className="acq-apply-stage" noValidate>
+            <p className="acq-apply-index">
+              {index + 1}
+              <span aria-hidden>→</span>
+            </p>
             <h2 id={titleId} className="acq-apply-title">
-              See if you qualify
+              {step.prompt}
             </h2>
-            <p className="acq-apply-note">{APPLY_STEP_NOTE}</p>
 
-            <div className="acq-apply-fields">
-              <Field>
-                <FieldLabel htmlFor="apply-first-name">First name</FieldLabel>
+            {step.kind === 'text' ? (
+              <Field className="acq-apply-control">
+                <FieldLabel className="sr-only" htmlFor={`apply-${step.key}`}>
+                  {step.prompt}
+                </FieldLabel>
                 <Input
                   nativeInput
-                  id="apply-first-name"
-                  ref={firstFieldRef}
-                  name="firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  autoCapitalize="words"
+                  id={`apply-${step.key}`}
+                  ref={(node) => {
+                    inputRef.current = node;
+                    if (step.key === 'firstName') firstFieldRef.current = node;
+                  }}
+                  name={step.key}
+                  type={step.type}
+                  autoComplete={step.autoComplete}
+                  autoCapitalize={step.key === 'firstName' ? 'words' : 'off'}
+                  inputMode={step.inputMode}
                   required
-                  placeholder="Jordan"
+                  placeholder={step.placeholder}
                   size="lg"
-                  value={firstName}
-                  onChange={(event) => setFirstName(event.target.value)}
+                  className="min-h-12 text-base"
+                  value={textValue(step.key)}
+                  onChange={(event) => setTextValue(step.key, event.target.value)}
+                  aria-invalid={error ? true : undefined}
                 />
               </Field>
-              <Field>
-                <FieldLabel htmlFor="apply-email">Email</FieldLabel>
-                <Input
-                  nativeInput
-                  id="apply-email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  inputMode="email"
-                  required
-                  placeholder="you@company.com"
-                  size="lg"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
-              </Field>
-              <Field className="acq-span">
-                <FieldLabel htmlFor="apply-phone">Phone</FieldLabel>
-                <Input
-                  nativeInput
-                  id="apply-phone"
-                  name="phone"
-                  type="tel"
-                  autoComplete="tel"
-                  inputMode="tel"
-                  required
-                  placeholder="(555) 201-8890"
-                  size="lg"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                />
-              </Field>
-            </div>
+            ) : null}
 
-            {APPLY_QUESTIONS.map((question) => (
-              <fieldset key={question.key} id={`apply-${question.key}`} className="acq-q">
-                <legend className="acq-q-title">{question.prompt}</legend>
-                <div className="acq-options">
-                  {question.options.map((option) => {
-                    const selected = answers[question.key] === option;
-                    return (
-                      <button
-                        key={option}
-                        type="button"
-                        className="acq-option"
-                        aria-pressed={selected}
-                        onClick={() => setAnswers((current) => selectAnswer(current, question.key, option))}
-                      >
-                        {option}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-            ))}
+            {step.kind === 'choice' ? (
+              <Field className="acq-apply-control">
+                <FieldLabel className="sr-only" htmlFor={`apply-${step.key}`}>
+                  {step.prompt}
+                </FieldLabel>
+                <NativeSelect
+                  id={`apply-${step.key}`}
+                  name={step.key}
+                  value={answers[step.key] ?? ''}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setAnswers((current) => choose(current, step.key, value));
+                    if (value) setError(null);
+                  }}
+                  className="h-12 text-base sm:h-12"
+                  aria-invalid={error ? true : undefined}
+                >
+                  <option value="">Choose one</option>
+                  {step.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </Field>
+            ) : null}
 
-            <Field className="acq-consent">
-              <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.85rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
-                <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
-                <span>{SMS_CONSENT_WORDING}</span>
-              </FieldLabel>
-            </Field>
+            {step.kind === 'sms' ? (
+              <Field className="acq-consent acq-apply-control">
+                <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.9rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
+                  <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
+                  <span>{SMS_CONSENT_WORDING}</span>
+                </FieldLabel>
+              </Field>
+            ) : null}
+
             <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
               <label>
                 Website
                 <input ref={websiteRef} name="website" type="text" tabIndex={-1} autoComplete="off" />
               </label>
             </div>
+
             {error ? (
               <p className="acq-apply-error" role="alert">
                 {error}
               </p>
             ) : null}
-            <button type="submit" className="acq-button acq-button-full" disabled={pending}>
-              {pending ? 'Saving…' : 'Submit'}
-            </button>
+
+            <div className="acq-apply-nav">
+              {index > 0 ? (
+                <button type="button" className="acq-apply-back" onClick={back}>
+                  Back
+                </button>
+              ) : (
+                <span />
+              )}
+              <button type="submit" className="acq-button acq-apply-next" disabled={pending}>
+                {last ? (pending ? 'Saving…' : 'Submit') : 'Next'}
+              </button>
+            </div>
           </form>
         )}
       </div>
