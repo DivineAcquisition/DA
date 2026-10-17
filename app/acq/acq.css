@@ -1211,11 +1211,11 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-bar {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 1rem;
-  padding: 1.15rem 1.25rem 0.35rem;
+  padding: 1rem 1.25rem 0.35rem;
 }
 
 .acq-apply-count {
@@ -1237,14 +1237,71 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-main {
   position: relative;
   z-index: 1;
-  display: flex;
   flex: 1;
-  align-items: center;
   min-height: 0;
   overflow: auto;
   width: min(42rem, 100%);
   margin: 0 auto;
-  padding: 1.25rem 1.35rem 1.25rem;
+  padding: 0.5rem 1.25rem 1.25rem;
+}
+
+.acq-apply-fields {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+@media (min-width: 700px) {
+  .acq-apply-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .acq-apply-fields .acq-span {
+    grid-column: 1 / -1;
+  }
+}
+
+.acq-apply-stage .acq-consent,
+.acq-apply-stage > .acq-button {
+  margin-top: 1.1rem;
+}
+
+.acq-q {
+  margin: 1.15rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.acq-q-title {
+  margin: 0 0 0.55rem;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.acq-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.acq-option {
+  border: 1px solid rgba(195, 182, 254, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.acq-option[aria-pressed='true'] {
+  border-color: #9a88fc;
+  background: #9a88fc;
+  color: #07070b;
 }
 
 .acq-apply-stage {
@@ -1312,9 +1369,7 @@ dialog.acq-apply-dialog::backdrop {
   position: relative;
   z-index: 1;
   flex: none;
-  max-height: 28dvh;
-  overflow: auto;
-  padding: 0.7rem 1.25rem calc(0.75rem + env(safe-area-inset-bottom));
+  padding: 0.65rem 1.25rem calc(0.7rem + env(safe-area-inset-bottom));
   border-top: 1px solid rgba(154, 136, 252, 0.22);
   background: #07070b;
   color: #9a9aaa;
@@ -1342,13 +1397,18 @@ dialog.acq-apply-dialog::backdrop {
 }
 
 .acq-coaches h2.acq-apply-title {
-  margin: 0.55rem 0 0;
+  margin: 0.35rem 0 0;
   color: #fff;
-  font-size: clamp(1.85rem, 4.6vw, 2.7rem);
+  font-size: clamp(1.55rem, 3vw, 2rem);
   font-weight: 650;
-  letter-spacing: -0.045em;
-  line-height: 1.08;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
   text-align: left;
+  text-transform: none;
+}
+
+.acq-coaches h3.acq-q-title,
+.acq-coaches legend.acq-q-title {
   text-transform: none;
 }
 
@@ -1502,10 +1562,13 @@ dialog.acq-apply-dialog::backdrop {
   }
 
   .acq-apply-legal {
-    max-height: 22dvh;
     padding-inline: 0.85rem;
     font-size: 0.68rem;
     text-align: left;
+  }
+
+  .acq-apply-fields {
+    grid-template-columns: 1fr;
   }
 
   .acq-choice {

@@ -3,18 +3,17 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type RefObject } from 'react';
 import { X } from 'lucide-react';
 import Logo from '@/app/components/Logo';
-import { BlurFade } from '@/components/ui/blur-fade';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { MagicCard } from '@/components/ui/magic-card';
-import { Particles } from '@/components/ui/particles';
 import {
   APPLY_LEGAL_FOOTER,
   APPLY_QUESTIONS,
   APPLY_SCREENS,
+  APPLY_STEP_NOTE,
   SMS_CONSENT_WORDING,
   type ApplyAnswers,
+  type ApplyQuestionKey,
   type ApplyScreen,
 } from '@/lib/acq/application-copy';
 import { LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
@@ -26,33 +25,8 @@ import { trackPixel } from './MetaPixel';
 const TOKEN_KEY = 'acq-apply-token';
 
 type FieldName = 'firstName' | 'email' | 'phone';
-type ContactStep = FieldName | 'sms';
 
-const CONTACT_STEPS: readonly ContactStep[] = ['firstName', 'email', 'phone', 'sms'];
-
-const CONTACT_PROMPTS: Record<ContactStep, string> = {
-  firstName: 'What is your first name?',
-  email: 'What is your email?',
-  phone: 'What is your phone number?',
-  sms: 'Want a text reminder for your audit?',
-};
-
-type Phase =
-  | { name: 'contact'; step: ContactStep }
-  | { name: 'question'; index: number }
-  | { name: 'screen'; screen: ApplyScreen };
-
-const STEP_TOTAL = CONTACT_STEPS.length + APPLY_QUESTIONS.length;
-
-function stepPosition(phase: Phase): number {
-  if (phase.name === 'screen') return STEP_TOTAL;
-  if (phase.name === 'question') return CONTACT_STEPS.length + phase.index + 1;
-  return CONTACT_STEPS.indexOf(phase.step) + 1;
-}
-
-function choiceKey(index: number): string {
-  return String.fromCharCode(65 + index);
-}
+type Phase = { name: 'form' } | { name: 'screen'; screen: ApplyScreen };
 
 async function postApply(body: Record<string, unknown>) {
   const response = await fetch('/api/acq/apply', {
@@ -70,6 +44,10 @@ async function postApply(body: Record<string, unknown>) {
     answers?: ApplyAnswers;
     firstName?: string;
   };
+}
+
+function selectAnswer(current: ApplyAnswers, key: ApplyQuestionKey, value: string): ApplyAnswers {
+  return { ...current, [key]: value } as ApplyAnswers;
 }
 
 export function ApplyAttribution({
@@ -97,7 +75,7 @@ export function ApplyDialog({
   testMode: boolean;
 }) {
   const titleId = 'acq-apply-title';
-  const [phase, setPhase] = useState<Phase>({ name: 'contact', step: 'firstName' });
+  const [phase, setPhase] = useState<Phase>({ name: 'form' });
   const [answers, setAnswers] = useState<ApplyAnswers>({});
   const [token, setToken] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -108,7 +86,6 @@ export function ApplyDialog({
   const [pending, setPending] = useState(false);
   const lock = useRef(false);
   const opened = useRef(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const websiteRef = useRef<HTMLInputElement | null>(null);
 
   const remember = (next: string) => {
@@ -132,8 +109,8 @@ export function ApplyDialog({
     if (!result.ok) return;
     setToken(saved);
     setAnswers(result.answers ?? {});
+    if (result.firstName) setFirstName(result.firstName);
     if (result.screen) setPhase({ name: 'screen', screen: result.screen });
-    else setPhase({ name: 'question', index: Math.max(0, (result.question ?? 1) - 1) });
   }, [testMode, tracking]);
 
   useEffect(() => {
@@ -156,23 +133,37 @@ export function ApplyDialog({
     };
   }, [dialogRef, restore, testMode, tracking]);
 
-  useEffect(() => {
-    if (phase.name !== 'contact' || phase.step === 'sms') return;
-    const frame = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [phase]);
-
   const close = () => {
     if (pending) return;
     dialogRef.current?.close();
   };
 
-  const submitStart = async () => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (lock.current) return;
+    setError(null);
+    if (firstName.trim().length < 2 || !/[A-Za-z]/.test(firstName)) {
+      setError('Enter your first name.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Enter a valid email.');
+      return;
+    }
+    if (phone.replace(/\D/g, '').length < 10) {
+      setError('Enter a valid phone number.');
+      return;
+    }
+    const missing = APPLY_QUESTIONS.find((question) => !answers[question.key]);
+    if (missing) {
+      setError(missing.prompt);
+      document.getElementById(`apply-${missing.key}`)?.scrollIntoView({ block: 'center' });
+      return;
+    }
+
     lock.current = true;
     setPending(true);
-    setError(null);
-    const result = await postApply({
+    const started = await postApply({
       action: 'start',
       firstName,
       email,
@@ -183,271 +174,60 @@ export function ApplyDialog({
       tracking,
       test: testMode,
     });
-    lock.current = false;
-    setPending(false);
-    if (!result.ok || !result.token) {
-      if (result.field) setPhase({ name: 'contact', step: result.field });
-      setError(result.error || 'Try that once more.');
+    if (!started.ok || !started.token) {
+      lock.current = false;
+      setPending(false);
+      setError(started.error || 'Try that once more.');
       return;
     }
-    remember(result.token);
-    setPhase({ name: 'question', index: 0 });
+    remember(started.token);
     trackPixel('Lead');
-  };
 
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (phase.name !== 'contact' || pending) return;
-    setError(null);
-    if (phase.step === 'firstName') {
-      if (firstName.trim().length < 2 || !/[A-Za-z]/.test(firstName)) {
-        setError('Enter your first name.');
+    let screen: ApplyScreen | undefined;
+    for (let index = 0; index < APPLY_QUESTIONS.length; index += 1) {
+      const question = APPLY_QUESTIONS[index];
+      const value = answers[question.key];
+      if (!value) break;
+      const result = await postApply({
+        action: 'answer',
+        token: started.token,
+        question: index + 1,
+        value,
+        tracking,
+        test: testMode,
+      });
+      if (!result.ok) {
+        lock.current = false;
+        setPending(false);
+        setError(result.error || 'Try that once more.');
         return;
       }
-      setPhase({ name: 'contact', step: 'email' });
-      return;
+      if (result.screen) screen = result.screen;
     }
-    if (phase.step === 'email') {
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-        setError('Enter a valid email.');
-        return;
-      }
-      setPhase({ name: 'contact', step: 'phone' });
-      return;
-    }
-    if (phase.step === 'phone') {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length < 10) {
-        setError('Enter a valid phone number.');
-        return;
-      }
-      setPhase({ name: 'contact', step: 'sms' });
-      return;
-    }
-    await submitStart();
-  };
-
-  const goBack = () => {
-    if (pending) return;
-    setError(null);
-    if (phase.name === 'contact') {
-      const index = CONTACT_STEPS.indexOf(phase.step);
-      if (index > 0) setPhase({ name: 'contact', step: CONTACT_STEPS[index - 1] });
-      return;
-    }
-    if (phase.name === 'question') {
-      if (phase.index > 0) setPhase({ name: 'question', index: phase.index - 1 });
-      else setPhase({ name: 'contact', step: 'sms' });
-    }
-  };
-
-  const choose = useCallback(async (value: string) => {
-    if (lock.current || phase.name !== 'question') return;
-    lock.current = true;
-    setPending(true);
-    setError(null);
-    const question = phase.index + 1;
-    setAnswers((current) => ({ ...current, [APPLY_QUESTIONS[phase.index].key]: value }));
-    const result = await postApply({
-      action: 'answer',
-      token,
-      question,
-      value,
-      tracking,
-      test: testMode,
-    });
     lock.current = false;
     setPending(false);
-    if (!result.ok) {
-      setError(result.error || 'Try that once more.');
-      return;
-    }
-    if (result.screen) {
-      setPhase({ name: 'screen', screen: result.screen });
-      return;
-    }
-    setPhase({ name: 'question', index: Math.max(0, (result.question ?? question + 1) - 1) });
-  }, [phase, testMode, token, tracking]);
+    if (screen) setPhase({ name: 'screen', screen });
+    else setError('Try that once more.');
+  };
 
-  const question = phase.name === 'question' ? APPLY_QUESTIONS[phase.index] : null;
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
-  const position = stepPosition(phase);
-  const canGoBack = phase.name === 'question' || (phase.name === 'contact' && phase.step !== 'firstName');
-
-  useEffect(() => {
-    if (!question || phase.name !== 'question') return;
-    const onKey = (event: KeyboardEvent) => {
-      if (pending || event.metaKey || event.ctrlKey || event.altKey) return;
-      const index = event.key.toUpperCase().charCodeAt(0) - 65;
-      const option = question.options[index];
-      if (!option) return;
-      event.preventDefault();
-      void choose(option);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [choose, pending, phase.name, question]);
 
   return (
     <div className="acq-apply-screen">
-      <Particles
-        className="absolute inset-0"
-        quantity={42}
-        color="#9A88FC"
-        ease={70}
-        size={0.45}
-      />
-      <div className="acq-apply-meter" aria-hidden>
-        <span style={{ width: `${(position / STEP_TOTAL) * 100}%` }} />
-      </div>
       <header className="acq-apply-bar">
         <Logo className="h-7 w-auto sm:h-8" title="Divine Acquisition" />
-        <p className="acq-apply-count">
-          {position} of {STEP_TOTAL}
-        </p>
         <button type="button" onClick={close} className="acq-apply-close" aria-label="Close">
           <X className="size-5" aria-hidden />
         </button>
       </header>
 
       <div className="acq-apply-main">
-        <div className="acq-apply-stage">
-          <BlurFade
-            key={phase.name === 'contact' ? phase.step : phase.name === 'question' ? `q-${phase.index}` : phase.screen}
-            delay={0.02}
-            offset={12}
-          >
-            {canGoBack ? (
-              <button type="button" className="acq-apply-back" onClick={goBack}>
-                Back
-              </button>
-            ) : null}
-            <p className="acq-apply-index">
-              {position}
-              <span aria-hidden>→</span>
-            </p>
+        {screen ? (
+          <div className="acq-apply-stage">
             <h2 id={titleId} className="acq-apply-title">
-              {phase.name === 'contact' ? CONTACT_PROMPTS[phase.step] : question ? question.prompt : screen?.heading}
+              {screen.heading}
             </h2>
-            {screen ? <p className="acq-apply-note">{screen.line}</p> : null}
-
-            {phase.name === 'contact' && phase.step !== 'sms' ? (
-              <form onSubmit={onSubmit} className="acq-typeform" noValidate>
-                <Field>
-                  <FieldLabel className="sr-only" htmlFor={`apply-${phase.step}`}>
-                    {CONTACT_PROMPTS[phase.step]}
-                  </FieldLabel>
-                  <div className="acq-typeform-row">
-                    <Input
-                      nativeInput
-                      id={`apply-${phase.step}`}
-                      ref={(node) => {
-                        inputRef.current = node;
-                        if (phase.step === 'firstName') firstFieldRef.current = node;
-                      }}
-                      name={phase.step}
-                      type={phase.step === 'email' ? 'email' : phase.step === 'phone' ? 'tel' : 'text'}
-                      autoComplete={
-                        phase.step === 'firstName' ? 'given-name' : phase.step === 'email' ? 'email' : 'tel'
-                      }
-                      autoCapitalize={phase.step === 'firstName' ? 'words' : 'off'}
-                      inputMode={phase.step === 'email' ? 'email' : phase.step === 'phone' ? 'tel' : 'text'}
-                      required
-                      placeholder={
-                        phase.step === 'firstName' ? 'Jordan' : phase.step === 'email' ? 'you@company.com' : '(555) 201-8890'
-                      }
-                      size="lg"
-                      className="min-h-14 text-lg"
-                      value={phase.step === 'firstName' ? firstName : phase.step === 'email' ? email : phone}
-                      onChange={(event) => {
-                        const next = event.target.value;
-                        if (phase.step === 'firstName') setFirstName(next);
-                        else if (phase.step === 'email') setEmail(next);
-                        else setPhone(next);
-                      }}
-                      aria-invalid={error ? true : undefined}
-                    />
-                    <button type="submit" className="acq-button" disabled={pending}>
-                      OK
-                    </button>
-                  </div>
-                </Field>
-                {error ? (
-                  <p className="acq-apply-error" role="alert">
-                    {error}
-                  </p>
-                ) : null}
-                <p className="acq-apply-enter">
-                  press <kbd>Enter</kbd>
-                </p>
-              </form>
-            ) : null}
-
-            {phase.name === 'contact' && phase.step === 'sms' ? (
-              <form onSubmit={onSubmit} className="acq-typeform" noValidate>
-                <Field className="acq-consent">
-                  <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.95rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
-                    <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
-                    <span>{SMS_CONSENT_WORDING}</span>
-                  </FieldLabel>
-                  <p>
-                    <a href={LEGAL_PRIVACY_URL}>Privacy</a>
-                    {' · '}
-                    <a href={LEGAL_TERMS_URL}>Terms</a>
-                  </p>
-                </Field>
-                <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-                  <label>
-                    Website
-                    <input ref={websiteRef} name="website" type="text" tabIndex={-1} autoComplete="off" />
-                  </label>
-                </div>
-                {error ? (
-                  <p className="acq-apply-error" role="alert">
-                    {error}
-                  </p>
-                ) : null}
-                <div className="acq-typeform-row">
-                  <button type="submit" className="acq-button" disabled={pending}>
-                    {pending ? 'Saving…' : 'OK'}
-                  </button>
-                  <p className="acq-apply-enter">
-                    press <kbd>Enter</kbd>
-                  </p>
-                </div>
-              </form>
-            ) : null}
-
-            {question ? (
-              <div className="acq-apply-options">
-                {question.options.map((option, index) => {
-                  const selected = answers[question.key] === option;
-                  return (
-                    <MagicCard
-                      key={option}
-                      className={`rounded-2xl border bg-white/[0.03] ${selected ? 'border-brand-300' : 'border-[rgba(195,182,254,0.28)]'}`}
-                    >
-                      <button
-                        type="button"
-                        className="acq-choice"
-                        disabled={pending}
-                        onClick={() => void choose(option)}
-                      >
-                        <span className="acq-choice-key">{choiceKey(index)}</span>
-                        {option}
-                      </button>
-                    </MagicCard>
-                  );
-                })}
-                {error ? (
-                  <p className="acq-apply-error" role="alert">
-                    {error}
-                  </p>
-                ) : null}
-                <p className="acq-apply-enter">Choose one, or press its letter.</p>
-              </div>
-            ) : null}
-
+            <p className="acq-apply-note">{screen.line}</p>
             {phase.name === 'screen' && phase.screen === 'calendar' ? (
               <div className="acq-apply-calendar">
                 {token.length >= 32 ? (
@@ -463,15 +243,116 @@ export function ApplyDialog({
                 )}
               </div>
             ) : null}
-          </BlurFade>
-        </div>
+          </div>
+        ) : (
+          <form onSubmit={onSubmit} className="acq-apply-stage" noValidate>
+            <h2 id={titleId} className="acq-apply-title">
+              See if you qualify
+            </h2>
+            <p className="acq-apply-note">{APPLY_STEP_NOTE}</p>
+
+            <div className="acq-apply-fields">
+              <Field>
+                <FieldLabel htmlFor="apply-first-name">First name</FieldLabel>
+                <Input
+                  nativeInput
+                  id="apply-first-name"
+                  ref={firstFieldRef}
+                  name="firstName"
+                  type="text"
+                  autoComplete="given-name"
+                  autoCapitalize="words"
+                  required
+                  placeholder="Jordan"
+                  size="lg"
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="apply-email">Email</FieldLabel>
+                <Input
+                  nativeInput
+                  id="apply-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  required
+                  placeholder="you@company.com"
+                  size="lg"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
+              </Field>
+              <Field className="acq-span">
+                <FieldLabel htmlFor="apply-phone">Phone</FieldLabel>
+                <Input
+                  nativeInput
+                  id="apply-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  required
+                  placeholder="(555) 201-8890"
+                  size="lg"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
+              </Field>
+            </div>
+
+            {APPLY_QUESTIONS.map((question) => (
+              <fieldset key={question.key} id={`apply-${question.key}`} className="acq-q">
+                <legend className="acq-q-title">{question.prompt}</legend>
+                <div className="acq-options">
+                  {question.options.map((option) => {
+                    const selected = answers[question.key] === option;
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        className="acq-option"
+                        aria-pressed={selected}
+                        onClick={() => setAnswers((current) => selectAnswer(current, question.key, option))}
+                      >
+                        {option}
+                      </button>
+                    );
+                  })}
+                </div>
+              </fieldset>
+            ))}
+
+            <Field className="acq-consent">
+              <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.85rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
+                <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
+                <span>{SMS_CONSENT_WORDING}</span>
+              </FieldLabel>
+            </Field>
+            <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+              <label>
+                Website
+                <input ref={websiteRef} name="website" type="text" tabIndex={-1} autoComplete="off" />
+              </label>
+            </div>
+            {error ? (
+              <p className="acq-apply-error" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <button type="submit" className="acq-button acq-button-full" disabled={pending}>
+              {pending ? 'Saving…' : 'Submit'}
+            </button>
+          </form>
+        )}
       </div>
 
       <footer className="acq-apply-legal">
-        <p>{APPLY_LEGAL_FOOTER.company}</p>
-        {APPLY_LEGAL_FOOTER.lines.map((line) => (
-          <p key={line}>{line}</p>
-        ))}
+        <p>
+          {APPLY_LEGAL_FOOTER.company}. {APPLY_LEGAL_FOOTER.lines[0]}
+        </p>
         <p>
           <a href={LEGAL_TERMS_URL}>Terms</a>
           {' · '}

@@ -325,6 +325,7 @@ describe('application flow', () => {
     const copy = readFileSync('lib/acq/application-copy.ts', 'utf8');
     expect(popup).toContain('SMS_CONSENT_WORDING');
     expect(popup).toContain('APPLY_LEGAL_FOOTER');
+    expect(popup).toContain('APPLY_QUESTIONS.map');
     expect(popup).toContain('<Logo');
     expect(copy).toContain('Divine Acquisition LLC');
     expect(copy).not.toContain('7404 Executive Place');
