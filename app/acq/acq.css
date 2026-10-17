@@ -1158,14 +1158,68 @@ a.acq-button:active {
   .acq-coaches .acq-button { min-height: 3.6rem; font-size: 0.95rem; }
 }
 
-.acq-apply-dialog {
-  width: min(36rem, calc(100vw - 1.25rem));
+.acq-dialog.acq-apply-dialog {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
   min-width: 0;
-  padding: 1.2rem 1.15rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #07070b;
 }
 
-.acq-apply-dialog:has(.acq-apply-calendar) {
-  width: min(52rem, calc(100vw - 1rem));
+.acq-dialog.acq-apply-dialog::backdrop {
+  background: #07070b;
+}
+
+.acq-apply-screen {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+}
+
+.acq-apply-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.acq-apply-logo {
+  height: 36px;
+  width: auto;
+}
+
+.acq-apply-main {
+  flex: 1;
+  overflow: auto;
+  width: min(40rem, 100%);
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 2rem;
+}
+
+.acq-apply-legal {
+  padding: 0.9rem 1.25rem 1.1rem;
+  border-top: 1px solid rgba(154, 136, 252, 0.22);
+  color: #9a9aaa;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+.acq-apply-legal p {
+  margin: 0.2rem auto;
+  max-width: 46rem;
+}
+
+.acq-apply-legal a {
+  color: #c3b6fe;
 }
 
 .acq-apply-kicker {
@@ -1260,9 +1314,11 @@ a.acq-button:active {
 
 .acq-choice,
 .acq-apply-back {
+  position: relative;
   width: 100%;
   min-height: 3.35rem;
   padding: 0.85rem 1rem;
+  overflow: hidden;
   border: 1px solid rgba(195, 182, 254, 0.28);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.03);
@@ -1294,11 +1350,8 @@ a.acq-button:active {
 }
 
 @media (max-width: 700px) {
-  .acq-apply-dialog {
-    width: calc(100vw - 0.8rem);
-    max-height: calc(100dvh - 0.8rem);
-    padding: 1rem 0.9rem 1.1rem;
-    border-radius: 20px;
+  .acq-apply-main {
+    padding-inline: 1rem;
   }
 
   .acq-choice {

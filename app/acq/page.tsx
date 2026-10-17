@@ -1,5 +1,8 @@
+import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from '@/components/ui/accordion';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { BlurFade } from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
+import { DotPattern } from '@/components/ui/dot-pattern';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
@@ -54,8 +57,15 @@ export default async function AcqLandingPage({
   return (
     <QualifyProvider tracking={tracking} testMode={testMode}>
       <div className="acq-coaches min-h-screen antialiased">
-        <section className="lx-hero">
-          <div className="lx-wrap lx-hero-inner">
+        <section className="lx-hero relative overflow-hidden">
+          <DotPattern
+            className="pointer-events-none absolute inset-0 text-[rgba(154,136,252,0.45)] [mask-image:radial-gradient(ellipse_at_center,black,transparent_72%)]"
+            width={22}
+            height={22}
+            cr={1}
+          />
+          <div className="lx-wrap lx-hero-inner relative z-[1]">
+            <BlurFade delay={0.05} offset={10}>
             <p className="lx-pill">
               <AnimatedShinyText className="mx-0 max-w-none text-inherit">{PILL_BANNER}</AnimatedShinyText>
             </p>
@@ -87,6 +97,7 @@ export default async function AcqLandingPage({
                 </span>
               </li>
             </ul>
+            </BlurFade>
           </div>
         </section>
 
@@ -151,7 +162,8 @@ export default async function AcqLandingPage({
             <h2 className="lx-heading">{HOW_IT_WORKS.eyebrow}</h2>
             <ol className="lx-steps">
               {HOW_IT_WORKS.steps.map((step) => (
-                <li key={step.label} className="lx-card">
+                <li key={step.label} className="lx-card relative overflow-hidden">
+                  <BorderBeam size={70} duration={12} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
                   <OfferScene title={step.label} />
                   <h3>{step.label}</h3>
                   <p>{step.body}</p>
@@ -191,17 +203,18 @@ export default async function AcqLandingPage({
         <section className="lx-section">
           <div className="lx-wrap">
             <h2 className="lx-heading">{FAQ.eyebrow}</h2>
-            <div className="lx-faq">
+            <Accordion className="lx-faq">
               {FAQ.items.map((item) => (
-                <details key={item.question}>
-                  <summary>
-                    <span>{item.question}</span>
-                    <span className="lx-plus" aria-hidden />
-                  </summary>
-                  <p className="lx-answer">{item.answer}</p>
-                </details>
+                <AccordionItem key={item.question} value={item.question} className="lx-card overflow-hidden border-0">
+                  <AccordionTrigger className="px-4 text-base font-semibold normal-case tracking-normal text-[var(--lx-accent-soft)]">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionPanel className="px-4 text-base leading-relaxed text-[var(--lx-muted)]">
+                    {item.answer}
+                  </AccordionPanel>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
             <div className="lx-center">
               <QualifyButton />
             </div>
@@ -210,9 +223,12 @@ export default async function AcqLandingPage({
 
         <section className="lx-section">
           <div className="lx-wrap lx-hero-inner">
-            <h2 className="lx-heading">{CLOSING.title}</h2>
-            <p className="lx-lead">{CLOSING.note}</p>
-            <QualifyButton />
+            <div className="relative mx-auto w-full max-w-3xl overflow-hidden rounded-[28px] px-6 py-10">
+              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} />
+              <h2 className="lx-heading">{CLOSING.title}</h2>
+              <p className="lx-lead">{CLOSING.note}</p>
+              <QualifyButton />
+            </div>
           </div>
         </section>
 

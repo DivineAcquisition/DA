@@ -1,8 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type FormEvent, type RefObject } from 'react';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { BlurFade } from '@/components/ui/blur-fade';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { MagicCard } from '@/components/ui/magic-card';
 import {
+  APPLY_LEGAL_FOOTER,
   APPLY_QUESTIONS,
   APPLY_SCREENS,
   APPLY_STEP_NOTE,
@@ -10,6 +15,7 @@ import {
   type ApplyAnswers,
   type ApplyScreen,
 } from '@/lib/acq/application-copy';
+import { LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
 import type { TrackingParamKey } from '@/lib/acq/config';
 import { AcqScheduler } from '../schedule/Scheduler';
 import { CalendarEmbed } from './CalendarEmbed';
@@ -192,9 +198,16 @@ export function ApplyDialog({
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
 
   return (
-    <>
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
+    <div className="acq-apply-screen">
+      <header className="acq-apply-bar">
+        <img src="/logo.png" alt="Divine Acquisition" className="acq-apply-logo" />
+        <button type="button" onClick={close} className="acq-apply-close" aria-label="Close">
+          <span aria-hidden>×</span>
+        </button>
+      </header>
+
+      <div className="acq-apply-main">
+        <BlurFade key={phase.name === 'question' ? `q-${phase.index}` : phase.name} delay={0.04} offset={8}>
           <p className="acq-apply-kicker">{phase.name === 'contact' ? 'Step 1 of 2' : 'Step 2 of 2'}</p>
           <h2 id={titleId} className="acq-apply-title">
             {phase.name === 'contact'
@@ -205,130 +218,155 @@ export function ApplyDialog({
           </h2>
           {phase.name !== 'screen' ? <p className="acq-apply-note">{APPLY_STEP_NOTE}</p> : null}
           {screen ? <p className="acq-apply-note">{screen.line}</p> : null}
-        </div>
-        <button type="button" onClick={close} className="acq-apply-close" aria-label="Close">
-          <span aria-hidden>×</span>
-        </button>
+
+          {phase.name === 'question' ? (
+            <div className="acq-apply-progress" aria-hidden>
+              {APPLY_QUESTIONS.map((item, index) => (
+                <span key={item.key} className={index <= phase.index ? 'is-on' : ''} />
+              ))}
+            </div>
+          ) : null}
+
+          {phase.name === 'contact' ? (
+            <form onSubmit={onSubmit} className="acq-apply-form" noValidate>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel nativeLabel={false} render={<label htmlFor="apply-first-name" />}>
+                    First name
+                  </FieldLabel>
+                  <Input
+                    nativeInput
+                    id="apply-first-name"
+                    ref={firstFieldRef}
+                    name="firstName"
+                    type="text"
+                    autoComplete="given-name"
+                    required
+                    placeholder="Jordan"
+                    className="acq-apply-input"
+                    aria-invalid={fieldError.firstName ? true : undefined}
+                  />
+                  {fieldError.firstName ? <FieldError match>{fieldError.firstName}</FieldError> : null}
+                </Field>
+                <Field>
+                  <FieldLabel nativeLabel={false} render={<label htmlFor="apply-email" />}>
+                    Email
+                  </FieldLabel>
+                  <Input
+                    nativeInput
+                    id="apply-email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    placeholder="you@company.com"
+                    inputMode="email"
+                    className="acq-apply-input"
+                    aria-invalid={fieldError.email ? true : undefined}
+                  />
+                  {fieldError.email ? <FieldError match>{fieldError.email}</FieldError> : null}
+                </Field>
+                <Field>
+                  <FieldLabel nativeLabel={false} render={<label htmlFor="apply-phone" />}>
+                    Phone
+                  </FieldLabel>
+                  <Input
+                    nativeInput
+                    id="apply-phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    required
+                    placeholder="(555) 201-8890"
+                    inputMode="tel"
+                    className="acq-apply-input"
+                    aria-invalid={fieldError.phone ? true : undefined}
+                  />
+                  {fieldError.phone ? <FieldError match>{fieldError.phone}</FieldError> : null}
+                </Field>
+                <label className="acq-consent">
+                  <input name="smsConsent" type="checkbox" />
+                  <span>{SMS_CONSENT_WORDING}</span>
+                </label>
+                <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                  <label>
+                    Website
+                    <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+                  </label>
+                </div>
+                {error ? (
+                  <p className="acq-apply-error" role="alert">
+                    {error}
+                  </p>
+                ) : null}
+                <button type="submit" className="acq-button acq-button-full" disabled={pending}>
+                  {pending ? 'Saving…' : 'Continue'}
+                </button>
+              </FieldGroup>
+            </form>
+          ) : null}
+
+          {question ? (
+            <div className="acq-apply-options">
+              {phase.name === 'question' && phase.index > 0 ? (
+                <button
+                  type="button"
+                  className="acq-apply-back"
+                  onClick={() => setPhase({ name: 'question', index: phase.index - 1 })}
+                >
+                  Back
+                </button>
+              ) : null}
+              {question.options.map((option) => (
+                <MagicCard key={option}>
+                  <button
+                    type="button"
+                    className="acq-choice"
+                    disabled={pending}
+                    onClick={() => void choose(option)}
+                  >
+                    <BorderBeam size={48} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+                    {option}
+                  </button>
+                </MagicCard>
+              ))}
+              {error ? (
+                <p className="acq-apply-error" role="alert">
+                  {error}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
+          {phase.name === 'screen' && phase.screen === 'calendar' ? (
+            <div className="acq-apply-calendar">
+              {token.length >= 32 ? (
+                <AcqScheduler
+                  token={token}
+                  initialPhone={phone}
+                  onBooked={() => {
+                    void postApply({ action: 'book', token, tracking, test: testMode });
+                  }}
+                />
+              ) : (
+                <CalendarEmbed className="mt-4" iframeClassName="h-[640px]" />
+              )}
+            </div>
+          ) : null}
+        </BlurFade>
       </div>
 
-      {phase.name === 'question' ? (
-        <div className="acq-apply-progress" aria-hidden>
-          {APPLY_QUESTIONS.map((item, index) => (
-            <span key={item.key} className={index <= phase.index ? 'is-on' : ''} />
-          ))}
-        </div>
-      ) : null}
-
-      {phase.name === 'contact' ? (
-        <form onSubmit={onSubmit} className="acq-apply-form" noValidate>
-          <label className="acq-apply-field">
-            <span>First name</span>
-            <Input
-              nativeInput
-              ref={firstFieldRef}
-              name="firstName"
-              type="text"
-              autoComplete="given-name"
-              required
-              placeholder="Jordan"
-              className="acq-apply-input"
-            />
-            {fieldError.firstName ? <small>{fieldError.firstName}</small> : null}
-          </label>
-          <label className="acq-apply-field">
-            <span>Email</span>
-            <Input
-              nativeInput
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@company.com"
-              inputMode="email"
-              className="acq-apply-input"
-            />
-            {fieldError.email ? <small>{fieldError.email}</small> : null}
-          </label>
-          <label className="acq-apply-field">
-            <span>Phone</span>
-            <Input
-              nativeInput
-              name="phone"
-              type="tel"
-              autoComplete="tel"
-              required
-              placeholder="(555) 201-8890"
-              inputMode="tel"
-              className="acq-apply-input"
-            />
-            {fieldError.phone ? <small>{fieldError.phone}</small> : null}
-          </label>
-          <label className="acq-consent">
-            <input name="smsConsent" type="checkbox" />
-            <span>{SMS_CONSENT_WORDING}</span>
-          </label>
-          <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-            <label>
-              Website
-              <input name="website" type="text" tabIndex={-1} autoComplete="off" />
-            </label>
-          </div>
-          {error ? (
-            <p className="acq-apply-error" role="alert">
-              {error}
-            </p>
-          ) : null}
-          <button type="submit" className="acq-button acq-button-full" disabled={pending}>
-            {pending ? 'Saving…' : 'Continue'}
-          </button>
-        </form>
-      ) : null}
-
-      {question ? (
-        <div className="acq-apply-options">
-          {phase.name === 'question' && phase.index > 0 ? (
-            <button
-              type="button"
-              className="acq-apply-back"
-              onClick={() => setPhase({ name: 'question', index: phase.index - 1 })}
-            >
-              Back
-            </button>
-          ) : null}
-          {question.options.map((option) => (
-            <button
-              key={option}
-              type="button"
-              className="acq-choice"
-              disabled={pending}
-              onClick={() => void choose(option)}
-            >
-              {option}
-            </button>
-          ))}
-          {error ? (
-            <p className="acq-apply-error" role="alert">
-              {error}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
-      {phase.name === 'screen' && phase.screen === 'calendar' ? (
-        <div className="acq-apply-calendar">
-          {token.length >= 32 ? (
-            <AcqScheduler
-              token={token}
-              initialPhone={phone}
-              onBooked={() => {
-                void postApply({ action: 'book', token, tracking, test: testMode });
-              }}
-            />
-          ) : (
-            <CalendarEmbed className="mt-4" iframeClassName="h-[640px]" />
-          )}
-        </div>
-      ) : null}
-    </>
+      <footer className="acq-apply-legal">
+        <p>{APPLY_LEGAL_FOOTER.company}</p>
+        {APPLY_LEGAL_FOOTER.lines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
+        <p>
+          <a href={LEGAL_TERMS_URL}>Terms</a>
+          {' · '}
+          <a href={LEGAL_PRIVACY_URL}>Privacy</a>
+        </p>
+      </footer>
+    </div>
   );
 }

@@ -2,6 +2,17 @@
 
 export const APPLY_STEP_NOTE = 'Takes about a minute.';
 
+/** Shown on every screen of the application. Matches the optional reminder checkbox and the free audit. */
+export const APPLY_LEGAL_FOOTER = {
+  company: 'Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706.',
+  lines: [
+    'Submitting this form requests a free sales audit. It is not a purchase.',
+    'We text appointment reminders only if you check the box. Consent is not required to apply. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.',
+    'We email you about your application. You can unsubscribe at any time.',
+    'This site is not part of, or endorsed by, Facebook or Meta. Results are not typical or guaranteed.',
+  ],
+} as const;
+
 export const SMS_CONSENT_WORDING =
   'Text me appointment reminders for my call. Message and data rates may apply. Reply STOP to opt out.';
 
