@@ -35,6 +35,9 @@ export type ApplyRecord = {
   ghlContactId: string;
   recovery: 'running' | 'stopped' | 'skipped';
   failures: string[];
+  /** Set when Step 2 should return before the other destinations finish. */
+  deliveryPending?: boolean;
+  delivery?: import('./application-deliver').ApplicationDelivery;
 };
 
 export type RetryJob = {
@@ -61,6 +64,8 @@ export type ApplyDeps = {
   syncAirtable: (record: ApplyRecord) => Promise<{ ok: true } | { ok: false; error: string }>;
   startRecovery: (record: ApplyRecord) => Promise<void>;
   stopRecovery: (email: string) => Promise<void>;
+  /** When true, Step 2 saves the route and returns. Delivery runs after the response. */
+  backgroundComplete?: boolean;
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -278,7 +283,11 @@ export function createApplyFlow(deps: ApplyDeps) {
         record.recovery = 'stopped';
       }
       const tags = record.test ? [...route.tags, 'da-test'] : [...route.tags];
-      await syncBoth(deps, record, tags);
+      if (deps.backgroundComplete) {
+        record.deliveryPending = true;
+      } else {
+        await syncBoth(deps, record, tags);
+      }
       await deps.save(record);
       await remember(deps, record, 'step2_completed');
       await remember(deps, record, 'route_shown', { screen: route.screen });

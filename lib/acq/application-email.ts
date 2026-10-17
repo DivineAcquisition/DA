@@ -96,6 +96,31 @@ export function buildApplicationAlertEmail(input: {
   return { subject, html, text };
 }
 
+export async function sendCompletedApplicationEmail(input: {
+  to: string;
+  subject: string;
+  text: string;
+  filename: string;
+  pdf: Uint8Array;
+}): Promise<{ id: string }> {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
+  const resend = new Resend(apiKey);
+  const { data, error } = await resend.emails.send({
+    from: WORKSPACE_RESEND_FROM,
+    to: [input.to],
+    subject: input.subject,
+    text: input.text,
+    attachments: [{ filename: input.filename, content: Buffer.from(input.pdf) }],
+    tags: [
+      { name: 'surface', value: 'acq' },
+      { name: 'type', value: 'application_alert' },
+    ],
+  });
+  if (error || !data?.id) throw new Error(error?.message ?? 'Resend did not return an email id');
+  return { id: data.id };
+}
+
 export async function sendApplicationAlertEmail(input: {
   payload: QualificationPayload;
   ghlContactId?: string;

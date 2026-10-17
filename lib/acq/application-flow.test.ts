@@ -16,11 +16,12 @@ import { routeApplication } from './application-route';
 
 const NOW = new Date('2026-10-17T15:00:00.000Z');
 
-function harness(options: { ghl?: boolean; airtable?: boolean } = {}) {
+function harness(options: { ghl?: boolean; airtable?: boolean; backgroundComplete?: boolean } = {}) {
   const records = new Map<string, ApplyRecord>();
   const events: ApplyDeps['events'] = [];
   const retries: RetryJob[] = [];
   const ghl = new Map<string, string>();
+  let ghlCalls = 0;
   let ghlUp = options.ghl !== false;
   const airtableUp = options.airtable !== false;
   let recoveryStarts = 0;
@@ -41,6 +42,7 @@ function harness(options: { ghl?: boolean; airtable?: boolean } = {}) {
     retries,
     rateLimit: () => true,
     syncGhl: async (record) => {
+      ghlCalls += 1;
       if (!ghlUp) return { ok: false, error: 'ghl_down' };
       const id = ghl.get(record.contact.email) ?? `ghl_${ghl.size + 1}`;
       ghl.set(record.contact.email, id);
@@ -53,6 +55,7 @@ function harness(options: { ghl?: boolean; airtable?: boolean } = {}) {
     stopRecovery: async () => {
       recoveryStops += 1;
     },
+    backgroundComplete: options.backgroundComplete,
   };
   return {
     flow: createApplyFlow(deps),
@@ -60,6 +63,7 @@ function harness(options: { ghl?: boolean; airtable?: boolean } = {}) {
     events,
     retries,
     ghl,
+    ghlCalls: () => ghlCalls,
     recoveryStarts: () => recoveryStarts,
     recoveryStops: () => recoveryStops,
     setGhl(up: boolean) {
@@ -293,6 +297,17 @@ describe('application flow', () => {
     });
     expect(box.records.get(test.token)?.test).toBe(true);
     expect(box.recoveryStarts()).toBe(1);
+  });
+
+  it('returns the next screen before the other destinations run', async () => {
+    const box = harness({ backgroundComplete: true });
+    const started = await box.flow.start(contact);
+    if (!started.ok || !started.token) throw new Error('start');
+    const afterStart = box.ghlCalls();
+    const done = await finish(box, started.token, ['$10K+', '$10K+', 'Me', "Leads don't book"]);
+    expect(done).toEqual({ ok: true, screen: 'calendar' });
+    expect(box.ghlCalls()).toBe(afterStart);
+    expect(box.records.get(started.token)?.deliveryPending).toBe(true);
   });
 
   it('normalizes a US phone and blocks junk', () => {

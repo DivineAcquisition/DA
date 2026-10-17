@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 import { touchFromTracking } from '@/lib/acq/application-attribution';
 import { publicShape } from '@/lib/acq/application-flow';
-import { applyFlow, readStoredTouch, rememberTouches } from '@/lib/acq/application-server';
+import { applyFlow, deliverCompletedApplication, readStoredTouch, rememberTouches } from '@/lib/acq/application-server';
 
 export const dynamic = 'force-dynamic';
 
@@ -74,14 +74,20 @@ export async function POST(request: Request) {
       return NextResponse.json(result, { status: result.ok ? 200 : 400 });
     }
     if (action === 'answer') {
+      const token = clip(body.token, 120);
       const result = publicShape(
         await applyFlow.answer({
-          token: clip(body.token, 120),
+          token,
           question: Number(body.question),
           value: clip(body.value, 80),
         }),
       );
-      if (result.ok) await applyFlow.retry();
+      if (result.ok && result.screen) {
+        after(() => {
+          void deliverCompletedApplication(token).catch((error) => console.error('[acq:deliver]', error));
+        });
+      }
+      if (result.ok) void applyFlow.retry();
       return NextResponse.json(result, { status: result.ok ? 200 : 400 });
     }
     if (action === 'resume') {
