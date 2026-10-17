@@ -1,20 +1,38 @@
+import { FACEBOOK_DISCLAIMER } from './copy';
+
 /** Visitor-facing application copy. No routing rules live in this file. */
 
 export const APPLY_STEP_NOTE = 'Takes about a minute.';
 
-/** Shown on every screen of the application. Matches the optional reminder checkbox and the free audit. */
+/**
+ * Bump when the checkbox sentence changes. Stored only if the box is checked.
+ * The older qualify form still uses ACQ_SMS_CONSENT_VERSION.
+ */
+export const APPLY_SMS_CONSENT_VERSION = 'acq-reminders-2026-10-17b';
+
+/**
+ * Pinned to the bottom of every application screen.
+ *
+ * TCPA / CTIA: the sender is named, texts are appointment reminders only,
+ * frequency and rates are disclosed, STOP and HELP are named, and the box
+ * is optional and separate from submitting.
+ * CAN-SPAM: legal name, postal address, and an email unsubscribe path.
+ * The Meta line is the ad-platform disclaimer. Results are not guaranteed.
+ */
 export const APPLY_LEGAL_FOOTER = {
   company: 'Divine Acquisition LLC, 7404 Executive Place, Lanham, MD 20706.',
   lines: [
-    'Submitting this form requests a free sales audit. It is not a purchase.',
-    'We text appointment reminders only if you check the box. Consent is not required to apply. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help.',
-    'We email you about your application. You can unsubscribe at any time.',
-    'This site is not part of, or endorsed by, Facebook or Meta. Results are not typical or guaranteed.',
+    'Submitting this form requests a free sales audit. It is not a purchase, and it does not start a client agreement.',
+    'Appointment reminder texts are sent only if you check the box. Consent is optional, is not required to apply or to buy anything, and you can withdraw it by replying STOP. Reply HELP for help. Message frequency varies. Message and data rates may apply.',
+    'We may call and email you about the audit you requested. You can unsubscribe from email at any time.',
+    'We use your name, email, phone, and answers to review fit and follow up. If you came from an ad, we store the campaign parameters so we know which ad brought you here.',
+    FACEBOOK_DISCLAIMER,
+    'Results are not typical or guaranteed.',
   ],
 } as const;
 
 export const SMS_CONSENT_WORDING =
-  'Text me appointment reminders for my call. Message and data rates may apply. Reply STOP to opt out.';
+  'Text me appointment reminders from Divine Acquisition LLC about my audit. Message frequency varies. Message and data rates may apply. Reply STOP to opt out or HELP for help. Consent is not required to apply.';
 
 export const AD_SPEND_OPTIONS = ['Not running ads', 'Under $5K', '$5K to $10K', '$10K+'] as const;
 export const OFFER_PRICE_OPTIONS = ['Under $3K', '$3K to $6K', '$6K to $10K', '$10K+'] as const;

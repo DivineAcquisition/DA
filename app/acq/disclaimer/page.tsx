@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
 import LegalShell from '../components/LegalShell';
 
 export const metadata: Metadata = {
   title: { absolute: 'Disclaimer | Divine Acquisition' },
-  description: 'Disclaimer for Divine Acquisition.',
+  description: 'Disclaimer for the Divine Acquisition founding install site.',
   alternates: {
     canonical: 'https://acq.divineacquisition.io/disclaimer',
   },
@@ -12,19 +13,17 @@ export const metadata: Metadata = {
 export default function DisclaimerPage() {
   return (
     <LegalShell title="Disclaimer">
+      <p>Last updated October 17, 2026.</p>
       <p>
-        This page is a placeholder for the Divine Acquisition disclaimer. The full disclaimer will
-        be published here.
+        Information on this site describes the founding install and the free sales audit. Results
+        vary by business, market, and execution. Nothing on this site is a guarantee of revenue,
+        show rate, appointments, or any other outcome. Examples are not typical.
       </p>
       <p>
-        Information on this site describes the founding-install offer. Results vary by business,
-        market, and execution. Nothing on this site is a guarantee of revenue, appointments, or
-        outcomes.
+        The audit is a conversation about your numbers and a written blueprint of what we see. It is
+        not a promise that a particular fix will produce a particular result.
       </p>
-      <p>
-        This site is not a part of the Facebook website or Facebook Inc. Additionally, this site is
-        NOT endorsed by Facebook in any way. FACEBOOK is a trademark of META PLATFORMS, Inc.
-      </p>
+      <p>{FACEBOOK_DISCLAIMER}</p>
     </LegalShell>
   );
 }

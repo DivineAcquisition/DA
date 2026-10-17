@@ -3,6 +3,8 @@ import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { BlurFade } from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { DotPattern } from '@/components/ui/dot-pattern';
+import { MagicCard } from '@/components/ui/magic-card';
+import { Marquee } from '@/components/ui/marquee';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
@@ -98,6 +100,16 @@ export default async function AcqLandingPage({
               </li>
             </ul>
             </BlurFade>
+            <Marquee pauseOnHover className="mt-12 w-full [--duration:32s] [--gap:0.75rem]">
+              {[LANDING_QUALIFIER, ...LANDING_TRUST, 'Free audit', 'Installed in 14 days'].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-neutral-300"
+                >
+                  {item}
+                </span>
+              ))}
+            </Marquee>
           </div>
         </section>
 
@@ -107,23 +119,28 @@ export default async function AcqLandingPage({
             <p className="lx-intro">{BUILD.note}</p>
             <ul className="lx-offer">
               {BUILD.items.map((item) => (
-                <li key={item.title} className="lx-card">
-                  <OfferScene title={item.title} />
-                  <h3>{item.title}</h3>
-                  <ul>
-                    {item.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                  <p className="lx-done">
-                    <strong>Done when:</strong> {item.done}
-                  </p>
+                <li key={item.title} className="lx-card overflow-hidden">
+                  <MagicCard contentClassName="flex h-full flex-col gap-[0.85rem]">
+                    <OfferScene title={item.title} />
+                    <h3>{item.title}</h3>
+                    <ul>
+                      {item.points.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    <p className="lx-done">
+                      <strong>Done when:</strong> {item.done}
+                    </p>
+                  </MagicCard>
                 </li>
               ))}
             </ul>
-            <p className="lx-callout">
-              <strong>The audit is free.</strong> You keep the findings either way.
-            </p>
+            <div className="lx-callout relative overflow-hidden">
+              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} />
+              <p className="m-0">
+                <strong>The audit is free.</strong> You keep the findings either way.
+              </p>
+            </div>
             <div className="lx-center">
               <QualifyButton />
             </div>
@@ -136,13 +153,16 @@ export default async function AcqLandingPage({
             <p className="lx-intro">{PROBLEM.body}</p>
             <ul className="lx-patterns">
               {QUESTIONS.items.map((question, index) => (
-                <li key={question} className="lx-card lx-pattern">
-                  <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
-                  <h3>{question}</h3>
+                <li key={question} className="lx-card lx-pattern overflow-hidden">
+                  <MagicCard contentClassName="flex h-full flex-col gap-[0.85rem]">
+                    <span className="lx-num">{String(index + 1).padStart(2, '0')}</span>
+                    <h3>{question}</h3>
+                  </MagicCard>
                 </li>
               ))}
             </ul>
-            <div className="lx-close">
+            <div className="lx-close relative overflow-hidden">
+              <BorderBeam size={80} duration={12} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
               <p>{WHY_US.lead}</p>
               <h3>So you see the leak before you pay.</h3>
               <ul>

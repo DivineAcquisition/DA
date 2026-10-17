@@ -21,6 +21,7 @@ import {
   upsertAirtableLead,
   upsertGhlContact,
 } from './pipeline';
+import { APPLY_SMS_CONSENT_VERSION } from './application-copy';
 import { stepOneTags } from './application-route';
 import type { QualificationPayload } from './qualify';
 
@@ -142,7 +143,7 @@ async function persistLead(record: ApplyRecord) {
     schedule_token: record.token,
     sms_consent: record.contact.smsConsent,
     sms_consent_at: record.contact.consentAt,
-    sms_consent_wording_version: 'acq-reminders-2026-10-17',
+    sms_consent_wording_version: record.contact.smsConsent ? APPLY_SMS_CONSENT_VERSION : null,
     sms_consent_page_url: record.contact.consentPage,
     notes: applicationNote(record),
     payload,
@@ -199,7 +200,7 @@ const deps: ApplyDeps = {
       firstName: record.contact.firstName,
       smsConsent: record.contact.smsConsent,
       smsConsentAt: record.contact.smsConsent ? record.contact.consentAt : null,
-      smsConsentWordingVersion: record.contact.smsConsent ? 'acq-reminders-2026-10-17' : null,
+      smsConsentWordingVersion: record.contact.smsConsent ? APPLY_SMS_CONSENT_VERSION : null,
       smsConsentPageUrl: record.contact.consentPage,
       ghlContactId: record.ghlContactId || undefined,
     });

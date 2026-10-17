@@ -255,6 +255,7 @@ export const FORM_SUBMIT_NOTE =
 
 export const LEGAL_TERMS_URL = 'https://acq.divineacquisition.io/terms';
 export const LEGAL_PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
+export const LEGAL_DISCLAIMER_URL = 'https://acq.divineacquisition.io/disclaimer';
 
 export const FORM_LABELS = {
   fullName: 'Name',

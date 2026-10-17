@@ -77,7 +77,7 @@ export function QualifyProvider({
     <QualifyContext.Provider value={{ open }}>
       <ApplyAttribution tracking={tracking} testMode={testMode} />
       {children}
-      <dialog ref={dialogRef} aria-labelledby="acq-apply-title" className="acq-dialog acq-coaches acq-apply-dialog">
+      <dialog ref={dialogRef} aria-labelledby="acq-apply-title" className="acq-apply-dialog acq-coaches">
         <ApplyDialog
           dialogRef={dialogRef as RefObject<HTMLDialogElement | null>}
           firstFieldRef={firstFieldRef}
