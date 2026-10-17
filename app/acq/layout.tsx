@@ -24,14 +24,14 @@ export const metadata: Metadata = {
     template: '%s | Divine Acquisition',
   },
   description:
-    "Turn the leads you're paying for into booked, held calls, built for you in 14 days. We rebuild intake, scoring, follow-up, and call prep so your team carries more leads without another hire.",
+    "We'll Install The System That Raises Your Show Rate And Sales From The Same Ad Spend. Done For You, Live In 14 Days (Or You Get 75% Back)",
   alternates: {
     canonical: 'https://acq.divineacquisition.io/',
   },
   openGraph: {
     title: 'Divine Acquisition | Founding Install',
     description:
-      "Turn the leads you're paying for into booked, held calls, built for you in 14 days. We rebuild intake, scoring, follow-up, and call prep so your team carries more leads without another hire.",
+      "We'll Install The System That Raises Your Show Rate And Sales From The Same Ad Spend. Done For You, Live In 14 Days (Or You Get 75% Back)",
     url: 'https://acq.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Divine Acquisition | Founding Install',
     description:
-      "Turn the leads you're paying for into booked, held calls, built for you in 14 days. We rebuild intake, scoring, follow-up, and call prep so your team carries more leads without another hire.",
+      "We'll Install The System That Raises Your Show Rate And Sales From The Same Ad Spend. Done For You, Live In 14 Days (Or You Get 75% Back)",
   },
   robots: {
     index: true,

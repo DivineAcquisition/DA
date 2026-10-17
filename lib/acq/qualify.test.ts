@@ -309,11 +309,11 @@ describe('founding landing media', () => {
     );
     expect(copy.HEADLINE).not.toMatch(/[—–]/);
     expect(copy.HEADLINE).toBe(
-      "TURN THE LEADS YOU'RE PAYING FOR INTO BOOKED, HELD CALLS (BUILT FOR YOU IN 14 DAYS)",
+      "We'll Install The System That Raises Your Show Rate And Sales From The Same Ad Spend. Done For You, Live In 14 Days (Or You Get 75% Back)",
     );
-    expect(copy.HEADLINE_ACCENT).toBe('(BUILT FOR YOU IN 14 DAYS)');
-    expect(copy.HEADLINE).toContain('BOOKED, HELD CALLS');
-    expect(copy.HEADLINE_BEFORE).toContain('TURN THE LEADS');
+    expect(copy.HEADLINE_ACCENT).toBe('Done For You, Live In 14 Days');
+    expect(copy.HEADLINE).toContain('Show Rate');
+    expect(copy.HEADLINE_BEFORE).toContain("We'll Install");
     expect(
       copy.HEADLINE.split(/\s+/)
         .filter(Boolean)

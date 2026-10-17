@@ -2,11 +2,12 @@
 
 export const PILL_BANNER = 'FOR COACHES, CONSULTANTS & COURSE TEAMS SPENDING $5K+/MO ON ADS';
 
-export const HEADLINE_BEFORE = "TURN THE LEADS YOU'RE PAYING FOR INTO BOOKED, HELD CALLS ";
+export const HEADLINE_BEFORE =
+  "We'll Install The System That Raises Your Show Rate And Sales From The Same Ad Spend. ";
 
-export const HEADLINE_ACCENT = '(BUILT FOR YOU IN 14 DAYS)';
+export const HEADLINE_ACCENT = 'Done For You, Live In 14 Days';
 
-export const HEADLINE_AFTER = '';
+export const HEADLINE_AFTER = ' (Or You Get 75% Back)';
 
 export const HEADLINE = `${HEADLINE_BEFORE}${HEADLINE_ACCENT}${HEADLINE_AFTER}`;
 
