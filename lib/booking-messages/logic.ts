@@ -373,6 +373,21 @@ function cancelPending(slice: Slice, predicate: (message: QueuedMessage) => bool
   }
 }
 
+/** Stops the application nudge once Step 2 is finished. Booked calls are untouched. */
+export function cancelApplicationMessages(slice: Slice, email: string): Slice {
+  const next = clone(slice);
+  const wanted = email.trim().toLowerCase();
+  const ids = new Set(
+    next.people.filter((person) => person.email.trim().toLowerCase() === wanted).map((person) => person.id),
+  );
+  cancelPending(
+    next,
+    (message) => ids.has(message.personId) && message.type === 'application_received',
+    'application_complete',
+  );
+  return next;
+}
+
 function activeBooking(booking: Booking): boolean {
   return booking.status === 'booked' || booking.status === 'rescheduled' || booking.status === 'held';
 }

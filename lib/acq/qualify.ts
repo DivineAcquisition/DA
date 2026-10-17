@@ -72,6 +72,8 @@ export type QualificationPayload = {
   attribution?: Record<string, string>;
   /** Page that showed the SMS box. Set by the server, not the form. */
   consentPageUrl?: string;
+  /** Extra lines for the coaches application. Omitted by older forms. */
+  applicationNote?: string;
 };
 
 export type QualificationResult = 'Qualified' | 'Manual Review' | 'Disqualified';
@@ -394,6 +396,7 @@ export function ghlContactNote(payload: QualificationPayload): string {
     payload.programPrice ? `Program price: ${payload.programPrice}` : null,
     payload.smsConsent ? 'Consent to calls and texts: yes' : null,
     payload.emailConsent ? 'Consent to email and the free blueprint: yes' : null,
+    payload.applicationNote || null,
     ...visitLines,
   ]
     .filter((line): line is string => Boolean(line))

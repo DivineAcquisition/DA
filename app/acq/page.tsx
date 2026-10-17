@@ -49,9 +49,10 @@ export default async function AcqLandingPage({
 }) {
   const query = await searchParams;
   const tracking = trackingFromSearchParams(query);
+  const testMode = query.da_test === '1' || (Array.isArray(query.da_test) && query.da_test.includes('1'));
 
   return (
-    <QualifyProvider tracking={tracking}>
+    <QualifyProvider tracking={tracking} testMode={testMode}>
       <div className="acq-coaches min-h-screen antialiased">
         <section className="lx-hero">
           <div className="lx-wrap lx-hero-inner">

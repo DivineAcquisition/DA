@@ -168,7 +168,7 @@ function contactIdFrom(payload: { contact?: { id?: string }; id?: string }): str
   return payload.contact?.id ?? payload.id ?? null;
 }
 
-async function searchGhlContact(email: string): Promise<string | null> {
+async function searchGhlContact(email: string, phone?: string): Promise<string | null> {
   try {
     const duplicate = await ghlFetch<{ contact?: { id?: string }; id?: string }>(
       `/contacts/search/duplicate?locationId=${encodeURIComponent(ACQ_GHL_LOCATION_ID)}&email=${encodeURIComponent(email)}`,
@@ -191,7 +191,23 @@ async function searchGhlContact(email: string): Promise<string | null> {
   const match = (listed.contacts ?? []).find(
     (contact) => contact.email?.trim().toLowerCase() === email && contact.id,
   );
-  return match?.id ?? null;
+  if (match?.id) return match.id;
+
+  const digits = (phone ?? '').replace(/\D/g, '');
+  if (digits.length < 7) return null;
+  try {
+    const byPhone = await ghlFetch<{ contact?: { id?: string }; id?: string }>(
+      `/contacts/search/duplicate?locationId=${encodeURIComponent(ACQ_GHL_LOCATION_ID)}&phone=${encodeURIComponent(phone ?? '')}`,
+      { method: 'GET' },
+      'ghl-search',
+    );
+    return contactIdFrom(byPhone);
+  } catch (error) {
+    if (!(error instanceof PipelineStepError) || !error.message.includes('(404)')) {
+      console.error('[acq:ghl-search-phone]', error);
+    }
+  }
+  return null;
 }
 
 export async function addGhlTags(contactId: string, tags: string[], step: string): Promise<void> {
@@ -262,7 +278,7 @@ export async function upsertGhlContact(
   if (payload.phone) body.phone = payload.phone;
   if (customFields.length) body.customFields = customFields;
 
-  const existingId = await searchGhlContact(payload.email);
+  const existingId = await searchGhlContact(payload.email, payload.phone);
   let contactId: string | null = existingId;
 
   if (existingId) {

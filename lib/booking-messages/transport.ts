@@ -435,6 +435,28 @@ async function writeTouch(message: QueuedMessage, person: Person): Promise<strin
   }
 }
 
+/** Cancels the unfinished-application nudge. Appointment reminders stay queued. */
+export async function stopApplicationRecovery(email: string): Promise<void> {
+  const db = database();
+  const wanted = email.trim().toLowerCase();
+  if (!db || !wanted) return;
+  const { data: people, error } = await db.from('booking_message_people').select('id').eq('email', wanted);
+  if (error || !people?.length) return;
+  const ids = people.map((person: { id?: string }) => person.id).filter((id): id is string => Boolean(id));
+  if (!ids.length) return;
+  await db
+    .from('booking_message_messages')
+    .update({
+      status: 'cancelled',
+      reason: 'application_complete',
+      final: true,
+      updated_at: new Date().toISOString(),
+    })
+    .in('person_id', ids)
+    .eq('message_type', 'application_received')
+    .eq('status', 'pending');
+}
+
 export async function recordBookingEvent(event: NormalizedEvent): Promise<
   { ok: true; duplicate: boolean; unmatched: boolean } | { ok: false; error: string }
 > {

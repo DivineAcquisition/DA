@@ -22,13 +22,17 @@ export function AcqScheduler({
   token,
   booked = null,
   trackBooking = false,
+  initialPhone = '',
+  onBooked,
 }: {
   token: string;
   booked?: { startsAt: string; timeZone: string; meetUrl?: string | null } | null;
   /** Roofing leads fire the existing Schedule event once. Coaches stay unchanged. */
   trackBooking?: boolean;
+  initialPhone?: string;
+  onBooked?: () => void;
 }) {
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(initialPhone);
   const fired = useRef(false);
 
   useEffect(() => {
@@ -82,6 +86,7 @@ export function AcqScheduler({
           }
           const result = await bookAcqAuditAction(token, input.startsAt, input.timeZone, phone.trim());
           if (!result.ok) return result;
+          if (!result.alreadyBooked) onBooked?.();
           if (trackBooking && !result.alreadyBooked && !fired.current && rememberSchedulePixel(token)) {
             fired.current = true;
             trackRoofingBrowser('Schedule', result.eventId || crypto.randomUUID());

@@ -1158,6 +1158,154 @@ a.acq-button:active {
   .acq-coaches .acq-button { min-height: 3.6rem; font-size: 0.95rem; }
 }
 
+.acq-apply-dialog {
+  width: min(36rem, calc(100vw - 1.25rem));
+  min-width: 0;
+  padding: 1.2rem 1.15rem 1.25rem;
+}
+
+.acq-apply-dialog:has(.acq-apply-calendar) {
+  width: min(52rem, calc(100vw - 1rem));
+}
+
+.acq-apply-kicker {
+  margin: 0;
+  color: #c3b6fe;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.acq-apply-title {
+  margin: 0.45rem 0 0;
+  color: #fff;
+  font-size: clamp(1.45rem, 4vw, 1.85rem);
+  font-weight: 750;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-align: left;
+  text-transform: none;
+}
+
+.acq-apply-note {
+  margin: 0.55rem 0 0;
+  max-width: 38rem;
+  color: #b9b9c7;
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.acq-apply-close {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #cfcfe0;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.acq-apply-close:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.acq-apply-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+  margin-top: 1.1rem;
+}
+
+.acq-apply-progress span {
+  height: 0.28rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.acq-apply-progress span.is-on {
+  background: #c3b6fe;
+}
+
+.acq-apply-form,
+.acq-apply-options {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.15rem;
+}
+
+.acq-apply-field {
+  display: grid;
+  gap: 0.35rem;
+  color: #dedeea;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.acq-apply-field small,
+.acq-apply-error {
+  color: #ffb4b4;
+  font-size: 0.82rem;
+  font-weight: 550;
+}
+
+.acq-apply-input {
+  min-height: 3.1rem;
+  font-size: 1rem;
+}
+
+.acq-choice,
+.acq-apply-back {
+  width: 100%;
+  min-height: 3.35rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(195, 182, 254, 0.28);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.acq-choice:hover,
+.acq-choice:focus-visible,
+.acq-apply-back:hover {
+  border-color: #c3b6fe;
+  background: rgba(154, 136, 252, 0.14);
+}
+
+.acq-choice:disabled {
+  opacity: 0.7;
+}
+
+.acq-apply-back {
+  color: #c3b6fe;
+  font-size: 0.92rem;
+}
+
+.acq-apply-calendar {
+  margin-top: 1rem;
+}
+
+@media (max-width: 700px) {
+  .acq-apply-dialog {
+    width: calc(100vw - 0.8rem);
+    max-height: calc(100dvh - 0.8rem);
+    padding: 1rem 0.9rem 1.1rem;
+    border-radius: 20px;
+  }
+
+  .acq-choice {
+    min-height: 3.5rem;
+  }
+}
+
 .acq-dialog .lx-headline {
   margin-top: 1rem;
   font-size: 1.45rem;
