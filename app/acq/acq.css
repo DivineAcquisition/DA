@@ -1177,7 +1177,7 @@ a.acq-button:active {
   text-transform: uppercase;
 }
 
-.acq-apply-title {
+.acq-coaches h2.acq-apply-title {
   margin: 0.45rem 0 0;
   color: #fff;
   font-size: clamp(1.45rem, 4vw, 1.85rem);
