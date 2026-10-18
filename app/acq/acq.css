@@ -1188,6 +1188,7 @@ dialog.acq-apply-dialog::backdrop {
   height: 100dvh;
   min-height: 0;
   flex-direction: column;
+  align-items: center;
   overflow: hidden;
 }
 
@@ -1206,6 +1207,12 @@ dialog.acq-apply-dialog::backdrop {
   height: 100%;
   background: linear-gradient(90deg, #9a88fc, #c3b6fe);
   transition: width 0.35s ease;
+}
+
+.acq-apply-bar,
+.acq-apply-legal {
+  align-self: stretch;
+  width: 100%;
 }
 
 .acq-apply-bar {
@@ -1240,11 +1247,13 @@ dialog.acq-apply-dialog::backdrop {
   display: flex;
   flex: 1;
   align-items: center;
+  align-self: center;
+  justify-content: center;
   min-height: 0;
   overflow: auto;
-  width: min(40rem, 100%);
-  margin: 0 auto;
-  padding: 1rem 1.25rem 1.25rem;
+  width: min(24rem, calc(100% - 2.5rem));
+  margin: 0;
+  padding: 1rem 0 1.25rem;
 }
 
 .acq-apply-control {
@@ -1254,8 +1263,8 @@ dialog.acq-apply-dialog::backdrop {
 .acq-apply-nav {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+  justify-content: center;
+  gap: 0.85rem;
   margin-top: 1.15rem;
 }
 
@@ -1329,11 +1338,13 @@ dialog.acq-apply-dialog::backdrop {
 
 .acq-apply-stage {
   width: 100%;
+  text-align: center;
 }
 
 .acq-apply-index {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   margin: 0;
   color: #c3b6fe;
@@ -1426,7 +1437,7 @@ dialog.acq-apply-dialog::backdrop {
   font-weight: 650;
   letter-spacing: -0.045em;
   line-height: 1.08;
-  text-align: left;
+  text-align: center;
   text-transform: none;
 }
 
@@ -1436,11 +1447,12 @@ dialog.acq-apply-dialog::backdrop {
 }
 
 .acq-apply-note {
-  margin: 0.55rem 0 0;
+  margin: 0.55rem auto 0;
   max-width: 38rem;
   color: #b9b9c7;
   font-size: 0.98rem;
   line-height: 1.45;
+  text-align: center;
 }
 
 .acq-apply-close {

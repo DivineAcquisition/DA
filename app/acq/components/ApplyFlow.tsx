@@ -453,9 +453,7 @@ export function ApplyDialog({
                 <button type="button" className="acq-apply-back" onClick={back}>
                   Back
                 </button>
-              ) : (
-                <span />
-              )}
+              ) : null}
               <button type="submit" className="acq-button acq-apply-next" disabled={pending}>
                 {last ? (pending ? 'Saving…' : 'Submit') : 'Next'}
               </button>
