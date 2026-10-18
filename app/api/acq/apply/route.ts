@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { after, NextResponse } from 'next/server';
 import { touchFromTracking } from '@/lib/acq/application-attribution';
+import { APPLY_QUESTIONS, type ApplyAnswers } from '@/lib/acq/application-copy';
 import { publicShape } from '@/lib/acq/application-flow';
 import { applyFlow, deliverCompletedApplication, readStoredTouch, rememberTouches } from '@/lib/acq/application-server';
 
@@ -16,6 +17,18 @@ function clientIp(request: Request): string {
     request.headers.get('x-real-ip')?.trim() ||
     'local'
   );
+}
+
+function answersOf(body: Record<string, unknown>): ApplyAnswers {
+  const raw = body.answers;
+  if (!raw || typeof raw !== 'object') return {};
+  const source = raw as Record<string, unknown>;
+  const answers: Record<string, string> = {};
+  for (const question of APPLY_QUESTIONS) {
+    const value = clip(source[question.key], 80);
+    if (value) answers[question.key] = value;
+  }
+  return answers as ApplyAnswers;
 }
 
 function trackingOf(body: Record<string, unknown>): Record<string, string | undefined> {
@@ -52,6 +65,33 @@ export async function POST(request: Request) {
     if (action === 'open') {
       const result = await applyFlow.open({ adName: adName === 'direct' ? 'direct' : adName, test, key: `open:${clientIp(request)}` });
       return NextResponse.json(result, { status: result.ok ? 200 : 429 });
+    }
+    if (action === 'complete') {
+      await rememberTouches(incoming, storedFirst, storedLast);
+      const result = publicShape(
+        await applyFlow.complete({
+          firstName: clip(body.firstName, 80),
+          email: clip(body.email, 320),
+          phone: clip(body.phone, 40),
+          smsConsent: body.smsConsent === true,
+          website: clip(body.website, 200),
+          page: clip(body.page, 500),
+          test,
+          key: clientIp(request),
+          incoming,
+          storedFirst,
+          storedLast,
+          answers: answersOf(body),
+        }),
+      );
+      if (result.ok && result.token && result.screen) {
+        const token = result.token;
+        after(() => {
+          void deliverCompletedApplication(token).catch((error) => console.error('[acq:deliver]', error));
+        });
+      }
+      if (result.ok) await applyFlow.retry();
+      return NextResponse.json(result, { status: result.ok ? 200 : 400 });
     }
     if (action === 'start') {
       await rememberTouches(incoming, storedFirst, storedLast);

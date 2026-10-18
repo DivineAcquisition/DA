@@ -4,13 +4,14 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type RefObjec
 import { X } from 'lucide-react';
 import Logo from '@/app/components/Logo';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Field, FieldLabel } from '@/components/ui/field';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/select';
 import {
   APPLY_LEGAL_FOOTER,
   APPLY_QUESTIONS,
   APPLY_SCREENS,
+  APPLY_STEP_NOTE,
   SMS_CONSENT_WORDING,
   type ApplyAnswers,
   type ApplyQuestionKey,
@@ -26,69 +27,7 @@ const TOKEN_KEY = 'acq-apply-token';
 
 type FieldName = 'firstName' | 'email' | 'phone';
 
-type TextStep = {
-  kind: 'text';
-  key: FieldName;
-  prompt: string;
-  placeholder: string;
-  type: 'text' | 'email' | 'tel';
-  autoComplete: string;
-  inputMode: 'text' | 'email' | 'tel';
-};
-
-type ChoiceStep = {
-  kind: 'choice';
-  key: ApplyQuestionKey;
-  prompt: string;
-  options: readonly string[];
-};
-
-type SmsStep = { kind: 'sms'; prompt: string };
-
-type Step = TextStep | ChoiceStep | SmsStep;
-
-const STEPS: readonly Step[] = [
-  {
-    kind: 'text',
-    key: 'firstName',
-    prompt: 'What is your first name?',
-    placeholder: 'Jordan',
-    type: 'text',
-    autoComplete: 'given-name',
-    inputMode: 'text',
-  },
-  {
-    kind: 'text',
-    key: 'email',
-    prompt: 'What is your email?',
-    placeholder: 'you@company.com',
-    type: 'email',
-    autoComplete: 'email',
-    inputMode: 'email',
-  },
-  {
-    kind: 'text',
-    key: 'phone',
-    prompt: 'What is your phone number?',
-    placeholder: '(555) 201-8890',
-    type: 'tel',
-    autoComplete: 'tel',
-    inputMode: 'tel',
-  },
-  ...APPLY_QUESTIONS.map(
-    (question): ChoiceStep => ({
-      kind: 'choice',
-      key: question.key,
-      prompt: question.prompt,
-      options: question.options,
-    }),
-  ),
-  { kind: 'sms', prompt: 'Want a text reminder for your audit?' },
-];
-
-const TEXT_INDEX: Record<FieldName, number> = { firstName: 0, email: 1, phone: 2 };
-
-type Phase = { name: 'pages' } | { name: 'screen'; screen: ApplyScreen };
+type Phase = { name: 'form' } | { name: 'screen'; screen: ApplyScreen };
 
 async function postApply(body: Record<string, unknown>) {
   const response = await fetch('/api/acq/apply', {
@@ -137,8 +76,7 @@ export function ApplyDialog({
   testMode: boolean;
 }) {
   const titleId = 'acq-apply-title';
-  const [phase, setPhase] = useState<Phase>({ name: 'pages' });
-  const [index, setIndex] = useState(0);
+  const [phase, setPhase] = useState<Phase>({ name: 'form' });
   const [answers, setAnswers] = useState<ApplyAnswers>({});
   const [token, setToken] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -149,7 +87,6 @@ export function ApplyDialog({
   const [pending, setPending] = useState(false);
   const lock = useRef(false);
   const opened = useRef(false);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const websiteRef = useRef<HTMLInputElement | null>(null);
 
   const remember = (next: string) => {
@@ -175,7 +112,6 @@ export function ApplyDialog({
     setAnswers(result.answers ?? {});
     if (result.firstName) setFirstName(result.firstName);
     if (result.screen) setPhase({ name: 'screen', screen: result.screen });
-    else if (result.question) setIndex(TEXT_INDEX.phone + result.question);
   }, [testMode, tracking]);
 
   useEffect(() => {
@@ -198,141 +134,65 @@ export function ApplyDialog({
     };
   }, [dialogRef, restore, testMode, tracking]);
 
-  const step = STEPS[index];
-  const textStep = step?.kind === 'text';
-
-  useEffect(() => {
-    if (phase.name !== 'pages' || !textStep) return;
-    const frame = requestAnimationFrame(() => inputRef.current?.focus());
-    return () => cancelAnimationFrame(frame);
-  }, [index, phase.name, textStep]);
-
   const close = () => {
     if (pending) return;
     dialogRef.current?.close();
   };
 
-  const textValue = (key: FieldName) => (key === 'firstName' ? firstName : key === 'email' ? email : phone);
-
-  const setTextValue = (key: FieldName, value: string) => {
-    if (key === 'firstName') setFirstName(value);
-    else if (key === 'email') setEmail(value);
-    else setPhone(value);
-  };
-
-  const validText = (key: FieldName) => {
-    if (key === 'firstName') return firstName.trim().length >= 2 && /[A-Za-z]/.test(firstName);
-    if (key === 'email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-    return phone.replace(/\D/g, '').length >= 10;
-  };
-
-  const textError = (key: FieldName) => {
-    if (key === 'firstName') return 'Enter your first name.';
-    if (key === 'email') return 'Enter a valid email.';
-    return 'Enter a valid phone number.';
-  };
-
-  const finish = async () => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (lock.current) return;
+    setError(null);
+    if (firstName.trim().length < 2 || !/[A-Za-z]/.test(firstName)) {
+      setError('Enter your first name.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Enter a valid email.');
+      return;
+    }
+    if (phone.replace(/\D/g, '').length < 10) {
+      setError('Enter a valid phone number.');
+      return;
+    }
+    const missing = APPLY_QUESTIONS.find((question) => !answers[question.key]);
+    if (missing) {
+      setError(missing.prompt);
+      document.getElementById(`apply-${missing.key}`)?.focus();
+      return;
+    }
+
     lock.current = true;
     setPending(true);
-    setError(null);
-    const started = await postApply({
-      action: 'start',
+    const result = await postApply({
+      action: 'complete',
       firstName,
       email,
       phone,
       smsConsent,
+      answers,
       website: websiteRef.current?.value ?? '',
       page: window.location.href,
       tracking,
       test: testMode,
     });
-    if (!started.ok || !started.token) {
-      lock.current = false;
-      setPending(false);
-      if (started.field) setIndex(TEXT_INDEX[started.field]);
-      setError(started.error || 'Try that once more.');
-      return;
-    }
-    remember(started.token);
-    trackPixel('Lead');
-
-    let screen: ApplyScreen | undefined;
-    for (let questionIndex = 0; questionIndex < APPLY_QUESTIONS.length; questionIndex += 1) {
-      const question = APPLY_QUESTIONS[questionIndex];
-      const value = answers[question.key];
-      if (!value) break;
-      const result = await postApply({
-        action: 'answer',
-        token: started.token,
-        question: questionIndex + 1,
-        value,
-        tracking,
-        test: testMode,
-      });
-      if (!result.ok) {
-        lock.current = false;
-        setPending(false);
-        setIndex(TEXT_INDEX.phone + questionIndex + 1);
-        setError(result.error || 'Try that once more.');
-        return;
-      }
-      if (result.screen) screen = result.screen;
-    }
     lock.current = false;
     setPending(false);
-    if (screen) setPhase({ name: 'screen', screen });
-    else setError('Try that once more.');
-  };
-
-  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (pending || phase.name !== 'pages') return;
-    const current = STEPS[index];
-    setError(null);
-    if (current.kind === 'text') {
-      if (!validText(current.key)) {
-        setError(textError(current.key));
-        return;
-      }
-      setIndex(index + 1);
+    if (!result.ok || !result.screen) {
+      setError(result.error || 'Try that once more.');
       return;
     }
-    if (current.kind === 'choice') {
-      if (!answers[current.key]) {
-        setError('Choose one.');
-        return;
-      }
-      setIndex(index + 1);
-      return;
-    }
-    await finish();
-  };
-
-  const back = () => {
-    if (pending || index === 0) return;
-    setError(null);
-    setIndex(index - 1);
+    if (result.token) remember(result.token);
+    trackPixel('Lead');
+    setPhase({ name: 'screen', screen: result.screen });
   };
 
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
-  const last = index === STEPS.length - 1;
 
   return (
     <div className="acq-apply-screen">
-      <div className="acq-apply-meter" aria-hidden>
-        <span style={{ width: `${((phase.name === 'screen' ? STEPS.length : index + 1) / STEPS.length) * 100}%` }} />
-      </div>
       <header className="acq-apply-bar">
         <Logo className="h-7 w-auto sm:h-8" title="Divine Acquisition" />
-        {phase.name === 'pages' ? (
-          <p className="acq-apply-count">
-            {index + 1} of {STEPS.length}
-          </p>
-        ) : (
-          <span />
-        )}
         <button type="button" onClick={close} className="acq-apply-close" aria-label="Close">
           <X className="size-5" aria-hidden />
         </button>
@@ -363,101 +223,107 @@ export function ApplyDialog({
           </div>
         ) : (
           <form onSubmit={onSubmit} className="acq-apply-stage" noValidate>
-            <p className="acq-apply-index">
-              {index + 1}
-              <span aria-hidden>→</span>
-            </p>
             <h2 id={titleId} className="acq-apply-title">
-              {step.prompt}
+              See if you qualify
             </h2>
+            <p className="acq-apply-note">{APPLY_STEP_NOTE}</p>
 
-            {step.kind === 'text' ? (
-              <Field className="acq-apply-control">
-                <FieldLabel className="sr-only" htmlFor={`apply-${step.key}`}>
-                  {step.prompt}
-                </FieldLabel>
+            <FieldGroup className="acq-apply-fields">
+              <Field>
+                <FieldLabel htmlFor="apply-first-name">First name</FieldLabel>
                 <Input
                   nativeInput
-                  id={`apply-${step.key}`}
-                  ref={(node) => {
-                    inputRef.current = node;
-                    if (step.key === 'firstName') firstFieldRef.current = node;
-                  }}
-                  name={step.key}
-                  type={step.type}
-                  autoComplete={step.autoComplete}
-                  autoCapitalize={step.key === 'firstName' ? 'words' : 'off'}
-                  inputMode={step.inputMode}
+                  id="apply-first-name"
+                  ref={firstFieldRef}
+                  name="firstName"
+                  type="text"
+                  autoComplete="given-name"
+                  autoCapitalize="words"
                   required
-                  placeholder={step.placeholder}
+                  placeholder="Jordan"
                   size="lg"
-                  className="min-h-12 text-base"
-                  value={textValue(step.key)}
-                  onChange={(event) => setTextValue(step.key, event.target.value)}
-                  aria-invalid={error ? true : undefined}
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
                 />
               </Field>
-            ) : null}
-
-            {step.kind === 'choice' ? (
-              <Field className="acq-apply-control">
-                <FieldLabel className="sr-only" htmlFor={`apply-${step.key}`}>
-                  {step.prompt}
-                </FieldLabel>
-                <NativeSelect
-                  id={`apply-${step.key}`}
-                  name={step.key}
-                  value={answers[step.key] ?? ''}
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    setAnswers((current) => choose(current, step.key, value));
-                    if (value) setError(null);
-                  }}
-                  className="h-12 text-base sm:h-12"
-                  aria-invalid={error ? true : undefined}
-                >
-                  <option value="">Choose one</option>
-                  {step.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </NativeSelect>
+              <Field>
+                <FieldLabel htmlFor="apply-email">Email</FieldLabel>
+                <Input
+                  nativeInput
+                  id="apply-email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  inputMode="email"
+                  required
+                  placeholder="you@company.com"
+                  size="lg"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                />
               </Field>
-            ) : null}
-
-            {step.kind === 'sms' ? (
-              <Field className="acq-consent acq-apply-control">
-                <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.9rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
-                  <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
-                  <span>{SMS_CONSENT_WORDING}</span>
-                </FieldLabel>
+              <Field className="acq-span">
+                <FieldLabel htmlFor="apply-phone">Phone</FieldLabel>
+                <Input
+                  nativeInput
+                  id="apply-phone"
+                  name="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  required
+                  placeholder="(555) 201-8890"
+                  size="lg"
+                  value={phone}
+                  onChange={(event) => setPhone(event.target.value)}
+                />
               </Field>
-            ) : null}
 
+              {APPLY_QUESTIONS.map((question) => (
+                <Field key={question.key} className="acq-span">
+                  <FieldLabel htmlFor={`apply-${question.key}`}>{question.prompt}</FieldLabel>
+                  <NativeSelect
+                    id={`apply-${question.key}`}
+                    name={question.key}
+                    value={answers[question.key] ?? ''}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setAnswers((current) => choose(current, question.key, value));
+                      if (value) setError(null);
+                    }}
+                    className="h-12 text-base sm:h-12"
+                  >
+                    <option value="">Choose one</option>
+                    {question.options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </Field>
+              ))}
+            </FieldGroup>
+
+            <Field className="acq-consent">
+              <FieldLabel className="flex cursor-pointer items-start gap-3 text-[0.85rem] font-normal normal-case tracking-normal text-[#d4d4d4]">
+                <Checkbox checked={smsConsent} onCheckedChange={(checked) => setSmsConsent(checked === true)} />
+                <span>{SMS_CONSENT_WORDING}</span>
+              </FieldLabel>
+            </Field>
             <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
               <label>
                 Website
                 <input ref={websiteRef} name="website" type="text" tabIndex={-1} autoComplete="off" />
               </label>
             </div>
-
             {error ? (
               <p className="acq-apply-error" role="alert">
                 {error}
               </p>
             ) : null}
-
-            <div className="acq-apply-nav">
-              {index > 0 ? (
-                <button type="button" className="acq-apply-back" onClick={back}>
-                  Back
-                </button>
-              ) : null}
-              <button type="submit" className="acq-button acq-apply-next" disabled={pending}>
-                {last ? (pending ? 'Saving…' : 'Submit') : 'Next'}
-              </button>
-            </div>
+            <button type="submit" className="acq-button acq-button-full" disabled={pending}>
+              {pending ? 'Saving…' : 'Submit'}
+            </button>
           </form>
         )}
       </div>

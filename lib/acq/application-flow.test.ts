@@ -94,6 +94,39 @@ async function finish(
   return last;
 }
 
+describe('application completion', () => {
+  it('saves the contact and the answers in one call', async () => {
+    const box = harness({ backgroundComplete: true });
+    const done = await box.flow.complete({
+      ...contact,
+      smsConsent: true,
+      answers: {
+        adSpend: '$10K+',
+        offerPrice: '$10K+',
+        callTaker: 'A closer',
+        problem: "Leads don't book",
+      },
+    });
+    expect(done).toMatchObject({ ok: true, screen: 'calendar' });
+    if (!done.ok || !done.token) throw new Error('complete');
+    expect(box.records.get(done.token)?.answers).toMatchObject({
+      adSpend: '$10K+',
+      callTaker: 'A closer',
+    });
+    expect(box.records.get(done.token)?.route?.screen).toBe('calendar');
+  });
+
+  it('rejects a complete call that skips a question', async () => {
+    const box = harness();
+    const done = await box.flow.complete({
+      ...contact,
+      answers: { adSpend: '$10K+' },
+    });
+    expect(done.ok).toBe(false);
+    expect(box.records.size).toBe(0);
+  });
+});
+
 describe('application routing', () => {
   it('priority A reaches the calendar with the qualified tags', () => {
     const route = routeApplication({
@@ -327,6 +360,7 @@ describe('application flow', () => {
     expect(popup).toContain('APPLY_LEGAL_FOOTER');
     expect(popup).toContain('APPLY_QUESTIONS.map');
     expect(popup).toContain('NativeSelect');
+    expect(popup).toContain("action: 'complete'");
     expect(popup).toContain('<Logo');
     expect(copy).toContain('Divine Acquisition LLC');
     expect(copy).not.toContain('7404 Executive Place');

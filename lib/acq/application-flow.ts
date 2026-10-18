@@ -1,6 +1,7 @@
 import { createToken } from '@/lib/workspace/tokens';
 import {
   answerOnQuestion,
+  APPLY_QUESTIONS,
   SMS_CONSENT_WORDING,
   type ApplyAnswers,
   type ApplyScreen,
@@ -152,7 +153,7 @@ async function syncBoth(deps: ApplyDeps, record: ApplyRecord, tags: string[]) {
 }
 
 export function createApplyFlow(deps: ApplyDeps) {
-  return {
+  const flow = {
     async open(input: { adName: string; test: boolean; key: string }) {
       if (!deps.rateLimit(input.key)) {
         return { ok: false as const, error: 'Please wait a moment and try again.' };
@@ -356,7 +357,43 @@ export function createApplyFlow(deps: ApplyDeps) {
       }
       return done;
     },
+
+    async complete(input: {
+      firstName?: string;
+      email?: string;
+      phone?: string;
+      smsConsent?: boolean;
+      website?: string;
+      page?: string;
+      test?: boolean;
+      key: string;
+      incoming: Touch | null;
+      storedFirst: Touch | null;
+      storedLast: Touch | null;
+      answers: ApplyAnswers;
+    }): Promise<PublicResult> {
+      for (let index = 0; index < APPLY_QUESTIONS.length; index += 1) {
+        const value = input.answers[APPLY_QUESTIONS[index].key] ?? '';
+        if (!answerOnQuestion(index + 1, value)) {
+          return { ok: false, error: 'Choose one of the options.' };
+        }
+      }
+      const started = await flow.start(input);
+      if (!started.ok || !started.token) {
+        return started.ok ? { ok: false, error: 'Try that once more.' } : started;
+      }
+      let screen: ApplyScreen | undefined;
+      for (let index = 0; index < APPLY_QUESTIONS.length; index += 1) {
+        const value = input.answers[APPLY_QUESTIONS[index].key] ?? '';
+        const answered = await flow.answer({ token: started.token, question: index + 1, value });
+        if (!answered.ok) return answered;
+        if (answered.screen) screen = answered.screen;
+      }
+      if (!screen) return { ok: false, error: 'Try that once more.' };
+      return { ok: true, token: started.token, screen };
+    },
   };
+  return flow;
 }
 
 export function publicShape(result: PublicResult): PublicResult {
