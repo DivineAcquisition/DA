@@ -229,6 +229,7 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/roofing/') ||
       pathname === '/api/submit-lead' ||
       pathname === '/api/meta/capi' ||
+      pathname.startsWith('/api/acq/') ||
       pathname.startsWith('/acq') ||
       pathname.startsWith('/onboard'),
   },
@@ -292,13 +293,15 @@ export async function proxy(request: NextRequest) {
   const host = (request.headers.get('host') ?? '').toLowerCase().split(':')[0];
   const { pathname } = request.nextUrl;
 
-  // Machine doors, cron workers, and the acq lead API are not surfaces.
-  // They must not be rewritten into a host surface prefix.
+  // Machine doors, cron workers, and the acq lead APIs are not surfaces.
+  // They must not be rewritten into a host surface prefix. /api/acq/apply is
+  // the coaches application; without this pass the acq host answers 404.
   if (
     pathname.startsWith(MACHINE_DOOR_PREFIX) ||
     pathname.startsWith(CRON_PREFIX) ||
     pathname === '/api/submit-lead' ||
-    pathname === '/api/meta/capi'
+    pathname === '/api/meta/capi' ||
+    pathname.startsWith('/api/acq/')
   ) {
     const response = NextResponse.next();
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');

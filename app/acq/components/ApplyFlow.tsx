@@ -30,21 +30,32 @@ type FieldName = 'firstName' | 'email' | 'phone';
 type Phase = { name: 'form' } | { name: 'screen'; screen: ApplyScreen };
 
 async function postApply(body: Record<string, unknown>) {
-  const response = await fetch('/api/acq/apply', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify(body),
-  });
-  return (await response.json()) as {
-    ok?: boolean;
-    error?: string;
-    field?: FieldName;
-    token?: string;
-    screen?: ApplyScreen;
-    question?: number;
-    answers?: ApplyAnswers;
-    firstName?: string;
-  };
+  const failed = { ok: false as const, error: 'Try that once more.' };
+  let response: Response;
+  try {
+    response = await fetch('/api/acq/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    return failed;
+  }
+  const text = await response.text();
+  try {
+    return JSON.parse(text) as {
+      ok?: boolean;
+      error?: string;
+      field?: FieldName;
+      token?: string;
+      screen?: ApplyScreen;
+      question?: number;
+      answers?: ApplyAnswers;
+      firstName?: string;
+    };
+  } catch {
+    return failed;
+  }
 }
 
 function choose(current: ApplyAnswers, key: ApplyQuestionKey, value: string): ApplyAnswers {
@@ -164,20 +175,24 @@ export function ApplyDialog({
 
     lock.current = true;
     setPending(true);
-    const result = await postApply({
-      action: 'complete',
-      firstName,
-      email,
-      phone,
-      smsConsent,
-      answers,
-      website: websiteRef.current?.value ?? '',
-      page: window.location.href,
-      tracking,
-      test: testMode,
-    });
-    lock.current = false;
-    setPending(false);
+    let result: Awaited<ReturnType<typeof postApply>>;
+    try {
+      result = await postApply({
+        action: 'complete',
+        firstName,
+        email,
+        phone,
+        smsConsent,
+        answers,
+        website: websiteRef.current?.value ?? '',
+        page: window.location.href,
+        tracking,
+        test: testMode,
+      });
+    } finally {
+      lock.current = false;
+      setPending(false);
+    }
     if (!result.ok || !result.screen) {
       setError(result.error || 'Try that once more.');
       return;
