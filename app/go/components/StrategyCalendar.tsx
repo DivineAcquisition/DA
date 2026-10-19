@@ -16,16 +16,29 @@ import { BOOKING, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/go/copy';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-export function StrategyCalendar() {
+export type StrategyCalendarDefaults = {
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  timeZone?: string;
+};
+
+export function StrategyCalendar({
+  defaults,
+  embedded = false,
+}: {
+  defaults?: StrategyCalendarDefaults;
+  embedded?: boolean;
+}) {
   const router = useRouter();
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [fullName, setFullName] = useState(defaults?.fullName ?? '');
+  const [email, setEmail] = useState(defaults?.email ?? '');
+  const [phone, setPhone] = useState(defaults?.phone ?? '');
   const [showUp, setShowUp] = useState<'yes' | 'no' | ''>('');
   const [smsConsent, setSmsConsent] = useState(false);
   const [emailConsent, setEmailConsent] = useState(false);
   const [website, setWebsite] = useState('');
-  const [timeZone, setTimeZone] = useState(DEFAULT_TIME_ZONE);
+  const [timeZone, setTimeZone] = useState(defaults?.timeZone ?? DEFAULT_TIME_ZONE);
   const today = civilToday(timeZone);
   const [cursor, setCursor] = useState(() => {
     const [year, month] = today.split('-').map(Number);
@@ -49,7 +62,7 @@ export function StrategyCalendar() {
 
   return (
     <form
-      className="go-scheduler"
+      className={embedded ? 'go-scheduler go-scheduler-embed' : 'go-scheduler'}
       onSubmit={(event) => {
         event.preventDefault();
         if (!selectedSlot) {

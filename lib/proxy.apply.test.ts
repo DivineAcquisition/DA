@@ -12,6 +12,16 @@ describe('coaches application route', () => {
     expect(response.status).not.toBe(404);
   });
 
+  it('rewrites a cleaning-host invite into the booking page', async () => {
+    const request = new NextRequest('https://go.divineacquisition.io/invite/luis', {
+      headers: { host: 'go.divineacquisition.io' },
+    });
+    const response = await proxy(request);
+    expect(response.status).not.toBe(404);
+    const rewrite = response.headers.get('x-middleware-rewrite') ?? '';
+    expect(rewrite).toContain('/go/invite/luis');
+  });
+
   it('does not rewrite the application API into the coaches pages', async () => {
     const request = new NextRequest('https://acq.divineacquisition.io/api/acq/apply', {
       method: 'POST',
