@@ -17,8 +17,8 @@ import {
   type ApplyQuestionKey,
   type ApplyScreen,
 } from '@/lib/acq/application-copy';
+import { ACQ_PRECALL_PATH, acqPublicPath, withTrackingQuery, type TrackingParamKey } from '@/lib/acq/config';
 import { LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
-import type { TrackingParamKey } from '@/lib/acq/config';
 import { AcqScheduler } from '../schedule/Scheduler';
 import { CalendarEmbed } from './CalendarEmbed';
 import { trackPixel } from './MetaPixel';
@@ -199,7 +199,11 @@ export function ApplyDialog({
     }
     if (result.token) remember(result.token);
     trackPixel('Lead');
-    setPhase({ name: 'screen', screen: result.screen });
+    const destination = withTrackingQuery(
+      acqPublicPath(ACQ_PRECALL_PATH, window.location.host),
+      tracking,
+    );
+    window.location.assign(destination);
   };
 
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;

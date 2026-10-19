@@ -361,6 +361,7 @@ describe('application flow', () => {
     expect(popup).toContain('APPLY_QUESTIONS.map');
     expect(popup).toContain('NativeSelect');
     expect(popup).toContain("action: 'complete'");
+    expect(popup).toContain('ACQ_PRECALL_PATH');
     expect(popup).toContain('<Logo');
     expect(copy).toContain('Divine Acquisition LLC');
     expect(copy).not.toContain('7404 Executive Place');

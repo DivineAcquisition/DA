@@ -5,7 +5,6 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { DotPattern } from '@/components/ui/dot-pattern';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Marquee } from '@/components/ui/marquee';
-import { NumberTicker } from '@/components/ui/number-ticker';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
 import {
@@ -19,7 +18,6 @@ import {
   HEADLINE_BEFORE,
   HOW_IT_WORKS,
   LANDING_QUALIFIER,
-  LANDING_TRUST,
   PILL_BANNER,
   PROBLEM,
   QUESTIONS,
@@ -36,14 +34,6 @@ function Mark({ icon: Icon, tone = 'brand' }: { icon: typeof CircleCheck; tone?:
     <span className={tone === 'red' ? 'lx-saas-icon lx-saas-icon-red' : 'lx-saas-icon'}>
       <Icon aria-hidden />
     </span>
-  );
-}
-
-function Check() {
-  return (
-    <svg viewBox="0 0 20 20" aria-hidden>
-      <path d="m4 10 4 4 8-8" />
-    </svg>
   );
 }
 
@@ -80,28 +70,9 @@ export default async function AcqLandingPage({
             <p className="lx-qualifier">{LANDING_QUALIFIER}</p>
             <HeroVideo shell />
             <QualifyButton />
-            <ul className="lx-trust lx-trust-cols">
-              <li>
-                <Check />
-                <span>
-                  $<NumberTicker value={6500} className="text-[var(--lx-accent-soft)]" /> for 3 months
-                </span>
-              </li>
-              <li>
-                <Check />
-                {LANDING_TRUST[1]}
-              </li>
-              <li>
-                <Check />
-                <span>
-                  <NumberTicker value={75} className="text-[var(--lx-accent-soft)]" />% back if we miss your
-                  targets
-                </span>
-              </li>
-            </ul>
             </BlurFade>
             <Marquee pauseOnHover className="mt-12 w-full [--duration:32s] [--gap:0.75rem]">
-              {[LANDING_QUALIFIER, ...LANDING_TRUST, 'Free audit', 'Installed in 14 days'].map((item) => (
+              {[LANDING_QUALIFIER, 'Free audit', 'Installed in 14 days'].map((item) => (
                 <span
                   key={item}
                   className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-medium tracking-wide text-neutral-300"
