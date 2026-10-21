@@ -229,7 +229,11 @@ export async function searchLeadRows(input: {
     throw new Error(error.message || 'Could not search workspace leads.');
   }
 
-  const rows = (data ?? []).map(mapStoredLead);
+  // Audits are the coaching offer. Local-market leads share the stage names
+  // (a booked go. session is "Audit Booked") but are not booked from here.
+  const rows = (data ?? [])
+    .filter((row: { offer_line?: unknown }) => (row.offer_line ?? 'coaching') === 'coaching')
+    .map(mapStoredLead);
   const filtered = input.bookedOnly
     ? rows
     : rows.filter((row) => isBookableLead(row, Boolean(input.includeManualReview)));

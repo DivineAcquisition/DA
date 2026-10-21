@@ -12,6 +12,7 @@ import {
   Eye,
   FilePenLine,
   FileSignature,
+  Funnel,
   Gauge,
   GraduationCap,
   HandCoins,
@@ -69,6 +70,7 @@ const WORKSPACE: NavSection = {
   tone: 'violet',
   items: [
     { href: '/vistrial/ops', label: 'Overview', icon: Gauge },
+    { href: '/workspace/pipeline', label: 'Pipeline', icon: Funnel },
     {
       href: '/vistrial/admin/clients',
       label: 'Clients',
