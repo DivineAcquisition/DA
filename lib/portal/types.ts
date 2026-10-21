@@ -68,6 +68,11 @@ export type PortalContext = {
     formal_notices?: number;
   };
   onboarding: { status: string; protocol_name: string; link_token: string | null } | null;
+  /**
+   * A Sales Operator on the team app. Training, end of day, sales logging, and a
+   * short client card. Not the admin portal, and not the wider VA account.
+   */
+  sales_operator?: boolean;
 };
 
 export type Window = { starts_at: string; ends_at: string };

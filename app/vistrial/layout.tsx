@@ -32,6 +32,11 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   // here is not a team or admin screen.
   if (app === 'training') notFound();
   const pathname = (await headers()).get('x-pathname') ?? '';
+  // A Sales Operator sets a password here before they have a session. The team
+  // host serves this path. It does not open the admin portal.
+  if (pathname === '/vistrial/auth/invite' || pathname.startsWith('/vistrial/auth/invite/')) {
+    return <>{children}</>;
+  }
   const operatorPath = pathname === '/vistrial/operator' || pathname.startsWith('/vistrial/operator/');
   const session = await getSessionContext();
   // The admin app has no VA screens of its own (only the View As mirror), so a

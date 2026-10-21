@@ -45,4 +45,17 @@ describe('stage navigation', () => {
     expect(zoneOf('bookings')).toBe('record');
     expect(zoneOf('pay')).toBe('growth');
   });
+
+  it('gives a sales operator training, end of day, sales, and the client card', () => {
+    const sales = { ...ctx('training'), sales_operator: true };
+    expect(zonesFor(sales).map((z) => z.label)).toEqual(['Training', 'End of day', 'Sales', 'Client']);
+    expect(menuFor(sales).map((z) => z.key)).toEqual(['profile', 'inbox']);
+    expect(tabAllowed('training', 'reports', false, true)).toBe(true);
+    expect(tabAllowed('training', 'bookings', false, true)).toBe(true);
+    expect(tabAllowed('training', 'client', false, true)).toBe(true);
+    expect(tabAllowed('placed', 'pay', true, true)).toBe(false);
+    expect(tabAllowed('placed', 'standards', true, true)).toBe(false);
+    expect(zoneOf('reports', true)).toBe('eod');
+    expect(zoneOf('bookings', true)).toBe('sales');
+  });
 });

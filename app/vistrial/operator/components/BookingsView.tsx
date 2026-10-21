@@ -15,7 +15,8 @@ export default function BookingsView({ data, state }: { data: BookingsData; stat
   const router = useRouter();
   const search = useSearchParams();
   const [logOpen, setLogOpen] = useState(false);
-  const { operatorZone } = usePortal();
+  const { operatorZone, context } = usePortal();
+  const sales = Boolean(context.sales_operator);
 
   const shiftMonth = (delta: number) => {
     const d = new Date(`${data.month}T00:00:00Z`);
@@ -35,10 +36,10 @@ export default function BookingsView({ data, state }: { data: BookingsData; stat
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Bookings</h1>
+        <h1 className="text-xl font-semibold">{sales ? 'Sales' : 'Bookings'}</h1>
         {data.live ? (
           <VaButton type="button" onClick={() => setLogOpen(true)} className={`${btnPrimary} ${btnSizeSm}`}>
-            Log a booking
+            {sales ? 'Log a sale' : 'Log a booking'}
           </VaButton>
         ) : (
           <Badge tone="neutral">Placement ended: history only</Badge>
@@ -78,7 +79,7 @@ export default function BookingsView({ data, state }: { data: BookingsData; stat
       </div>
 
       <Card>
-        {data.bookings.length === 0 ? <Empty>No bookings for this month.</Empty> : null}
+        {data.bookings.length === 0 ? <Empty>{sales ? 'No sales logged this month.' : 'No bookings for this month.'}</Empty> : null}
         <ul className="divide-y divide-white/[0.05]">
           {data.bookings.map((booking) => {
             const label = bookingState(booking.state, booking.counts);
@@ -118,7 +119,8 @@ export default function BookingsView({ data, state }: { data: BookingsData; stat
 }
 
 function LogBooking({ data, open, onClose }: { data: BookingsData; open: boolean; onClose: () => void }) {
-  const { operatorZone } = usePortal();
+  const { operatorZone, context } = usePortal();
+  const sales = Boolean(context.sales_operator);
   const action = useAction();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -166,7 +168,7 @@ function LogBooking({ data, open, onClose }: { data: BookingsData; open: boolean
     );
 
   return (
-    <Sheet open={open} onClose={onClose} title="Log a booking">
+    <Sheet open={open} onClose={onClose} title={sales ? 'Log a sale' : 'Log a booking'}>
       <VaFieldset>
         <p className="text-sm text-neutral-400">
           It is saved as waiting for review. Only bookings from {formatDate(data.current_period_start)} onward can be logged

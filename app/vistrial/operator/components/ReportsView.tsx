@@ -11,6 +11,8 @@ import { Card, CardTitle, Empty, Feedback, Sheet, useAction, usePortal, VaButton
 
 /** Section 5.4: a report for every shift. Filed once; changes are new versions with a reason. */
 export default function ReportsView({ data, initialDate }: { data: ReportsData; initialDate: string | null }) {
+  const { context } = usePortal();
+  const sales = Boolean(context.sales_operator);
   const [formDate, setFormDate] = useState<string | null>(initialDate ?? (data.due[0] ?? null));
   const [correcting, setCorrecting] = useState<ReportRow | null>(null);
   const current = data.reports.filter((r) => r.current);
@@ -27,9 +29,9 @@ export default function ReportsView({ data, initialDate }: { data: ReportsData; 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Shift Reports</h1>
+        <h1 className="text-xl font-semibold">{sales ? 'End of day' : 'Shift Reports'}</h1>
         <VaButton type="button" onClick={() => setFormDate(data.today)} className={`${btnPrimary} ${btnSizeSm}`}>
-          File a report
+          {sales ? 'File end of day' : 'File a report'}
         </VaButton>
       </div>
 

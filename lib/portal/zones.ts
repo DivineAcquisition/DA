@@ -23,9 +23,21 @@ export type TabKey =
   | 'inbox'
   | 'agreements'
   | 'availability'
-  | 'notice';
+  | 'notice'
+  | 'client';
 
-export type ZoneKey = 'today' | 'record' | 'standards' | 'commitments' | 'growth' | 'playbook' | 'pay' | 'agreements';
+export type ZoneKey =
+  | 'today'
+  | 'record'
+  | 'standards'
+  | 'commitments'
+  | 'growth'
+  | 'playbook'
+  | 'pay'
+  | 'agreements'
+  | 'eod'
+  | 'sales'
+  | 'client';
 
 export type NavItem = { key: ZoneKey | TabKey; label: string; short: string; href: string };
 
@@ -42,6 +54,16 @@ const ZONE: Record<ZoneKey, NavItem> = {
   agreements: { key: 'agreements', label: 'Agreements', short: 'Agreements', href: `${BASE}/agreements` },
 };
 
+/** Sales Operators on team.divineacquisition.io. Training, end of day, sales, and the client card. */
+const SALES_NAV: NavItem[] = [
+  { key: 'today', label: 'Training', short: 'Training', href: BASE },
+  { key: 'eod', label: 'End of day', short: 'End of day', href: `${BASE}/reports` },
+  { key: 'sales', label: 'Sales', short: 'Sales', href: `${BASE}/bookings` },
+  { key: 'client', label: 'Client', short: 'Client', href: `${BASE}/client` },
+];
+
+const SALES_TABS: TabKey[] = ['today', 'reports', 'bookings', 'client', 'profile', 'inbox', 'notice', 'tasks'];
+
 const MENU: Record<'profile' | 'tasks' | 'inbox' | 'agreements' | 'availability', NavItem> = {
   profile: { key: 'profile', label: 'Profile', short: 'Profile', href: `${BASE}/profile` },
   tasks: { key: 'tasks', label: 'Tasks & Training', short: 'Tasks', href: `${BASE}/tasks` },
@@ -51,7 +73,8 @@ const MENU: Record<'profile' | 'tasks' | 'inbox' | 'agreements' | 'availability'
 };
 
 /** The bottom bar on a phone, the tab row on a desktop. */
-export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 'has_pay'>): NavItem[] {
+export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 'has_pay' | 'sales_operator'>): NavItem[] {
+  if (context.sales_operator) return SALES_NAV;
   switch (context.stage) {
     case 'placed':
       return [ZONE.today, ZONE.record, ZONE.standards, ZONE.commitments, ZONE.growth];
@@ -70,7 +93,8 @@ export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 
 }
 
 /** The menu at the top of every screen. */
-export function menuFor(context: Pick<PortalContext, 'stage'>): NavItem[] {
+export function menuFor(context: Pick<PortalContext, 'stage' | 'sales_operator'>): NavItem[] {
+  if (context.sales_operator) return [MENU.profile, MENU.inbox];
   switch (context.stage) {
     case 'placed':
     case 'waiting':
@@ -85,7 +109,14 @@ export function menuFor(context: Pick<PortalContext, 'stage'>): NavItem[] {
 }
 
 /** Which zone a page belongs to, so the right one is highlighted. */
-export function zoneOf(tab: TabKey): ZoneKey | null {
+export function zoneOf(tab: TabKey, salesOperator = false): ZoneKey | null {
+  if (salesOperator) {
+    if (tab === 'today' || tab === 'tasks') return 'today';
+    if (tab === 'reports') return 'eod';
+    if (tab === 'bookings') return 'sales';
+    if (tab === 'client') return 'client';
+    return null;
+  }
   switch (tab) {
     case 'today':
       return 'today';
@@ -125,7 +156,8 @@ const ALLOWED: Record<Stage, TabKey[]> = {
 };
 
 /** Whether a page belongs in this stage's account at all. */
-export function tabAllowed(stage: Stage, tab: TabKey, hasHistory = false): boolean {
+export function tabAllowed(stage: Stage, tab: TabKey, hasHistory = false, salesOperator = false): boolean {
+  if (salesOperator) return SALES_TABS.includes(tab);
   if (stage === 'waiting' && !hasHistory && ['record', 'bookings', 'escalations', 'reports', 'commitments'].includes(tab)) {
     return false;
   }

@@ -43,13 +43,17 @@ export async function loadPortal<T>(
   // With a remembered placement, the tab loads alongside the context. The
   // database still refuses a placement that is not the VA's.
   const early = wanted && fetchTab ? fetchTab(rpc, wanted) : null;
-  const context = await rpc<PortalContext>('portal_context', { p_tab: tab, p_placement_id: wanted });
+  const [context, sales] = await Promise.all([
+    rpc<PortalContext>('portal_context', { p_tab: tab, p_placement_id: wanted }),
+    rpc<boolean>('portal_is_sales_operator'),
+  ]);
 
   if (context.error || !context.data) {
     return { kind: 'closed', message: context.error ?? 'The portal could not be loaded.' };
   }
 
   const ctx = context.data;
+  ctx.sales_operator = sales.data === true;
   const placementId = ctx.selected_placement_id;
   const blocked = ctx.blocking_notices.length > 0 && !ctx.viewer.view_as;
 

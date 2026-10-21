@@ -6,6 +6,7 @@ import type { AvailabilityData, LiveData, TasksData, TodayData } from '@/lib/por
 import DayExtras from './components/DayExtras';
 import { renderPortal } from './components/frame';
 import GhlDay from './components/GhlDay';
+import SalesHome from './components/SalesHome';
 import { ApplicantHome, TrainingHome, WaitingHome } from './components/StageHome';
 import TodayView from './components/TodayView';
 
@@ -39,7 +40,10 @@ export default async function MyDayPage() {
 
   if (load.kind === 'ready' && load.context.stage === 'inactive') redirect('/vistrial/operator/pay');
 
-  return renderPortal(load, 'today', (data, _placementId, context) => {
+  return renderPortal(load, 'today', (data, placementId, context) => {
+    if (context.sales_operator) {
+      return <SalesHome placementId={placementId} />;
+    }
     switch (context.stage) {
       case 'applicant':
         return <ApplicantHome />;

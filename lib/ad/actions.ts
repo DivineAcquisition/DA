@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc, readable, type ActionResult } from '@/lib/ad/rpc';
+import { appUrl } from '@/lib/apps';
 import { createClient } from '@/lib/supabase/server';
 
 const revalidateAd = (...paths: string[]) => {
@@ -165,6 +166,9 @@ export async function acceptInviteAction(formData: FormData): Promise<ActionResu
   if (error) return { ok: false, error: readable(error) };
 
   revalidateAd();
+  revalidatePath('/vistrial', 'layout');
+  // Operators work on the team app. Accepting an invite does not open admin.
+  if (invite.role === 'operator') redirect(appUrl('team'));
   redirect('/ad');
 }
 

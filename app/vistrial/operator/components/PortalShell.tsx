@@ -57,7 +57,7 @@ export default function PortalShell({
   const showGate = context.blocking_notices.length > 0 && (blocked || (viewAs && !peek));
   const zones = zonesFor(context);
   const menu = menuFor(context);
-  const zone = zoneOf(tab);
+  const zone = zoneOf(tab, Boolean(context.sales_operator));
   const menuCount = menu.reduce((sum, item) => sum + badgeFor(item.key, context), 0);
 
   return (

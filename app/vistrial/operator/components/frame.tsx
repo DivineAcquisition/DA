@@ -19,11 +19,13 @@ export function renderPortal<T>(
 
   let body: React.ReactNode;
   if (load.blocked) body = null;
-  else if (!tabAllowed(load.context.stage, tab, load.context.has_history)) body = <NotInStage stage={load.context.stage} />;
+  else if (!tabAllowed(load.context.stage, tab, load.context.has_history, Boolean(load.context.sales_operator))) {
+    body = <NotInStage stage={load.context.stage} sales={Boolean(load.context.sales_operator)} />;
+  }
   else if (options.whenNoData && (load.error || load.data === null)) body = options.whenNoData(load.context);
-  else if (options.needsPlacement && !load.placementId) body = <NoPlacement />;
+  else if (options.needsPlacement && !load.placementId) body = <NoPlacement sales={Boolean(load.context.sales_operator)} />;
   else if (load.error) body = <Refused message={load.error} />;
-  else if (load.data === null && options.needsPlacement) body = <NoPlacement />;
+  else if (load.data === null && options.needsPlacement) body = <NoPlacement sales={Boolean(load.context.sales_operator)} />;
   else body = render(load.data as T, load.placementId, load.context);
 
   return (
@@ -41,11 +43,14 @@ const STAGE_REASON: Record<PortalContext['stage'], string> = {
   inactive: 'Your account is closed. Your pay statements and agreements stay available.',
 };
 
-function NotInStage({ stage }: { stage: PortalContext['stage'] }) {
+function NotInStage({ stage, sales }: { stage: PortalContext['stage']; sales?: boolean }) {
+  const reason = sales
+    ? 'Your team account is training, end-of-day reports, sales logging, and a short view of the client. This page is not part of it.'
+    : STAGE_REASON[stage];
   return (
     <section className="panel rounded-2xl px-6 py-12 text-center">
       <p className="text-sm font-medium text-neutral-200">Not part of your account right now</p>
-      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{STAGE_REASON[stage]}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">{reason}</p>
       <Link href={homeFor(stage)} className={`${btnPrimary} ${btnSizeSm} mt-5`}>
         Go to {stage === 'inactive' ? 'Pay' : 'your home screen'}
       </Link>
@@ -53,13 +58,14 @@ function NotInStage({ stage }: { stage: PortalContext['stage'] }) {
   );
 }
 
-function NoPlacement() {
+function NoPlacement({ sales = false }: { sales?: boolean }) {
   return (
     <section className="panel rounded-2xl px-6 py-12 text-center">
-      <p className="text-sm font-medium text-neutral-200">You are between placements</p>
+      <p className="text-sm font-medium text-neutral-200">{sales ? 'No client is assigned yet' : 'You are between placements'}</p>
       <p className="mx-auto mt-2 max-w-md text-sm text-neutral-500">
-        When DA places you with a client, your shift, bookings and playbook appear here. Your pay, tasks and profile are
-        still available below.
+        {sales
+          ? 'End-of-day reports and sales logging open when DA places you with a client. Until then, finish your training.'
+          : 'When DA places you with a client, your shift, bookings and playbook appear here. Your pay, tasks and profile are still available below.'}
       </p>
     </section>
   );
