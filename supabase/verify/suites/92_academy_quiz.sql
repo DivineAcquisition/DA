@@ -67,6 +67,7 @@ begin
   where p.slug = 'da-operator-academy' and m.order_number = 1;
   perform set_config('request.jwt.claim.sub', v_admin::text, false);
   perform public.academy_save_lesson(jsonb_build_object(
+    'id', (select id from public.academy_lesson where lesson_code = 'M01-L01' and archived_at is null),
     'module_id', v_module, 'lesson_code', 'M01-L01', 'title', 'Who we are', 'sort_order', 1,
     'body', 'The offer.', 'status', 'live', 'required_watch_percent', 90
   ));
@@ -94,6 +95,12 @@ begin
     ));
   end loop;
 
+  -- Lesson 01 ships with its own quiz. This suite's draw is the eight questions above.
+  update public.academy_question
+  set active = false
+  where module_id = v_module
+    and prompt not like 'Question %';
+
   insert into public.academy_enrollment (profile_id, program_id, track, status)
   select u.id, p.id, 'Core', 'active'
   from public.academy_program p
@@ -105,8 +112,9 @@ begin
   where p.slug = 'da-operator-academy';
 
   insert into public.academy_progress (enrollment_id, lesson_id, status, completed_at, completed_version)
-  select e.id, v_lesson, 'completed', now(), 1
+  select e.id, v_lesson, 'completed', now(), l.content_version
   from public.academy_enrollment e
+  join public.academy_lesson l on l.id = v_lesson
   where e.profile_id in (
     'cccccccc-cccc-4ccc-8ccc-ccccccccccc1',
     'cccccccc-cccc-4ccc-8ccc-ccccccccccc3'

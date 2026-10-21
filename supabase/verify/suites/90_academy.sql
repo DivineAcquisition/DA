@@ -4,7 +4,7 @@
 \set ON_ERROR_STOP on
 set search_path = public;
 
-\echo '== curriculum is configuration: draft programs, no people, no lessons =='
+\echo '== curriculum is configuration: draft programs, no people, lesson 01 is ready =='
 do $$
 begin
   assert (select count(*) from public.academy_program) = 7, 'seven programs';
@@ -15,8 +15,24 @@ begin
     join public.academy_program p on p.id = m.program_id
     where p.slug <> 'da-operator-academy'
   ) = 0, 'vertical and internal programs have no modules yet';
-  assert (select count(*) from public.academy_lesson) = 0, 'no lessons';
-  assert (select count(*) from public.academy_question) = 0, 'no questions';
+  assert (select count(*) from public.academy_lesson) = 1, 'Who We Are is loaded';
+  assert (select status from public.academy_lesson where lesson_code = 'M01-L01') = 'ready',
+    'the lesson stays hidden until the video is live';
+  assert (select published from public.academy_lesson where lesson_code = 'M01-L01') = false;
+  assert (select count(*) from public.academy_question) = 10, 'lesson 01 quiz';
+  assert (
+    select count(*)
+    from public.academy_question q
+    join public.academy_concept c on c.id = q.concept_id
+    join public.academy_lesson l on l.id = c.lesson_id
+    where l.lesson_code = 'M01-L01' and q.active
+  ) = 10, 'every quiz question is on Who We Are';
+  assert (select correct_answer from public.academy_question
+          where prompt = 'Which statement best describes Divine Acquisition?') = 'b';
+  assert (select correct_answer from public.academy_question
+          where prompt = 'What are the five stages of our operational approach?') = 'b';
+  assert (select correct_answer from public.academy_question
+          where prompt = 'True or false: Completing assigned tasks automatically means a client is receiving measurable value.') = 'b';
   assert (select count(*) from public.academy_enrollment) = 0, 'no enrollments';
   assert (select count(*) from public.academy_attempt) = 0, 'no attempts';
   assert (select title from public.academy_module m
@@ -25,8 +41,8 @@ begin
     = 'Applied Acquisition: The DA Speed-to-Lead System';
   assert (select count(*) from public.academy_quiz where kind = 'module') = 10;
   assert (select count(*) from public.academy_quiz where kind = 'final') = 1;
-  assert (select bool_and(questions_per_attempt = 5 and pass_mark = 4 and pass_mark_unit = 'correct'
-            and max_attempts = 5 and lockout_minutes = 30 and shuffle_answers and active)
+  assert (select bool_and(questions_per_attempt = 5 and pass_mark = 85 and pass_mark_unit = 'percent'
+            and max_attempts = 3 and lockout_minutes = 30 and shuffle_answers and active)
           from public.academy_quiz where kind = 'module');
   assert (select questions_per_attempt = 30 and pass_mark = 85 and pass_mark_unit = 'percent'
             and max_attempts = 5 and lockout_minutes = 120 and shuffle_answers and active
@@ -405,7 +421,7 @@ do $$ begin perform set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-0000-0000
 do $$
 begin
   assert (select count(*) from public.academy_enrollment) = 2, 'academy admin still sees both';
-  assert (select count(*) from public.academy_question) = 1, 'academy admin can read the pool';
+  assert (select count(*) from public.academy_question) = 11, 'academy admin can read the seeded quiz and the test question';
   assert (select count(*) from public.academy_program) = 7;
 end $$;
 update public.academy_quiz set lockout_minutes = 31 where kind = 'final';

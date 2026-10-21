@@ -85,13 +85,20 @@ begin
   join public.academy_program p on p.id = m.program_id
   where p.slug = 'da-operator-academy' and m.order_number = 1;
   perform public.academy_save_lesson(jsonb_build_object(
+    'id', (select id from public.academy_lesson where lesson_code = 'M01-L01' and archived_at is null),
     'module_id', v_module, 'lesson_code', 'M01-L01', 'title', 'Who we are', 'sort_order', 1,
     'body', 'The offer and the price, explained in enough words to take a minute to read.',
-    'status', 'live', 'required_watch_percent', 90
+    'status', 'live', 'required_watch_percent', 90, 'completion_policy', 'keep'
   ));
   select id into v_lesson from public.academy_lesson where lesson_code = 'M01-L01';
-  perform public.academy_save_concept(jsonb_build_object('module_id', v_module, 'name', 'Offer', 'lesson_id', v_lesson));
-  perform public.academy_save_concept(jsonb_build_object('module_id', v_module, 'name', 'Price', 'lesson_id', v_lesson));
+  perform public.academy_save_concept(jsonb_build_object(
+    'id', (select id from public.academy_concept where module_id = v_module and name = 'Offer'),
+    'module_id', v_module, 'name', 'Offer', 'lesson_id', v_lesson
+  ));
+  perform public.academy_save_concept(jsonb_build_object(
+    'id', (select id from public.academy_concept where module_id = v_module and name = 'Price'),
+    'module_id', v_module, 'name', 'Price', 'lesson_id', v_lesson
+  ));
   select id into v_offer from public.academy_concept where module_id = v_module and name = 'Offer';
   select id into v_price from public.academy_concept where module_id = v_module and name = 'Price';
   perform public.academy_save_question(jsonb_build_object(
@@ -110,6 +117,10 @@ begin
     ),
     'correct_answer', 'b', 'explanation', 'Because the price.', 'concept_id', v_price, 'difficulty', 'medium', 'active', true
   ));
+  update public.academy_question
+  set active = false
+  where module_id = v_module
+    and prompt not in ('What is the offer?', 'What is the price?');
   select id into v_quiz from public.academy_quiz where module_id = v_module;
   perform public.academy_save_quiz_settings(jsonb_build_object(
     'id', v_quiz, 'questions_per_attempt', 2, 'pass_mark', 2, 'pass_mark_unit', 'correct',
@@ -132,7 +143,7 @@ begin
   where p.slug = 'da-operator-academy';
 
   insert into public.academy_progress (enrollment_id, lesson_id, status, completed_at, completed_version, time_spent_seconds)
-  select e.id, v_lesson, 'completed', now(), 1, 10
+  select e.id, v_lesson, 'completed', now(), (select content_version from public.academy_lesson where id = v_lesson), 10
   from public.academy_enrollment e
   where e.profile_id in (
     'dddddddd-dddd-4ddd-8ddd-dddddddddd21',
