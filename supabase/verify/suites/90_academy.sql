@@ -15,11 +15,13 @@ begin
     join public.academy_program p on p.id = m.program_id
     where p.slug <> 'da-operator-academy'
   ) = 0, 'vertical and internal programs have no modules yet';
-  assert (select count(*) from public.academy_lesson) = 1, 'Who We Are is loaded';
+  assert (select count(*) from public.academy_lesson) = 3, 'lessons 01 through 03 are loaded';
   assert (select status from public.academy_lesson where lesson_code = 'M01-L01') = 'ready',
     'the lesson stays hidden until the video is live';
   assert (select published from public.academy_lesson where lesson_code = 'M01-L01') = false;
-  assert (select count(*) from public.academy_question) = 5, 'lesson 01 quiz';
+  assert (select status from public.academy_lesson where lesson_code = 'M02-L01') = 'ready';
+  assert (select status from public.academy_lesson where lesson_code = 'M03-L01') = 'ready';
+  assert (select count(*) from public.academy_question) = 15, 'three lesson quizzes of five';
   assert (
     select count(*)
     from public.academy_question q
@@ -187,15 +189,27 @@ from public.academy_module m
 join public.academy_program p on p.id = m.program_id
 where p.slug = 'da-operator-academy' and m.order_number = 0;
 
-insert into public.academy_lesson (id, module_id, lesson_code, sort_order, title, body, published)
-select 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa71', m.id, 'M02-L01', 1, 'The standard', 'Published body', true
+update public.academy_lesson
+set title = 'The standard', body = 'Published body', status = 'live'
+where lesson_code = 'M02-L01' and archived_at is null;
+
+insert into public.academy_lesson (id, module_id, lesson_code, sort_order, title, body, status)
+select 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa71', m.id, 'M02-L01', 1, 'The standard', 'Published body', 'live'
 from public.academy_module m
 join public.academy_program p on p.id = m.program_id
-where p.slug = 'da-operator-academy' and m.order_number = 2;
+where p.slug = 'da-operator-academy' and m.order_number = 2
+  and not exists (
+    select 1 from public.academy_lesson where lesson_code = 'M02-L01' and archived_at is null
+  );
 
-insert into public.academy_asset (lesson_id, asset_type, storage_path, status) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa71', 'document', 'academy/m02/guide.pdf', 'live'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa71', 'document', 'academy/m02/draft.pdf', 'draft');
+insert into public.academy_asset (lesson_id, asset_type, storage_path, status)
+select l.id, x.asset_type, x.storage_path, x.status
+from public.academy_lesson l
+cross join (values
+  ('document', 'academy/m02/guide.pdf', 'live'),
+  ('document', 'academy/m02/draft.pdf', 'draft')
+) as x(asset_type, storage_path, status)
+where l.lesson_code = 'M02-L01' and l.archived_at is null;
 
 insert into public.academy_question (module_id, prompt, question_type, options, correct_answer, explanation, concept_tag)
 select m.id, 'Which one is the standard?', 'multiple_choice',
@@ -224,7 +238,9 @@ join public.academy_module m on m.id = q.module_id
 where m.order_number = 1;
 
 insert into public.academy_progress (enrollment_id, lesson_id, status, time_spent_seconds)
-values ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa62', 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa71', 'completed', 90);
+select 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa62', l.id, 'completed', 90
+from public.academy_lesson l
+where l.lesson_code = 'M02-L01' and l.archived_at is null;
 
 insert into public.academy_hold (enrollment_id, quiz_id, reason, attempts_used, status, reviewer_id, review_notes)
 select 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaa61', q.id, 'Fifth failed attempt', 5, 'open',
@@ -421,7 +437,7 @@ do $$ begin perform set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-0000-0000
 do $$
 begin
   assert (select count(*) from public.academy_enrollment) = 2, 'academy admin still sees both';
-  assert (select count(*) from public.academy_question) = 6, 'academy admin can read the seeded quiz and the test question';
+  assert (select count(*) from public.academy_question) = 16, 'academy admin can read the seeded quizzes and the test question';
   assert (select count(*) from public.academy_program) = 7;
 end $$;
 update public.academy_quiz set lockout_minutes = 31 where kind = 'final';

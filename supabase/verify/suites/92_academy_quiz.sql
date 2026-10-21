@@ -435,8 +435,9 @@ begin
   join public.academy_program p on p.id = m.program_id
   where p.slug = 'da-operator-academy' and m.order_number = 2;
   perform public.academy_save_lesson(jsonb_build_object(
+    'id', (select id from public.academy_lesson where lesson_code = 'M02-L01' and archived_at is null),
     'module_id', v_module, 'lesson_code', 'M02-L01', 'title', 'The standard', 'sort_order', 1,
-    'body', 'The standard.', 'status', 'live', 'required_watch_percent', 90
+    'body', 'The standard.', 'status', 'live', 'required_watch_percent', 90, 'completion_policy', 'keep'
   ));
   select id into v_lesson from public.academy_lesson where lesson_code = 'M02-L01';
   perform public.academy_save_concept(jsonb_build_object(
@@ -458,7 +459,9 @@ begin
   select e.id into v_enrollment from public.academy_enrollment e
   where e.profile_id = 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1';
   insert into public.academy_progress (enrollment_id, lesson_id, status, completed_at, completed_version)
-  values (v_enrollment, v_lesson, 'completed', now(), 1);
+  select v_enrollment, v_lesson, 'completed', now(), l.content_version
+  from public.academy_lesson l
+  where l.id = v_lesson;
 
   perform set_config('request.jwt.claim.sub', 'cccccccc-cccc-4ccc-8ccc-ccccccccccc1', false);
   v := public.academy_start_quiz(v_module, 'phone');
@@ -519,8 +522,11 @@ begin
     join public.academy_program p on p.id = m.program_id
     where p.slug = 'da-operator-academy' and m.order_number = v_order;
     perform public.academy_save_lesson(jsonb_build_object(
+      'id', (select id from public.academy_lesson
+             where lesson_code = format('M%s-L01', lpad(v_order::text, 2, '0')) and archived_at is null),
       'module_id', v_module, 'lesson_code', format('M%s-L01', lpad(v_order::text, 2, '0')),
-      'title', 'Lesson ' || v_order, 'sort_order', 1, 'body', 'Lesson.', 'status', 'live', 'required_watch_percent', 90
+      'title', 'Lesson ' || v_order, 'sort_order', 1, 'body', 'Lesson.', 'status', 'live',
+      'required_watch_percent', 90, 'completion_policy', 'keep'
     ));
     select id into v_lesson from public.academy_lesson
     where lesson_code = format('M%s-L01', lpad(v_order::text, 2, '0'));
@@ -539,7 +545,9 @@ begin
       ));
     end loop;
     insert into public.academy_progress (enrollment_id, lesson_id, status, completed_at, completed_version)
-    values (v_enrollment, v_lesson, 'completed', now(), 1);
+    select v_enrollment, v_lesson, 'completed', now(), l.content_version
+    from public.academy_lesson l
+    where l.id = v_lesson;
     insert into public.academy_attempt (enrollment_id, quiz_id, attempt_number, score, passed, finished_at, rules)
     select v_enrollment, q.id, 1, 5, true, now(), '{}'::jsonb
     from public.academy_quiz q where q.module_id = v_module;
