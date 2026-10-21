@@ -42,6 +42,10 @@ describe('findActive', () => {
     expect(activeLabels('/accounts/123')).toEqual(['Workspace', 'Sales', 'Accounts']);
   });
 
+  it('lights Pipeline for a lead page', () => {
+    expect(activeLabels('/workspace/pipeline/abc')).toEqual(['Workspace', 'Pipeline']);
+  });
+
   it('returns nothing for pages outside the nav', () => {
     expect(activeLabels('/workspace/login')).toBeNull();
   });
@@ -80,7 +84,7 @@ describe('findActive', () => {
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
     const labels = full.flatMap((section) => section.items.map((item) => item.label));
-    expect(labels).toEqual(['Overview', 'Clients', 'Sales operators', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
+    expect(labels).toEqual(['Overview', 'Pipeline', 'Clients', 'Sales operators', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
   });
 });
 
