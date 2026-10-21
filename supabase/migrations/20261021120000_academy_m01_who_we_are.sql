@@ -2,10 +2,11 @@
 -- Source: Divine Acquisition employee onboarding, Lesson 01.
 -- The video is not attached here. The lesson stays Ready, so trainees do not
 -- see it until the video is added and the status is set to Live.
--- The knowledge assessment is scored as multiple choice. The academy pass
--- mark is 85 percent (9 of these 10), with 3 attempts.
+-- The knowledge assessment is scored as multiple choice. Each lesson quiz
+-- is 5 questions. The academy pass mark is 85 percent, with 3 attempts.
+-- On 5 questions, 85 percent means all 5 correct.
 --
--- Answer key: 1 B, 2 C, 3 B, 4 B, 5 B, 6 B, 7 B (False), 8 C, 9 A, 10 A.
+-- Answer key: 1 B, 2 C, 3 B, 4 B, 5 A.
 
 do $m01$
 declare
@@ -210,7 +211,7 @@ We diagnose problems. We design systems. We execute solutions. We measure outcom
 
 That is what Divine Acquisition stands for. That is the standard you are joining.
 
-Pass the lesson quiz before this lesson can be marked complete. You need 85 percent. On these 10 questions, that is 9 correct. You have 3 attempts.
+Pass the lesson quiz before this lesson can be marked complete. The quiz has 5 questions. You need 85 percent, which is all 5 correct. You have 3 attempts.
 $body$;
 begin
   select l.id, l.module_id
@@ -264,12 +265,7 @@ begin
       ('What DA is'),
       ('Why DA exists'),
       ('Five stages'),
-      ('Vistrial'),
       ('First response'),
-      ('Client Success'),
-      ('What success looks like'),
-      ('Integrity'),
-      ('Standards'),
       ('What makes DA different')
   ) as tag(name)
   where not exists (
@@ -282,8 +278,7 @@ begin
   where c.module_id = v_module
     and c.lesson_id is null
     and c.name in (
-      'What DA is', 'Why DA exists', 'Five stages', 'Vistrial', 'First response',
-      'Client Success', 'What success looks like', 'Integrity', 'Standards', 'What makes DA different'
+      'What DA is', 'Why DA exists', 'Five stages', 'First response', 'What makes DA different'
     );
 
   if exists (
@@ -291,8 +286,7 @@ begin
     from public.academy_concept c
     where c.module_id = v_module
       and c.name in (
-        'What DA is', 'Why DA exists', 'Five stages', 'Vistrial', 'First response',
-        'Client Success', 'What success looks like', 'Integrity', 'Standards', 'What makes DA different'
+        'What DA is', 'Why DA exists', 'Five stages', 'First response', 'What makes DA different'
       )
       and c.lesson_id is distinct from v_lesson
   ) then
@@ -353,17 +347,7 @@ begin
         $m01q$Hire, train, advertise, sell, and report$m01q$
       ),
       (
-        4, 'Vistrial', 'medium', 'multiple_choice', null::text,
-        $m01q$What is the primary purpose of Vistrial?$m01q$,
-        'b',
-        $m01q$Vistrial is technology being developed to support more effective operational execution. It is not the mission, and clients need better-performing operations rather than software for its own sake.$m01q$,
-        $m01q$To replace all employees$m01q$,
-        $m01q$To support more effective operational execution through technology and AI$m01q$,
-        $m01q$To serve exclusively as an advertising platform$m01q$,
-        $m01q$To eliminate the need for client communication$m01q$
-      ),
-      (
-        5, 'First response', 'medium', 'multiple_choice', null::text,
+        4, 'First response', 'medium', 'multiple_choice', null::text,
         $m01q$A client reports receiving many leads but generating few sales. What should our team do first?$m01q$,
         'b',
         $m01q$Diagnose the existing sales process and find where opportunities are being lost. Do not start by spending more on advertising, promising a revenue number, or replacing the client's salespeople.$m01q$,
@@ -373,47 +357,7 @@ begin
         $m01q$Immediately replace the client's salespeople$m01q$
       ),
       (
-        6, 'Client Success', 'medium', 'multiple_choice', null::text,
-        $m01q$How does Client Success contribute to the mission of Divine Acquisition?$m01q$,
-        'b',
-        $m01q$Client Success helps clients understand, adopt, and receive value from the solutions we deliver, and keeps progress visible. The guiding question is whether the client is receiving meaningful value and understands the progress being made.$m01q$,
-        $m01q$Client Success replaces the client's sales team and runs every appointment$m01q$,
-        $m01q$Client Success helps clients understand, adopt, and receive value from the solutions we deliver$m01q$,
-        $m01q$Client Success writes the advertising and buys the media$m01q$,
-        $m01q$Client Success only closes support tickets$m01q$
-      ),
-      (
-        7, 'What success looks like', 'medium', 'multiple_choice', null::text,
-        $m01q$True or false: Completing assigned tasks automatically means a client is receiving measurable value.$m01q$,
-        'b',
-        $m01q$False. Being busy is not the same as being effective. Follow-ups, meetings, or closed tickets can all be completed while the client is still not receiving measurable value.$m01q$,
-        $m01q$True$m01q$,
-        $m01q$False$m01q$,
-        null::text,
-        null::text
-      ),
-      (
-        8, 'Integrity', 'hard', 'multiple_choice', null::text,
-        $m01q$A team member discovers that a client-facing performance report contains inaccurate numbers. What should they do?$m01q$,
-        'c',
-        $m01q$Correct or escalate the issue and make the information accurate. Integrity means we do not invent results, misrepresent data, or conceal a significant problem.$m01q$,
-        $m01q$Leave it unchanged$m01q$,
-        $m01q$Make up replacement numbers$m01q$,
-        $m01q$Correct or escalate the issue and ensure the information is accurate$m01q$,
-        $m01q$Delete the entire report without communicating$m01q$
-      ),
-      (
-        9, 'Standards', 'easy', 'multiple_choice', null::text,
-        $m01q$Which set names three principles employees are expected to demonstrate?$m01q$,
-        'a',
-        $m01q$The standards are Ownership, Clarity, Accountability, Continuous Improvement, Integrity, and Client Value. Ownership, integrity, and client value are three of them.$m01q$,
-        $m01q$Ownership, integrity, and client value$m01q$,
-        $m01q$Volume, discounting, and speed at any cost$m01q$,
-        $m01q$Secrecy, isolation, and individual heroics$m01q$,
-        $m01q$Charisma, availability, and improvisation$m01q$
-      ),
-      (
-        10, 'What makes DA different', 'medium', 'multiple_choice', null::text,
+        5, 'What makes DA different', 'medium', 'multiple_choice', null::text,
         $m01q$What makes Divine Acquisition different from a traditional marketing agency?$m01q$,
         'a',
         $m01q$We improve how the business operates and we measure business outcomes. A traditional agency is focused mainly on campaigns or lead generation. We do not assume more spending, more staff, or more software is the answer.$m01q$,
@@ -440,12 +384,7 @@ begin
         ($m01q$Which statement best describes Divine Acquisition?$m01q$, 'b'),
         ($m01q$Why does Divine Acquisition prioritize operational systems over simply generating more leads?$m01q$, 'c'),
         ($m01q$What are the five stages of our operational approach?$m01q$, 'b'),
-        ($m01q$What is the primary purpose of Vistrial?$m01q$, 'b'),
         ($m01q$A client reports receiving many leads but generating few sales. What should our team do first?$m01q$, 'b'),
-        ($m01q$How does Client Success contribute to the mission of Divine Acquisition?$m01q$, 'b'),
-        ($m01q$True or false: Completing assigned tasks automatically means a client is receiving measurable value.$m01q$, 'b'),
-        ($m01q$A team member discovers that a client-facing performance report contains inaccurate numbers. What should they do?$m01q$, 'c'),
-        ($m01q$Which set names three principles employees are expected to demonstrate?$m01q$, 'a'),
         ($m01q$What makes Divine Acquisition different from a traditional marketing agency?$m01q$, 'a')
     ) as expected(prompt, answer)
     left join public.academy_question question

@@ -19,20 +19,20 @@ begin
   assert (select status from public.academy_lesson where lesson_code = 'M01-L01') = 'ready',
     'the lesson stays hidden until the video is live';
   assert (select published from public.academy_lesson where lesson_code = 'M01-L01') = false;
-  assert (select count(*) from public.academy_question) = 10, 'lesson 01 quiz';
+  assert (select count(*) from public.academy_question) = 5, 'lesson 01 quiz';
   assert (
     select count(*)
     from public.academy_question q
     join public.academy_concept c on c.id = q.concept_id
     join public.academy_lesson l on l.id = c.lesson_id
     where l.lesson_code = 'M01-L01' and q.active
-  ) = 10, 'every quiz question is on Who We Are';
+  ) = 5, 'every quiz question is on Who We Are';
   assert (select correct_answer from public.academy_question
           where prompt = 'Which statement best describes Divine Acquisition?') = 'b';
   assert (select correct_answer from public.academy_question
           where prompt = 'What are the five stages of our operational approach?') = 'b';
   assert (select correct_answer from public.academy_question
-          where prompt = 'True or false: Completing assigned tasks automatically means a client is receiving measurable value.') = 'b';
+          where prompt = 'What makes Divine Acquisition different from a traditional marketing agency?') = 'a';
   assert (select count(*) from public.academy_enrollment) = 0, 'no enrollments';
   assert (select count(*) from public.academy_attempt) = 0, 'no attempts';
   assert (select title from public.academy_module m
@@ -421,7 +421,7 @@ do $$ begin perform set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-0000-0000
 do $$
 begin
   assert (select count(*) from public.academy_enrollment) = 2, 'academy admin still sees both';
-  assert (select count(*) from public.academy_question) = 11, 'academy admin can read the seeded quiz and the test question';
+  assert (select count(*) from public.academy_question) = 6, 'academy admin can read the seeded quiz and the test question';
   assert (select count(*) from public.academy_program) = 7;
 end $$;
 update public.academy_quiz set lockout_minutes = 31 where kind = 'final';
