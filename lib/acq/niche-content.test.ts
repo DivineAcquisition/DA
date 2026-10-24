@@ -183,6 +183,9 @@ describe('roofing lead payload', () => {
       'DA - Campaign ID',
       'DA - Ad Set ID',
       'DA - Ad ID',
+      'DA - Monthly Revenue',
+      'DA - Weekly Leads',
+      'DA - Biggest Leak',
     ]);
   });
 

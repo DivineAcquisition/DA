@@ -15,7 +15,9 @@ import {
 import { Field as CossField, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { CONSENT_CALLS, CONSENT_EMAIL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
+import type { FrontOfficeApplication, FrontOfficeContent } from '@/lib/acq/front-office-content';
 import type { NicheContent } from '@/lib/acq/niche-content';
+import { FrontOfficeDialog } from './FrontOfficeForm';
 import { captureVisitAttribution, type HeadlineVariant, type NicheVisit } from '@/lib/acq/niche-tracking';
 import { browserClickIds, trackRoofingBrowser } from '../RoofingPixel';
 
@@ -86,12 +88,16 @@ export function NicheExperience({
   variant,
   tracking,
   children,
+  className,
+  application,
 }: {
   button: string;
-  form: NicheContent['form'];
+  form: NicheContent['form'] | FrontOfficeContent['form'];
   variant: HeadlineVariant;
   tracking: NicheVisit;
   children: ReactNode;
+  className?: string;
+  application?: FrontOfficeApplication;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const firstFieldRef = useRef<HTMLInputElement>(null);
@@ -164,21 +170,32 @@ export function NicheExperience({
 
   return (
     <NicheContext.Provider value={{ open, register, button }}>
-      <div className={`acq-coaches acq-niche min-h-screen antialiased${showSticky ? ' niche-has-sticky' : ''}`}>
+      <div className={`acq-coaches acq-niche min-h-screen antialiased${showSticky ? ' niche-has-sticky' : ''}${className ? ` ${className}` : ''}`}>
         {children}
         <div className="niche-sticky" hidden={!showSticky}>
           <button type="button" className="acq-button acq-button-full" onClick={open}>
             {button}
           </button>
         </div>
-        <RoofingDialog
-          dialogRef={dialogRef}
-          firstFieldRef={firstFieldRef}
-          form={form}
-          variant={variant}
-          visit={visit}
-          onClose={() => setFormOpen(false)}
-        />
+        {application ? (
+          <FrontOfficeDialog
+            dialogRef={dialogRef}
+            firstFieldRef={firstFieldRef}
+            application={application}
+            variant={variant}
+            visit={visit}
+            onClose={() => setFormOpen(false)}
+          />
+        ) : (
+          <RoofingDialog
+            dialogRef={dialogRef}
+            firstFieldRef={firstFieldRef}
+            form={form as NicheContent['form']}
+            variant={variant}
+            visit={visit}
+            onClose={() => setFormOpen(false)}
+          />
+        )}
       </div>
     </NicheContext.Provider>
   );

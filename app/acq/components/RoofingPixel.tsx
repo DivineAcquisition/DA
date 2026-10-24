@@ -66,9 +66,17 @@ export function trackRoofingBrowser(event: string, eventId: string, custom = fal
   );
 }
 
-export function RoofingPixel() {
+export function RoofingPixel({
+  contentName,
+  contentCategory,
+  pixelCookie = 'roofing',
+}: {
+  contentName?: string;
+  contentCategory?: string;
+  pixelCookie?: string;
+} = {}) {
   useEffect(() => {
-    document.cookie = 'da_pixel=roofing; Path=/; Max-Age=2592000; SameSite=Lax';
+    document.cookie = `da_pixel=${pixelCookie}; Path=/; Max-Age=2592000; SameSite=Lax`;
     const eventId = crypto.randomUUID();
     trackRoofingBrowser('PageView', eventId, false, {});
     const ids = browserClickIds();
@@ -84,11 +92,13 @@ export function RoofingPixel() {
         fbp: ids.fbp,
         fbc: ids.fbc,
         fbclid,
+        ...(contentName ? { contentName } : {}),
+        ...(contentCategory ? { contentCategory } : {}),
       }),
     }).catch(() => {
       // The browser pixel already fired. A blocked request just skips the server copy.
     });
-  }, []);
+  }, [contentCategory, contentName, pixelCookie]);
 
   if (!ROOFING_META_PIXEL_ID) return null;
 

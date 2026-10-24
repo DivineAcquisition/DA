@@ -4,6 +4,7 @@ import {
   APPOINTMENT_TAGS,
   LEGACY_TAGS,
   QUALIFICATION_TAGS,
+  REVENUE_FIT_TAGS,
   SOURCE_TAGS,
   SPEND_QUALIFIED_TAGS,
   STAGE_TAGS,
@@ -20,6 +21,7 @@ const ALL = [
   ...Object.values(SOURCE_TAGS),
   ...Object.values(TAGS),
   ...Object.values(SPEND_QUALIFIED_TAGS),
+  ...Object.values(REVENUE_FIT_TAGS),
   ...Object.values(LEGACY_TAGS),
 ];
 

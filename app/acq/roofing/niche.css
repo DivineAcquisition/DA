@@ -509,6 +509,127 @@
   }
 }
 
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero {
+  padding-top: 0.55rem;
+  padding-bottom: 1.25rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .lx-pill {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.72rem;
+  line-height: 1.3;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .lx-headline {
+  margin-top: 0.45rem;
+  font-size: clamp(1.28rem, 5.5vw, 2.7rem);
+  line-height: 1.08;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .lx-lead {
+  margin-top: 0.45rem;
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .niche-quiet {
+  margin-top: 0.4rem;
+  font-size: 0.9rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .acq-button {
+  min-height: 3.05rem;
+  margin-top: 0.6rem;
+  padding: 0.65rem 1rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .lx-hero .niche-chips {
+  margin-top: 0.55rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-example {
+  display: inline-flex;
+  width: fit-content;
+  margin: 0;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(154, 136, 252, 0.16);
+  color: var(--lx-accent-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc {
+  gap: 1rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 800px) {
+  .acq-coaches.acq-niche.acq-niche-ai .niche-calc-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc label {
+  display: grid;
+  gap: 0.4rem;
+  color: #f4f4f5;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(154, 136, 252, 0.35);
+  border-radius: 14px;
+  background: #100f18;
+  color: #fff;
+  font-size: 16px;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc-result {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc-figure {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-calc-note,
+.acq-coaches.acq-niche.acq-niche-ai .niche-price-line {
+  margin-top: 0.35rem;
+  color: #d4d4d8;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-industry-chips {
+  margin-bottom: 1.25rem;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-industry-chips a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.acq-coaches.acq-niche.acq-niche-ai .niche-industry-chips a[aria-current='page'] {
+  color: #fff;
+}
+
 @keyframes niche-rise {
   from {
     transform: translateY(8px);

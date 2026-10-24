@@ -2,6 +2,7 @@ import { Resend } from 'resend';
 import { renderEmailHtml, textFooter } from '@/lib/email/layout';
 import { ACQ_AUDIT_CC } from './config';
 import { WORKSPACE_RESEND_FROM } from '@/lib/workspace/email';
+import { AI_FRONT_OFFICE_OFFER } from '@/lib/ghl/tags';
 import type { QualificationPayload } from './qualify';
 
 export function applicationNotifyTo(): string {
@@ -16,20 +17,32 @@ export function buildApplicationAlertEmail(input: {
 }): { subject: string; html: string; text: string } {
   const { payload } = input;
   const niche = Boolean(payload.niche);
-  const subject = `New application: ${payload.fullName}`;
+  const frontOffice = payload.coachingNiche === AI_FRONT_OFFICE_OFFER;
+  const subject = frontOffice
+    ? `New application: ${AI_FRONT_OFFICE_OFFER}: ${payload.fullName}`
+    : `New application: ${payload.fullName}`;
   const inquiries =
     payload.inquiriesPerMonth != null ? String(payload.inquiriesPerMonth) : 'Not given';
-  const intro = niche
-    ? `A ${payload.niche} owner requested the Lead Leak Audit.`
-    : 'A coach just filled out the application.';
+  const intro = frontOffice
+    ? `${payload.businessLabel || payload.niche} application for the ${AI_FRONT_OFFICE_OFFER}.`
+    : niche
+      ? `A ${payload.niche} owner requested the Lead Leak Audit.`
+      : 'A coach just filled out the application.';
   const lines = [
     `Name: ${payload.fullName}`,
     `Email: ${payload.email}`,
     payload.phone ? `Phone: ${payload.phone}` : null,
     `Company: ${payload.companyName}`,
-    `What they sell: ${payload.coachingNiche}`,
+    frontOffice ? `Offer: ${payload.coachingNiche}` : `What they sell: ${payload.coachingNiche}`,
     payload.niche ? `Niche: ${payload.niche}` : null,
+    payload.businessLabel ? `Business: ${payload.businessLabel}` : null,
     payload.spendBand ? `Spend band: ${payload.spendBand}` : null,
+    payload.monthlyRevenue ? `Monthly revenue: ${payload.monthlyRevenue}` : null,
+    payload.weeklyLeads ? `Weekly leads: ${payload.weeklyLeads}` : null,
+    payload.biggestLeak ? `Biggest leak: ${payload.biggestLeak}` : null,
+    payload.adName ? `Ad name: ${payload.adName}` : null,
+    payload.firstCampaign ? `First-touch campaign: ${payload.firstCampaign}` : null,
+    payload.lastCampaign ? `Last-touch campaign: ${payload.lastCampaign}` : null,
     payload.nicheQualified == null ? null : `Qualified: ${payload.nicheQualified ? 'yes' : 'no'}`,
     payload.headlineVariant ? `Headline: ${payload.headlineVariant}` : null,
     payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
@@ -49,7 +62,9 @@ export function buildApplicationAlertEmail(input: {
   ].filter((line): line is string => Boolean(line));
 
   const reason = niche
-    ? `You received this because someone submitted the ${payload.niche} Lead Leak Audit form.`
+    ? frontOffice
+      ? `You received this because someone submitted the ${AI_FRONT_OFFICE_OFFER} form.`
+      : `You received this because someone submitted the ${payload.niche} Lead Leak Audit form.`
     : 'You received this because an application was submitted on the coaches landing page.';
   const text = [
     intro,
@@ -73,9 +88,16 @@ export function buildApplicationAlertEmail(input: {
       { label: 'Email', value: payload.email },
       ...(payload.phone ? [{ label: 'Phone', value: payload.phone }] : []),
       { label: 'Company', value: payload.companyName },
-      { label: 'What they sell', value: payload.coachingNiche },
+      { label: frontOffice ? 'Offer' : 'What they sell', value: payload.coachingNiche },
       ...(payload.niche ? [{ label: 'Niche', value: payload.niche }] : []),
+      ...(payload.businessLabel ? [{ label: 'Business', value: payload.businessLabel }] : []),
       ...(payload.spendBand ? [{ label: 'Spend band', value: payload.spendBand }] : []),
+      ...(payload.monthlyRevenue ? [{ label: 'Monthly revenue', value: payload.monthlyRevenue }] : []),
+      ...(payload.weeklyLeads ? [{ label: 'Weekly leads', value: payload.weeklyLeads }] : []),
+      ...(payload.biggestLeak ? [{ label: 'Biggest leak', value: payload.biggestLeak }] : []),
+      ...(payload.adName ? [{ label: 'Ad name', value: payload.adName }] : []),
+      ...(payload.firstCampaign ? [{ label: 'First-touch campaign', value: payload.firstCampaign }] : []),
+      ...(payload.lastCampaign ? [{ label: 'Last-touch campaign', value: payload.lastCampaign }] : []),
       ...(payload.nicheQualified == null
         ? []
         : [{ label: 'Qualified', value: payload.nicheQualified ? 'yes' : 'no' }]),

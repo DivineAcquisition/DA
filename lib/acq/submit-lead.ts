@@ -20,7 +20,14 @@ import {
 import { ghlPit } from '@/lib/ghl/pit';
 import { moveGhlLead } from './ghl-lifecycle';
 import { sendRoofingCapi } from './meta-capi';
+import {
+  frontOfficeNotYetPath,
+  frontOfficeVisitorPath,
+  parseFrontOfficeLead,
+  withFrontOfficeTouch,
+} from './front-office-lead';
 import { nichePixelEvent, parseRoofingLead, roofingNotYetPath, roofingVisitorPath } from './niche-lead';
+import { AI_FRONT_OFFICE_KEY, AI_FRONT_OFFICE_OFFER } from '@/lib/ghl/tags';
 import { scoreQualification } from './score';
 import { isLeadStage, stageForQualification } from './stages';
 import {
@@ -104,13 +111,22 @@ export async function submitLead(
   if (isHoneypot(input)) {
     return {
       ok: true,
-      redirectTo: input.niche === 'roofing' ? roofingNotYetPath(host) : redirectTo(host),
+      redirectTo:
+        input.offerKey === AI_FRONT_OFFICE_KEY
+          ? frontOfficeNotYetPath(host)
+          : input.niche === 'roofing'
+            ? roofingNotYetPath(host)
+            : redirectTo(host),
     };
   }
 
   let payload: QualificationPayload;
   try {
-    payload = input.niche === 'roofing' ? parseRoofingLead(input) : parseQualification(input);
+    if (input.offerKey === AI_FRONT_OFFICE_KEY) {
+      payload = await withFrontOfficeTouch(parseFrontOfficeLead(input));
+    } else {
+      payload = input.niche === 'roofing' ? parseRoofingLead(input) : parseQualification(input);
+    }
     payload.consentPageUrl = meta?.eventSourceUrl;
   } catch (error) {
     if (error instanceof QualificationError) {
@@ -227,6 +243,41 @@ export async function submitLead(
     if (!recorded.ok) {
       await logPipelineFailure('booking-message', payload.email, new Error(recorded.error));
     }
+  }
+
+  if (payload.coachingNiche === AI_FRONT_OFFICE_OFFER) {
+    const pixel = nichePixelEvent(Boolean(payload.nicheQualified));
+    const eventId = crypto.randomUUID();
+    await sendRoofingCapi({
+      eventName: pixel,
+      eventId,
+      eventSourceUrl: meta?.eventSourceUrl,
+      email: payload.email,
+      phone: payload.phone,
+      firstName: payload.firstName,
+      fbp: meta?.fbp,
+      fbc: meta?.fbc,
+      fbclid: payload.tracking.fbclid,
+      clientIp: meta?.ip,
+      userAgent: meta?.userAgent,
+      customData: {
+        content_name: AI_FRONT_OFFICE_OFFER,
+        content_category: payload.niche || 'home-service',
+        status: payload.nicheQualified ? 'qualified' : 'unqualified',
+      },
+    });
+    return {
+      ok: true,
+      redirectTo: frontOfficeVisitorPath(
+        payload,
+        host,
+        scheduleToken,
+        schedulePath,
+        redirectTo(host),
+      ),
+      pixel,
+      eventId,
+    };
   }
 
   if (payload.niche === 'roofing') {

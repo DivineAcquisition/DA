@@ -229,6 +229,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/practices') ||
       pathname === '/roofing' ||
       pathname.startsWith('/roofing/') ||
+      pathname === '/ai' ||
+      pathname.startsWith('/ai/') ||
       pathname === '/api/submit-lead' ||
       pathname === '/api/meta/capi' ||
       pathname.startsWith('/api/acq/') ||
@@ -551,7 +553,11 @@ export async function proxy(request: NextRequest) {
     pathname === '/roofing' ||
     pathname.startsWith('/roofing/') ||
     pathname === '/acq/roofing' ||
-    pathname.startsWith('/acq/roofing/')
+    pathname.startsWith('/acq/roofing/') ||
+    pathname === '/ai' ||
+    pathname.startsWith('/ai/') ||
+    pathname === '/acq/ai' ||
+    pathname.startsWith('/acq/ai/')
   ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }

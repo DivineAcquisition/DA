@@ -1,5 +1,7 @@
 import { FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
+import { SHARED_FRONT_OFFICE } from '@/lib/acq/front-office-content';
 import { ROOFING } from '@/lib/acq/niche-content';
+import { AI_FRONT_OFFICE_OFFER } from '@/lib/ghl/tags';
 import { loadAcqSchedule } from '@/lib/acq/schedule';
 import { AcqScheduler } from '../Scheduler';
 
@@ -19,6 +21,7 @@ export default async function AcqSchedulePage({
   const schedule = await loadAcqSchedule(token);
   const firstName = schedule?.fullName.trim().split(/\s+/)[0] || 'there';
   const roofing = schedule?.offer === ROOFING.offerLabel;
+  const frontOffice = schedule?.offer === AI_FRONT_OFFICE_OFFER;
 
   return (
     <div className="acq-coaches acq-schedule min-h-screen antialiased">
@@ -39,7 +42,9 @@ export default async function AcqSchedulePage({
               <p className="lx-lead">
                 {roofing
                   ? ROOFING.bookingLead
-                  : 'Real time goes into the roadmap for this call. Book a time you will keep. We do not run your ads. We line the follow-up up with the offer you already sell.'}
+                  : frontOffice
+                    ? SHARED_FRONT_OFFICE.bookingLead
+                    : 'Real time goes into the roadmap for this call. Book a time you will keep. We do not run your ads. We line the follow-up up with the offer you already sell.'}
               </p>
               <div className="mt-8 w-full max-w-3xl text-left">
                 <AcqScheduler

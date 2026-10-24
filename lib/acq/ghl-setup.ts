@@ -5,6 +5,8 @@ import {
   APPOINTMENT_TAGS,
   LEGACY_TAGS,
   QUALIFICATION_TAGS,
+  AI_FRONT_OFFICE_TAG,
+  REVENUE_FIT_TAGS,
   SOURCE_TAGS,
   SPEND_QUALIFIED_TAGS,
   STAGE_TAGS,
@@ -30,6 +32,8 @@ export function formalTags(): string[] {
       ...Object.values(SOURCE_TAGS),
       ...Object.values(TAGS),
       ...Object.values(SPEND_QUALIFIED_TAGS),
+      ...Object.values(REVENUE_FIT_TAGS),
+      AI_FRONT_OFFICE_TAG,
       ...Object.values(LEGACY_TAGS),
     ]),
   ];

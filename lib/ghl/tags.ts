@@ -45,7 +45,20 @@ export const SOURCE_TAGS = {
   roofing: 'source - roofing lead leak audit',
   cleaning: 'source - cleaning strategy session',
   talent: 'source - talent assessment',
+  aiFrontOffice: 'source - ai front office',
 } as const;
+
+/** Stored on the lead and in DA - Offer. Not a tag. */
+export const AI_FRONT_OFFICE_OFFER = 'AI Front Office';
+
+/** Form and pipeline key so this offer never uses the roofing parser. */
+export const AI_FRONT_OFFICE_KEY = 'ai-front-office';
+
+/**
+ * Offer tag named in the brief. It does not follow the "group - value" shape,
+ * so it stays out of the exclusive groups above.
+ */
+export const AI_FRONT_OFFICE_TAG = 'da-offer-ai-front-office';
 
 export const TAGS = {
   applicationComplete: 'application - complete',
@@ -59,6 +72,11 @@ export const TAGS = {
 export const SPEND_QUALIFIED_TAGS = {
   yes: 'fit - spend qualified',
   no: 'fit - spend not qualified',
+} as const;
+
+export const REVENUE_FIT_TAGS = {
+  yes: 'fit - revenue qualified',
+  no: 'fit - revenue not qualified',
 } as const;
 
 export function nicheTag(niche: string): string {

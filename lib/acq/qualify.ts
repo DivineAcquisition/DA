@@ -1,7 +1,7 @@
 import { TRACKING_PARAM_KEYS, type TrackingParamKey } from './config';
 import type { HeadlineVariant } from './niche-tracking';
 import type { LeadStage } from './stages';
-import { QUALIFICATION_TAGS, SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
+import { AI_FRONT_OFFICE_OFFER, QUALIFICATION_TAGS, SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 
 export const AD_SPEND_OPTIONS = ['$0', 'Under $2k', '$2-5k', '$5k+'] as const;
 export const PROGRAM_PRICE_OPTIONS = ['Under $2k', '$2-5k', '$5k+'] as const;
@@ -39,6 +39,12 @@ export type QualificationInput = {
   niche?: string;
   spendBand?: string;
   headlineVariant?: string;
+  /** AI Front Office application. Coaches and the roofing audit leave this empty. */
+  offerKey?: string;
+  businessType?: string;
+  monthlyRevenue?: string;
+  weeklyLeads?: string;
+  biggestLeak?: string;
 };
 
 export type QualificationPayload = {
@@ -68,6 +74,13 @@ export type QualificationPayload = {
   spendBand?: string;
   nicheQualified?: boolean;
   headlineVariant?: HeadlineVariant;
+  businessLabel?: string;
+  monthlyRevenue?: string;
+  weeklyLeads?: string;
+  biggestLeak?: string;
+  firstCampaign?: string;
+  lastCampaign?: string;
+  adName?: string;
   /** Visit values that are not already keys on `tracking`. */
   attribution?: Record<string, string>;
   /** Page that showed the SMS box. Set by the server, not the form. */
@@ -95,7 +108,11 @@ export type QualifyErrorField =
   | 'programPrice'
   | 'smsConsent'
   | 'emailConsent'
-  | 'spendBand';
+  | 'spendBand'
+  | 'businessType'
+  | 'monthlyRevenue'
+  | 'weeklyLeads'
+  | 'biggestLeak';
 
 export class QualificationError extends Error {
   readonly field?: QualifyErrorField;
@@ -366,6 +383,14 @@ export function ghlWebhookBody(payload: QualificationPayload): Record<string, un
           qualified: payload.nicheQualified ? 'yes' : 'no',
           headlineVariant: payload.headlineVariant,
           headline_variant: payload.headlineVariant,
+          ...(payload.monthlyRevenue
+            ? { monthlyRevenue: payload.monthlyRevenue, monthly_revenue: payload.monthlyRevenue }
+            : {}),
+          ...(payload.weeklyLeads ? { weeklyLeads: payload.weeklyLeads, weekly_leads: payload.weeklyLeads } : {}),
+          ...(payload.biggestLeak ? { biggestLeak: payload.biggestLeak, biggest_leak: payload.biggestLeak } : {}),
+          ...(payload.firstCampaign ? { firstCampaign: payload.firstCampaign, first_campaign: payload.firstCampaign } : {}),
+          ...(payload.lastCampaign ? { lastCampaign: payload.lastCampaign, last_campaign: payload.lastCampaign } : {}),
+          ...(payload.adName ? { adName: payload.adName, ad_name: payload.adName } : {}),
         }
       : {}),
     ...payload.tracking,
@@ -375,19 +400,36 @@ export function ghlWebhookBody(payload: QualificationPayload): Record<string, un
 
 export function ghlContactNote(payload: QualificationPayload): string {
   const visit = { ...payload.tracking, ...(payload.attribution ?? {}) };
+  const hiddenVisit = new Set([
+    'monthly_revenue',
+    'weekly_leads',
+    'biggest_leak',
+    'first_campaign',
+    'last_campaign',
+    'ad_name',
+    'offer',
+  ]);
   const visitLines = payload.niche
     ? Object.entries(visit)
-        .filter((entry): entry is [string, string] => Boolean(entry[1]))
+        .filter((entry): entry is [string, string] => Boolean(entry[1]) && !hiddenVisit.has(entry[0]))
         .map(([key, value]) => `${key}: ${value}`)
     : [];
+  const frontOffice = payload.coachingNiche === AI_FRONT_OFFICE_OFFER;
   return [
-    payload.niche ? `${payload.niche} Lead Leak Audit` : 'Founding install qualification',
-    `What they sell: ${payload.coachingNiche}`,
+    frontOffice ? AI_FRONT_OFFICE_OFFER : payload.niche ? `${payload.niche} Lead Leak Audit` : 'Founding install qualification',
+    frontOffice ? `Offer: ${payload.coachingNiche}` : `What they sell: ${payload.coachingNiche}`,
     payload.companyName ? `Company: ${payload.companyName}` : null,
     payload.niche ? `Niche: ${payload.niche}` : null,
+    payload.businessLabel ? `Business: ${payload.businessLabel}` : null,
     payload.spendBand ? `Spend band: ${payload.spendBand}` : null,
+    payload.monthlyRevenue ? `Monthly revenue: ${payload.monthlyRevenue}` : null,
+    payload.weeklyLeads ? `Weekly leads: ${payload.weeklyLeads}` : null,
+    payload.biggestLeak ? `Biggest leak: ${payload.biggestLeak}` : null,
     payload.nicheQualified == null ? null : `Qualified: ${payload.nicheQualified ? 'yes' : 'no'}`,
     payload.headlineVariant ? `Headline: ${payload.headlineVariant}` : null,
+    payload.adName ? `Ad name: ${payload.adName}` : null,
+    payload.firstCampaign ? `First-touch campaign: ${payload.firstCampaign}` : null,
+    payload.lastCampaign ? `Last-touch campaign: ${payload.lastCampaign}` : null,
     payload.monthlyAdSpend ? `Monthly ad spend: ${payload.monthlyAdSpend}` : null,
     payload.inquiriesPerMonth != null ? `Inquiries per month: ${payload.inquiriesPerMonth}` : null,
     payload.followUpOwner

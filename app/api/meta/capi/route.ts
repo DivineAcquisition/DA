@@ -44,7 +44,10 @@ export async function POST(request: Request) {
     fbclid: text(body.fbclid, 200),
     clientIp: clientIp(request),
     userAgent: request.headers.get('user-agent') || undefined,
-    customData: { content_name: 'Lead Leak Audit', content_category: 'roofing' },
+    customData: {
+      content_name: text(body.contentName, 80) || 'Lead Leak Audit',
+      content_category: text(body.contentCategory, 80) || 'roofing',
+    },
   });
 
   return NextResponse.json(result, { status: result.ok || result.skipped ? 200 : 502 });

@@ -163,6 +163,12 @@ export function leadWriteFromQualification(
             spendBand: payload.spendBand,
             qualified: payload.nicheQualified ? 'yes' : 'no',
             headlineVariant: payload.headlineVariant,
+            monthlyRevenue: payload.monthlyRevenue,
+            weeklyLeads: payload.weeklyLeads,
+            biggestLeak: payload.biggestLeak,
+            firstCampaign: payload.firstCampaign,
+            lastCampaign: payload.lastCampaign,
+            adName: payload.adName,
           }
         : {}),
     },
@@ -314,6 +320,12 @@ async function captureApplication(
     spendBand: payload.spendBand ?? '',
     qualified: payload.nicheQualified == null ? '' : payload.nicheQualified ? 'yes' : 'no',
     headlineVariant: payload.headlineVariant ?? '',
+    monthlyRevenue: payload.monthlyRevenue ?? '',
+    weeklyLeads: payload.weeklyLeads ?? '',
+    biggestLeak: payload.biggestLeak ?? '',
+    firstCampaign: payload.firstCampaign ?? '',
+    lastCampaign: payload.lastCampaign ?? '',
+    adName: payload.adName ?? '',
     nicheNote: payload.niche ? ghlContactNote(payload) : '',
   };
 
