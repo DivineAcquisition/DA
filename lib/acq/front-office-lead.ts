@@ -1,4 +1,4 @@
-import { acqPublicPath, isTryHost } from './config';
+import { acqPublicPath } from './config';
 import { revenueQualifies, SHARED_FRONT_OFFICE, type FrontOfficeChoice } from './front-office-content';
 import { readFrontOfficeTouch } from './front-office-touch';
 import {
@@ -178,7 +178,6 @@ export async function withFrontOfficeTouch(payload: QualificationPayload): Promi
 }
 
 export function frontOfficeNotYetPath(host?: string): string {
-  if (isTryHost(host)) return '/not-yet';
   return acqPublicPath('/ai/not-yet', host);
 }
 
@@ -192,14 +191,7 @@ export function frontOfficeVisitorPath(
   const tracking = { ...payload.tracking, ...(payload.attribution ?? {}) };
   const visit = sanitizeNicheVisit(tracking);
   if (payload.nicheQualified) {
-    const schedule = isTryHost(host)
-      ? scheduleToken
-        ? `/schedule/${scheduleToken}`
-        : '/thank-you'
-      : scheduleToken
-        ? schedulePath
-        : thankYouPath;
-    return withNicheTracking(schedule, visit);
+    return withNicheTracking(scheduleToken ? schedulePath : thankYouPath, visit);
   }
   return withNicheTracking(frontOfficeNotYetPath(host), visit);
 }

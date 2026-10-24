@@ -93,8 +93,6 @@ export type FrontOfficeContent = {
 
 export type FrontOfficeApplication = FrontOfficeContent['form'];
 
-export const TRY_ORIGIN = 'https://try.divineacquisition.io';
-
 export const FRONT_OFFICE_SETTINGS = {
   qualificationCutoff: 50_000,
   showPrice: true,

@@ -195,14 +195,6 @@ export function withTrackingParams(
 /** Hosts that serve the coaching funnel at bare paths (`/book`, not `/acq/book`). */
 const ACQ_BARE_HOSTS = new Set(['acq.divineacquisition.io']);
 
-/** The AI Front Office lives on this host. `/` is the offer, not the coaches page. */
-export const TRY_PUBLIC_ORIGIN = 'https://try.divineacquisition.io';
-
-export function isTryHost(host?: string | null): boolean {
-  const hostname = (host ?? '').toLowerCase().split(':')[0];
-  return hostname === 'try.divineacquisition.io' || (hostname.startsWith('try.') && hostname.endsWith('.divineacquisition.io'));
-}
-
 /** go.divineacquisition.io is the cleaning-company funnel, not the coaches offer. */
 function isCleaningFunnelHost(hostname: string): boolean {
   return (

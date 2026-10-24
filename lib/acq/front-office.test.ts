@@ -1,7 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { buildApplicationAlertEmail } from './application-email';
-import { isTryHost } from './config';
 import { ghlContactNote, ghlWebhookBody } from './qualify';
 import { GHL_FIELDS_TO_CREATE } from './niche-lead';
 import { missedLeadCost } from './front-office-math';
@@ -141,24 +140,19 @@ describe('AI Front Office calculator', () => {
 });
 
 describe('AI Front Office lead', () => {
-  it('serves the offer on try.divineacquisition.io', () => {
-    expect(isTryHost('try.divineacquisition.io')).toBe(true);
-    expect(isTryHost('acq.divineacquisition.io')).toBe(false);
-  });
-
   it('qualifies $50K and up, and sends under $50K to the not-yet page', async () => {
-    const low = await submitLead({ ...valid, monthlyRevenue: 'Under $50K' }, 'try.divineacquisition.io');
+    const low = await submitLead({ ...valid, monthlyRevenue: 'Under $50K' }, 'acq.divineacquisition.io');
     expect(low.ok).toBe(true);
     if (low.ok) {
-      expect(low.redirectTo.startsWith('/not-yet')).toBe(true);
+      expect(low.redirectTo.startsWith('/ai/not-yet')).toBe(true);
       expect(low.pixel).toBe('UnqualifiedLead');
       expect(low.redirectTo).toContain('utm_content=c2-second-call');
     }
 
-    const high = await submitLead(valid, 'try.divineacquisition.io');
+    const high = await submitLead(valid, 'acq.divineacquisition.io');
     expect(high.ok).toBe(true);
     if (high.ok) {
-      expect(high.redirectTo.startsWith('/not-yet')).toBe(false);
+      expect(high.redirectTo.startsWith('/ai/not-yet')).toBe(false);
       expect(high.redirectTo.startsWith('/schedule/') || high.redirectTo.startsWith('/thank-you')).toBe(true);
       expect(high.pixel).toBe('Lead');
     }

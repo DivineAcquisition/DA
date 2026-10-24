@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { absolute: SHARED_FRONT_OFFICE.meta.title },
   description: SHARED_FRONT_OFFICE.meta.description,
   robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
-  alternates: { canonical: 'https://try.divineacquisition.io/' },
+  alternates: { canonical: 'https://acq.divineacquisition.io/ai' },
 };
 
 function readParam(value: string | string[] | undefined): string {
