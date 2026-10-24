@@ -43,7 +43,7 @@ export type NavItem = { key: ZoneKey | TabKey; label: string; short: string; hre
 
 const BASE = '/vistrial/operator';
 
-const ZONE: Record<ZoneKey, NavItem> = {
+const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client'>, NavItem> = {
   today: { key: 'today', label: 'My Day', short: 'My Day', href: BASE },
   record: { key: 'record', label: 'My Record', short: 'Record', href: `${BASE}/record` },
   standards: { key: 'standards', label: 'My Standards', short: 'Standards', href: `${BASE}/standards` },
