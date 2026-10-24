@@ -5,14 +5,12 @@ import { BorderBeam } from '@/components/ui/border-beam';
 import { DotPattern } from '@/components/ui/dot-pattern';
 import { HeroPill } from '@/components/ui/hero-pill';
 import { MagicCard } from '@/components/ui/magic-card';
-import { Marquee } from '@/components/ui/marquee';
 import { OfferBento } from '@/components/ui/offer-bento';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { FACEBOOK_DISCLAIMER, LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
 import {
   frontOfficeFaqs,
   frontOfficePriceFoot,
-  leakCatalog,
   type FrontOfficeContent,
 } from '@/lib/acq/front-office-content';
 import type { HeadlineVariant, NicheVisit } from '@/lib/acq/niche-tracking';
@@ -79,7 +77,7 @@ export function FrontOfficeLanding({
       variant={variant}
       tracking={tracking}
       className="acq-niche-ai"
-      application={{ ...content.form, leaksByBusiness: leakCatalog() }}
+      application={content.form}
     >
       <section
         className="lx-hero relative overflow-hidden"
@@ -199,18 +197,6 @@ export function FrontOfficeLanding({
       <section className="lx-section niche-reveal">
         <div className="lx-wrap">
           <h2 className="lx-heading">{content.fitHeading}</h2>
-          <Marquee pauseOnHover className="niche-industry-marquee mb-6 w-full [--duration:28s] [--gap:0.5rem]">
-            {content.industries.map((industry) => (
-              <a
-                key={industry.id}
-                href={industry.href}
-                aria-current={industry.id === content.id ? 'page' : undefined}
-                className="rounded-full border border-[rgba(154,136,252,0.4)] bg-[rgba(154,136,252,0.12)] px-4 py-2 text-sm font-semibold text-[var(--lx-accent-soft)]"
-              >
-                {industry.label}
-              </a>
-            ))}
-          </Marquee>
           <ul className="lx-audience">
             <li className="lx-card lx-featured">
               <h3>{content.fit.title}</h3>

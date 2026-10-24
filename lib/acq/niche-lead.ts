@@ -62,6 +62,7 @@ export const GHL_FIELDS_TO_CREATE = [
   },
   { key: 'weeklyLeads', name: 'DA - Weekly Leads', aliases: ['DA - Weekly Leads', 'Weekly Leads'] },
   { key: 'biggestLeak', name: 'DA - Biggest Leak', aliases: ['DA - Biggest Leak', 'Biggest Leak'] },
+  { key: 'businessType', name: 'DA - Business Type', aliases: ['DA - Business Type', 'Business Type'] },
 ] as const;
 
 export type NicheGhlFieldKey = (typeof GHL_FIELDS_TO_CREATE)[number]['key'];
@@ -109,6 +110,7 @@ export function nicheGhlValues(
     monthlyRevenue: payload.monthlyRevenue,
     weeklyLeads: payload.weeklyLeads,
     biggestLeak: payload.biggestLeak,
+    businessType: payload.businessLabel,
   };
   return values;
 }

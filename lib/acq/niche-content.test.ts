@@ -186,6 +186,7 @@ describe('roofing lead payload', () => {
       'DA - Monthly Revenue',
       'DA - Weekly Leads',
       'DA - Biggest Leak',
+      'DA - Business Type',
     ]);
   });
 

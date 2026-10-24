@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: { absolute: `${SHARED_FRONT_OFFICE.notYet.title} | Divine Acquisition` },
   robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
-  alternates: { canonical: 'https://acq.divineacquisition.io/ai/not-yet' },
+  alternates: { canonical: 'https://try.divineacquisition.io/not-yet' },
 };
 
 export default async function FrontOfficeNotYetPage({

@@ -61,11 +61,11 @@ export function buildApplicationAlertEmail(input: {
       : []),
   ].filter((line): line is string => Boolean(line));
 
-  const reason = niche
-    ? frontOffice
-      ? `You received this because someone submitted the ${AI_FRONT_OFFICE_OFFER} form.`
-      : `You received this because someone submitted the ${payload.niche} Lead Leak Audit form.`
-    : 'You received this because an application was submitted on the coaches landing page.';
+  const reason = frontOffice
+    ? `You received this because someone submitted the ${AI_FRONT_OFFICE_OFFER} form.`
+    : niche
+      ? `You received this because someone submitted the ${payload.niche} Lead Leak Audit form.`
+      : 'You received this because an application was submitted on the coaches landing page.';
   const text = [
     intro,
     '',

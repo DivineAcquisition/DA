@@ -262,7 +262,7 @@ export async function submitLead(
       userAgent: meta?.userAgent,
       customData: {
         content_name: AI_FRONT_OFFICE_OFFER,
-        content_category: payload.niche || 'home-service',
+        content_category: 'local-service',
         status: payload.nicheQualified ? 'qualified' : 'unqualified',
       },
     });

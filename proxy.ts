@@ -27,6 +27,7 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
  *   acq.divineacquisition.io        -> /acq  (coaches offer)
+ *   try.divineacquisition.io        -> /acq/ai (AI Front Office). `/` is that page.
  *   go.divineacquisition.io         -> /go   (cleaning-company funnel, coaches layout)
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
@@ -68,12 +69,16 @@ const WORKSPACE_HOSTS = appHosts('admin');
 // fall through onto the coaches surface.
 const ACQ_HOST_DEFAULTS = ['acq.divineacquisition.io'];
 const GO_HOST_DEFAULTS = ['go.divineacquisition.io'];
+const TRY_HOST_DEFAULTS = ['try.divineacquisition.io'];
 const GO_HOSTS = [
   ...new Set([...hosts(process.env.VISTRIAL_GO_HOSTS, GO_HOST_DEFAULTS.join(',')), ...GO_HOST_DEFAULTS]),
 ];
+const TRY_HOSTS = [
+  ...new Set([...hosts(process.env.VISTRIAL_TRY_HOSTS, TRY_HOST_DEFAULTS.join(',')), ...TRY_HOST_DEFAULTS]),
+].filter((host) => !GO_HOSTS.includes(host));
 const ACQ_HOSTS = [
   ...new Set([...hosts(process.env.VISTRIAL_ACQ_HOSTS, ACQ_HOST_DEFAULTS.join(',')), ...ACQ_HOST_DEFAULTS]),
-].filter((host) => !GO_HOSTS.includes(host));
+].filter((host) => !GO_HOSTS.includes(host) && !TRY_HOSTS.includes(host));
 const CALLS_HOSTS = hosts(process.env.VISTRIAL_CALLS_HOSTS, 'calls.divineacquisition.io');
 const ONBOARD_HOSTS = hosts(process.env.VISTRIAL_ONBOARD_HOSTS, 'onboard.divineacquisition.io');
 const TRAINING_HOSTS = appHosts('training');
@@ -207,6 +212,26 @@ const SURFACES: Surface[] = [
       pathname === '/invite' ||
       pathname.startsWith('/invite/') ||
       pathname.startsWith('/go'),
+  },
+  {
+    hosts: TRY_HOSTS,
+    prefix: ACQ_PREFIX,
+    // Home is the AI Front Office. The coaches offer and the roofing audit stay on acq.
+    allow: (pathname) =>
+      pathname === '/' ||
+      pathname === '/ai' ||
+      pathname.startsWith('/ai/') ||
+      pathname === '/not-yet' ||
+      pathname === '/terms' ||
+      pathname === '/disclaimer' ||
+      pathname === '/privacy' ||
+      pathname === '/thank-you' ||
+      pathname.startsWith('/thank-you') ||
+      pathname === '/schedule' ||
+      pathname.startsWith('/schedule/') ||
+      pathname === '/api/submit-lead' ||
+      pathname === '/api/meta/capi' ||
+      pathname.startsWith('/acq'),
   },
   {
     hosts: ACQ_HOSTS,
@@ -429,7 +454,11 @@ export async function proxy(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   let stampedPath = pathname;
-  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite) {
+  const tryHome = TRY_HOSTS.includes(host) && (pathname === '/' || pathname === '/ai');
+  const tryNotYet = TRY_HOSTS.includes(host) && (pathname === '/not-yet' || pathname === '/ai/not-yet');
+  if (tryHome) stampedPath = '/acq/ai';
+  else if (tryNotYet) stampedPath = '/acq/ai/not-yet';
+  else if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite) {
     stampedPath = `${prefix}${pathname === '/' ? '' : pathname}`;
   }
   requestHeaders.set('x-pathname', stampedPath);
@@ -449,7 +478,7 @@ export async function proxy(request: NextRequest) {
   // Dedicated hosts rewrite bare paths into their surface. Careers keeps `/`
   // as the board and `/hiring/*` as role pages — no rewrite needed for `/`.
   // Public token routes (/p, /c) stay unprefixed on the workspace host.
-  if (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite) {
+  if ((tryHome || tryNotYet || (prefix && prefix !== HIRING_PREFIX && !pathname.startsWith(prefix) && !skipRewrite))) {
     const url = request.nextUrl.clone();
     url.pathname = stampedPath;
     response = NextResponse.rewrite(url, { request: { headers: requestHeaders } });
@@ -557,7 +586,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/ai' ||
     pathname.startsWith('/ai/') ||
     pathname === '/acq/ai' ||
-    pathname.startsWith('/acq/ai/')
+    pathname.startsWith('/acq/ai/') ||
+    TRY_HOSTS.includes(host)
   ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }

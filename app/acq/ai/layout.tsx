@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function FrontOfficeLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <RoofingPixel contentName={AI_FRONT_OFFICE_OFFER} contentCategory="home-service" pixelCookie="ai-front-office" />
+      <RoofingPixel contentName={AI_FRONT_OFFICE_OFFER} contentCategory="local-service" pixelCookie="ai-front-office" />
       {children}
     </>
   );

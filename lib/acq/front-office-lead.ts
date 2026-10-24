@@ -1,10 +1,5 @@
-import { acqPublicPath } from './config';
-import {
-  frontOfficeBusiness,
-  revenueQualifies,
-  SHARED_FRONT_OFFICE,
-  type FrontOfficeChoice,
-} from './front-office-content';
+import { acqPublicPath, isTryHost } from './config';
+import { revenueQualifies, SHARED_FRONT_OFFICE, type FrontOfficeChoice } from './front-office-content';
 import { readFrontOfficeTouch } from './front-office-touch';
 import {
   AI_FRONT_OFFICE_KEY,
@@ -14,7 +9,6 @@ import {
   SOURCE_TAGS,
   TAGS,
   headlineTag,
-  nicheTag,
 } from '@/lib/ghl/tags';
 import {
   APP_COMPLETE_TAG,
@@ -69,32 +63,33 @@ export function parseFrontOfficeLead(input: QualificationInput): QualificationPa
   if (companyName.length < 2) throw new QualificationError('Enter your company name.', 'companyName');
   if (companyName.length > 200) throw new QualificationError('Keep the company name under 200 characters.', 'companyName');
 
-  const business = frontOfficeBusiness((input.businessType ?? '').trim());
-  if (!business || !(input.businessType ?? '').trim()) {
-    throw new QualificationError('Select the type of business you run.', 'businessType');
+  const businessLabel = (input.businessType ?? '').trim();
+  if (businessLabel.length < 2) {
+    throw new QualificationError('Tell us what type of service business you run.', 'businessType');
   }
-  const businessId = (input.businessType ?? '').trim();
+  if (businessLabel.length > 80) {
+    throw new QualificationError('Keep the business type under 80 characters.', 'businessType');
+  }
 
-  const revenue = choiceByLabel(SHARED_FRONT_OFFICE.form.revenueOptions, input.monthlyRevenue ?? '');
+  const content = SHARED_FRONT_OFFICE;
+  const revenue = choiceByLabel(content.form.revenueOptions, input.monthlyRevenue ?? '');
   if (!revenue) throw new QualificationError('Select your monthly revenue.', 'monthlyRevenue');
 
-  const weekly = choiceByLabel(business.form.leadsOptions, input.weeklyLeads ?? '');
+  const weekly = choiceByLabel(content.form.leadsOptions, input.weeklyLeads ?? '');
   if (!weekly) throw new QualificationError('Select how many new leads you get a week.', 'weeklyLeads');
 
   const leak =
-    choiceById(business.form.leakOptions, input.biggestLeak ?? '') ??
-    choiceByLabel(business.form.leakOptions, input.biggestLeak ?? '');
+    choiceById(content.form.leakOptions, input.biggestLeak ?? '') ??
+    choiceByLabel(content.form.leakOptions, input.biggestLeak ?? '');
   if (!leak) throw new QualificationError('Select where you lose the most jobs.', 'biggestLeak');
 
   if (!input.smsConsent) throw new QualificationError('Agree to calls and texts to continue.', 'smsConsent');
   if (!input.emailConsent) throw new QualificationError('Agree to emails to continue.', 'emailConsent');
 
   const visit = sanitizeNicheVisit(input.tracking);
-  const qualified = revenueQualifies(revenue, business.qualificationCutoff);
+  const qualified = revenueQualifies(revenue, content.qualificationCutoff);
   const headlineVariant = asVariant(input.headlineVariant, visit.utm_content);
   const { firstName, lastName } = splitName(fullName);
-  const businessLabel =
-    SHARED_FRONT_OFFICE.form.businesses.find((item) => item.id === businessId)?.label ?? businessId;
 
   const tracking: QualificationPayload['tracking'] = {};
   if (visit.utm_source) tracking.utm_source = visit.utm_source;
@@ -133,7 +128,6 @@ export function parseFrontOfficeLead(input: QualificationInput): QualificationPa
       APP_COMPLETE_TAG,
       TAGS.smsConsent,
       AI_FRONT_OFFICE_TAG,
-      nicheTag(businessId),
       revenue.tag,
       weekly.tag,
       leak.tag,
@@ -141,7 +135,6 @@ export function parseFrontOfficeLead(input: QualificationInput): QualificationPa
       headlineTag(headlineVariant),
     ],
     tracking,
-    niche: businessId,
     spendBand: '',
     nicheQualified: qualified,
     headlineVariant,
@@ -150,8 +143,8 @@ export function parseFrontOfficeLead(input: QualificationInput): QualificationPa
     weeklyLeads: weekly.label,
     biggestLeak: leak.label,
     attribution: {
-      niche: businessId,
       offer: AI_FRONT_OFFICE_OFFER,
+      business_type: businessLabel,
       monthly_revenue: revenue.label,
       weekly_leads: weekly.label,
       biggest_leak: leak.label,
@@ -185,6 +178,7 @@ export async function withFrontOfficeTouch(payload: QualificationPayload): Promi
 }
 
 export function frontOfficeNotYetPath(host?: string): string {
+  if (isTryHost(host)) return '/not-yet';
   return acqPublicPath('/ai/not-yet', host);
 }
 
@@ -198,7 +192,14 @@ export function frontOfficeVisitorPath(
   const tracking = { ...payload.tracking, ...(payload.attribution ?? {}) };
   const visit = sanitizeNicheVisit(tracking);
   if (payload.nicheQualified) {
-    return withNicheTracking(scheduleToken ? schedulePath : thankYouPath, visit);
+    const schedule = isTryHost(host)
+      ? scheduleToken
+        ? `/schedule/${scheduleToken}`
+        : '/thank-you'
+      : scheduleToken
+        ? schedulePath
+        : thankYouPath;
+    return withNicheTracking(schedule, visit);
   }
   return withNicheTracking(frontOfficeNotYetPath(host), visit);
 }

@@ -37,7 +37,7 @@ export function FrontOfficeDialog({
     phone: '',
     email: '',
     companyName: '',
-    businessType: application.defaultBusinessId,
+    businessType: '',
     monthlyRevenue: '',
     weeklyLeads: '',
     biggestLeak: '',
@@ -46,8 +46,7 @@ export function FrontOfficeDialog({
   const [emailConsent, setEmailConsent] = useState(false);
   const [website, setWebsite] = useState('');
 
-  const leakOptions =
-    application.leaksByBusiness[values.businessType] ?? application.leaksByBusiness.shared ?? application.leakOptions;
+  const leakOptions = application.leakOptions;
 
   const setField = (key: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -66,8 +65,8 @@ export function FrontOfficeDialog({
     if ((values.phone.match(/\d/g)?.length ?? 0) < 10) next.phone = 'Enter a valid mobile phone.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) next.email = 'Enter a valid email.';
     if (values.companyName.trim().length < 2) next.companyName = 'Enter your company name.';
-    if (!application.businesses.some((option) => option.id === values.businessType)) {
-      next.businessType = 'Select the type of business you run.';
+    if (values.businessType.trim().length < 2) {
+      next.businessType = 'Tell us what type of service business you run.';
     }
     if (!application.revenueOptions.some((option) => option.label === values.monthlyRevenue)) {
       next.monthlyRevenue = 'Select your monthly revenue.';
@@ -239,15 +238,15 @@ export function FrontOfficeDialog({
               error={fieldErrors.companyName}
               onChange={(value) => setField('companyName', value)}
             />
-            <SelectField
+            <TextField
               id="ai-business"
               label={application.businessLabel}
               name="businessType"
               field="businessType"
+              type="text"
+              autoComplete="organization"
               value={values.businessType}
-              placeholder={application.businessPlaceholder}
               error={fieldErrors.businessType}
-              options={application.businesses.map((option) => ({ value: option.id, label: option.label }))}
               onChange={(value) => setField('businessType', value)}
             />
             <SelectField
