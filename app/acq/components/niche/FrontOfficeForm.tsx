@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent, type RefObject } from 'react';
 import { Field as CossField, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/select';
 import { CONSENT_CALLS, CONSENT_EMAIL, FORM_SUBMIT_NOTE, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
 import type { FrontOfficeApplication } from '@/lib/acq/front-office-content';
 import { AI_FRONT_OFFICE_KEY, AI_FRONT_OFFICE_OFFER } from '@/lib/ghl/tags';
@@ -448,7 +449,7 @@ function SelectField({
       <FieldLabel className={fieldLabel} htmlFor={id}>
         {label}
       </FieldLabel>
-      <select
+      <NativeSelect
         id={id}
         name={name}
         data-field={field}
@@ -456,6 +457,7 @@ function SelectField({
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
+        className="min-h-12 text-base sm:h-12"
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -463,7 +465,7 @@ function SelectField({
             {option.label}
           </option>
         ))}
-      </select>
+      </NativeSelect>
       {error ? (
         <p id={`${id}-error`} className="mt-1.5 text-sm text-flag-critical" role="alert">
           {error}

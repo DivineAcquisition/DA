@@ -1,8 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { MagicCard } from '@/components/ui/magic-card';
+import { NumberTicker } from '@/components/ui/number-ticker';
 import type { FrontOfficeContent } from '@/lib/acq/front-office-content';
-import { formatDollars, missedLeadCost } from '@/lib/acq/front-office-math';
+import { missedLeadCost } from '@/lib/acq/front-office-math';
 
 /**
  * The numbers stay in this component. Nothing here is written to storage or sent.
@@ -22,7 +25,9 @@ export function LeakCalculator({ calculator }: { calculator: FrontOfficeContent[
   }, [missed, percent, value]);
 
   return (
-    <div className="niche-calc lx-card" data-calculator="local">
+    <div className="relative overflow-hidden rounded-3xl" data-calculator="local">
+      <BorderBeam size={80} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+      <MagicCard className="rounded-3xl" contentClassName="niche-calc lx-card">
       <div className="niche-calc-grid">
         <label>
           <span>{calculator.valueLabel}</span>
@@ -57,11 +62,13 @@ export function LeakCalculator({ calculator }: { calculator: FrontOfficeContent[
           calculator.estimate
         ) : (
           <>
-            About {formatDollars(amount)} {calculator.resultAfter}
+            About $
+            <NumberTicker value={amount} startValue={amount} className="niche-calc-figure" /> {calculator.resultAfter}
           </>
         )}
       </p>
       {amount != null ? <p className="niche-calc-note">{calculator.estimate}</p> : null}
+      </MagicCard>
     </div>
   );
 }
