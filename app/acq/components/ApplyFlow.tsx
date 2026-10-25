@@ -17,9 +17,15 @@ import {
   type ApplyQuestionKey,
   type ApplyScreen,
 } from '@/lib/acq/application-copy';
-import { ACQ_PRECALL_PATH, acqPublicPath, withTrackingQuery, type TrackingParamKey } from '@/lib/acq/config';
+import {
+  ACQ_PRECALL_PATH,
+  ACQ_PUBLIC_ORIGIN,
+  acqCalendarEmbedSrc,
+  acqPublicPath,
+  withTrackingQuery,
+  type TrackingParamKey,
+} from '@/lib/acq/config';
 import { LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
-import { AcqScheduler } from '../schedule/Scheduler';
 import { CalendarEmbed } from './CalendarEmbed';
 import { trackPixel } from './MetaPixel';
 
@@ -89,7 +95,6 @@ export function ApplyDialog({
   const titleId = 'acq-apply-title';
   const [phase, setPhase] = useState<Phase>({ name: 'form' });
   const [answers, setAnswers] = useState<ApplyAnswers>({});
-  const [token, setToken] = useState('');
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -101,7 +106,6 @@ export function ApplyDialog({
   const websiteRef = useRef<HTMLInputElement | null>(null);
 
   const remember = (next: string) => {
-    setToken(next);
     try {
       sessionStorage.setItem(TOKEN_KEY, next);
     } catch {
@@ -119,7 +123,6 @@ export function ApplyDialog({
     if (!saved) return;
     const result = await postApply({ action: 'resume', token: saved, tracking, test: testMode });
     if (!result.ok) return;
-    setToken(saved);
     setAnswers(result.answers ?? {});
     if (result.firstName) setFirstName(result.firstName);
     if (result.screen) setPhase({ name: 'screen', screen: result.screen });
@@ -199,12 +202,21 @@ export function ApplyDialog({
     }
     if (result.token) remember(result.token);
     trackPixel('Lead');
+    if (result.screen === 'calendar') {
+      setPhase({ name: 'screen', screen: 'calendar' });
+      return;
+    }
     const destination = withTrackingQuery(
       acqPublicPath(ACQ_PRECALL_PATH, window.location.host),
       tracking,
     );
     window.location.assign(destination);
   };
+
+  const precallRedirect =
+    typeof window === 'undefined'
+      ? `${ACQ_PUBLIC_ORIGIN}${ACQ_PRECALL_PATH}`
+      : `${window.location.origin}${acqPublicPath(ACQ_PRECALL_PATH, window.location.host)}`;
 
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
 
@@ -226,17 +238,11 @@ export function ApplyDialog({
             <p className="acq-apply-note">{screen.line}</p>
             {phase.name === 'screen' && phase.screen === 'calendar' ? (
               <div className="acq-apply-calendar">
-                {token.length >= 32 ? (
-                  <AcqScheduler
-                    token={token}
-                    initialPhone={phone}
-                    onBooked={() => {
-                      void postApply({ action: 'book', token, tracking, test: testMode });
-                    }}
-                  />
-                ) : (
-                  <CalendarEmbed className="mt-4" iframeClassName="h-[640px]" />
-                )}
+                <CalendarEmbed
+                  src={acqCalendarEmbedSrc(tracking, { redirectUrl: precallRedirect })}
+                  className="mt-4"
+                  iframeClassName="h-[640px]"
+                />
               </div>
             ) : null}
           </div>

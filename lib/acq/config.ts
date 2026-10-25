@@ -96,7 +96,7 @@ export const ACQ_BOOK_PATH = '/book';
 export const ACQ_PRECALL_PATH = '/precall';
 export const ACQ_PRACTICES_PATH = '/practices';
 
-/** Optional Typeform apply URL. The landing CTA uses /book (iClosed). */
+/** Optional Typeform apply URL. The coaching booking page uses the GHL calendar. */
 export const ACQ_TYPEFORM_DEFAULT_URL = 'https://form.typeform.com/to/lvtP8G4E';
 export const ACQ_TYPEFORM_URL =
   process.env.NEXT_PUBLIC_ACQ_TYPEFORM_URL?.trim() || ACQ_TYPEFORM_DEFAULT_URL;

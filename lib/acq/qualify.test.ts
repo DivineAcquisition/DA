@@ -1,10 +1,8 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   ACQ_CALENDAR_DEFAULT_EMBED_URL,
   ACQ_CALENDAR_EMBED_URL,
-  ACQ_ICLOSED_EMBED_SCRIPT,
-  ACQ_ICLOSED_EVENT_URL,
-  ACQ_ICLOSED_HEIGHT,
   ACQ_META_PIXEL_ID,
   ACQ_PRACTICES_PATH,
   ACQ_PRECALL_PATH,
@@ -407,12 +405,10 @@ describe('founding landing media', () => {
     expect(ACQ_CALENDAR_EMBED_URL).toContain('msgsndr');
   });
 
-  it('embeds the issued iClosed event on /book', () => {
-    expect(ACQ_ICLOSED_EVENT_URL).toBe(
-      'https://app.iclosed.io/e/divineacquisitionn/free-sales-ops-audit-divineacq',
-    );
-    expect(ACQ_ICLOSED_EMBED_SCRIPT).toBe('https://app.iclosed.io/assets/widget.js');
-    expect(ACQ_ICLOSED_HEIGHT).toBe(620);
+  it('embeds the issued GHL booking widget on the coaching book page', () => {
+    expect(readFileSync('app/acq/book/page.tsx', 'utf8')).toContain('CalendarEmbed');
+    expect(readFileSync('app/acq/book/page.tsx', 'utf8')).not.toContain('IclosedEmbed');
+    expect(ACQ_CALENDAR_EMBED_URL).toContain('widget/booking');
   });
 
   it('defaults the thank-you booking calendar to the issued GHL widget', () => {

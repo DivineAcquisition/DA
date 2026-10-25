@@ -1,5 +1,6 @@
 import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
-import IclosedEmbed from '../components/IclosedEmbed';
+import { acqCalendarEmbedSrc, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import { CalendarEmbed } from '../components/CalendarEmbed';
 
 export const metadata = {
   title: { absolute: 'Free Sales Audit | Divine Acquisition' },
@@ -9,8 +10,14 @@ export const metadata = {
   },
 };
 
-/** iClosed booking calendar for the landing CTA. */
-export default function AcqBookPage() {
+/** GHL booking calendar for the coaching landing. */
+export default async function AcqBookPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const tracking = trackingFromSearchParams(await searchParams);
+
   return (
     <div className="acq-coaches min-h-screen antialiased">
       <section className="lx-hero">
@@ -21,7 +28,7 @@ export default function AcqBookPage() {
             <span className="lx-accent">{BOOK_PAGE.titleAccent}</span>
           </h1>
           <p className="lx-lead">{BOOK_PAGE.body}</p>
-          <IclosedEmbed />
+          <CalendarEmbed src={acqCalendarEmbedSrc(tracking)} title="Free sales audit" />
         </div>
       </section>
       <footer className="lx-foot">
