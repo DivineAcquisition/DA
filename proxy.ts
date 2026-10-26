@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './lib/apps';
+import { REVENUE_LEAK_NOINDEX } from './lib/acq/revenue-leak-content';
 
 /**
  * Strict host-based routing plus Supabase session refresh.
@@ -26,7 +27,7 @@ import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './li
  *                                       reachable there too, for staff View As.
  *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
- *   acq.divineacquisition.io        -> /acq  (coaches offer, and /ai for the AI Front Office)
+ *   acq.divineacquisition.io        -> /acq  (coaches offer, /ai, and /leak for the Revenue Leak Audit)
  *   go.divineacquisition.io         -> /go   (cleaning-company funnel, coaches layout)
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
@@ -231,6 +232,9 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/roofing/') ||
       pathname === '/ai' ||
       pathname.startsWith('/ai/') ||
+      pathname === '/leak' ||
+      pathname.startsWith('/leak/') ||
+      pathname === '/api/meta/acq-capi' ||
       pathname === '/api/submit-lead' ||
       pathname === '/api/meta/capi' ||
       pathname.startsWith('/api/acq/') ||
@@ -557,7 +561,16 @@ export async function proxy(request: NextRequest) {
     pathname === '/ai' ||
     pathname.startsWith('/ai/') ||
     pathname === '/acq/ai' ||
-    pathname.startsWith('/acq/ai/')
+    pathname.startsWith('/acq/ai/') ||
+    pathname === '/leak/not-yet' ||
+    pathname.startsWith('/leak/not-yet/') ||
+    pathname === '/acq/leak/not-yet' ||
+    pathname.startsWith('/acq/leak/not-yet/') ||
+    (REVENUE_LEAK_NOINDEX &&
+      (pathname === '/leak' ||
+        pathname.startsWith('/leak/') ||
+        pathname === '/acq/leak' ||
+        pathname.startsWith('/acq/leak/')))
   ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
   }

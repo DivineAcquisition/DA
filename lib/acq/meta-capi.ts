@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { ACQ_META_PIXEL_ID } from './config';
 import { ROOFING_META_PIXEL_ID, type RoofingCapiEvent } from './roofing-pixel';
 
 const GRAPH_VERSION = 'v21.0';
@@ -76,6 +77,8 @@ export type RoofingCapiInput = {
   clientIp?: string;
   userAgent?: string;
   customData?: Record<string, string>;
+  /** Used when eventSourceUrl is missing or not on this site. */
+  fallbackUrl?: string;
 };
 
 export function roofingCapiBody(input: RoofingCapiInput, now = new Date()): Record<string, unknown> {
@@ -100,7 +103,7 @@ export function roofingCapiBody(input: RoofingCapiInput, now = new Date()): Reco
     action_source: 'website',
     event_source_url: safeEventSourceUrl(
       input.eventSourceUrl,
-      'https://acq.divineacquisition.io/roofing',
+      input.fallbackUrl || 'https://acq.divineacquisition.io/roofing',
     ),
     user_data: userData,
   };
@@ -129,6 +132,46 @@ export async function sendRoofingCapi(
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(roofingCapiBody(input)),
+        cache: 'no-store',
+      },
+    );
+    const text = await response.text();
+    if (!response.ok) {
+      console.error('[meta-capi]', input.eventName, response.status, text.slice(0, 500));
+      return { ok: false, error: 'Meta did not accept the event.' };
+    }
+    return { ok: true };
+  } catch (error) {
+    console.error('[meta-capi]', input.eventName, error);
+    return { ok: false, error: 'Meta could not be reached.' };
+  }
+}
+
+const ACQ_CAPI_FALLBACK = 'https://acq.divineacquisition.io/leak';
+
+/** Booking events for the coaches pixel, including the Revenue Leak Audit page. */
+export function acqCapiBody(input: RoofingCapiInput, now = new Date()): Record<string, unknown> {
+  return roofingCapiBody(
+    { ...input, fallbackUrl: input.fallbackUrl || ACQ_CAPI_FALLBACK },
+    now,
+  );
+}
+
+export async function sendAcqCapi(
+  input: RoofingCapiInput,
+): Promise<{ ok: boolean; skipped?: boolean; error?: string }> {
+  const token = metaCapiAccessToken();
+  if (!token || !ACQ_META_PIXEL_ID) {
+    return { ok: false, skipped: true };
+  }
+
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/${GRAPH_VERSION}/${ACQ_META_PIXEL_ID}/events?access_token=${encodeURIComponent(token)}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(acqCapiBody(input)),
         cache: 'no-store',
       },
     );

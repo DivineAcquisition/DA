@@ -8,6 +8,7 @@ import {
   ACQ_ICLOSED_HEIGHT,
   ACQ_ICLOSED_TITLE,
 } from '@/lib/acq/config';
+import { cn } from '@/lib/utils';
 import { CalendarFrame } from './CalendarEmbed';
 import { trackPixel } from './MetaPixel';
 
@@ -57,8 +58,26 @@ function readPostedHeight(data: unknown): number | null {
     : null;
 }
 
-/** iClosed inline scheduler for /book. */
-export default function IclosedEmbed() {
+type IclosedEmbedProps = {
+  url?: string;
+  title?: string;
+  contentName?: string;
+  eventName?: 'Schedule' | 'Lead';
+  shell?: boolean;
+  className?: string;
+  onBooked?: (eventId: string, eventName: 'Schedule' | 'Lead') => void;
+};
+
+/** iClosed inline scheduler. The coaches calendar stays the default URL. */
+export default function IclosedEmbed({
+  url = ACQ_ICLOSED_EVENT_URL,
+  title = ACQ_ICLOSED_TITLE,
+  contentName,
+  eventName,
+  shell = true,
+  className,
+  onBooked,
+}: IclosedEmbedProps = {}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pixelFired = useRef(false);
 
@@ -99,6 +118,17 @@ export default function IclosedEmbed() {
       if (pixelFired.current) return;
       if (!looksLikeBooking(event.data)) return;
       pixelFired.current = true;
+      if (eventName || contentName) {
+        const booked = eventName ?? 'Schedule';
+        const eventId = crypto.randomUUID();
+        trackPixel(
+          booked,
+          { content_name: contentName || 'Booking', content_category: 'local-service' },
+          eventId,
+        );
+        onBooked?.(eventId, booked);
+        return;
+      }
       trackPixel('Schedule');
     };
 
@@ -107,15 +137,15 @@ export default function IclosedEmbed() {
       observer.disconnect();
       window.removeEventListener('message', onMessage);
     };
-  }, []);
+  }, [contentName, eventName, onBooked]);
 
   return (
-    <CalendarFrame shell className="max-w-5xl">
+    <CalendarFrame shell={shell} className={shell ? cn('max-w-5xl', className) : cn('mt-0 max-w-none', className)}>
       <div
         ref={hostRef}
         className="iclosed-widget w-full bg-black [&_iframe]:block [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0"
-        data-url={ACQ_ICLOSED_EVENT_URL}
-        title={ACQ_ICLOSED_TITLE}
+        data-url={url}
+        title={title}
         style={{ width: '100%', height: ACQ_ICLOSED_HEIGHT }}
       />
       <Script src={ACQ_ICLOSED_EMBED_SCRIPT} strategy="afterInteractive" />

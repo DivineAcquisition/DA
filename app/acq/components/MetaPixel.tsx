@@ -12,11 +12,14 @@ declare global {
   }
 }
 
-export function trackPixel(event: string, params?: Record<string, unknown>) {
+export function trackPixel(event: string, params?: Record<string, unknown>, eventId?: string) {
   if (typeof window === 'undefined' || !ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') {
     return;
   }
-  if (params) window.fbq('track', event, params);
+  const options = eventId ? { eventID: eventId } : undefined;
+  if (params && options) window.fbq('track', event, params, options);
+  else if (params) window.fbq('track', event, params);
+  else if (options) window.fbq('track', event, {}, options);
   else window.fbq('track', event);
 }
 
