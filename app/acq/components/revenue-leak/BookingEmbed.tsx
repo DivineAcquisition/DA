@@ -96,7 +96,7 @@ export function BookingEmbed({ tracking }: { tracking: NicheVisit }) {
       {src ? (
         <IclosedEmbed
           url={src}
-          title={REVENUE_LEAK.booking.headline}
+          title={REVENUE_LEAK.booking.widgetTitle}
           contentName="Revenue Leak Audit"
           eventName={REVENUE_LEAK.booking.event}
           shell={false}

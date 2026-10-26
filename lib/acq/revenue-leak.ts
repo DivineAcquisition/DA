@@ -1,5 +1,18 @@
 import { NICHE_PASSTHROUGH_KEYS, NICHE_TRACKING_KEYS, type NicheVisit } from './niche-tracking';
 
+/** Ads pixel for the Revenue Leak Audit. Public id, safe in the browser. */
+export const REVENUE_LEAK_META_PIXEL_ID =
+  process.env.NEXT_PUBLIC_REVENUE_LEAK_META_PIXEL_ID?.trim() || '658113660313482';
+
+export function isRevenueLeakPath(pathname: string): boolean {
+  return (
+    pathname === '/leak' ||
+    pathname.startsWith('/leak/') ||
+    pathname === '/acq/leak' ||
+    pathname.startsWith('/acq/leak/')
+  );
+}
+
 const TRACKING_KEYS = [...NICHE_TRACKING_KEYS, ...NICHE_PASSTHROUGH_KEYS] as const;
 
 /** iClosed embed URL with the ad click ids from this visit. */

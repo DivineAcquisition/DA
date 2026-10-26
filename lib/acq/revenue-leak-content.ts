@@ -4,8 +4,8 @@
  *
  * Leave testimonials empty until the GoHighLevel page quotes are pasted in.
  * Leave guarantee as an empty string until the wording is ready.
- * Leave video.url and booking.url empty until those links exist, or set
- * NEXT_PUBLIC_REVENUE_LEAK_VSL_URL and NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL.
+ * The iClosed calendar is set. Override it with NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL.
+ * Leave video.url empty until the VSL link exists, or set NEXT_PUBLIC_REVENUE_LEAK_VSL_URL.
  */
 
 /** Flip to false when the landing page should be indexed. */
@@ -314,7 +314,10 @@ export const REVENUE_LEAK = {
     label: 'Book your free audit',
     headline: 'Find out where your business is leaking.',
     /** iClosed event URL. The questions below are configured inside iClosed, not on this page. */
-    url: process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() || '',
+    url:
+      process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() ||
+      'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
+    widgetTitle: 'DivineACQ™ Operation Audit',
     /** Schedule matches a booked call. Switch to Lead if that is the ad event. */
     event: 'Schedule' as 'Schedule' | 'Lead',
     pending: 'The booking calendar shows here once the iClosed link is added.',

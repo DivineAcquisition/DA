@@ -3,7 +3,9 @@
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { ACQ_META_PIXEL_ID } from '@/lib/acq/config';
+import { isRevenueLeakPath, REVENUE_LEAK_META_PIXEL_ID } from '@/lib/acq/revenue-leak';
 import { isRoofingPath } from '@/lib/acq/roofing-pixel';
+import { ensureLeakPixel } from './revenue-leak/LeakPixel';
 
 declare global {
   interface Window {
@@ -12,10 +14,22 @@ declare global {
   }
 }
 
+function onLeakPage(): boolean {
+  return typeof window !== 'undefined' && isRevenueLeakPath(window.location.pathname);
+}
+
 export function trackPixel(event: string, params?: Record<string, unknown>, eventId?: string) {
-  if (typeof window === 'undefined' || !ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') {
+  if (typeof window === 'undefined') return;
+  if (onLeakPage()) {
+    ensureLeakPixel();
+    if (typeof window.fbq !== 'function' || !REVENUE_LEAK_META_PIXEL_ID) return;
+    const options = eventId ? { eventID: eventId } : undefined;
+    if (options) window.fbq('trackSingle', REVENUE_LEAK_META_PIXEL_ID, event, params ?? {}, options);
+    else if (params) window.fbq('trackSingle', REVENUE_LEAK_META_PIXEL_ID, event, params);
+    else window.fbq('trackSingle', REVENUE_LEAK_META_PIXEL_ID, event);
     return;
   }
+  if (!ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') return;
   const options = eventId ? { eventID: eventId } : undefined;
   if (params && options) window.fbq('track', event, params, options);
   else if (params) window.fbq('track', event, params);
@@ -25,9 +39,15 @@ export function trackPixel(event: string, params?: Record<string, unknown>, even
 
 /** Custom events stay out of Meta's standard Lead optimization. */
 export function trackPixelCustom(event: string, params?: Record<string, unknown>) {
-  if (typeof window === 'undefined' || !ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') {
+  if (typeof window === 'undefined') return;
+  if (onLeakPage()) {
+    ensureLeakPixel();
+    if (typeof window.fbq !== 'function' || !REVENUE_LEAK_META_PIXEL_ID) return;
+    if (params) window.fbq('trackSingleCustom', REVENUE_LEAK_META_PIXEL_ID, event, params);
+    else window.fbq('trackSingleCustom', REVENUE_LEAK_META_PIXEL_ID, event);
     return;
   }
+  if (!ACQ_META_PIXEL_ID || typeof window.fbq !== 'function') return;
   if (params) window.fbq('trackCustom', event, params);
   else window.fbq('trackCustom', event);
 }
@@ -35,8 +55,8 @@ export function trackPixelCustom(event: string, params?: Record<string, unknown>
 export function MetaPixel() {
   const pathname = usePathname() || '';
   const pixelId = ACQ_META_PIXEL_ID;
-  // Roofing ads use their own pixel. The coaches pixel stays on the coaches pages.
-  if (!pixelId || isRoofingPath(pathname)) return null;
+  // Roofing and the Revenue Leak Audit use their own pixel. The coaches pixel stays on the coaches pages.
+  if (!pixelId || isRoofingPath(pathname) || isRevenueLeakPath(pathname)) return null;
 
   return (
     <>

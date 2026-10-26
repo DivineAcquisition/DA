@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { acqCapiBody } from './meta-capi';
 import { REVENUE_LEAK, REVENUE_LEAK_NOINDEX, REVENUE_LEAK_TESTIMONIALS } from './revenue-leak-content';
-import { revenueLeakEmbedUrl, vslEmbed } from './revenue-leak';
+import { REVENUE_LEAK_META_PIXEL_ID, revenueLeakEmbedUrl, vslEmbed } from './revenue-leak';
 
 function strings(value: unknown, out: string[] = []): string[] {
   if (typeof value === 'string') out.push(value);
@@ -21,6 +21,14 @@ describe('revenue leak audit copy', () => {
 
   it('hides results until real testimonials are pasted in', () => {
     expect(REVENUE_LEAK_TESTIMONIALS).toEqual([]);
+  });
+
+  it('embeds the AI operations audit calendar and the ads pixel', () => {
+    expect(REVENUE_LEAK.booking.url).toBe(
+      'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
+    );
+    expect(REVENUE_LEAK.booking.widgetTitle).toBe('DivineACQ™ Operation Audit');
+    expect(REVENUE_LEAK_META_PIXEL_ID).toBe('658113660313482');
   });
 
   it('does not use an em dash or the dropped missed-call statistic', () => {

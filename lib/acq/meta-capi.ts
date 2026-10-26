@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
-import { ACQ_META_PIXEL_ID } from './config';
 import { ROOFING_META_PIXEL_ID, type RoofingCapiEvent } from './roofing-pixel';
+import { REVENUE_LEAK_META_PIXEL_ID } from './revenue-leak';
 
 const GRAPH_VERSION = 'v21.0';
 
@@ -161,13 +161,13 @@ export async function sendAcqCapi(
   input: RoofingCapiInput,
 ): Promise<{ ok: boolean; skipped?: boolean; error?: string }> {
   const token = metaCapiAccessToken();
-  if (!token || !ACQ_META_PIXEL_ID) {
+  if (!token || !REVENUE_LEAK_META_PIXEL_ID) {
     return { ok: false, skipped: true };
   }
 
   try {
     const response = await fetch(
-      `https://graph.facebook.com/${GRAPH_VERSION}/${ACQ_META_PIXEL_ID}/events?access_token=${encodeURIComponent(token)}`,
+      `https://graph.facebook.com/${GRAPH_VERSION}/${REVENUE_LEAK_META_PIXEL_ID}/events?access_token=${encodeURIComponent(token)}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
