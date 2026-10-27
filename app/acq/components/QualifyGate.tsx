@@ -1,15 +1,5 @@
-'use client';
-
-import { createContext, useCallback, useContext, useRef, type ReactNode, type RefObject } from 'react';
+import type { ReactNode } from 'react';
 import { CTA_LABEL } from '@/lib/acq/copy';
-import type { TrackingParamKey } from '@/lib/acq/config';
-import { ApplyAttribution, ApplyDialog } from './ApplyFlow';
-
-type QualifyContextValue = {
-  open: () => void;
-};
-
-const QualifyContext = createContext<QualifyContextValue | null>(null);
 
 function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
   return (
@@ -19,6 +9,7 @@ function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
   );
 }
 
+/** Scrolls to the on-page calendar. The landing no longer opens an application popup. */
 export function QualifyButton({
   className = '',
   children,
@@ -28,63 +19,22 @@ export function QualifyButton({
   children?: ReactNode;
   variant?: 'solid' | 'nav';
 }) {
-  const ctx = useContext(QualifyContext);
-  if (!ctx) {
-    throw new Error('QualifyButton must be used inside QualifyProvider');
-  }
-
   if (variant === 'nav') {
     return (
-      <button
-        type="button"
-        onClick={ctx.open}
-        className={`text-sm font-semibold text-brand-200 transition hover:text-white ${className}`}
-      >
+      <a href="#calendar" className={`text-sm font-semibold text-brand-200 transition hover:text-white ${className}`}>
         {children ?? CTA_LABEL}
-      </button>
+      </a>
     );
   }
 
   return (
-    <button type="button" onClick={ctx.open} className={`acq-button acq-button-full max-w-sm ${className}`}>
+    <a href="#calendar" className={`acq-button acq-button-full max-w-sm no-underline ${className}`}>
       {children ?? CTA_LABEL}
       <ArrowIcon />
-    </button>
+    </a>
   );
 }
 
-export function QualifyProvider({
-  children,
-  tracking,
-  testMode = false,
-}: {
-  children: ReactNode;
-  tracking: Partial<Record<TrackingParamKey, string>>;
-  testMode?: boolean;
-}) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
-  const firstFieldRef = useRef<HTMLInputElement>(null);
-
-  const open = useCallback(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (!dialog.open) dialog.showModal();
-    dialog.dispatchEvent(new Event('acq-apply-shown'));
-    requestAnimationFrame(() => firstFieldRef.current?.focus());
-  }, []);
-
-  return (
-    <QualifyContext.Provider value={{ open }}>
-      <ApplyAttribution tracking={tracking} testMode={testMode} />
-      {children}
-      <dialog ref={dialogRef} aria-labelledby="acq-apply-title" className="acq-apply-dialog acq-coaches">
-        <ApplyDialog
-          dialogRef={dialogRef as RefObject<HTMLDialogElement | null>}
-          firstFieldRef={firstFieldRef}
-          tracking={tracking}
-          testMode={testMode}
-        />
-      </dialog>
-    </QualifyContext.Provider>
-  );
+export function QualifyProvider({ children }: { children: ReactNode }) {
+  return children;
 }

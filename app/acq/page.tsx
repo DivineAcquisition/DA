@@ -6,9 +6,13 @@ import { DotPattern } from '@/components/ui/dot-pattern';
 import { MagicCard } from '@/components/ui/magic-card';
 import { Marquee } from '@/components/ui/marquee';
 import { ShineBorder } from '@/components/ui/shine-border';
-import { trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import { cookies } from 'next/headers';
+import { ACQ_ICLOSED_TITLE, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import {
   AUDIENCE,
+  BOOK_PAGE,
   BUILD,
   CLOSING,
   FACEBOOK_DISCLAIMER,
@@ -25,9 +29,10 @@ import {
   WHY_US,
 } from '@/lib/acq/copy';
 import { CircleCheck, X } from 'lucide-react';
+import IclosedEmbed from './components/IclosedEmbed';
 import HeroVideo from './components/HeroVideo';
 import { OfferScene } from './components/OfferScenes';
-import { QualifyButton, QualifyProvider } from './components/QualifyGate';
+import { QualifyButton } from './components/QualifyGate';
 
 function Mark({ icon: Icon, tone = 'brand' }: { icon: typeof CircleCheck; tone?: 'brand' | 'red' }) {
   return (
@@ -44,10 +49,13 @@ export default async function AcqLandingPage({
 }) {
   const query = await searchParams;
   const tracking = trackingFromSearchParams(query);
-  const testMode = query.da_test === '1' || (Array.isArray(query.da_test) && query.da_test.includes('1'));
+  const jar = await cookies();
+  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+    fbp: jar.get('_fbp')?.value,
+    fbc: jar.get('_fbc')?.value,
+  });
 
   return (
-    <QualifyProvider tracking={tracking} testMode={testMode}>
       <div className="acq-coaches min-h-screen antialiased">
         <section className="lx-hero relative overflow-hidden">
           <DotPattern
@@ -223,11 +231,27 @@ export default async function AcqLandingPage({
           </div>
         </section>
 
+        <section className="lx-section" id="calendar">
+          <div className="lx-wrap lx-hero-inner">
+            <h2 className="lx-heading">
+              {BOOK_PAGE.titleBefore}
+              <span className="lx-accent">{BOOK_PAGE.titleAccent}</span>
+            </h2>
+            <p className="lx-lead">{BOOK_PAGE.body}</p>
+            <IclosedEmbed
+              url={calendarSrc}
+              title={ACQ_ICLOSED_TITLE}
+              contentName="Free Sales Audit"
+              contentCategory="coaching"
+              eventName="Schedule"
+            />
+          </div>
+        </section>
+
         <footer className="lx-foot">
           <p>© Divine Acquisition. All rights reserved.</p>
           <p className="mx-auto mt-4 max-w-2xl">{FACEBOOK_DISCLAIMER}</p>
         </footer>
       </div>
-    </QualifyProvider>
   );
 }
