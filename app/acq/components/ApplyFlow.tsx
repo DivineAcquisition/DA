@@ -19,15 +19,26 @@ import {
 } from '@/lib/acq/application-copy';
 import {
   ACQ_PRECALL_PATH,
-  ACQ_PUBLIC_ORIGIN,
-  acqCalendarEmbedSrc,
   acqPublicPath,
   withTrackingQuery,
   type TrackingParamKey,
 } from '@/lib/acq/config';
 import { LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
-import { CalendarEmbed } from './CalendarEmbed';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
+import IclosedEmbed from './IclosedEmbed';
 import { trackPixel } from './MetaPixel';
+
+function browserClickCookie(name: string): string | undefined {
+  if (typeof document === 'undefined') return undefined;
+  const match = document.cookie.split('; ').find((row) => row.startsWith(`${name}=`));
+  if (!match) return undefined;
+  try {
+    return decodeURIComponent(match.slice(name.length + 1));
+  } catch {
+    return match.slice(name.length + 1);
+  }
+}
 
 const TOKEN_KEY = 'acq-apply-token';
 
@@ -213,11 +224,6 @@ export function ApplyDialog({
     window.location.assign(destination);
   };
 
-  const precallRedirect =
-    typeof window === 'undefined'
-      ? `${ACQ_PUBLIC_ORIGIN}${ACQ_PRECALL_PATH}`
-      : `${window.location.origin}${acqPublicPath(ACQ_PRECALL_PATH, window.location.host)}`;
-
   const screen = phase.name === 'screen' ? APPLY_SCREENS[phase.screen] : null;
 
   return (
@@ -238,10 +244,17 @@ export function ApplyDialog({
             <p className="acq-apply-note">{screen.line}</p>
             {phase.name === 'screen' && phase.screen === 'calendar' ? (
               <div className="acq-apply-calendar">
-                <CalendarEmbed
-                  src={acqCalendarEmbedSrc(tracking, { redirectUrl: precallRedirect })}
-                  className="mt-4"
-                  iframeClassName="h-[640px]"
+                <IclosedEmbed
+                  url={revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+                    fbp: browserClickCookie('_fbp'),
+                    fbc: browserClickCookie('_fbc'),
+                  })}
+                  title={REVENUE_LEAK.booking.widgetTitle}
+                  contentName="Free Sales Audit"
+                  contentCategory="coaching"
+                  eventName="Schedule"
+                  shell={false}
+                  className="mt-4 max-w-none"
                 />
               </div>
             ) : null}

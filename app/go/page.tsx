@@ -39,9 +39,14 @@ import {
   TESTIMONIALS_LEAD,
   VIDEO_LABEL,
 } from '@/lib/go/copy';
+import { cookies } from 'next/headers';
+import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
+import { ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
+import { nicheTrackingFromSearch } from '@/lib/acq/niche-tracking';
 import { DemoLink } from './components/DemoLink';
 import { GoScene } from './components/GoScenes';
-import { StrategyCalendar } from './components/StrategyCalendar';
 import { GoWistia } from './components/GoWistia';
 
 function Check() {
@@ -70,7 +75,18 @@ function BookLink() {
   );
 }
 
-export default function CleaningFunnelPage() {
+export default async function CleaningFunnelPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const tracking = nicheTrackingFromSearch(await searchParams);
+  const jar = await cookies();
+  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+    fbp: jar.get('_fbp')?.value,
+    fbc: jar.get('_fbc')?.value,
+  });
+
   return (
     <div className="acq-coaches min-h-screen antialiased">
       <section className="lx-hero">
@@ -302,9 +318,13 @@ export default function CleaningFunnelPage() {
             </h2>
             <p className="lx-lead">{CALENDAR.body}</p>
           </div>
-          <div className="go-calendar-frame">
-            <StrategyCalendar />
-          </div>
+          <IclosedEmbed
+            url={calendarSrc}
+            title={ACQ_ICLOSED_TITLE}
+            contentName="Cleaning strategy session"
+            contentCategory="cleaning"
+            eventName="Schedule"
+          />
         </div>
       </section>
 

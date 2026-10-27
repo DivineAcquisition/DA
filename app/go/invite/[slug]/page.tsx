@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
+import { ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import { FACEBOOK_DISCLAIMER } from '@/lib/go/copy';
 import { inviteForSlug } from '@/lib/go/invites';
-import { StrategyCalendar } from '../../components/StrategyCalendar';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,6 +35,11 @@ export default async function StrategyInvitePage({
 }) {
   const invite = inviteForSlug((await params).slug);
   if (!invite) notFound();
+  const jar = await cookies();
+  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, {}, {
+    fbp: jar.get('_fbp')?.value,
+    fbc: jar.get('_fbc')?.value,
+  });
 
   return (
     <div className="acq-coaches min-h-screen antialiased">
@@ -77,18 +86,15 @@ export default async function StrategyInvitePage({
             <div className="go-invite-book" id="book">
               <p className="go-invite-kicker">Pick a time</p>
               <h2>Held for {invite.firstName}</h2>
-              <p>
-                {invite.company}. Name, email, and mobile are filled from your application. Change the number if the
-                reminder should go somewhere else.
-              </p>
-              <StrategyCalendar
-                embedded
-                defaults={{
-                  fullName: invite.fullName,
-                  email: invite.email,
-                  phone: invite.phone,
-                  timeZone: invite.timeZone,
-                }}
+              <p>{invite.company}. Pick a time and the calendar will confirm the reminder number.</p>
+              <IclosedEmbed
+                url={calendarSrc}
+                title={ACQ_ICLOSED_TITLE}
+                contentName="Cleaning strategy session"
+                contentCategory="cleaning"
+                eventName="Schedule"
+                shell={false}
+                className="mt-4 max-w-none"
               />
             </div>
           </div>

@@ -405,10 +405,14 @@ describe('founding landing media', () => {
     expect(ACQ_CALENDAR_EMBED_URL).toContain('msgsndr');
   });
 
-  it('embeds the issued GHL booking widget on the coaching book page', () => {
-    expect(readFileSync('app/acq/book/page.tsx', 'utf8')).toContain('CalendarEmbed');
-    expect(readFileSync('app/acq/book/page.tsx', 'utf8')).not.toContain('IclosedEmbed');
-    expect(ACQ_CALENDAR_EMBED_URL).toContain('widget/booking');
+  it('embeds the AI operations iClosed calendar on the coaching book page', () => {
+    const book = readFileSync('app/acq/book/page.tsx', 'utf8');
+    expect(book).toContain('IclosedEmbed');
+    expect(book).not.toContain('CalendarEmbed');
+    expect(readFileSync('lib/acq/config.ts', 'utf8')).toContain(
+      'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
+    );
+    expect(readFileSync('app/go/page.tsx', 'utf8')).toContain('IclosedEmbed');
   });
 
   it('defaults the thank-you booking calendar to the issued GHL widget', () => {

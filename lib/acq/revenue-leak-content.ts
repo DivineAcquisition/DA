@@ -1,3 +1,5 @@
+import { ACQ_ICLOSED_EVENT_URL, ACQ_ICLOSED_TITLE } from './config';
+
 /**
  * All public copy for the Revenue Leak Audit landing page.
  * Edit text here. The layout reads this object and does not hard-code sentences.
@@ -313,11 +315,9 @@ export const REVENUE_LEAK = {
   booking: {
     label: 'Book your free audit',
     headline: 'Find out where your business is leaking.',
-    /** iClosed event URL. The questions below are configured inside iClosed, not on this page. */
-    url:
-      process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() ||
-      'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
-    widgetTitle: 'DivineACQ™ Operation Audit',
+    /** Same iClosed event as the coaching and cleaning pages. */
+    url: ACQ_ICLOSED_EVENT_URL,
+    widgetTitle: ACQ_ICLOSED_TITLE,
     /** Schedule matches a booked call. Switch to Lead if that is the ad event. */
     event: 'Schedule' as 'Schedule' | 'Lead',
     pending: 'The booking calendar shows here once the iClosed link is added.',

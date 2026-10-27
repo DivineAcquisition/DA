@@ -62,17 +62,19 @@ type IclosedEmbedProps = {
   url?: string;
   title?: string;
   contentName?: string;
+  contentCategory?: string;
   eventName?: 'Schedule' | 'Lead';
   shell?: boolean;
   className?: string;
   onBooked?: (eventId: string, eventName: 'Schedule' | 'Lead') => void;
 };
 
-/** iClosed inline scheduler. The coaches calendar stays the default URL. */
+/** iClosed inline scheduler. Defaults to the AI operations audit calendar. */
 export default function IclosedEmbed({
   url = ACQ_ICLOSED_EVENT_URL,
   title = ACQ_ICLOSED_TITLE,
   contentName,
+  contentCategory,
   eventName,
   shell = true,
   className,
@@ -123,7 +125,10 @@ export default function IclosedEmbed({
         const eventId = crypto.randomUUID();
         trackPixel(
           booked,
-          { content_name: contentName || 'Booking', content_category: 'local-service' },
+          {
+            content_name: contentName || 'Booking',
+            content_category: contentCategory || 'local-service',
+          },
           eventId,
         );
         onBooked?.(eventId, booked);
@@ -137,7 +142,7 @@ export default function IclosedEmbed({
       observer.disconnect();
       window.removeEventListener('message', onMessage);
     };
-  }, [contentName, eventName, onBooked]);
+  }, [contentCategory, contentName, eventName, onBooked]);
 
   return (
     <CalendarFrame shell={shell} className={shell ? cn('max-w-5xl', className) : cn('mt-0 max-w-none', className)}>

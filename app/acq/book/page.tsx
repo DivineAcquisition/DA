@@ -1,6 +1,9 @@
+import { cookies } from 'next/headers';
 import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
-import { acqCalendarEmbedSrc, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
-import { CalendarEmbed } from '../components/CalendarEmbed';
+import { ACQ_ICLOSED_TITLE, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
+import IclosedEmbed from '../components/IclosedEmbed';
 
 export const metadata = {
   title: { absolute: 'Free Sales Audit | Divine Acquisition' },
@@ -10,13 +13,18 @@ export const metadata = {
   },
 };
 
-/** GHL booking calendar for the coaching landing. */
+/** iClosed booking calendar for the coaching landing. Same event as the local-service audit. */
 export default async function AcqBookPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>;
 }) {
   const tracking = trackingFromSearchParams(await searchParams);
+  const jar = await cookies();
+  const src = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+    fbp: jar.get('_fbp')?.value,
+    fbc: jar.get('_fbc')?.value,
+  });
 
   return (
     <div className="acq-coaches min-h-screen antialiased">
@@ -28,7 +36,13 @@ export default async function AcqBookPage({
             <span className="lx-accent">{BOOK_PAGE.titleAccent}</span>
           </h1>
           <p className="lx-lead">{BOOK_PAGE.body}</p>
-          <CalendarEmbed src={acqCalendarEmbedSrc(tracking)} title="Free sales audit" />
+          <IclosedEmbed
+            url={src}
+            title={ACQ_ICLOSED_TITLE}
+            contentName="Free Sales Audit"
+            contentCategory="coaching"
+            eventName="Schedule"
+          />
         </div>
       </section>
       <footer className="lx-foot">

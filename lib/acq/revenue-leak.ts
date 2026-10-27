@@ -1,4 +1,5 @@
-import { NICHE_PASSTHROUGH_KEYS, NICHE_TRACKING_KEYS, type NicheVisit } from './niche-tracking';
+import { TRACKING_PARAM_KEYS } from './config';
+import { NICHE_PASSTHROUGH_KEYS, NICHE_TRACKING_KEYS } from './niche-tracking';
 
 /** Ads pixel for the Revenue Leak Audit. Public id, safe in the browser. */
 export const REVENUE_LEAK_META_PIXEL_ID =
@@ -13,12 +14,14 @@ export function isRevenueLeakPath(pathname: string): boolean {
   );
 }
 
-const TRACKING_KEYS = [...NICHE_TRACKING_KEYS, ...NICHE_PASSTHROUGH_KEYS] as const;
+const TRACKING_KEYS = [
+  ...new Set<string>([...NICHE_TRACKING_KEYS, ...NICHE_PASSTHROUGH_KEYS, ...TRACKING_PARAM_KEYS]),
+];
 
 /** iClosed embed URL with the ad click ids from this visit. */
 export function revenueLeakEmbedUrl(
   base: string,
-  tracking: NicheVisit = {},
+  tracking: Partial<Record<string, string | undefined>> = {},
   click: { fbp?: string; fbc?: string } = {},
 ): string {
   const trimmed = base.trim();

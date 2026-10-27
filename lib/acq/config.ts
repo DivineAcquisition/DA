@@ -128,12 +128,13 @@ export const ACQ_CAL_LINK =
 export const ACQ_CAL_BRAND = '#9A88FC';
 export const ACQ_CAL_ELEMENT_ID = 'my-cal-inline-practices';
 
-/** iClosed inline scheduler on /book. */
+/** iClosed inline scheduler. Coaching, cleaning, and the local-service audit share this event. */
 export const ACQ_ICLOSED_EMBED_SCRIPT = 'https://app.iclosed.io/assets/widget.js';
 export const ACQ_ICLOSED_EVENT_URL =
   process.env.NEXT_PUBLIC_ACQ_ICLOSED_URL?.trim() ||
-  'https://app.iclosed.io/e/divineacquisitionn/free-sales-ops-audit-divineacq';
-export const ACQ_ICLOSED_TITLE = 'Free Sales Ops Audit | DivineACQ™';
+  process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() ||
+  'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit';
+export const ACQ_ICLOSED_TITLE = 'DivineACQ™ Operation Audit';
 export const ACQ_ICLOSED_HEIGHT = 620;
 
 /** Ad / click identifiers forwarded from the landing URL into the application. */
