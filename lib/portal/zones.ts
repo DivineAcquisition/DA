@@ -54,7 +54,7 @@ const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client'>, NavItem> = {
   agreements: { key: 'agreements', label: 'Agreements', short: 'Agreements', href: `${BASE}/agreements` },
 };
 
-/** Sales Operators on team.divineacquisition.io. Training, end of day, sales, and the client card. */
+/** Sales Operators on the operator workspace. Training, end of day, sales, and the client card. */
 const SALES_NAV: NavItem[] = [
   { key: 'today', label: 'Training', short: 'Training', href: BASE },
   { key: 'eod', label: 'End of day', short: 'End of day', href: `${BASE}/reports` },

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildTeamEmail, recordUrl, type MailMessage } from './email';
 
-const base = 'https://team.divineacquisition.io';
+const base = 'https://operators.example.test';
 
 const single: MailMessage = {
   kind: 'single',
@@ -24,16 +24,16 @@ const single: MailMessage = {
 describe('team email', () => {
   it('links to the exact record on the team host', () => {
     expect(recordUrl(base, '/vistrial/operator/record?review=2026-10-06')).toBe(
-      'https://team.divineacquisition.io/operator/record?review=2026-10-06',
+      'https://operators.example.test/operator/record?review=2026-10-06',
     );
-    expect(recordUrl(`${base}/`, null)).toBe('https://team.divineacquisition.io/operator/inbox');
+    expect(recordUrl(`${base}/`, null)).toBe('https://operators.example.test/operator/inbox');
   });
 
   it('builds a single message with the record link', () => {
     const mail = buildTeamEmail(single, base);
     expect(mail.subject).toBe('Your shift review for Tue, Oct 6 is ready');
-    expect(mail.text).toContain('Open the record: https://team.divineacquisition.io/operator/record?review=2026-10-06');
-    expect(mail.html).toContain('href="https://team.divineacquisition.io/operator/record?review=2026-10-06"');
+    expect(mail.text).toContain('Open the record: https://operators.example.test/operator/record?review=2026-10-06');
+    expect(mail.html).toContain('href="https://operators.example.test/operator/record?review=2026-10-06"');
     expect(mail.html).toContain('DivineACQ Team');
   });
 
@@ -46,7 +46,7 @@ describe('team email', () => {
     const mail = buildTeamEmail(digest, base);
     expect(mail.subject).toBe('2 updates from DivineACQ Team');
     expect(mail.text.match(/Hi Ana/g)?.length).toBe(1);
-    expect(mail.text).toContain('https://team.divineacquisition.io/operator/pay');
+    expect(mail.text).toContain('https://operators.example.test/operator/pay');
   });
 
   it('escapes anything that looks like markup', () => {

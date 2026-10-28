@@ -15,6 +15,7 @@ describe('team url', () => {
   });
 
   it('builds absolute links on the team host', () => {
+    // Last-resort bootstrap, used only when the database setting and TEAM_APP_URL are both unset.
     expect(teamOrigin()).toBe('https://team.divineacquisition.io');
     expect(teamUrl('/vistrial/operator/record', '?review=2026-10-06')).toBe(
       'https://team.divineacquisition.io/operator/record?review=2026-10-06',

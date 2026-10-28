@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 /**
  * Where Supabase email links (password reset, and any future sign-in link)
- * land on team.divineacquisition.io. The one-time code becomes a session
+ * land on the operator workspace. The one-time code becomes a session
  * cookie for this host only, then the person continues to `next`.
  */
 export async function GET(request: NextRequest) {

@@ -41,7 +41,18 @@ const fmt = (iso: string) =>
  * password confirmation. The database decides whether this viewer may open this
  * operator, starts a 30-minute read-only session and tells the operator.
  */
-export function ViewAsButton({ operatorId, name, hasAccount }: { operatorId: string; name: string; hasAccount: boolean }) {
+export function ViewAsButton({
+  operatorId,
+  name,
+  hasAccount,
+  label,
+}: {
+  operatorId: string;
+  name: string;
+  hasAccount: boolean;
+  /** Button text after "View as". Defaults to the operator's name. */
+  label?: string;
+}) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -53,7 +64,7 @@ export function ViewAsButton({ operatorId, name, hasAccount }: { operatorId: str
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className={`${btnSecondary} ${btnSizeSm} border-cyan-400/40 text-cyan-200`}>
-        View as {name}
+        View as {label ?? name}
       </button>
       {open ? (
         <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={`View as ${name}`}>

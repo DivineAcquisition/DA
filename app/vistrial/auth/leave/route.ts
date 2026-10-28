@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { appUrl } from '@/lib/apps';
+import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { createClient } from '@/lib/supabase/server';
 
 /**
@@ -12,5 +13,6 @@ export async function GET(request: NextRequest) {
   const supabase = await createClient();
   await supabase.rpc('end_impersonation');
   await supabase.auth.signOut({ scope: 'local' });
-  return NextResponse.redirect(to === 'admin' ? `${appUrl('admin')}/vistrial` : `${appUrl('team')}/`);
+  const team = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');
+  return NextResponse.redirect(to === 'admin' ? `${appUrl('admin')}/vistrial` : `${team}/`);
 }

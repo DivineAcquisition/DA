@@ -1,6 +1,6 @@
 import { AcceptInviteForm } from '@/app/ad/invite/AcceptInviteForm';
 
-/** Password setup for a Sales Operator. Served on team.divineacquisition.io/auth/invite. */
+/** Password setup for a Sales Operator. Served on the operator workspace at /auth/invite. */
 export default async function TeamInvitePage({
   searchParams,
 }: {

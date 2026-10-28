@@ -252,7 +252,8 @@ begin
   assert (select count(*) from public.sales_eod) = 1;
   assert (select operator_id from public.sales_eod) = '98000000-0000-4000-8000-0000000001c1';
   assert (select count(*) from public.activity_day) = 1;
-  assert (select count(*) from public.activity_value) = 2;
+  assert (select count(*) from public.activity_value) = 1, 'managers see the operator number, not the GHL number';
+  assert (select source from public.activity_value) = 'operator';
   assert (select count(*) from public.sales_eod_feedback) = 1;
   assert (select count(*) from public.activity_mismatch) = 0, 'managers never see mismatches';
   assert (select count(*) from public.client_feedback_token) = 0;

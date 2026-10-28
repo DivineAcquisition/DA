@@ -79,7 +79,7 @@ function TeamPanel({ data, edit }: { data: AccountabilitySettings; edit: boolean
   return (
     <Panel title="Sending and access">
       <p className="mb-3 text-xs text-neutral-500">
-        Email goes from {data.team.from_address}. Links point to {data.team.base_url}.
+        Email goes from {data.team.from_address}. Operator workspace links use {data.team.base_url}. Change that host in Team Workspace.
       </p>
       <div className="grid gap-3 sm:grid-cols-3">
         <label>

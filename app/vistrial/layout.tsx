@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
 import AdminMfaGate from '@/app/components/AdminMfaGate';
 import { appUrl } from '@/lib/apps';
+import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { currentApp } from '@/lib/appsServer';
 import { adminMfaState } from '@/lib/auth/mfa';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
@@ -62,7 +63,10 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   }
 
   if (app === 'admin') {
-    if (isVa) return <HubSignIn app="admin" wrongApp={{ email: session.email, url: appUrl('team') }} />;
+    if (isVa) {
+      const team = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');
+      return <HubSignIn app="admin" wrongApp={{ email: session.email, url: team }} />;
+    }
     if (!isStaff) return <HubSignIn app="admin" wrongAudience={session.email} />;
     const mfa = await adminMfaState();
     if (mfa.state !== 'ok') {

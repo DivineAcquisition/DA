@@ -1,6 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './lib/apps';
+import { hostRole, loadOperatorWorkspaceDomain, servingHosts } from './lib/operator-workspace/domain';
 import { REVENUE_LEAK_NOINDEX } from './lib/acq/revenue-leak-content';
 
 /**
@@ -19,7 +20,7 @@ import { REVENUE_LEAK_NOINDEX } from './lib/acq/revenue-leak-content';
  *   da.divineacquisition.io         -> redirects to the admin workspace (legacy)
  *   ad.divineacquisition.io         -> /ad
  *   acct.divineacquisition.io       -> /acct
- *   team.divineacquisition.io       -> /vistrial, VA and SDR pages only (the portal,
+ *   operator workspace host         -> /vistrial, VA and SDR pages only (the portal,
  *                                       sign-in, password reset). Any staff path
  *                                       redirects to admin., path preserved.
  *   admin.divineacquisition.io/vistrial -> the staff side of /vistrial (team board,
@@ -264,8 +265,10 @@ const isLocalHost = (host: string) =>
   host.endsWith('.localhost') ||
   host.endsWith('.vercel.app');
 
-function surfaceForHost(host: string): Surface | null {
-  return SURFACES.find((surface) => surface.hosts.includes(host)) ?? null;
+function surfaceForHost(host: string, teamHosts: string[]): Surface | null {
+  return SURFACES.map((surface) => (surface.prefix === OPS_PREFIX ? { ...surface, hosts: teamHosts } : surface)).find((surface) =>
+    surface.hosts.includes(host),
+  ) ?? null;
 }
 
 function isOnboardOnLiveHost(prefix: string | null, pathname: string): boolean {
@@ -316,21 +319,27 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  const surface = surfaceForHost(host);
   const local = isLocalHost(host);
+  const domain = local ? null : await loadOperatorWorkspaceDomain();
+  if (domain && hostRole(host, domain) === 'retired' && domain.origin) {
+    return NextResponse.redirect(new URL(`${pathname}${request.nextUrl.search}`, domain.origin), 308);
+  }
+  const teamHosts = domain ? servingHosts(domain, TEAM_HOSTS) : TEAM_HOSTS;
+  const teamOrigin = domain?.origin || TEAM_ORIGIN;
+  const surface = surfaceForHost(host, teamHosts);
 
   // The team app serves its own screens and nothing else: an admin screen asked
   // for there is "not found", so the team app does not even reveal that admin
   // pages exist. Former single-address hosts (ops., vistrial.) redirect with the
   // path kept: team screens to the team app, everything else to the admin app.
   const legacyOpsHost = !local && OPS_HOSTS.includes(host);
-  const onTeamHost = !local && TEAM_HOSTS.includes(host);
+  const onTeamHost = !local && teamHosts.includes(host);
   const isServicePath = pathname.startsWith('/_next') || pathname.startsWith('/api/');
   if ((legacyOpsHost || onTeamHost) && !isServicePath) {
     const internal = pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`) ? pathname : `${OPS_PREFIX}${pathname === '/' ? '' : pathname}`;
     if (legacyOpsHost) {
       const target = isTeamAppPath(internal)
-        ? `${TEAM_ORIGIN}${internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length)}`
+        ? `${teamOrigin}${internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length)}`
         : `${ADMIN_PORTAL_ORIGIN}${internal}`;
       return NextResponse.redirect(`${target}${request.nextUrl.search}`, 308);
     }
@@ -442,6 +451,7 @@ export async function proxy(request: NextRequest) {
     requestHeaders.set('x-academy-link', 'expired');
   }
   if (prefix) requestHeaders.set('x-vistrial-surface', prefix);
+  if (!local && teamHosts.includes(host)) requestHeaders.set('x-da-app', 'team');
   if (prefix === WORKSPACE_PREFIX || (local && isUnifiedAdminPath(pathname))) {
     requestHeaders.set('x-da-unified-admin', '1');
   }
@@ -514,7 +524,7 @@ export async function proxy(request: NextRequest) {
     // stricter on the admin app. Cookies are host-only, like the auth cookies.
     const app: AppKey | null = local
       ? null
-      : TEAM_HOSTS.includes(host)
+      : teamHosts.includes(host)
         ? 'team'
         : WORKSPACE_HOSTS.includes(host)
           ? 'admin'

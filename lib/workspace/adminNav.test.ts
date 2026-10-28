@@ -84,7 +84,9 @@ describe('findActive', () => {
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
     const labels = full.flatMap((section) => section.items.map((item) => item.label));
-    expect(labels).toEqual(['Overview', 'Pipeline', 'Clients', 'Sales operators', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
+    expect(labels).toEqual(['Overview', 'Pipeline', 'Clients', 'Sales operators', 'Team Workspace', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
+    expect(activeLabels('/vistrial/team/workspace')).toEqual(['Workspace', 'Team Workspace']);
+    expect(activeLabels('/vistrial/team/workspace/operators/abc')).toEqual(['Workspace', 'Team Workspace']);
   });
 });
 

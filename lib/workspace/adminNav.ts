@@ -14,6 +14,7 @@ import {
   FileSignature,
   Funnel,
   Gauge,
+  LayoutDashboard,
   GraduationCap,
   HandCoins,
   Inbox,
@@ -98,6 +99,7 @@ const WORKSPACE: NavSection = {
         { href: '/workspace/onboarding', label: 'Onboarding', icon: ClipboardList },
       ],
     },
+    { href: '/vistrial/team/workspace', label: 'Team Workspace', icon: LayoutDashboard },
     {
       href: '/workspace/calls',
       label: 'Sales',

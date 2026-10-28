@@ -7,7 +7,7 @@
  *
  * Each app's address comes from configuration and nowhere else:
  *
- *   TEAM_APP_URL       e.g. https://team.divineacquisition.io
+ *   TEAM_APP_URL       operator workspace origin. The database setting wins when it can be read.
  *   ADMIN_APP_URL      e.g. https://admin.divineacquisition.io
  *   TRAINING_APP_URL   e.g. https://training.divineacquisition.io
  *

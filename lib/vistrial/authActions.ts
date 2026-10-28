@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import { appUrl } from '@/lib/apps';
+import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { currentApp } from '@/lib/appsServer';
 
 export type AuthResult = { ok: true } | { ok: false; error: string };
@@ -43,8 +44,9 @@ export async function hubResetRequestAction(formData: FormData): Promise<AuthRes
   const supabase = await createClient();
   const app = (await currentApp()) ?? 'team';
   const next = app === 'admin' ? '/vistrial/reset-password' : '/reset-password';
+  const origin = app === 'team' ? (await loadOperatorWorkspaceDomain()).origin || appUrl('team') : appUrl(app);
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${appUrl(app)}/vistrial/auth/callback?next=${encodeURIComponent(next)}`,
+    redirectTo: `${origin}/vistrial/auth/callback?next=${encodeURIComponent(next)}`,
   });
   return { ok: true };
 }
