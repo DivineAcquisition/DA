@@ -17,7 +17,7 @@ async function call<T>(fn: string, args: Record<string, unknown>, message?: stri
   const supabase = await createClient();
   const { data, error } = await controlRpc<T>(supabase, fn, args);
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/vistrial/team', 'layout');
+  revalidatePath('/workspace/team', 'layout');
   return { ok: true, message, data: (data ?? undefined) as T | undefined };
 }
 

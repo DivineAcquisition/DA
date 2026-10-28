@@ -1,4 +1,4 @@
-import { EmptyState } from '@/app/vistrial/components/ui';
+import { EmptyState } from '@/app/workspace/(portal)/components/ui';
 
 export default function OnboardIndexPage() {
   return (

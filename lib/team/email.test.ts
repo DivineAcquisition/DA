@@ -15,7 +15,7 @@ const single: MailMessage = {
       subject: 'Your shift review for Tue, Oct 6 is ready',
       title: 'Your shift review for Tue, Oct 6 is ready',
       body: 'Hi Ana, your shift on Tue, Oct 6 has been recorded.\n\nStandard: every worked shift has a confirmed review.',
-      link: '/vistrial/operator/record?review=2026-10-06',
+      link: '/workspace/operator/record?review=2026-10-06',
       formal: false,
     },
   ],
@@ -23,7 +23,7 @@ const single: MailMessage = {
 
 describe('team email', () => {
   it('links to the exact record on the team host', () => {
-    expect(recordUrl(base, '/vistrial/operator/record?review=2026-10-06')).toBe(
+    expect(recordUrl(base, '/workspace/operator/record?review=2026-10-06')).toBe(
       'https://operators.example.test/operator/record?review=2026-10-06',
     );
     expect(recordUrl(`${base}/`, null)).toBe('https://operators.example.test/operator/inbox');
@@ -41,7 +41,7 @@ describe('team email', () => {
     const digest: MailMessage = {
       ...single,
       kind: 'digest',
-      items: [single.items[0], { ...single.items[0], id: 'n2', title: 'Your pay statement is ready', link: '/vistrial/operator/pay' }],
+      items: [single.items[0], { ...single.items[0], id: 'n2', title: 'Your pay statement is ready', link: '/workspace/operator/pay' }],
     };
     const mail = buildTeamEmail(digest, base);
     expect(mail.subject).toBe('2 updates from DivineACQ Team');

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { EmptyState } from '@/app/vistrial/components/ui';
+import { EmptyState } from '@/app/workspace/(portal)/components/ui';
 import { isRecordId } from '@/lib/calls/cells';
 import { callsReady } from '@/lib/calls/ready';
 import { getLeadProfile } from '@/lib/calls/queries';

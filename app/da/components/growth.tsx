@@ -1,4 +1,4 @@
-import { Badge, Panel, type Tone } from '@/app/vistrial/components/ui';
+import { Badge, Panel, type Tone } from '@/app/workspace/(portal)/components/ui';
 import type { GrowthRow } from '@/lib/da/queries';
 
 /**

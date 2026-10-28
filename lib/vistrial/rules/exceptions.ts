@@ -79,7 +79,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: escalation.operatorId,
       clientId: escalation.clientId,
       placementId: escalation.placementId,
-      href: `/vistrial/admin/escalations#${escalation.id}`,
+      href: `/workspace/admin/escalations#${escalation.id}`,
       rank: EXCEPTION_RANK['escalation-overdue'],
     });
   }
@@ -97,7 +97,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/vistrial/admin/operators/${placement.operatorId}`,
+      href: `/workspace/admin/operators/${placement.operatorId}`,
       rank: EXCEPTION_RANK['response-below-standard'],
     });
   }
@@ -120,7 +120,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/vistrial/admin/clients/${placement.clientId}`,
+      href: `/workspace/admin/clients/${placement.clientId}`,
       rank: EXCEPTION_RANK['missed-eod'],
     });
   }
@@ -146,7 +146,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId,
-      href: '/vistrial/admin/bookings',
+      href: '/workspace/admin/bookings',
       rank: EXCEPTION_RANK['booking-review'],
     });
   }
@@ -172,7 +172,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/vistrial/admin/operators/${placement.operatorId}`,
+      href: `/workspace/admin/operators/${placement.operatorId}`,
       rank: EXCEPTION_RANK['quota-at-risk'],
     });
   }
@@ -190,7 +190,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/vistrial/admin/clients/${placement.clientId}`,
+      href: `/workspace/admin/clients/${placement.clientId}`,
       rank: EXCEPTION_RANK['placement-expiring'],
     });
   }

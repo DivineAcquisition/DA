@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { labelClass, selectClass } from '@/app/vistrial/components/ui';
+import { labelClass, selectClass } from '@/app/workspace/(portal)/components/ui';
 import { attributeEventAction, replayEventAction } from '@/lib/ingest/actions';
 import type { IngestStatus } from '@/lib/ingest/types';
 

@@ -1,4 +1,4 @@
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { ActionForm } from '@/app/ad/components/ActionForm';
 import { engageLockdownAction, releaseLockdownAction } from '@/lib/ad/actions';
 import { createClient, isControlPlaneSession } from '@/lib/supabase/server';

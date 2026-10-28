@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { EmptyState, PageHeader } from '@/app/vistrial/components/ui';
+import { EmptyState, PageHeader } from '@/app/workspace/(portal)/components/ui';
 import { callsReady } from '@/lib/calls/ready';
 import { listLeads } from '@/lib/calls/queries';
 

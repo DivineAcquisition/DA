@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge, Panel } from '@/app/vistrial/components/ui';
+import { Badge, Panel } from '@/app/workspace/(portal)/components/ui';
 import { clientSignOutAction } from '@/lib/acct/actions';
 import type { Database } from '@/lib/supabase/database.types';
 

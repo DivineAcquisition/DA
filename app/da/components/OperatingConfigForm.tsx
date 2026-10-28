@@ -1,6 +1,6 @@
 'use client';
 
-import { inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass, selectClass } from '@/app/workspace/(portal)/components/ui';
 import { setOperatingConfigAction } from '@/lib/da/actions';
 import type { IndustryTemplate } from '@/lib/da/queries';
 import { ActionForm, Disclosure } from './ActionForm';

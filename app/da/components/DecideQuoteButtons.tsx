@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { inputClass } from '@/app/vistrial/components/ui';
+import { inputClass } from '@/app/workspace/(portal)/components/ui';
 import { decideQuoteAction } from '@/lib/da/actions';
 
 export default function DecideQuoteButtons({ quoteId, slug }: { quoteId: string; slug: string }) {

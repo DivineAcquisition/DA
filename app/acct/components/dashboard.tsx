@@ -1,4 +1,4 @@
-import { Badge, Panel, StatGrid, StatTile, type Tone } from '@/app/vistrial/components/ui';
+import { Badge, Panel, StatGrid, StatTile, type Tone } from '@/app/workspace/(portal)/components/ui';
 import type { FunnelSummary } from '@/lib/acct/queries';
 
 const money = (value: number | null | undefined) =>

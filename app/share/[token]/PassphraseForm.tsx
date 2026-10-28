@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { btnPrimary, btnSizeMd } from '@/app/components/ui';
-import { Badge, Panel, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Badge, Panel, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 
 export default function PassphraseForm({ token, wrong = false }: { token: string; wrong?: boolean }) {
   const router = useRouter();

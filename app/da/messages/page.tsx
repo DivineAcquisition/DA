@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';
-import { Badge, EmptyState, PageHeader, Panel, SectionHeader, StatGrid, StatTile } from '@/app/vistrial/components/ui';
+import { Badge, EmptyState, PageHeader, Panel, SectionHeader, StatGrid, StatTile } from '@/app/workspace/(portal)/components/ui';
 import AdminGate from '../components/AdminGate';
 import { listClientMessages } from '@/lib/da/billing';
 import AnswerMessageForm from '../components/AnswerMessageForm';

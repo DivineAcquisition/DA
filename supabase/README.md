@@ -216,7 +216,7 @@ for previews.
 
 `admin.divineacquisition.io` (`DA_WORKSPACE_HOSTS`) is the unified admin
 portal: agreements (`/workspace`), growth (`/da`), control (`/ad`), assessment
-admin (`/admin`), and ops (`/vistrial`) share one sidebar. Dedicated hosts below
+admin (`/admin`), and ops (`/workspace`) share one sidebar. Dedicated hosts below
 remain as cutover aliases while DNS moves off `*.vistrial.io`.
 
 | Host env | Default | Surface |
@@ -225,7 +225,7 @@ remain as cutover aliases while DNS moves off `*.vistrial.io`.
 | `VISTRIAL_CONTROL_HOSTS` | `ad.divineacquisition.io` | `/ad` |
 | `VISTRIAL_ADMIN_HOSTS` | `da.divineacquisition.io` | `/da` |
 | `VISTRIAL_ACCT_HOSTS` | `acct.divineacquisition.io` | `/acct` |
-| `VISTRIAL_OPS_HOSTS` | `ops.divineacquisition.io`, … | `/vistrial` |
+| `VISTRIAL_OPS_HOSTS` | `ops.divineacquisition.io`, … | `/workspace` |
 | `VISTRIAL_CAREERS_HOSTS` | `divineacquisition.io`, … | `/hiring` |
 | `VISTRIAL_TALENT_HOSTS` | `talent.divineacquisition.io` | `/assessment` |
 | `VISTRIAL_ACQ_HOSTS` | `acq.divineacquisition.io` | `/acq` (coaches offer) |

@@ -20,8 +20,8 @@ export async function hubSignInAction(formData: FormData): Promise<AuthResult> {
 
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath('/vistrial', 'layout');
-  redirect('/vistrial');
+  revalidatePath('/workspace', 'layout');
+  redirect('/workspace');
 }
 
 export async function hubSignOutAction(): Promise<void> {
@@ -29,8 +29,8 @@ export async function hubSignOutAction(): Promise<void> {
   // Signing out ends any View As session first, so none outlives the sign-in.
   await controlRpc(supabase, 'end_impersonation', {});
   await supabase.auth.signOut();
-  revalidatePath('/vistrial', 'layout');
-  redirect('/vistrial');
+  revalidatePath('/workspace', 'layout');
+  redirect('/workspace');
 }
 
 /**
@@ -43,10 +43,10 @@ export async function hubResetRequestAction(formData: FormData): Promise<AuthRes
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: 'Enter the email you sign in with.' };
   const supabase = await createClient();
   const app = (await currentApp()) ?? 'team';
-  const next = app === 'admin' ? '/vistrial/reset-password' : '/reset-password';
+  const next = app === 'admin' ? '/workspace/reset-password' : '/reset-password';
   const origin = app === 'team' ? (await loadOperatorWorkspaceDomain()).origin || appUrl('team') : appUrl(app);
   await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/vistrial/auth/callback?next=${encodeURIComponent(next)}`,
+    redirectTo: `${origin}/workspace/auth/callback?next=${encodeURIComponent(next)}`,
   });
   return { ok: true };
 }
@@ -60,6 +60,6 @@ export async function hubSetPasswordAction(formData: FormData): Promise<AuthResu
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { ok: false, error: error.message };
-  revalidatePath('/vistrial', 'layout');
-  redirect('/vistrial');
+  revalidatePath('/workspace', 'layout');
+  redirect('/workspace');
 }

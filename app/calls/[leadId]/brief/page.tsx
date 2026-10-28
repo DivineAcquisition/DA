@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { PageHeader } from '@/app/vistrial/components/ui';
+import { PageHeader } from '@/app/workspace/(portal)/components/ui';
 import { isRecordId } from '@/lib/calls/cells';
 import { getLeadProfile } from '@/lib/calls/queries';
 import CallBrief from '../../components/CallBrief';

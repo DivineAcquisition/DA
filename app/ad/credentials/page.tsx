@@ -1,4 +1,4 @@
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { ActionForm, Disclosure } from '@/app/ad/components/ActionForm';
 import { revealCredentialAction, storeCredentialAction } from '@/lib/ad/actions';
 import { listCaseFiles, listCredentials } from '@/lib/ad/queries';

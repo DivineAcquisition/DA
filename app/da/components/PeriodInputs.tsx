@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 
 const day = (offsetDays: number) => {
   const date = new Date();

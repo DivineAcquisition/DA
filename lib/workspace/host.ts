@@ -2,7 +2,7 @@
  * Host helpers for the unified Divine Acquisition admin portal.
  *
  * admin.divineacquisition.io serves agreements (/workspace), growth (/da),
- * control (/ad), assessment admin (/admin) and ops (/vistrial) under one
+ * control (/ad), assessment admin (/admin) and ops (/workspace) under one
  * sidebar. Dedicated hosts (da.*, ad.*, ops.*) keep working for cutover.
  */
 
@@ -29,7 +29,7 @@ export function isUnifiedAdminPath(pathname: string): boolean {
     pathname.startsWith('/da/') ||
     pathname === '/admin' ||
     pathname.startsWith('/admin/') ||
-    pathname === '/vistrial' ||
-    pathname.startsWith('/vistrial/')
+    pathname === '/workspace' ||
+    pathname.startsWith('/workspace/')
   );
 }

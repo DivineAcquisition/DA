@@ -23,7 +23,7 @@ async function call(fn: string, args: Record<string, unknown>, message: string):
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, fn, args);
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/vistrial/team/workspace', 'layout');
+  revalidatePath('/workspace/team/workspace', 'layout');
   return { ok: true, message };
 }
 

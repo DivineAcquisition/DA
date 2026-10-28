@@ -1,5 +1,86 @@
 import 'server-only';
+import { controlRpc } from '@/lib/ad/rpc';
+import { getSessionContext } from '@/lib/supabase/server';
 import { workspaceClient } from './db';
+
+export async function salesOpsRole(): Promise<'admin' | 'manager' | null> {
+  const session = await getSessionContext();
+  if (!session || session.state !== 'active') return null;
+  if (session.isAdmin) return 'admin';
+  if (session.role === 'manager') return 'manager';
+  return null;
+}
+
+export type RosterRow = {
+  placement_id: string;
+  operator_id: string;
+  operator_name: string;
+  client_name: string;
+  status: string;
+  shift: string;
+  time_zone: string;
+  eod_deadline: string;
+  manager_name: string | null;
+  review_on: string | null;
+};
+
+export async function listRoster(): Promise<RosterRow[]> {
+  const supabase = await workspaceClient();
+  if (!supabase) return [];
+  const { data } = await controlRpc<RosterRow[]>(supabase, 'so_manager_operators');
+  return data ?? [];
+}
+
+export type WorkspaceAlert = {
+  id: string;
+  kind: string;
+  summary: string;
+  period_on: string;
+  created_at: string;
+  operator_name: string;
+  placement_id: string | null;
+};
+
+export async function listWorkspaceAlerts(): Promise<WorkspaceAlert[]> {
+  const supabase = await workspaceClient();
+  if (!supabase) return [];
+  const { data } = await controlRpc<WorkspaceAlert[]>(supabase, 'so_workspace_alerts');
+  return data ?? [];
+}
+
+export type PlacementDetail = {
+  placement: {
+    id: string;
+    status: string;
+    placement_type: string | null;
+    operator_name: string;
+    client_name: string;
+    manager_name: string | null;
+    start_date: string;
+    end_date: string;
+    review_on: string | null;
+    time_zone: string;
+    working_days: number[];
+    shift_start: string;
+    shift_end: string;
+    eod_deadline: string;
+    campaign_summary: string | null;
+    activity_categories: string[];
+    tracks_results: boolean;
+    paused_at: string | null;
+  };
+  outcomes: { id: string; name: string; definition: string; active: boolean }[];
+  eods: { id: string; work_date: string; status: string; submitted_at: string | null; was_late: boolean }[];
+  feedback: { id: string; body: string; author_kind: string; created_at: string }[];
+  targets: { metric_key: string; daily: number | null; weekly: number | null; effective_from: string }[];
+};
+
+export async function placementDetail(id: string): Promise<PlacementDetail | null> {
+  const supabase = await workspaceClient();
+  if (!supabase) return null;
+  const { data } = await controlRpc<PlacementDetail | null>(supabase, 'so_placement_detail', { p_id: id });
+  return data;
+}
 
 /** Reads for the DA Admin workspace setup screens. RLS admits DA Admin only. */
 
@@ -12,6 +93,7 @@ export type PlacementRow = {
   manager_profile_id: string | null;
   start_date: string;
   end_date: string;
+  review_on: string | null;
   closed_on: string | null;
   time_zone: string;
   working_days: number[];
@@ -75,6 +157,10 @@ export type WorkspaceSettings = {
   eod_hours_worked_enabled: boolean;
   eod_note_to_manager_enabled: boolean;
   client_feedback_token_days: number;
+  cert_warning_days: number;
+  cert_grace_days: number;
+  view_as_idle_minutes: number;
+  placement_review_months: number;
   speed_to_lead_target_seconds: number | null;
   target_override_min_pct: number | null;
   target_override_max_pct: number | null;
@@ -82,7 +168,7 @@ export type WorkspaceSettings = {
 };
 
 const PLACEMENT_SELECT =
-  'id, status, placement_type, operator_id, case_file_id, manager_profile_id, start_date, end_date, closed_on, time_zone, working_days, shift_start, shift_end, eod_deadline, campaign_summary, activity_categories, tracks_results, paused_at, operator:operator_id(name, email, profile_id), client:case_file_id(name), manager:manager_profile_id(full_name, email)';
+  'id, status, placement_type, operator_id, case_file_id, manager_profile_id, start_date, end_date, review_on, closed_on, time_zone, working_days, shift_start, shift_end, eod_deadline, campaign_summary, activity_categories, tracks_results, paused_at, operator:operator_id(name, email, profile_id), client:case_file_id(name), manager:manager_profile_id(full_name, email)';
 
 export async function listPlacements(): Promise<{ rows: PlacementRow[]; error: string | null }> {
   const supabase = await workspaceClient();

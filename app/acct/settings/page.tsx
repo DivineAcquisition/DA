@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge, EmptyState, PageHeader, Panel, SectionHeader } from '@/app/vistrial/components/ui';
+import { Badge, EmptyState, PageHeader, Panel, SectionHeader } from '@/app/workspace/(portal)/components/ui';
 import { getMyAccount, getMyPreferences } from '@/lib/acct/queries';
 import PreferencesForm from '../components/PreferencesForm';
 

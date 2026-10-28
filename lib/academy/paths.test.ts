@@ -14,7 +14,7 @@ describe('academy paths', () => {
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/reflection')).toBe('reflection');
     expect(academyPathKind('/academy/modules/6f0b4c2e-1a2b-4c3d-8e9f-0a1b2c3d4e5f/practical')).toBe('practical');
     expect(academyPathKind('/academy/not-found')).toBe('missing');
-    expect(academyPathKind('/vistrial/ops')).toBe('missing');
+    expect(academyPathKind('/workspace/operations')).toBe('missing');
     expect(academyPathKind('/workspace/agreements')).toBe('missing');
     expect(academyPathKind('/academy/modules/one/extra')).toBe('missing');
   });

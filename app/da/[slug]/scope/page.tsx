@@ -14,7 +14,7 @@ import {
   inputClass,
   labelClass,
   selectClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { logScopeRequestAction, quoteScopeAction } from '@/lib/da/actions';
 import { getCaseFileBySlug, listScope } from '@/lib/da/queries';
 import { ActionForm, Disclosure } from '../../components/ActionForm';

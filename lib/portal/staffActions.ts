@@ -16,7 +16,7 @@ async function call<T>(fn: string, args: Record<string, unknown>, message?: stri
   const supabase = await createClient();
   const { data, error } = await controlRpc<T>(supabase, fn, args);
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/vistrial', 'layout');
+  revalidatePath('/workspace', 'layout');
   return { ok: true, message, data: (data ?? undefined) as T | undefined };
 }
 
@@ -46,8 +46,8 @@ export async function startViewAsAction(operatorId: string, formData: FormData):
     p_minutes: 30,
   });
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/vistrial', 'layout');
-  redirect('/vistrial/operator');
+  revalidatePath('/workspace', 'layout');
+  redirect('/workspace/operator');
 }
 
 export async function extendViewAsAction(reason: string): Promise<Result> {
@@ -58,8 +58,8 @@ export async function extendViewAsAction(reason: string): Promise<Result> {
 export async function exitViewAsAction(returnTo: string): Promise<void> {
   const supabase = await createClient();
   await controlRpc(supabase, 'end_impersonation', {});
-  revalidatePath('/vistrial', 'layout');
-  redirect(returnTo.startsWith('/vistrial/') ? returnTo : '/vistrial');
+  revalidatePath('/workspace', 'layout');
+  redirect(returnTo.startsWith('/workspace/') || returnTo.startsWith('/workspace/') ? returnTo : '/workspace');
 }
 
 export async function viewAsSessionsAction(filters: {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { Badge, Panel } from '@/app/vistrial/components/ui';
+import { Badge, Panel } from '@/app/workspace/(portal)/components/ui';
 import {
   clientBaseUrl,
   formatClosedWonLabel,

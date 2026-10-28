@@ -1,4 +1,4 @@
-import type { Tone } from '@/app/vistrial/components/ui';
+import type { Tone } from '@/app/workspace/(portal)/components/ui';
 import type { BlockerControl, StandardStatus } from './types';
 
 /** Plain words for statuses. Calm colours: "at risk" is a nudge, not an alarm. */

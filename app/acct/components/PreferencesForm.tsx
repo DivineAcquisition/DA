@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { Panel } from '@/app/vistrial/components/ui';
+import { Panel } from '@/app/workspace/(portal)/components/ui';
 import { updatePreferencesAction } from '@/lib/acct/actions';
 
 const OPTIONS = [

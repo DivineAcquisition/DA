@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass, selectClass } from '@/app/workspace/(portal)/components/ui';
 import {
   drainBacklogAction,
   mapAccountAction,

@@ -9,7 +9,7 @@ import {
   SectionHeader,
   StatGrid,
   StatTile,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import AdminGate from '../components/AdminGate';
 import { listMargin, listMonthlyMargin, listOperatorMargin } from '@/lib/da/billing';
 

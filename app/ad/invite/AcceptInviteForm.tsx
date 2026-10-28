@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSizeMd } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { acceptInviteAction } from '@/lib/ad/actions';
 
 export function AcceptInviteForm({ initialToken }: { initialToken: string }) {

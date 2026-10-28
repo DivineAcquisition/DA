@@ -21,7 +21,7 @@ import { runCheck, runWorker } from './worker';
 export type GhlResult<T = undefined> = { ok: true; message?: string; data?: T } | { ok: false; error: string };
 
 function refresh() {
-  revalidatePath('/vistrial/team/ghl', 'layout');
+  revalidatePath('/workspace/team/ghl', 'layout');
 }
 
 /** Run queued GHL work after the response, so a removal never waits for the clock. */

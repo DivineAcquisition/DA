@@ -9,7 +9,7 @@ import {
   SectionHeader,
   StatGrid,
   StatTile,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { readFreshness, orGap } from '@/lib/ingest/rules/freshness';
 import {
   INGEST_STATUS_LABELS,

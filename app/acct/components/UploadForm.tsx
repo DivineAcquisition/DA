@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Panel, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Panel, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { recordUploadAction } from '@/lib/acct/actions';
 
 export default function UploadForm({ caseFileId }: { caseFileId: string }) {

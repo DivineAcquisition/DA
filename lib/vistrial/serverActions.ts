@@ -22,7 +22,7 @@ function readable(error: { message: string } | null): string {
 }
 
 const refresh = () => {
-  revalidatePath('/vistrial', 'layout');
+  revalidatePath('/workspace', 'layout');
 };
 
 // ---------------------------------------------------------------------------
@@ -354,7 +354,7 @@ export async function sendNotificationAction(input: {
       sent_by: senderProfile?.full_name || senderProfile?.email || 'Divine Acquisition',
       kind: 'staff_message',
       urgency: input.severity === 'urgent' ? 'immediate' : 'normal',
-      link_path: '/vistrial/operator/inbox',
+      link_path: '/workspace/operator/inbox',
     } as never)
     .select('id')
     .single();

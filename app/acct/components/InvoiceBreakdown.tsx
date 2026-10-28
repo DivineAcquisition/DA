@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Badge } from '@/app/vistrial/components/ui';
+import { Badge } from '@/app/workspace/(portal)/components/ui';
 import { money } from './dashboard';
 
 /**

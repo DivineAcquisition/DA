@@ -167,7 +167,7 @@ export async function acceptInviteAction(formData: FormData): Promise<ActionResu
   if (error) return { ok: false, error: readable(error) };
 
   revalidateAd();
-  revalidatePath('/vistrial', 'layout');
+  revalidatePath('/workspace', 'layout');
   // Operators work on the team app. Accepting an invite does not open admin.
   if (invite.role === 'operator') redirect((await loadOperatorWorkspaceDomain()).origin || appUrl('team'));
   redirect('/ad');

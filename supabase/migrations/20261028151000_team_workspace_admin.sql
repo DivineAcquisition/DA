@@ -117,25 +117,13 @@ create policy activity_value_change_admin_read on public.activity_value_change
 drop policy if exists activity_value_change_manager_read on public.activity_value_change;
 create policy activity_value_change_manager_read on public.activity_value_change
   for select to authenticated
-  using (
-    source = 'operator'
-    and exists (
-      select 1 from public.activity_day d
-      where d.id = activity_day_id and app.so_manages_placement(d.placement_id)
-    )
-  );
+  using (app.is_manager() and source = 'operator');
 
 -- Managers read the number the operator logged. The GHL number is DA Admin only.
 drop policy if exists activity_value_manager_read on public.activity_value;
 create policy activity_value_manager_read on public.activity_value
   for select to authenticated
-  using (
-    source = 'operator'
-    and exists (
-      select 1 from public.activity_day d
-      where d.id = activity_day_id and app.so_manages_placement(d.placement_id)
-    )
-  );
+  using (app.is_manager() and source = 'operator');
 
 -- 3. Helpers -----------------------------------------------------------------------
 
@@ -679,7 +667,7 @@ begin
         'working_days', v_pl.working_days,
         'eod_deadline', coalesce(v_pl.eod_deadline, v_pl.shift_end),
         'start_date', v_pl.start_date,
-        'review_on', (v_pl.start_date + make_interval(months => coalesce(v_months, 3)))::date,
+        'review_on', coalesce(v_pl.review_on, (v_pl.start_date + make_interval(months => coalesce(v_months, 3)))::date),
         'local_minutes', app.so_local_minutes(v_pl.time_zone),
         'shift_status', app.so_shift_status(v_pl)
       ),

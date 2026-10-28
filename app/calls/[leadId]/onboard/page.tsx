@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { EmptyState, PageHeader } from '@/app/vistrial/components/ui';
+import { EmptyState, PageHeader } from '@/app/workspace/(portal)/components/ui';
 import CopyOnboardLink from '../../components/CopyOnboardLink';
 import OnboardForm from '../../components/OnboardForm';
 import { isRecordId } from '@/lib/calls/cells';

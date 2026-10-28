@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge, EmptyState, Panel, StatGrid, StatTile } from '@/app/vistrial/components/ui';
+import { Badge, EmptyState, Panel, StatGrid, StatTile } from '@/app/workspace/(portal)/components/ui';
 import { conversionFrom, onboardCta } from '@/lib/calls/conversion';
 import { airtableDebriefUrl, airtableTouchUrl, formatDisplayDate, formatShortDate } from '@/lib/calls/map';
 import type { DebriefRecord, LeadProfile, TouchRecord } from '@/lib/calls/types';

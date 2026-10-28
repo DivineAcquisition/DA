@@ -8,7 +8,7 @@ import {
   PageHeader,
   Panel,
   SectionHeader,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { formatMoney } from '@/lib/vistrial/format';
 import { growthReady } from '@/lib/da/guard';
 import { engagementPath, engagementsHome, requestEngagementBase } from '@/lib/da/paths';

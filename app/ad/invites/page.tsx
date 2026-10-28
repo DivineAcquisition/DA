@@ -1,4 +1,4 @@
-import { Badge, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Badge, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { ActionForm } from '@/app/ad/components/ActionForm';
 import { cancelInviteAction, inviteAccountAction, resendInviteAction } from '@/lib/ad/actions';
 import { listCaseFiles, listInvites } from '@/lib/ad/queries';

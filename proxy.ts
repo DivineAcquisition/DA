@@ -141,7 +141,7 @@ const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },
   { hosts: ADMIN_HOSTS, prefix: ADMIN_PREFIX },
   { hosts: ACCT_HOSTS, prefix: ACCT_PREFIX },
-  { hosts: TEAM_HOSTS, prefix: OPS_PREFIX },
+  { hosts: TEAM_HOSTS, prefix: WORKSPACE_PREFIX },
   {
     hosts: CAREERS_HOSTS,
     prefix: HIRING_PREFIX,
@@ -266,9 +266,15 @@ const isLocalHost = (host: string) =>
   host.endsWith('.vercel.app');
 
 function surfaceForHost(host: string, teamHosts: string[]): Surface | null {
-  return SURFACES.map((surface) => (surface.prefix === OPS_PREFIX ? { ...surface, hosts: teamHosts } : surface)).find((surface) =>
-    surface.hosts.includes(host),
-  ) ?? null;
+  let replaced = false;
+  const surfaces = SURFACES.map((surface) => {
+    if (!replaced && surface.prefix === WORKSPACE_PREFIX && surface.hosts === TEAM_HOSTS) {
+      replaced = true;
+      return { ...surface, hosts: teamHosts };
+    }
+    return surface;
+  });
+  return surfaces.find((surface) => surface.hosts.includes(host)) ?? null;
 }
 
 function isOnboardOnLiveHost(prefix: string | null, pathname: string): boolean {
@@ -335,13 +341,26 @@ export async function proxy(request: NextRequest) {
   const legacyOpsHost = !local && OPS_HOSTS.includes(host);
   const onTeamHost = !local && teamHosts.includes(host);
   const isServicePath = pathname.startsWith('/_next') || pathname.startsWith('/api/');
+  // Old /vistrial addresses. The screens now live under /workspace.
+  if (!isServicePath && (pathname === '/vistrial' || pathname.startsWith('/vistrial/'))) {
+    const next =
+      pathname === '/vistrial' || pathname === '/vistrial/'
+        ? onTeamHost
+          ? '/workspace/operator'
+          : '/workspace/operations'
+        : pathname === '/vistrial/ops' || pathname.startsWith('/vistrial/ops/')
+          ? `/workspace/operations${pathname.slice('/vistrial/ops'.length)}`
+          : `/workspace${pathname.slice('/vistrial'.length)}`;
+    return NextResponse.redirect(new URL(`${next}${request.nextUrl.search}`, request.url), 308);
+  }
   if ((legacyOpsHost || onTeamHost) && !isServicePath) {
-    const internal = pathname === OPS_PREFIX || pathname.startsWith(`${OPS_PREFIX}/`) ? pathname : `${OPS_PREFIX}${pathname === '/' ? '' : pathname}`;
+    const internal = pathname === '/' ? '/workspace/operator' : pathname.startsWith('/workspace') ? pathname : `/workspace${pathname}`;
     if (legacyOpsHost) {
-      const target = isTeamAppPath(internal)
-        ? `${teamOrigin}${internal === OPS_PREFIX ? '/' : internal.slice(OPS_PREFIX.length)}`
-        : `${ADMIN_PORTAL_ORIGIN}${internal}`;
+      const target = isTeamAppPath(internal) ? `${teamOrigin}${internal}` : `${ADMIN_PORTAL_ORIGIN}${internal}`;
       return NextResponse.redirect(`${target}${request.nextUrl.search}`, 308);
+    }
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL('/workspace/operator', request.url), 307);
     }
     if (!isTeamAppPath(internal)) {
       return new NextResponse('Not found', { status: 404, headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
@@ -374,7 +393,7 @@ export async function proxy(request: NextRequest) {
 
   // The admin app's home is the operations overview.
   if (!local && WORKSPACE_HOSTS.includes(host) && pathname === '/') {
-    return NextResponse.redirect(new URL('/vistrial/ops', request.url), 307);
+    return NextResponse.redirect(new URL('/workspace/operations', request.url), 307);
   }
 
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.

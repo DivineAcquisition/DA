@@ -35,9 +35,9 @@ describe('apps', () => {
   });
 
   it('serves only VA screens on the team app', () => {
-    expect(isTeamAppPath('/vistrial/operator/pay')).toBe(true);
-    expect(isTeamAppPath('/vistrial/auth/leave')).toBe(true);
-    for (const path of ['/vistrial/team', '/vistrial/ops', '/vistrial/admin/payroll', '/vistrial/inbox', '/vistrial/team/ghl']) {
+    expect(isTeamAppPath('/workspace/operator/pay')).toBe(true);
+    expect(isTeamAppPath('/workspace/auth/leave')).toBe(true);
+    for (const path of ['/workspace/team', '/workspace/operations', '/workspace/admin/payroll', '/workspace/inbox', '/workspace/team/ghl']) {
       expect(isTeamAppPath(path)).toBe(false);
     }
   });
