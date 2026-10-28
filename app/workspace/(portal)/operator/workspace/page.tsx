@@ -1,27 +1,30 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { appUrl } from '@/lib/apps';
-import type { CertificationNotice, WorkspaceState } from '@/lib/sales-workspace/types';
-import { deadlineLabel, firstName, NO_ACCESS_COPY, shiftLabel } from '@/lib/sales-workspace/view';
+import type { CertificationNotice } from '@/lib/sales-workspace/types';
+import { firstName, NO_ACCESS_COPY } from '@/lib/sales-workspace/view';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
-import WorkspaceFrame, { brand, DetailGrid, StatePanel } from './WorkspaceFrame';
+import ActiveDashboard from './dashboard/ActiveDashboard';
+import { isActiveDashboard, type DashboardResponse } from '@/lib/sales-workspace/dashboard';
 import { ViewAsBanner } from './ViewAsBanner';
+import WorkspaceFrame, { brand, DetailGrid, StatePanel } from './WorkspaceFrame';
 
 export const metadata: Metadata = { title: 'Workspace' };
 export const dynamic = 'force-dynamic';
 
 /**
- * The Sales Operator workspace. The database decides the state from the
- * operator's own records: account, Academy certification, placement.
+ * The Sales Operator workspace. Active placements see the dashboard.
+ * Every other state is the access page from the foundation.
  */
 export default async function WorkspacePage() {
   const [supabase, session] = await Promise.all([createClient(), getSessionContext()]);
-  const { data, error } = await controlRpc<WorkspaceState>(supabase, 'so_workspace');
+  const { data, error } = await controlRpc<DashboardResponse>(supabase, 'so_dashboard');
   const viewingAs = session?.impersonation?.target_full_name || session?.impersonation?.target_email || null;
 
   return (
-    <WorkspaceFrame banner={viewingAs ? <ViewAsBanner name={viewingAs} /> : null}>
-      {error || !data ? <Unavailable message={error ? readable(error) : null} /> : <State state={data} />}
+    <WorkspaceFrame wide={data?.state === 'active'} banner={viewingAs ? <ViewAsBanner name={viewingAs} /> : null}>
+      {error || !data ? <Unavailable message={error ? readable(error) : null} /> : <StateView state={data} />}
     </WorkspaceFrame>
   );
 }
@@ -32,18 +35,24 @@ function CertBanner({ notice }: { notice: CertificationNotice | undefined }) {
   if (notice.phase === 'warning') {
     return (
       <p className="rounded-xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm text-white">
-        Recertify by {when}. {notice.days_left} {notice.days_left === 1 ? 'day' : 'days'} left.
+        Recertify by {when}. {notice.days_left} {notice.days_left === 1 ? 'day' : 'days'} left.{' '}
+        <a href={appUrl('training')} className="font-semibold text-[#937DFF]">
+          Open the Academy
+        </a>
       </p>
     );
   }
   return (
     <p className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
-      Your certification lapsed on {when}. You have {notice.days_left} {notice.days_left === 1 ? 'day' : 'days'} of access left. Recertify in the Academy.
+      Your certification lapsed on {when}. You have {notice.days_left} {notice.days_left === 1 ? 'day' : 'days'} of access left.{' '}
+      <a href={appUrl('training')} className="font-semibold text-amber-50">
+        Recertify in the Academy
+      </a>
     </p>
   );
 }
 
-function State({ state }: { state: WorkspaceState }) {
+function StateView({ state }: { state: DashboardResponse }) {
   switch (state.state) {
     case 'not_certified':
       return (
@@ -73,7 +82,7 @@ function State({ state }: { state: WorkspaceState }) {
               : 'DA is matching you with a client. Metrics and your end-of-day report open the day your placement starts.'
           }
         >
-          <CertBanner notice={state.certification} />
+          <CertBanner notice={state.certification as CertificationNotice | undefined} />
         </StatePanel>
       );
     case 'paused':
@@ -82,47 +91,31 @@ function State({ state }: { state: WorkspaceState }) {
           eyebrow="Placement paused"
           title="Your placement is paused."
           body="Nothing is due while it is paused. Past end-of-day reports and feedback stay readable here."
+          action={
+            <Link href="/workspace/operator/workspace/history" className={brand.primaryButton}>
+              Past EODs
+            </Link>
+          }
         >
-          <CertBanner notice={state.certification} />
+          <CertBanner notice={state.certification as CertificationNotice | undefined} />
           <DetailGrid
             items={[
-              { label: 'Client', value: state.placement.client_name ?? 'Not set' },
-              { label: 'Manager', value: state.placement.manager_name ?? 'Not assigned yet' },
+              { label: 'Client', value: state.placement?.client_name ?? 'Not set' },
+              { label: 'Manager', value: state.placement?.manager_name ?? 'Not assigned yet' },
             ]}
           />
         </StatePanel>
       );
     case 'active':
-      return <ActiveHome state={state} />;
+      if (!isActiveDashboard(state)) return <Unavailable message={null} />;
+      return <ActiveDashboard data={state} />;
     case 'no_access':
     default: {
-      const copy = NO_ACCESS_COPY[(state as { reason: keyof typeof NO_ACCESS_COPY }).reason] ?? NO_ACCESS_COPY.deactivated;
+      const reason = (state.reason ?? 'deactivated') as keyof typeof NO_ACCESS_COPY;
+      const copy = NO_ACCESS_COPY[reason] ?? NO_ACCESS_COPY.deactivated;
       return <StatePanel eyebrow="No workspace access" title={copy.title} body={copy.body} />;
     }
   }
-}
-
-function ActiveHome({ state }: { state: Extract<WorkspaceState, { state: 'active' }> }) {
-  const p = state.placement;
-  const name = firstName(state.operator_name) || state.operator_name;
-  return (
-    <div className="space-y-6">
-      <CertBanner notice={state.certification} />
-      <div>
-        <p className={brand.eyebrow}>Active placement</p>
-        <h1 className={`${brand.heading} mt-2 text-2xl sm:text-3xl`}>Hi {name}.</h1>
-      </div>
-      <DetailGrid
-        items={[
-          { label: 'Operator', value: state.operator_name },
-          { label: 'Client', value: p.client_name ?? 'Not set' },
-          { label: 'Manager', value: p.manager_name ?? 'Not assigned yet' },
-          { label: 'Shift', value: shiftLabel(p) },
-          { label: 'EOD deadline', value: deadlineLabel(p) },
-        ]}
-      />
-    </div>
-  );
 }
 
 function Unavailable({ message }: { message: string | null }) {

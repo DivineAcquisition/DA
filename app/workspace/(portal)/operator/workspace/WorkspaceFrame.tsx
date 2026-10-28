@@ -11,9 +11,21 @@ export const brand = {
     'inline-flex h-9 items-center justify-center rounded-xl border border-white/10 px-3 text-sm font-medium text-neutral-200 transition-colors hover:border-[#937DFF]/50 hover:text-white',
   eyebrow: 'text-[11px] font-semibold uppercase tracking-[0.16em] text-[#937DFF]',
   heading: 'font-[family-name:var(--font-jakarta)] font-bold tracking-tight text-white',
+  panel: 'rounded-3xl border border-white/[0.07] bg-white/[0.03] p-5 sm:p-6',
+  warn: 'border-[#FFB020]/40 bg-[#FFB020]/10 text-[#FFB020]',
+  ok: 'text-[#3DDC97]',
 };
 
-export default function WorkspaceFrame({ children, banner }: { children: React.ReactNode; banner?: React.ReactNode }) {
+export default function WorkspaceFrame({
+  children,
+  wide = false,
+  banner,
+}: {
+  children: React.ReactNode;
+  wide?: boolean;
+  banner?: React.ReactNode;
+}) {
+  const width = wide ? 'max-w-6xl' : 'max-w-3xl';
   return (
     <div className={`${jakarta.variable} min-h-screen bg-ink-950 font-sans text-white antialiased`}>
       {banner}
@@ -22,7 +34,7 @@ export default function WorkspaceFrame({ children, banner }: { children: React.R
         className="pointer-events-none fixed inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(106,0,255,0.22),transparent)]"
       />
       <header className={`sticky z-30 border-b border-white/[0.06] bg-ink-950/85 backdrop-blur-xl ${banner ? 'top-[52px]' : 'top-0'}`}>
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-3 px-4">
+        <div className={`mx-auto flex h-14 ${width} items-center justify-between gap-3 px-4`}>
           <Link href="/workspace/operator/workspace" className="flex items-center gap-2.5">
             <Logo markOnly className="h-5 w-auto" />
             <span className={`${brand.heading} text-[15px]`}>Workspace</span>
@@ -39,7 +51,7 @@ export default function WorkspaceFrame({ children, banner }: { children: React.R
           </nav>
         </div>
       </header>
-      <main className="relative mx-auto max-w-3xl px-4 py-8 sm:py-12">{children}</main>
+      <main className={`relative mx-auto ${width} px-4 py-8 sm:py-10`}>{children}</main>
     </div>
   );
 }

@@ -73,6 +73,8 @@ describe('settingsPayload', () => {
     if (r.ok) {
       expect(r.value.speed_to_lead_target_seconds).toBeNull();
       expect(r.value.eod_late_minutes_after).toBe(0);
+      expect(r.value.cert_warning_days).toBe(14);
+      expect(r.value.cert_grace_days).toBe(7);
       expect(r.value.eod_hours_worked_enabled).toBe(false);
     }
   });
