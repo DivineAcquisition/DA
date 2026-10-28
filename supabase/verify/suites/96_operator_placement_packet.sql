@@ -29,6 +29,9 @@ begin
   assert (select status from public.operator_packet where operator_id = v_operator) = 'pending';
   assert (select case_file_id from public.operator_packet where operator_id = v_operator) = v_case;
 
+  -- One active placement per operator: the first ends before the second starts.
+  update public.placement set status = 'ended', closed_on = current_date
+   where operator_id = v_operator and status = 'active';
   insert into public.placement (operator_id, case_file_id, start_date, end_date, status)
   values (v_operator, v_client, current_date, current_date + 30, 'active');
   assert (select count(*) from public.operator_packet where operator_id = v_operator) = 1,
