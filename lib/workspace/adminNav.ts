@@ -87,6 +87,7 @@ const WORKSPACE: NavSection = {
       icon: UsersRound,
       aliases: ['/workspace/ops/operators', '/vistrial/team/board'],
       children: [
+        { href: '/workspace/sales-ops', label: 'Workspace setup', icon: Target },
         { href: '/vistrial/admin/payroll', label: 'Payroll', icon: Wallet, aliases: ['/workspace/ops/payroll'] },
         { href: '/vistrial/admin/view-as', label: 'View as', icon: Eye },
         { href: '/vistrial/team/queues', label: 'Queues', icon: Inbox },

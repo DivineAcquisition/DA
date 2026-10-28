@@ -18,6 +18,13 @@ export default function SalesHome({ placementId }: { placementId: string | null 
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Hi {name}</h1>
       <Card>
+        <CardTitle>Workspace</CardTitle>
+        <p className="text-sm text-neutral-400">Your placement, shift, and end-of-day deadline. Opens after Academy certification.</p>
+        <Link href="/vistrial/operator/workspace" className={`${btnSecondary} ${btnSizeSm} mt-4`}>
+          Open the workspace
+        </Link>
+      </Card>
+      <Card>
         <CardTitle>Training</CardTitle>
         <p className="text-sm text-neutral-300">
           The Academy is where you take the quizzes. Start with the first three: Who We Are, The DA Standard, and What We Sell and Why It Works.
