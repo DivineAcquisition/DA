@@ -69,31 +69,31 @@ const WORKSPACE: NavSection = {
   heading: 'Workspace',
   tone: 'violet',
   items: [
-    { href: '/vistrial/ops', label: 'Overview', icon: Gauge },
+    { href: '/workspace/operations', label: 'Overview', icon: Gauge },
     { href: '/workspace/pipeline', label: 'Pipeline', icon: Funnel },
     {
-      href: '/vistrial/admin/clients',
+      href: '/workspace/admin/clients',
       label: 'Clients',
       icon: Building2,
-      aliases: ['/vistrial/admin', '/workspace/ops', '/workspace/ops/clients'],
+      aliases: ['/workspace/admin', '/workspace/ops', '/workspace/ops/clients'],
       children: [
-        { href: '/vistrial/admin/escalations', label: 'Escalations', icon: TriangleAlert, aliases: ['/workspace/ops/escalations'] },
-        { href: '/vistrial/admin/bookings', label: 'Client bookings', icon: CalendarCheck2, aliases: ['/workspace/ops/bookings'] },
+        { href: '/workspace/admin/escalations', label: 'Escalations', icon: TriangleAlert, aliases: ['/workspace/ops/escalations'] },
+        { href: '/workspace/admin/bookings', label: 'Client bookings', icon: CalendarCheck2, aliases: ['/workspace/ops/bookings'] },
       ],
     },
     {
-      href: '/vistrial/admin/operators',
+      href: '/workspace/admin/operators',
       label: 'Sales operators',
       icon: UsersRound,
-      aliases: ['/workspace/ops/operators', '/vistrial/team/board'],
+      aliases: ['/workspace/ops/operators', '/workspace/team/board'],
       children: [
         { href: '/workspace/sales-ops', label: 'Workspace setup', icon: Target },
-        { href: '/vistrial/admin/payroll', label: 'Payroll', icon: Wallet, aliases: ['/workspace/ops/payroll'] },
-        { href: '/vistrial/admin/view-as', label: 'View as', icon: Eye },
-        { href: '/vistrial/team/queues', label: 'Queues', icon: Inbox },
-        { href: '/vistrial/team/scorecard', label: "DA's scorecard", icon: Trophy },
-        { href: '/vistrial/team/matching', label: 'Availability', icon: CalendarRange },
-        { href: '/vistrial/team', label: 'Roster & View As', icon: Contact, exact: true },
+        { href: '/workspace/admin/payroll', label: 'Payroll', icon: Wallet, aliases: ['/workspace/ops/payroll'] },
+        { href: '/workspace/admin/view-as', label: 'View as', icon: Eye },
+        { href: '/workspace/team/queues', label: 'Queues', icon: Inbox },
+        { href: '/workspace/team/scorecard', label: "DA's scorecard", icon: Trophy },
+        { href: '/workspace/team/matching', label: 'Availability', icon: CalendarRange },
+        { href: '/workspace/team', label: 'Roster & View As', icon: Contact, exact: true },
         { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
         { href: '/workspace/onboarding', label: 'Onboarding', icon: ClipboardList },
       ],
@@ -179,7 +179,7 @@ export function buildNav({
 }
 
 /** Top-level prefixes the app serves directly. Anything else on the admin host is a bare /workspace path. */
-const ROUTED_PREFIXES = ['/workspace', '/vistrial', '/ad', '/da', '/admin'];
+const ROUTED_PREFIXES = ['/workspace', '/workspace', '/ad', '/da', '/admin'];
 
 /**
  * The admin host rewrites bare paths (/overview, /calls) into /workspace, so
@@ -204,7 +204,7 @@ export type ActiveMatch = {
 
 /**
  * The single most specific entry for a path. Longest href wins, so
- * /vistrial/team/queues lights up "Queues" and not "Roster" too.
+ * /workspace/team/queues lights up "Queues" and not "Roster" too.
  */
 export function findActive(nav: NavSection[], pathname: string): ActiveMatch | null {
   const path = normalizePath(pathname);

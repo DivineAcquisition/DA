@@ -14,12 +14,42 @@ export type WorkspacePlacement = {
 
 export type NoAccessReason = 'not_an_operator' | 'deactivated' | 'placement_ended' | 'lockdown';
 
+export type CertificationNotice = {
+  phase: 'current' | 'warning' | 'grace';
+  recertify_on: string | null;
+  days_left: number | null;
+};
+
 export type WorkspaceState =
-  | { state: 'not_certified'; operator_name: string; certification_level: number | null }
-  | { state: 'awaiting_placement'; operator_name: string; certification_level: number; pending: boolean }
-  | { state: 'active'; operator_name: string; certification_level: number; placement: WorkspacePlacement }
-  | { state: 'paused'; operator_name: string; certification_level: number; placement: WorkspacePlacement }
-  | { state: 'no_access'; reason: NoAccessReason; operator_name?: string };
+  | {
+      state: 'not_certified';
+      operator_name: string;
+      certification_level: number | null;
+      grace_ended?: boolean;
+      recertify_on?: string | null;
+    }
+  | {
+      state: 'awaiting_placement';
+      operator_name: string;
+      certification_level: number;
+      pending: boolean;
+      certification?: CertificationNotice;
+    }
+  | {
+      state: 'active';
+      operator_name: string;
+      certification_level: number;
+      placement: WorkspacePlacement;
+      certification?: CertificationNotice;
+    }
+  | {
+      state: 'paused';
+      operator_name: string;
+      certification_level: number;
+      placement: WorkspacePlacement;
+      certification?: CertificationNotice;
+    }
+  | { state: 'no_access'; reason: NoAccessReason; operator_name?: string; certification?: CertificationNotice };
 
 export const PLACEMENT_TYPES = [
   { value: 'client_placed', label: 'Client-placed' },

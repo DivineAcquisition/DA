@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Avatar, Badge } from '@/app/vistrial/components/ui';
+import { Avatar, Badge } from '@/app/workspace/(portal)/components/ui';
 import { endImpersonationFormAction, signOutAction } from '@/lib/ad/actions';
 import { roleLabel } from '@/lib/ad/types';
 import type { SessionContext } from '@/lib/supabase/server';

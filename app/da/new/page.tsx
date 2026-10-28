@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
 import { engagementsHome, requestEngagementBase } from '@/lib/da/paths';
-import { PageHeader, Panel, inputClass, labelClass, selectClass } from '@/app/vistrial/components/ui';
+import { PageHeader, Panel, inputClass, labelClass, selectClass } from '@/app/workspace/(portal)/components/ui';
 import { createCaseFileAction } from '@/lib/da/actions';
 import { listIndustryTemplates } from '@/lib/da/queries';
 import { driveConfigured } from '@/lib/drive/client';

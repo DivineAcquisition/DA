@@ -19,15 +19,15 @@ async function call<T>(fn: string, args: Record<string, unknown>, message?: stri
   const supabase = await createClient();
   const { data, error } = await controlRpc<T>(supabase, fn, args);
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/vistrial/operator', 'layout');
+  revalidatePath('/workspace/operator', 'layout');
   return { ok: true, message, data: (data ?? undefined) as T | undefined };
 }
 
 export async function selectPlacementAction(placementId: string): Promise<void> {
   const jar = await cookies();
-  // Path '/': on team.* the browser sees /operator, not /vistrial/operator.
+  // Path '/': on team.* the browser sees /operator, not /workspace/operator.
   jar.set(PLACEMENT_COOKIE, placementId, { httpOnly: true, sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 90 });
-  revalidatePath('/vistrial/operator', 'layout');
+  revalidatePath('/workspace/operator', 'layout');
 }
 
 // Bookings -------------------------------------------------------------------
@@ -270,7 +270,7 @@ export async function verifyMfaEnrollAction(factorId: string, code: string): Pro
   const supabase = await createClient();
   const { error } = await supabase.auth.mfa.challengeAndVerify({ factorId, code: code.replace(/\s+/g, '') });
   if (error) return { ok: false, error: 'That code did not match. Use the newest code from your app.' };
-  revalidatePath('/vistrial/operator', 'layout');
+  revalidatePath('/workspace/operator', 'layout');
   return { ok: true, message: 'Two-factor sign-in is on.' };
 }
 

@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { inputClass } from '@/app/vistrial/components/ui';
+import { inputClass } from '@/app/workspace/(portal)/components/ui';
 import { saveBriefNoteAction } from '@/lib/calls/actions';
 
 export default function BriefNoteForm({

@@ -58,6 +58,10 @@ const INTEGER_SETTINGS = [
   'eod_late_minutes_after',
   'eod_manager_alert_minutes_after',
   'client_feedback_token_days',
+  'cert_warning_days',
+  'cert_grace_days',
+  'view_as_idle_minutes',
+  'placement_review_months',
 ] as const;
 
 const NULLABLE_INTEGER_SETTINGS = [

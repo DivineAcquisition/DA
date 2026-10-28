@@ -90,13 +90,13 @@ export function appForRole(role: string | null | undefined): AppKey | null {
 }
 
 /**
- * The team app's screens, as internal /vistrial paths: the VA portal, its
- * sign-in callback, password reset and the sign-out handoff. Everything else
- * under /vistrial is an admin screen.
+ * The team app's screens, as internal /workspace paths: the operator portal,
+ * its sign-in callback, password reset and the sign-out handoff. Every other
+ * /workspace screen is the admin app.
  */
 export function isTeamAppPath(internalPath: string): boolean {
-  const prefixes = ['/vistrial/operator', '/vistrial/auth', '/vistrial/reset-password'];
-  return internalPath === '/vistrial' || prefixes.some((p) => internalPath === p || internalPath.startsWith(`${p}/`));
+  const prefixes = ['/workspace/operator', '/workspace/auth', '/workspace/reset-password'];
+  return prefixes.some((p) => internalPath === p || internalPath.startsWith(`${p}/`));
 }
 
 /**

@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from 'react';
 import { btnPrimary, btnSecondary, btnSizeMd } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { saveAuditDebriefAction } from '@/lib/calls/actions';
 import {
   DEBRIEF_CALL_TYPES,

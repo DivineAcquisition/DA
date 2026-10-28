@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Badge, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Badge, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { ActionForm, Disclosure } from '@/app/ad/components/ActionForm';
 import {
   archiveAccountAction,

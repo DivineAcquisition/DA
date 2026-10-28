@@ -11,7 +11,7 @@ import {
   SectionHeader,
   inputClass,
   labelClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { correctEffortAction, logEffortAction } from '@/lib/da/actions';
 import { getCaseFileBySlug, listEffort, listSnapshots } from '@/lib/da/queries';
 import { ActionForm, Disclosure, ImmutableNotice } from '../../components/ActionForm';

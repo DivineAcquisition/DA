@@ -220,8 +220,8 @@ insert into public.activity_metric (key, label, description, category, source, u
   ('no_show_recovery_attempts', 'No-show recovery attempts', 'Attempts to rebook a lead who missed an appointment.', 'follow_up', 'both', 'count', true, false, 140),
   ('reactivation_responses', 'Responses and re-engaged leads', 'Old leads who responded or re-engaged.', 'reactivation', 'both', 'count', true, false, 150),
   ('reactivated_bookings', 'Reactivated bookings', 'Bookings from old leads.', 'reactivation', 'both', 'count', true, false, 160),
-  ('show_rate', 'Show rate', 'Share of booked appointments that showed. Tracked only when the placement tracks results.', 'results', 'operator', 'percent', true, false, 170),
-  ('closes', 'Closes', 'Booked appointments that became a sale. Tracked only when the placement tracks results.', 'results', 'operator', 'count', true, false, 180)
+  ('show_rate', 'Show rate', 'Share of booked appointments that showed, from appointment status in GHL. Tracked only when the placement tracks results. Operators cannot edit it.', 'results', 'ghl', 'percent', false, false, 170),
+  ('closes', 'Closes', 'Opportunities marked won in GHL. Tracked only when the placement tracks results. Operators cannot edit it.', 'results', 'ghl', 'count', false, false, 180)
 on conflict (key) do nothing;
 
 -- 4. Positive outcome types, per placement -----------------------------------------

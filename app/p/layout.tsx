@@ -1,5 +1,5 @@
 import { Plus_Jakarta_Sans } from 'next/font/google';
-import '../workspace/workspace.css';
+import '../workspace/(staff)/workspace.css';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],

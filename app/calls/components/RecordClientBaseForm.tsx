@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { recordClientBaseAction } from '@/lib/calls/actions';
 
 const STELLAR_MASTER_URL = 'https://airtable.com/app0I1Krtkcg6SEfd';

@@ -2,7 +2,7 @@
 
 import { useState, useTransition, type ReactNode } from 'react';
 import { btnPrimary, btnSizeMd } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { submitClientOnboardingAction } from '@/lib/calls/actions';
 import type { OnboardPrefill } from '@/lib/calls/types';
 

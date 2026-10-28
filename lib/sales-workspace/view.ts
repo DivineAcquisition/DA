@@ -39,6 +39,11 @@ export const NO_ACCESS_COPY: Record<NoAccessReason, { title: string; body: strin
   },
 };
 
+/** 9999-12-31 is the coverage date stored when a placement has no end date. */
+export function isOpenEnd(value: string | null | undefined): boolean {
+  return !value || value >= '9999-01-01';
+}
+
 export function statusFromDb(status: string): WorkspaceStatus {
   if (status === 'draft') return 'pending';
   if (status === 'renewed') return 'ended';

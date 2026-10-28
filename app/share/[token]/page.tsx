@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
-import { Badge, EmptyState, PageHeader, Panel, SectionHeader } from '@/app/vistrial/components/ui';
+import { Badge, EmptyState, PageHeader, Panel, SectionHeader } from '@/app/workspace/(portal)/components/ui';
 import { createClient, supabaseConfigured } from '@/lib/supabase/server';
 import type { FunnelSummary } from '@/lib/acct/queries';
 import type { GrowthRow } from '@/lib/da/queries';

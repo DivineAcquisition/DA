@@ -1,13 +1,13 @@
 /**
  * Links into the team app (VAs and SDRs). Its address is TEAM_APP_URL (see
- * lib/apps). On that host bare paths are rewritten into /vistrial by the proxy,
- * so <team>/operator serves /vistrial/operator. Admin screens are not served
+ * lib/apps). On that host bare paths are rewritten into /workspace by the proxy,
+ * so <team>/operator serves /workspace/operator. Admin screens are not served
  * there at all: they answer "not found".
  */
 
 import { appHosts, appUrl, isTeamAppPath } from '../apps';
 
-export const TEAM_PREFIX = '/vistrial';
+export const TEAM_PREFIX = '/workspace';
 
 export function teamHosts(): string[] {
   return appHosts('team');
@@ -17,7 +17,7 @@ export function teamOrigin(): string {
   return appUrl('team');
 }
 
-/** The public path on the team host for an internal /vistrial path. */
+/** The public path on the team host for an internal /workspace path. */
 export function teamPath(pathname: string): string {
   if (pathname === TEAM_PREFIX) return '/';
   if (pathname.startsWith(`${TEAM_PREFIX}/`)) return pathname.slice(TEAM_PREFIX.length);

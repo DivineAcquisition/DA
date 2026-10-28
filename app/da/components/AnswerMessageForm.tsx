@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { answerMessageAction } from '@/lib/da/billingActions';
 
 export default function AnswerMessageForm({ messageId }: { messageId: string }) {

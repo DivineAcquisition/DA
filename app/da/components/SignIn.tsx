@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
-import { Badge, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Badge, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { signInAction, signOutAction } from '@/lib/da/actions';
 
 /**

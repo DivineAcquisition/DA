@@ -12,7 +12,7 @@ import {
   inputClass,
   labelClass,
   selectClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { recordEvidenceAction } from '@/lib/da/actions';
 import { getCaseFileBySlug, getDriveFolders, listEvidence } from '@/lib/da/queries';
 import { driveConfigured } from '@/lib/drive/client';

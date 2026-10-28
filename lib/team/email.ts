@@ -21,7 +21,7 @@ export type MailMessage = {
 
 export function recordUrl(baseUrl: string, link: string | null): string {
   const base = baseUrl.replace(/\/+$/, '');
-  return `${base}${teamPath(link ?? '/vistrial/operator/inbox')}`;
+  return `${base}${teamPath(link ?? '/workspace/operator/inbox')}`;
 }
 
 function paragraphs(body: string): string {

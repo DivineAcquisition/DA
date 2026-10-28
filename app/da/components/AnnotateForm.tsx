@@ -1,6 +1,6 @@
 'use client';
 
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { annotateSnapshotAction } from '@/lib/da/actions';
 import { ActionForm } from './ActionForm';
 

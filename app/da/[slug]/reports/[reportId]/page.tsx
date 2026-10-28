@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { growthReady } from '@/lib/da/guard';
 import { engagementPath, requestEngagementBase } from '@/lib/da/paths';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge, PageHeader, Panel, SectionHeader } from '@/app/vistrial/components/ui';
+import { Badge, PageHeader, Panel, SectionHeader } from '@/app/workspace/(portal)/components/ui';
 import { getReport } from '@/lib/da/queries';
 import { changeLabel, formatMetric } from '../../../components/growth';
 

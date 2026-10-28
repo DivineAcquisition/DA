@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge, inputClass, labelClass, selectClass, type Tone } from '@/app/vistrial/components/ui';
+import { Badge, inputClass, labelClass, selectClass, type Tone } from '@/app/workspace/(portal)/components/ui';
 import { confirmPayoutAction, failPayoutAction } from '@/lib/da/billingActions';
 
 const money = (value: number) => `$${value.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;

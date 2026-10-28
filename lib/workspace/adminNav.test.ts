@@ -15,7 +15,7 @@ describe('normalizePath', () => {
   });
 
   it('keeps routed prefixes and strips trailing slashes', () => {
-    expect(normalizePath('/vistrial/ops/')).toBe('/vistrial/ops');
+    expect(normalizePath('/workspace/operations/')).toBe('/workspace/operations');
     expect(normalizePath('/da/billing')).toBe('/da/billing');
     expect(normalizePath('/admin')).toBe('/admin');
     expect(normalizePath('/')).toBe('/');
@@ -24,8 +24,8 @@ describe('normalizePath', () => {
 
 describe('findActive', () => {
   it('picks one entry: team sub-pages no longer also light up the roster', () => {
-    expect(activeLabels('/vistrial/team/queues')).toEqual(['Workspace', 'Sales operators', 'Queues']);
-    expect(activeLabels('/vistrial/team')).toEqual(['Workspace', 'Sales operators', 'Roster & View As']);
+    expect(activeLabels('/workspace/team/queues')).toEqual(['Workspace', 'Sales operators', 'Queues']);
+    expect(activeLabels('/workspace/team')).toEqual(['Workspace', 'Sales operators', 'Roster & View As']);
   });
 
   it('separates Holds from the Academy it lives under', () => {
@@ -64,9 +64,9 @@ describe('findActive', () => {
       '/workspace/control/audit',
       '/workspace/control/alerts',
       '/workspace/growth/ingestion',
-      '/vistrial/admin/notifications',
-      '/vistrial/team/settings',
-      '/vistrial/team/ghl',
+      '/workspace/admin/notifications',
+      '/workspace/team/settings',
+      '/workspace/team/ghl',
       '/workspace/academy/import',
       '/workspace/academy/practice',
       '/workspace/academy/calibration',
@@ -74,7 +74,7 @@ describe('findActive', () => {
     ]) {
       expect(hrefs).not.toContain(hidden);
     }
-    expect(activeLabels('/vistrial/team/ghl/access')).toBeNull();
+    expect(activeLabels('/workspace/team/ghl/access')).toBeNull();
     expect(activeLabels('/workspace/control/credentials')).toBeNull();
   });
 

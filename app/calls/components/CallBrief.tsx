@@ -1,4 +1,4 @@
-import { Badge, Panel } from '@/app/vistrial/components/ui';
+import { Badge, Panel } from '@/app/workspace/(portal)/components/ui';
 import { entryHow, formatShortDate, openerLine } from '@/lib/calls/map';
 import type { HistoryLine, LeadRecord } from '@/lib/calls/types';
 import BriefNoteForm from './BriefNoteForm';

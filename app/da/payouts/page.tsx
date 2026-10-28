@@ -10,7 +10,7 @@ import {
   StatGrid,
   StatTile,
   type Tone,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import AdminGate from '../components/AdminGate';
 import { listOperators, listPayPeriods, listPayoutBatches, listPayouts } from '@/lib/da/billing';
 import BatchActions from '../components/BatchActions';

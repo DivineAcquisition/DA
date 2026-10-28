@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { Badge } from '@/app/vistrial/components/ui';
+import { Badge } from '@/app/workspace/(portal)/components/ui';
 import type { ActionResult } from '@/lib/da/actions';
 
 /**

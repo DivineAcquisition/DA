@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSizeMd } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { logPhoneTouchAction } from '@/lib/calls/actions';
 import { TOUCH_CHANNELS, TOUCH_OUTCOMES, TOUCH_SENTIMENTS } from '@/lib/calls/config';
 import { recordingPrefillFrom } from '@/lib/calls/overlay';

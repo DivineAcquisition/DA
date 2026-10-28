@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Badge } from '@/app/vistrial/components/ui';
+import { Badge } from '@/app/workspace/(portal)/components/ui';
 import { listAccounts, listOwnerAlerts } from '@/lib/ad/queries';
 import { roleLabel, stateLabel } from '@/lib/ad/types';
 

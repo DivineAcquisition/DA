@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import { btnPrimary, btnSizeSm } from '@/app/components/ui';
-import { Panel, inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { Panel, inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { sendMessageAction } from '@/lib/acct/actions';
 
 export default function MessageForm({ caseFileId }: { caseFileId: string }) {

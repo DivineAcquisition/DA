@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
-import UnifiedAdminChrome from '@/app/workspace/components/UnifiedAdminChrome';
+import UnifiedAdminChrome from '@/app/workspace/(staff)/components/UnifiedAdminChrome';
 import NotConfigured from './components/NotConfigured';
 import SignIn from './components/SignIn';
 import RequireAdminMfa from '@/app/components/RequireAdminMfa';

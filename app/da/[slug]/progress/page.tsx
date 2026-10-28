@@ -11,7 +11,7 @@ import {
   SectionHeader,
   inputClass,
   labelClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { takeSnapshotAction } from '@/lib/da/actions';
 import {
   getBaseline,

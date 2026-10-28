@@ -84,6 +84,8 @@ begin
   v_id := public.so_save_placement(pg_temp.placement_input((select v from ids where k = 'op1'), '98000000-0000-4000-8000-0000000000d1', '98000000-0000-4000-8000-0000000000b1'));
   insert into ids values ('p1', v_id);
   assert (select status from public.placement where id = v_id) = 'draft', 'a new placement is Pending';
+  assert (select end_date from public.placement where id = v_id) = date '9999-12-31', 'a blank end date stays open';
+  assert (select review_on from public.placement where id = v_id) = (current_date + interval '3 months')::date, 'the review date is three months out';
   assert (select count(*) from public.audit_event where action = 'workspace.placement.created' and entity_id = v_id::text) = 1;
   assert (select count(*) from public.audit_event where action = 'workspace.placement.manager_assigned' and entity_id = v_id::text) = 1;
 end $$;
@@ -194,12 +196,28 @@ begin
   assert w ->> 'state' = 'no_access' and w ->> 'reason' = 'deactivated', w::text;
 end $$;
 
-\echo '== a certification past its re-certification date no longer counts =='
+\echo '== certification warning, grace, then not certified =='
 do $$
+declare w jsonb;
 begin
-  update public.academy_certification set recertify_on = current_date - 1 where profile_id = (select v from ids where k = 'user4');
   perform pg_temp.as_user((select v from ids where k = 'user4'));
-  assert public.so_workspace() ->> 'state' = 'not_certified';
+  update public.academy_certification set recertify_on = current_date + 10 where profile_id = (select v from ids where k = 'user4');
+  w := public.so_workspace();
+  assert w ->> 'state' = 'awaiting_placement', w::text;
+  assert w #>> '{certification,phase}' = 'warning', w::text;
+  assert (w #>> '{certification,days_left}')::int = 10;
+
+  update public.academy_certification set recertify_on = current_date - 1 where profile_id = (select v from ids where k = 'user4');
+  w := public.so_workspace();
+  assert w ->> 'state' = 'awaiting_placement', 'grace keeps access: ' || w::text;
+  assert w #>> '{certification,phase}' = 'grace', w::text;
+  assert (select count(*) from public.workspace_alert where kind = 'cert_grace') = 1;
+
+  update public.academy_certification set recertify_on = current_date - 8 where profile_id = (select v from ids where k = 'user4');
+  w := public.so_workspace();
+  assert w ->> 'state' = 'not_certified', w::text;
+  assert (w ->> 'grace_ended')::boolean;
+
   update public.academy_certification set recertify_on = null where profile_id = (select v from ids where k = 'user4');
 end $$;
 
@@ -245,38 +263,28 @@ begin
   end;
 end $$;
 
-\echo '== a manager reads their assigned placements and nothing else =='
+\echo '== a manager reads every operator, and still cannot read mismatches =='
 select set_config('request.jwt.claim.sub', '98000000-0000-4000-8000-0000000000b1', true);
 do $$
 begin
-  assert (select count(*) from public.sales_eod) = 1;
-  assert (select operator_id from public.sales_eod) = '98000000-0000-4000-8000-0000000001c1';
-  assert (select count(*) from public.activity_day) = 1;
-  assert (select count(*) from public.activity_value) = 2;
-  assert (select count(*) from public.sales_eod_feedback) = 1;
+  assert (select count(*) from public.sales_eod) = 2;
+  assert (select count(*) from public.activity_day) = 2;
+  assert (select count(*) from public.activity_value) = 4;
+  assert (select count(*) from public.sales_eod_feedback) = 2;
   assert (select count(*) from public.activity_mismatch) = 0, 'managers never see mismatches';
   assert (select count(*) from public.client_feedback_token) = 0;
   assert (select count(*) from public.operator_pay_impact) = 0;
-  -- Outcomes on p1, op5 and op6: the placements that name manager one.
-  assert (select count(*) from public.placement_outcome_type) = 3;
-  -- Operator 1 and operator 5 (paused). Ended placements and the unassigned
-  -- Pending one are not listed.
-  assert jsonb_array_length(public.so_manager_operators()) = 2, public.so_manager_operators()::text;
-end $$;
-
-select set_config('request.jwt.claim.sub', '98000000-0000-4000-8000-0000000000b2', true);
-do $$
-begin
-  assert (select count(*) from public.sales_eod) = 1;
-  assert (select operator_id from public.sales_eod) = '98000000-0000-4000-8000-0000000001c2';
-  assert jsonb_array_length(public.so_manager_operators()) = 1;
+  assert (select count(*) from public.placement_outcome_type) = 5;
+  -- Active, paused, and the pending second placement. The ended one is not listed.
+  assert jsonb_array_length(public.so_manager_operators()) = 4, public.so_manager_operators()::text;
 end $$;
 
 select set_config('request.jwt.claim.sub', '98000000-0000-4000-8000-0000000000b3', true);
 do $$
 begin
-  assert (select count(*) from public.sales_eod) = 0;
-  assert public.so_manager_operators() = '[]'::jsonb, 'a manager with nobody assigned gets an empty list';
+  assert (select count(*) from public.sales_eod) = 2, 'a manager with nobody assigned still sees every operator';
+  assert jsonb_array_length(public.so_manager_operators()) = 4;
+  assert (select count(*) from public.activity_mismatch) = 0;
 end $$;
 
 \echo '== DA Admin reads everything, mismatches included =='
@@ -302,7 +310,9 @@ reset role;
 do $$
 begin
   assert (select count(*) from public.activity_metric) = 18;
-  assert (select count(*) from public.activity_metric where source = 'ghl') = 3;
+  assert (select count(*) from public.activity_metric where source = 'ghl') = 5;
+  assert (select source from public.activity_metric where key = 'show_rate') = 'ghl';
+  assert (select source from public.activity_metric where key = 'closes') = 'ghl';
   assert not exists (select 1 from public.activity_metric where source = 'ghl' and operator_editable);
   begin
     update public.activity_metric set operator_editable = true where key = 'dials_made';
@@ -436,6 +446,28 @@ begin
   assert s.eod_missed_rule = 'next_shift_start' and s.eod_edit_rule = 'until_next_shift';
   assert not s.eod_hours_worked_enabled and not s.eod_note_to_manager_enabled;
   assert s.client_feedback_token_days = 14 and s.speed_to_lead_target_seconds is null;
+  assert s.cert_warning_days = 14 and s.cert_grace_days = 7;
+  assert s.view_as_idle_minutes = 30 and s.placement_review_months = 3;
+end $$;
+
+\echo '== view as cannot change logged numbers =='
+insert into public.impersonation (actor_profile_id, target_profile_id, reason, expires_at, last_activity_at, kind, reason_kind)
+values ('98000000-0000-4000-8000-0000000000a1', '98000000-0000-4000-8000-0000000000c1', 'test', now() + interval '30 minutes', now(), 'view_as', 'other');
+select set_config('request.jwt.claim.sub', '98000000-0000-4000-8000-0000000000a1', true);
+do $$
+begin
+  begin
+    update public.activity_value set value = 99 where source = 'operator';
+    raise exception 'view as changed a logged number';
+  exception when others then
+    if sqlerrm not like 'view_as_read_only%' then raise; end if;
+  end;
+  begin
+    update public.sales_eod set wins = 'Changed while viewing.' where placement_id = (select v from ids where k = 'p1');
+    raise exception 'view as edited an EOD';
+  exception when others then
+    if sqlerrm not like 'view_as_read_only%' then raise; end if;
+  end;
 end $$;
 
 rollback;

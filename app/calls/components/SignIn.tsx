@@ -4,7 +4,7 @@ import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import { signInAction, signOutAction } from '@/lib/calls/actions';
 
 export default function SignIn({ refusedFor }: { refusedFor?: string }) {

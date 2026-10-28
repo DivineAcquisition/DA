@@ -123,7 +123,7 @@ function asState(value: string | null | undefined): AccountState {
  * cookie, and reads the role from `profile` rather than user metadata, which the
  * user can edit themselves.
  *
- * Owner is treated as admin-capable so existing /da and /vistrial gates keep
+ * Owner is treated as admin-capable so existing /da and /workspace gates keep
  * working after the control-plane promotion of admin@vistrial.io.
  */
 export async function getSessionContext(): Promise<SessionContext | null> {

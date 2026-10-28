@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from 'react';
 import { searchLeadsAction } from '@/lib/calls/actions';
-import { inputClass, labelClass } from '@/app/vistrial/components/ui';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 import type { LeadRecord } from '@/lib/calls/types';
 
 export default function LeadPicker({

@@ -1,4 +1,4 @@
-import { EmptyState } from '@/app/vistrial/components/ui';
+import { EmptyState } from '@/app/workspace/(portal)/components/ui';
 import OnboardForm from '@/app/calls/components/OnboardForm';
 import { callsReady } from '@/lib/calls/ready';
 import { clientBaseUrl, conversionFrom, onboardCta, onboardPrefillFrom } from '@/lib/calls/conversion';

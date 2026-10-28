@@ -11,7 +11,7 @@ import {
   inputClass,
   labelClass,
   selectClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { captureBaselineAction } from '@/lib/da/actions';
 import { getBaseline, getCaseFileBySlug, getMetricDefinitions } from '@/lib/da/queries';
 import { ActionForm } from '../../components/ActionForm';

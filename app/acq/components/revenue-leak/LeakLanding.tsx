@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { AlertTriangle, Check } from 'lucide-react';
 import Logo from '@/app/components/Logo';
-import { Badge, StatGrid, StatTile } from '@/app/vistrial/components/ui';
+import { Badge, StatGrid, StatTile } from '@/app/workspace/(portal)/components/ui';
 import {
   Accordion,
   AccordionItem,

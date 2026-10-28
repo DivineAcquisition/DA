@@ -11,7 +11,7 @@ import {
   SectionHeader,
   labelClass,
   selectClass,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { generateReportAction } from '@/lib/da/actions';
 import { getBaseline, getCaseFileBySlug, listEvidence, listReports } from '@/lib/da/queries';
 import { ActionForm } from '../../components/ActionForm';

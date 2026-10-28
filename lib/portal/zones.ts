@@ -41,7 +41,7 @@ export type ZoneKey =
 
 export type NavItem = { key: ZoneKey | TabKey; label: string; short: string; href: string };
 
-const BASE = '/vistrial/operator';
+const BASE = '/workspace/operator';
 
 const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client'>, NavItem> = {
   today: { key: 'today', label: 'My Day', short: 'My Day', href: BASE },

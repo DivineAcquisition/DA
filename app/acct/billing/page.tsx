@@ -7,7 +7,7 @@ import {
   Panel,
   SectionHeader,
   type Tone,
-} from '@/app/vistrial/components/ui';
+} from '@/app/workspace/(portal)/components/ui';
 import { getInvoices, getMyAccount } from '@/lib/acct/queries';
 import { money } from '../components/dashboard';
 import InvoiceBreakdown from '../components/InvoiceBreakdown';
