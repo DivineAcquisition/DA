@@ -8,6 +8,7 @@ const TABS = [
   { href: '/workspace/sales-ops/placements', label: 'Placements' },
   { href: '/workspace/sales-ops/metrics', label: 'Metrics' },
   { href: '/workspace/sales-ops/targets', label: 'Default targets' },
+  { href: '/workspace/sales-ops/tasks', label: 'Tasks' },
   { href: '/workspace/sales-ops/settings', label: 'Settings' },
 ];
 

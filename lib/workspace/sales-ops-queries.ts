@@ -78,6 +78,8 @@ export type WorkspaceSettings = {
   speed_to_lead_target_seconds: number | null;
   target_override_min_pct: number | null;
   target_override_max_pct: number | null;
+  cert_warning_days: number;
+  cert_grace_days: number;
   updated_at: string;
 };
 

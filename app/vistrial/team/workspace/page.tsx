@@ -4,6 +4,7 @@ import { STATUS_LABEL } from '@/lib/sales-workspace/view';
 import type { WorkspaceStatus } from '@/lib/sales-workspace/types';
 import { createClient } from '@/lib/supabase/server';
 import TeamNav from '../TeamNav';
+import WorkspaceSubnav from './Subnav';
 
 export const metadata: Metadata = { title: 'Sales workspace' };
 export const dynamic = 'force-dynamic';
@@ -31,6 +32,7 @@ export default async function TeamWorkspacePage() {
   return (
     <>
       <TeamNav />
+      <WorkspaceSubnav current="operators" />
       <div className="mb-4">
         <h1 className="text-xl font-semibold text-white">Sales workspace</h1>
         <p className="mt-1 text-sm text-neutral-400">Operators on the placements assigned to you.</p>

@@ -194,10 +194,11 @@ begin
   assert w ->> 'state' = 'no_access' and w ->> 'reason' = 'deactivated', w::text;
 end $$;
 
-\echo '== a certification past its re-certification date no longer counts =='
+\echo '== a certification past its grace period no longer counts =='
 do $$
 begin
-  update public.academy_certification set recertify_on = current_date - 1 where profile_id = (select v from ids where k = 'user4');
+  -- Grace is 7 days. One day past the date is still inside it; eight days is not.
+  update public.academy_certification set recertify_on = current_date - 8 where profile_id = (select v from ids where k = 'user4');
   perform pg_temp.as_user((select v from ids where k = 'user4'));
   assert public.so_workspace() ->> 'state' = 'not_certified';
   update public.academy_certification set recertify_on = null where profile_id = (select v from ids where k = 'user4');
@@ -302,7 +303,8 @@ reset role;
 do $$
 begin
   assert (select count(*) from public.activity_metric) = 18;
-  assert (select count(*) from public.activity_metric where source = 'ghl') = 3;
+  assert (select count(*) from public.activity_metric where source = 'ghl') = 5,
+    'dials, connects, speed-to-lead, show rate, and closes';
   assert not exists (select 1 from public.activity_metric where source = 'ghl' and operator_editable);
   begin
     update public.activity_metric set operator_editable = true where key = 'dials_made';

@@ -27,9 +27,14 @@ export default async function SalesOpsOverviewPage() {
       body: targetedMetrics ? `${targetedMetrics} metrics have a default target.` : 'No default targets set yet.',
     },
     {
+      href: '/workspace/sales-ops/tasks',
+      title: 'Tasks',
+      body: 'Assign a task to any operator. They see it on the dashboard, with an alert.',
+    },
+    {
       href: '/workspace/sales-ops/settings',
       title: 'Settings',
-      body: 'Mismatch tolerance, EOD timing, edit window, client link expiry.',
+      body: 'Mismatch tolerance, EOD timing, edit window, certification window.',
     },
   ];
 

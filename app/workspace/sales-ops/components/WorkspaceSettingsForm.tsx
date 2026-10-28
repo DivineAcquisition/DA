@@ -78,6 +78,21 @@ export default function WorkspaceSettingsForm({ settings: s }: { settings: Works
           </div>
         </Section>
 
+        <Section title="Certification">
+          <Num
+            name="cert_warning_days"
+            value={s.cert_warning_days}
+            label="Warn this many days before re-certification"
+            hint="The operator sees the date and a link to the Academy."
+          />
+          <Num
+            name="cert_grace_days"
+            value={s.cert_grace_days}
+            label="Grace days after the re-certify date"
+            hint="Workspace access stays open through these days."
+          />
+        </Section>
+
         <Section title="Clients and targets">
           <Num name="client_feedback_token_days" value={s.client_feedback_token_days} label="Client feedback link expires after (days)" />
           <Num

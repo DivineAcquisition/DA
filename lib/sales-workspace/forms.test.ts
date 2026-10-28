@@ -58,6 +58,8 @@ describe('settingsPayload', () => {
     ['eod_late_minutes_after', '0'],
     ['eod_manager_alert_minutes_after', '120'],
     ['client_feedback_token_days', '14'],
+    ['cert_warning_days', '14'],
+    ['cert_grace_days', '7'],
     ['eod_missed_rule', 'next_shift_start'],
     ['eod_edit_rule', 'until_next_shift'],
     ['speed_to_lead_target_seconds', ''],
@@ -69,6 +71,8 @@ describe('settingsPayload', () => {
     if (r.ok) {
       expect(r.value.speed_to_lead_target_seconds).toBeNull();
       expect(r.value.eod_late_minutes_after).toBe(0);
+      expect(r.value.cert_warning_days).toBe(14);
+      expect(r.value.cert_grace_days).toBe(7);
       expect(r.value.eod_hours_worked_enabled).toBe(false);
     }
   });
