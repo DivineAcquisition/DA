@@ -30,7 +30,7 @@ export default async function HistoryPage() {
             <Link href={`/workspace/operator/workspace/history/${row.id}`} className={`${brand.panel} block hover:border-[#937DFF]/40`}>
               <p className="text-sm font-semibold text-white">{formatDate(row.work_date, true)}</p>
               <p className="mt-1 text-sm text-neutral-300">
-                {EOD_STATUS_LABEL[row.status]}
+                {EOD_STATUS_LABEL[row.status] ?? row.status}
                 {row.was_late ? ' · Late' : ''}
                 {row.has_feedback ? ' · Feedback' : ''}
               </p>

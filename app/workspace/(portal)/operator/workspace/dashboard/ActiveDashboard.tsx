@@ -108,7 +108,9 @@ function EodStatus({ card, zone, readOnly }: { card: EodCard; zone: string; read
       <p className={`text-sm font-semibold ${warning ? 'text-[#FFB020]' : 'text-white'}`}>{EOD_STATUS_LABEL[card.status]}</p>
       {card.status === 'not_started' ? <p className="mt-1 text-sm text-neutral-300">{remaining ? `${remaining} until the deadline.` : 'The deadline has passed.'}</p> : null}
       {card.status === 'draft' ? (
-        <p className="mt-1 text-sm text-neutral-300">Draft saved.{remaining ? ` ${remaining} until the deadline.` : ' The deadline has passed.'}</p>
+        <p className="mt-1 text-sm text-neutral-300">
+          Draft saved{card.updated_at ? ` ${formatTime(card.updated_at, zone)}` : ''}.{remaining ? ` ${remaining} until the deadline.` : ' The deadline has passed.'}
+        </p>
       ) : null}
       {card.status === 'submitted' ? (
         <p className="mt-1 text-sm text-neutral-300">
@@ -118,10 +120,12 @@ function EodStatus({ card, zone, readOnly }: { card: EodCard; zone: string; read
         </p>
       ) : null}
       {card.status === 'late' ? <p className="mt-1 text-sm">{late ? `${late} late.` : 'Past the deadline.'}</p> : null}
-      {card.status === 'missed' ? <p className="mt-1 text-sm">This working day was missed.</p> : null}
+      {card.status === 'missed' ? <p className="mt-1 text-sm">This working day was missed. You can still submit it. It stays marked missed.</p> : null}
+      {card.status === 'excused' ? <p className="mt-1 text-sm text-neutral-300">No EOD is due. Reminders are off.</p> : null}
+      {card.edited_after_submit ? <p className="mt-1 text-sm text-neutral-300">Edited after submission.</p> : null}
       <div className="mt-3 flex flex-wrap items-center gap-3">
-        <EodButton status={card.status} day={card.work_date} readOnly={readOnly} />
-        {card.status === 'submitted' && card.id ? (
+        <EodButton card={card} readOnly={readOnly} />
+        {(card.status === 'submitted' || (card.status === 'missed' && card.submitted_at)) && card.id ? (
           <Link href={`/workspace/operator/workspace/history/${card.id}`} className="text-sm font-semibold text-[#937DFF]">
             {card.feedback_count > 0 ? 'Read feedback' : 'View EOD'}
           </Link>
@@ -131,12 +135,14 @@ function EodStatus({ card, zone, readOnly }: { card: EodCard; zone: string; read
   );
 }
 
-function EodButton({ status, day, readOnly }: { status: EodCard['status']; day: string; readOnly: boolean }) {
-  const label = status === 'draft' ? 'Continue EOD' : status === 'late' ? 'Submit now' : status === 'not_started' ? 'Start EOD' : null;
-  if (!label) return null;
+function EodButton({ card, readOnly }: { card: EodCard; readOnly: boolean }) {
+  const open = card.status === 'not_started' || card.status === 'draft' || card.status === 'late' || (card.status === 'missed' && !card.submitted_at);
+  const editable = card.status === 'submitted' && card.editable;
+  const label = card.status === 'draft' ? 'Continue EOD' : card.status === 'late' || card.status === 'missed' ? 'Submit now' : card.status === 'not_started' ? 'Start EOD' : editable ? 'Edit EOD' : null;
+  if (!label || (!open && !editable)) return null;
   if (readOnly) return <p className="text-sm text-neutral-300">{VIEW_AS_BLOCK}</p>;
   return (
-    <Link href={`/workspace/operator/workspace/eod?day=${day}`} className={brand.primaryButton}>
+    <Link href={`/workspace/operator/workspace/eod?day=${card.work_date}`} className={brand.primaryButton}>
       {label}
     </Link>
   );

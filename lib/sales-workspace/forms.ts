@@ -62,6 +62,7 @@ const INTEGER_SETTINGS = [
   'cert_grace_days',
   'view_as_idle_minutes',
   'placement_review_months',
+  'eod_min_text_chars',
 ] as const;
 
 const NULLABLE_INTEGER_SETTINGS = [

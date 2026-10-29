@@ -62,6 +62,7 @@ describe('settingsPayload', () => {
     ['cert_grace_days', '7'],
     ['view_as_idle_minutes', '30'],
     ['placement_review_months', '3'],
+    ['eod_min_text_chars', '20'],
     ['eod_missed_rule', 'next_shift_start'],
     ['eod_edit_rule', 'until_next_shift'],
     ['speed_to_lead_target_seconds', ''],

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
-import TaskDesk, { type StaffTask, type TaskRosterRow } from '@/app/workspace/sales-ops/tasks/TaskDesk';
+import TaskDesk, { type StaffTask, type TaskRosterRow } from './TaskDesk';
 
 export const metadata: Metadata = { title: 'Operator tasks' };
 export const dynamic = 'force-dynamic';

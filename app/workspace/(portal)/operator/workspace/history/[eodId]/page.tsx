@@ -7,6 +7,7 @@ import { EOD_STATUS_LABEL, formatMetric, type EodDetail, type EodNumber } from '
 import { createClient } from '@/lib/supabase/server';
 import { brand } from '../../WorkspaceFrame';
 import { WorkspaceShell } from '../../shell';
+import ReplyForm from '../ReplyForm';
 
 export const metadata: Metadata = { title: 'EOD' };
 export const dynamic = 'force-dynamic';
@@ -34,8 +35,9 @@ export default async function EodDetailPage({ params }: { params: Promise<{ eodI
           <header>
             <p className={brand.eyebrow}>{formatDate(data.work_date, true)}</p>
             <h1 className={`${brand.heading} mt-2 text-2xl`}>
-              {EOD_STATUS_LABEL[data.status]}
+              {EOD_STATUS_LABEL[data.status] ?? data.status}
               {data.was_late ? ' · Late' : ''}
+              {data.edited_after_submit ? ' · Edited after submission' : ''}
             </h1>
             {data.submitted_at ? <p className="mt-2 text-sm text-neutral-400">Submitted {formatDateTime(data.submitted_at, zone)}</p> : null}
           </header>
@@ -53,15 +55,24 @@ export default async function EodDetailPage({ params }: { params: Promise<{ eodI
             {data.feedback.length === 0 ? <p className="mt-3 text-sm text-neutral-400">No feedback yet.</p> : null}
             <ul className="mt-3 space-y-3">
               {data.feedback.map((note) => (
-                <li key={note.id} className="rounded-2xl border border-white/[0.06] px-4 py-3">
+                <li key={note.id} className={`rounded-2xl border border-white/[0.06] px-4 py-3 ${note.parent_id ? 'ml-4' : ''}`}>
                   <p className="text-xs font-semibold uppercase tracking-wide text-[#937DFF]">
-                    {note.author_kind === 'admin' ? 'DA Admin' : note.author_kind === 'client' ? 'Client' : 'Manager'} · {note.author_name}
+                    {note.author_kind === 'admin' ? 'DA Admin' : note.author_kind === 'client' ? 'Client' : note.author_kind === 'operator' ? 'You' : 'Manager'} · {note.author_name}
+                    {' · '}
+                    {formatDateTime(note.created_at, zone)}
                   </p>
                   <p className="mt-2 text-sm text-neutral-200">{note.body}</p>
                   {note.rating != null ? <p className="mt-1 text-xs text-neutral-500">Rating {note.rating} of 5</p> : null}
+                  {note.author_kind === 'manager' || note.author_kind === 'admin' ? (
+                    <ReplyForm eodId={data.id} parentId={note.id} readOnly={Boolean(data.view_as)} />
+                  ) : null}
                 </li>
               ))}
             </ul>
+          </section>
+          <section className={brand.panel}>
+            <h2 className={`${brand.heading} text-lg`}>Client feedback</h2>
+            <p className="mt-2 text-sm text-neutral-400">Client feedback shows here when the client report goes out. Nothing to answer yet.</p>
           </section>
         </article>
       )}

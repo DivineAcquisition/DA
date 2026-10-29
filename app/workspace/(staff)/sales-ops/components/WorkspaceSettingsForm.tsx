@@ -72,6 +72,12 @@ export default function WorkspaceSettingsForm({ settings: s }: { settings: Works
           ) : (
             <input type="hidden" name="eod_edit_hours_after" value={s.eod_edit_hours_after ?? ''} />
           )}
+          <Num
+            name="eod_min_text_chars"
+            value={s.eod_min_text_chars}
+            label="Minimum characters for Wins and Blockers"
+            hint="No blockers today is accepted as written."
+          />
           <div className="space-y-3 md:col-span-2 lg:col-span-3">
             <Toggle name="eod_hours_worked_enabled" label="Hours worked field" defaultChecked={s.eod_hours_worked_enabled} />
             <Toggle name="eod_note_to_manager_enabled" label="Note to manager field" defaultChecked={s.eod_note_to_manager_enabled} />

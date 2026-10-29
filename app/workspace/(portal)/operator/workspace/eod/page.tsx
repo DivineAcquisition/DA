@@ -1,37 +1,35 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { controlRpc } from '@/lib/ad/rpc';
-import { formatDate } from '@/lib/portal/time';
+import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
-import { brand, StatePanel } from '../WorkspaceFrame';
+import { brand } from '../WorkspaceFrame';
 import { WorkspaceShell } from '../shell';
+import EodForm, { type EodFormData } from './EodForm';
 
 export const metadata: Metadata = { title: 'End of day' };
 export const dynamic = 'force-dynamic';
 
-/** Placeholder until the EOD form is built. No fields, no submit. */
-export default async function EodSoonPage({ searchParams }: { searchParams: Promise<{ day?: string }> }) {
+export default async function EodPage({ searchParams }: { searchParams: Promise<{ day?: string }> }) {
   const { day } = await searchParams;
+  const workDate = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : null;
   const supabase = await createClient();
   await controlRpc(supabase, 'so_note_view', { p_tab: 'workspace_eod_form' });
-  const when = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? formatDate(day, true) : null;
+  const { data, error } = await controlRpc<EodFormData>(supabase, 'so_eod_form', { p_day: workDate });
 
   return (
     <WorkspaceShell>
-      <StatePanel
-        eyebrow="End of day"
-        title="The EOD form is coming soon."
-        body={
-          when
-            ? `This report is for ${when}. The form is the next step. Nothing is submitted from this screen.`
-            : 'The form is the next step. Nothing is submitted from this screen.'
-        }
-        action={
-          <Link href="/workspace/operator/workspace" className={brand.primaryButton}>
+      {error || !data ? (
+        <section className={brand.panel}>
+          <p className={brand.eyebrow}>End of day</p>
+          <h1 className={`${brand.heading} mt-2 text-2xl`}>The report could not open.</h1>
+          <p className="mt-3 text-sm text-neutral-300">{error ? readable(error) : 'Nothing came back.'}</p>
+          <Link href="/workspace/operator/workspace" className={`${brand.primaryButton} mt-6`}>
             Back to the dashboard
           </Link>
-        }
-      />
+        </section>
+      ) : (
+        <EodForm data={data} />
+      )}
     </WorkspaceShell>
   );
 }

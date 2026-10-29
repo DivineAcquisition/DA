@@ -1,6 +1,6 @@
 /** Shapes returned by the dashboard functions. The screen does not invent numbers. */
 
-export type EodStatus = 'not_started' | 'draft' | 'submitted' | 'late' | 'missed';
+export type EodStatus = 'not_started' | 'draft' | 'submitted' | 'late' | 'missed' | 'excused';
 
 export type Pace = 'on_track' | 'behind' | 'met';
 
@@ -37,6 +37,9 @@ export type EodCard = {
   feedback_count: number;
   remaining_seconds: number | null;
   late_seconds: number | null;
+  updated_at?: string | null;
+  edited_after_submit?: boolean;
+  editable?: boolean;
 };
 
 export type CertBanner = {
@@ -152,7 +155,8 @@ export type EodNumber = {
 
 export type EodFeedback = {
   id: string;
-  author_kind: 'manager' | 'admin' | 'client';
+  parent_id?: string | null;
+  author_kind: 'manager' | 'admin' | 'client' | 'operator';
   author_name: string;
   body: string;
   rating: number | null;
@@ -170,6 +174,10 @@ export type EodDetail = {
   tomorrow_plan: string | null;
   hours_worked: number | null;
   note_to_manager: string | null;
+  plan_items?: { text?: string; done_at?: string | null }[];
+  needs_help?: boolean;
+  edited_after_submit?: boolean;
+  view_as?: boolean;
   numbers: EodNumber[];
   feedback: EodFeedback[];
 };
@@ -180,6 +188,7 @@ export const EOD_STATUS_LABEL: Record<EodStatus, string> = {
   submitted: 'Submitted',
   late: 'Late',
   missed: 'Missed',
+  excused: 'Excused',
 };
 
 export const VIEW_AS_BLOCK = 'View-as is read-only. Exit to let the operator do this.';

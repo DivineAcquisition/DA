@@ -462,6 +462,9 @@ end $$;
 do $$
 declare w jsonb; v_eod uuid; v_day uuid;
 begin
+  -- The previous test left a View As session on the manager. Direct writes are blocked while it is open.
+  perform pg_temp.as_user('99000000-0000-4000-8000-0000000000a1');
+  update public.impersonation set ended_at = now(), ended_reason = 'ended' where ended_at is null;
   select id into v_day from public.activity_day
   where placement_id = (select v from ids where k = 'p3') limit 1;
   if v_day is null then

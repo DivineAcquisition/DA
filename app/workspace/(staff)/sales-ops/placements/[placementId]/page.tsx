@@ -9,6 +9,7 @@ import { ws } from '../../../components/tokens';
 import OutcomeEditor from '../../components/OutcomeEditor';
 import PlacementForm from '../../components/PlacementForm';
 import PlacementStatusControl from '../../components/PlacementStatusControl';
+import { ExcuseForm } from '../../eods/ReviewPanel';
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -23,7 +24,7 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
   const { placementId } = await params;
   const role = await salesOpsRole();
   if (role === 'manager') return <ManagerPlacement placementId={placementId} />;
-  const [data, options] = await Promise.all([getPlacement(placementId), placementFormOptions()]);
+  const [data, options, detail] = await Promise.all([getPlacement(placementId), placementFormOptions(), placementDetail(placementId)]);
   if (!data) notFound();
   const { placement: p, outcomes, ghl } = data;
   const status = statusFromDb(p.status);
@@ -122,6 +123,26 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
               . Keys stay in the vault and never reach operators or managers.
             </p>
           </Panel>
+          <Panel title="End of day">
+            {detail && detail.eods.length > 0 ? (
+              <ul className="space-y-2 text-sm">
+                {detail.eods.map((e) => (
+                  <li key={e.id}>
+                    <Link href={`/workspace/sales-ops/eods/${e.id}`} className="text-white hover:underline">
+                      {formatDate(e.work_date)}
+                    </Link>{' '}
+                    <span className="text-[var(--ws-dim)]">
+                      {e.status.replaceAll('_', ' ')}
+                      {e.was_late ? ' · late' : ''}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-[var(--ws-dim)]">No reports yet.</p>
+            )}
+            <ExcuseForm placementId={p.id} />
+          </Panel>
         </div>
       </div>
     </>
@@ -194,11 +215,18 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
           <ul className="space-y-2 text-sm">
             {data.eods.map((e) => (
               <li key={e.id} className="text-[var(--ws-dim)]">
-                <span className="text-white">{formatDate(e.work_date)}</span> {e.status.replaceAll('_', ' ')}
+                <Link href={`/workspace/sales-ops/eods/${e.id}`} className="text-white hover:underline">
+                  {formatDate(e.work_date)}
+                </Link>{' '}
+                {e.status.replaceAll('_', ' ')}
                 {e.was_late ? ' · late' : ''}
               </li>
             ))}
           </ul>
+        </Panel>
+        <Panel title="Excuse a day">
+          <p className="text-sm text-[var(--ws-dim)]">No EOD is due, and reminders stop. The operator can see the day. They cannot excuse themselves.</p>
+          <ExcuseForm placementId={placementId} />
         </Panel>
         <Panel title="Feedback">
           {data.feedback.length === 0 ? <p className="text-sm text-[var(--ws-dim)]">No feedback yet.</p> : null}

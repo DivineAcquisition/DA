@@ -156,6 +156,7 @@ export type WorkspaceSettings = {
   eod_edit_hours_after: number | null;
   eod_hours_worked_enabled: boolean;
   eod_note_to_manager_enabled: boolean;
+  eod_min_text_chars: number;
   client_feedback_token_days: number;
   cert_warning_days: number;
   cert_grace_days: number;

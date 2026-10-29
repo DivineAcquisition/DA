@@ -19,6 +19,7 @@ export const dynamic = 'force-dynamic';
  */
 export default async function WorkspacePage() {
   const [supabase, session] = await Promise.all([createClient(), getSessionContext()]);
+  await controlRpc(supabase, 'so_eod_sweep');
   const { data, error } = await controlRpc<DashboardResponse>(supabase, 'so_dashboard');
   const viewingAs = session?.impersonation?.target_full_name || session?.impersonation?.target_email || null;
 

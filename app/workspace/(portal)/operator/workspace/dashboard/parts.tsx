@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { formatDate, formatDateTime } from '@/lib/portal/time';
-import { completeTaskAction, logActivityAction, markAlertReadAction } from '@/lib/sales-workspace/actions';
+import { completeTaskAction, logActivityAction, markAlertReadAction, tickPlanAction } from '@/lib/sales-workspace/actions';
 import {
   formatMetric,
   PACE_LABEL,
@@ -322,6 +322,62 @@ export function NumbersBoard({ data }: { data: BoardData }) {
           );
         })}
       </div>
+    </section>
+  );
+}
+
+export function TodayPlan({
+  plan,
+  readOnly,
+}: {
+  plan: { eod_id?: string; work_date?: string; items?: { text?: string; done_at?: string | null }[] } | null;
+  readOnly: boolean;
+}) {
+  const save = useSaved();
+  const items = plan?.items ?? [];
+  if (!plan?.eod_id || !items.some((item) => item.text?.trim())) return null;
+  return (
+    <section className={brand.panel} aria-labelledby="plan-heading">
+      <h2 id="plan-heading" className={`${brand.heading} text-lg`}>
+        Your plan for today
+      </h2>
+      <p className="mt-1 text-sm text-neutral-400">From {plan.work_date}. Tick what you finished.</p>
+      {readOnly ? <p className="mt-3 text-sm text-neutral-300">View-as is read-only. Exit to let the operator do this.</p> : null}
+      {save.error ? <p className="mt-3 text-sm text-[#FFB020]">{save.error}</p> : null}
+      <ul className="mt-3 space-y-2">
+        {items.map((item, index) =>
+          item.text?.trim() ? (
+            <li key={`${item.text}-${index}`} className="flex items-center justify-between gap-3 rounded-2xl border border-white/[0.06] px-3 py-3">
+              <p className={`text-sm ${item.done_at ? 'text-neutral-500 line-through' : 'text-white'}`}>{item.text}</p>
+              <button
+                type="button"
+                disabled={readOnly || save.pending}
+                onClick={() => save.run(() => tickPlanAction(plan.eod_id as string, index, !item.done_at))}
+                className={brand.ghostButton}
+              >
+                {item.done_at ? 'Undo' : 'Done'}
+              </button>
+            </li>
+          ) : null,
+        )}
+      </ul>
+    </section>
+  );
+}
+
+export function ExcusedNote({ days }: { days: { work_date: string; reason: string; note: string | null }[] }) {
+  if (days.length === 0) return null;
+  return (
+    <section className="rounded-3xl border border-white/[0.07] px-5 py-4">
+      <h2 className={`${brand.heading} text-lg`}>Excused days</h2>
+      <ul className="mt-3 space-y-1 text-sm text-neutral-300">
+        {days.slice(0, 8).map((day) => (
+          <li key={day.work_date}>
+            {formatDate(day.work_date)} · {day.reason.replaceAll('_', ' ')}
+            {day.note ? ` · ${day.note}` : ''}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

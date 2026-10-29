@@ -722,12 +722,7 @@ begin
     if v_ws ->> 'state' = 'paused' and v_op.id is not null then
       select * into v_pl from public.placement where id = (v_ws #>> '{placement,id}')::uuid;
       if v_pl.id is not null then
-        v_local := (now() at time zone app.safe_tz(v_pl.time_zone))::date;
-        v_level := app.so_certification_level(v_op.profile_id);
-        return v_ws || jsonb_build_object(
-          'viewer', v_viewer,
-          'operator_id', v_op.id,
-          );
+        return v_ws || jsonb_build_object('viewer', v_viewer, 'operator_id', v_op.id);
       end if;
     end if;
     return v_ws || jsonb_build_object('viewer', v_viewer, 'operator_id', v_op.id);
