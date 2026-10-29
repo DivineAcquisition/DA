@@ -36,7 +36,7 @@ export default async function EodsPage({
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-semibold text-white">EODs</h1>
-        <p className="mt-1 text-sm text-neutral-400">Today and yesterday, unless you set a range. Open a report to read it. Nothing here can be edited.</p>
+        <p className="mt-1 text-sm text-neutral-400">Today and yesterday, unless you set a range. Needs review lists submitted reports no one has marked yet. Needs help is first.</p>
       </div>
       <form className="flex flex-wrap gap-2" method="get">
         <input type="date" name="from" defaultValue={query.from ?? ''} aria-label="From" className="h-9 rounded-lg border border-white/10 bg-ink-950 px-2 text-sm" />
@@ -67,6 +67,7 @@ export default async function EodsPage({
         </select>
         <select name="status" defaultValue={query.status ?? ''} aria-label="Status" className="h-9 rounded-lg border border-white/10 bg-ink-950 px-2 text-sm">
           <option value="">Status</option>
+          <option value="needs_review">Needs review</option>
           {(Object.keys(EOD_LABEL) as EodStatus[]).map((status) => (
             <option key={status} value={status}>
               {EOD_LABEL[status]}
@@ -118,7 +119,12 @@ export default async function EodsPage({
                   <td className="py-3 text-neutral-300">
                     <When iso={row.submitted_at} />
                   </td>
-                  <td className="py-3 text-neutral-300">{row.feedback_count}</td>
+                  <td className="py-3 text-neutral-300">
+                    {row.feedback_count}
+                    {row.needs_help ? <span className="ml-2 text-flag-warning">Needs help</span> : null}
+                    {row.escalated ? <span className="ml-2 text-flag-warning">Escalated</span> : null}
+                    {row.reviewed ? <span className="ml-2 text-neutral-500">Reviewed</span> : null}
+                  </td>
                 </tr>
               ))}
             </tbody>

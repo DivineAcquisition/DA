@@ -103,6 +103,9 @@ export type EodListRow = {
   status: EodStatus;
   submitted_at: string | null;
   was_late: boolean;
+  needs_help?: boolean;
+  escalated?: boolean;
+  reviewed?: boolean;
   feedback_count: number;
 };
 

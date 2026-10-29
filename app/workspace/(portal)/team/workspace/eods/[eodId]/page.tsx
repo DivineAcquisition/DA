@@ -1,16 +1,32 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { controlRpc } from '@/lib/ad/rpc';
 import { formatCount } from '@/lib/sales-workspace/team';
 import { loadEod } from '@/lib/sales-workspace/team-data';
+import { createClient } from '@/lib/supabase/server';
 import { EodPill, When } from '../../components/Bits';
+import { BlockerTask, EscalateBox, FeedbackBox, ReviewForm, UnlockBox } from '../../components/EodReview';
 
 export const metadata: Metadata = { title: 'EOD' };
 export const dynamic = 'force-dynamic';
 
 export default async function EodDetailPage({ params }: { params: Promise<{ eodId: string }> }) {
   const { eodId } = await params;
-  const { data, error } = await loadEod(eodId);
+  const supabase = await createClient();
+  const [{ data, error }, staff] = await Promise.all([
+    loadEod(eodId),
+    controlRpc<{
+      placement_id: string;
+      operator_id: string;
+      blockers: string | null;
+      needs_help: boolean;
+      reviewed_at: string | null;
+      escalated_at: string | null;
+      escalation_reason: string | null;
+      work_date: string;
+    }>(supabase, 'so_eod_staff', { p_eod: eodId }),
+  ]);
   if (error?.includes('not on file')) notFound();
   if (error || !data) {
     return <p className="panel rounded-2xl px-5 py-4 text-sm text-flag-critical">{error ?? 'This EOD did not load.'}</p>;
@@ -84,11 +100,31 @@ export default async function EodDetailPage({ params }: { params: Promise<{ eodI
           </ul>
         )}
       </section>
-      <section className="rounded-2xl border border-dashed border-white/15 px-5 py-4">
-        <h2 className="text-sm font-semibold text-white">Review</h2>
-        <p className="mt-1 text-sm text-neutral-400">
-          Leaving feedback, review actions, and the client feedback link land here in the next prompts. This report stays read-only until then.
-        </p>
+      <section className="panel space-y-4 rounded-2xl p-5">
+        <h2 className="text-base font-semibold text-white">Review</h2>
+        {staff.data?.needs_help ? <p className="text-sm font-semibold text-flag-warning">Needs manager help.</p> : null}
+        {staff.data?.escalated_at ? <p className="text-sm font-semibold text-flag-warning">Escalated. {staff.data.escalation_reason}</p> : null}
+        {staff.data ? <ReviewForm eodId={data.id} reviewed={Boolean(staff.data.reviewed_at)} /> : null}
+        <FeedbackBox eodId={data.id} />
+        <EscalateBox eodId={data.id} />
+        {staff.data ? (
+          <BlockerTask
+            eodId={data.id}
+            operatorId={staff.data.operator_id}
+            placementId={staff.data.placement_id}
+            blockers={data.blockers ?? staff.data.blockers ?? ''}
+            workDate={data.work_date}
+            needsHelp={Boolean(staff.data.needs_help)}
+          />
+        ) : null}
+        {data.is_admin && staff.data ? (
+          <div className="border-t border-white/[0.06] pt-4">
+            <h3 className="mb-2 text-sm font-semibold text-white">Unlock</h3>
+            <p className="mb-2 text-xs text-neutral-500">DA Admin only. The operator is told, and the reason is in the audit log.</p>
+            <UnlockBox eodId={data.id} />
+          </div>
+        ) : null}
+        <p className="text-xs text-neutral-500">Client feedback shows on this report when the client report goes out.</p>
       </section>
     </div>
   );

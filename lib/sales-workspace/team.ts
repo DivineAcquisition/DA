@@ -1,7 +1,7 @@
 /** Shared labels and the rules behind the Team Workspace table. */
 
 export type ShiftStatus = 'on_shift' | 'off_shift' | 'not_working_day';
-export type EodStatus = 'not_started' | 'draft' | 'submitted' | 'late' | 'missed';
+export type EodStatus = 'not_started' | 'draft' | 'submitted' | 'late' | 'missed' | 'excused';
 export type CertStatus = 'current' | 'warning' | 'grace' | 'lapsed' | 'none';
 export type Pace = 'on_track' | 'behind' | 'met';
 
@@ -37,6 +37,8 @@ export type TeamRow = {
   working_day: boolean;
   eod_status: EodStatus | null;
   was_late: boolean;
+  needs_help?: boolean;
+  escalated?: boolean;
   last_activity_at: string | null;
   last_activity_kind: string | null;
   tasks_open: number;
@@ -69,6 +71,7 @@ export const EOD_LABEL: Record<EodStatus, string> = {
   submitted: 'Submitted',
   late: 'Late',
   missed: 'Missed',
+  excused: 'Excused',
 };
 
 export const CERT_LABEL: Record<CertStatus, string> = {
@@ -99,6 +102,7 @@ export const EOD_TONE: Record<EodStatus, string> = {
   submitted: 'border-flag-good/35 bg-flag-good/12 text-flag-good',
   late: 'border-flag-critical/35 bg-flag-critical/12 text-flag-critical',
   missed: 'border-flag-critical/35 bg-flag-critical/12 text-flag-critical',
+  excused: 'border-white/10 bg-white/[0.04] text-neutral-300',
 };
 
 export const PACE_TONE: Record<Pace, string> = {
@@ -187,8 +191,15 @@ export function paceForRow(row: Pick<TeamRow, 'metrics' | 'shift_start' | 'shift
 }
 
 /** Late or missed EOD, then overdue tasks, grace, behind target, then everyone else. */
-export function attentionRank(row: { eod_status: EodStatus | null; tasks_overdue: number; certification: CertStatus; pace?: Pace | null }): number {
-  if (row.eod_status === 'late' || row.eod_status === 'missed') return 0;
+export function attentionRank(row: {
+  eod_status: EodStatus | null;
+  tasks_overdue: number;
+  certification: CertStatus;
+  pace?: Pace | null;
+  needs_help?: boolean;
+  escalated?: boolean;
+}): number {
+  if (row.eod_status === 'late' || row.eod_status === 'missed' || row.needs_help || row.escalated) return 0;
   if (row.tasks_overdue > 0) return 1;
   if (row.certification === 'grace') return 2;
   if (row.pace === 'behind') return 3;

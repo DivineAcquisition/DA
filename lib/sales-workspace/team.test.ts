@@ -99,6 +99,8 @@ describe('attention and admin-only fields', () => {
   it('raises late, overdue, grace, and behind ahead of the rest', () => {
     const rank = (patch: Partial<TeamRow>) => attentionRank({ ...presentTeamRow({ ...base, ...patch }, true), ...patch });
     expect(rank({ eod_status: 'late' })).toBeLessThan(rank({ tasks_overdue: 2, eod_status: 'draft' }));
+    expect(rank({ needs_help: true, eod_status: 'submitted' })).toBe(rank({ eod_status: 'late' }));
+    expect(rank({ escalated: true, eod_status: 'submitted' })).toBe(0);
     expect(rank({ tasks_overdue: 1, eod_status: 'draft' })).toBeLessThan(rank({ certification: 'grace', eod_status: 'draft', tasks_overdue: 0 }));
     expect(rank({ certification: 'grace', eod_status: 'submitted', tasks_overdue: 0 })).toBeLessThan(
       rank({

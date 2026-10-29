@@ -6,6 +6,7 @@ import { CERT_LABEL, PLACEMENT_TYPE_LABEL, formatCount, type TeamMetric } from '
 import { STATUS_LABEL, shiftLabel, statusFromDb } from '@/lib/sales-workspace/view';
 import { loadOperator } from '@/lib/sales-workspace/team-data';
 import { CertPill, EodPill, ShiftPill, When } from '../../components/Bits';
+import { ExcuseDays } from '../../components/EodReview';
 import { MessageForm, TargetForm, TaskForm } from '../../components/Forms';
 
 export const metadata: Metadata = { title: 'Operator' };
@@ -146,6 +147,12 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
           </ul>
         )}
       </Section>
+
+      {placement ? (
+        <Section title="Excuse a day">
+          <ExcuseDays placementId={placement.id} />
+        </Section>
+      ) : null}
 
       <Section title="EODs">
         {data.eods.length === 0 ? (
