@@ -16,7 +16,7 @@ export type EodFormMetric = {
   unit: string;
   group: string;
   editable: boolean;
-  display: 'number' | 'pending_sync';
+  display: 'number' | 'pending_sync' | 'sync_delayed';
   value: number | null;
   target: number | null;
 };
@@ -276,7 +276,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
                         <div className="flex items-center justify-between gap-3">
                           <p className="text-sm font-semibold text-white">{row.label}</p>
                           <p className="text-sm text-neutral-300">
-                            {row.display === 'pending_sync' ? 'Pending sync' : formatMetric(row.unit, row.value)}
+                            {ghlLabel(row.display, row.unit, row.value)}
                             {row.target != null ? <span className="text-neutral-500"> / {formatMetric(row.unit, row.target)}</span> : null}
                           </p>
                         </div>
@@ -479,7 +479,7 @@ function Review({
         <ul className="mt-3 space-y-1 text-sm text-neutral-300">
           {metrics.map((row) => (
             <li key={row.key}>
-              {row.label}: {row.display === 'pending_sync' ? 'Pending sync' : formatMetric(row.unit, row.value)}
+              {row.label}: {ghlLabel(row.display, row.unit, row.value)}
               {row.target != null ? ` / ${formatMetric(row.unit, row.target)}` : ''}
             </li>
           ))}
@@ -522,6 +522,12 @@ function Step({ label, disabled, onClick, sign = '−' }: { label: string; disab
       {sign}
     </button>
   );
+}
+
+function ghlLabel(display: string, unit: string, value: number | null): string {
+  if (display === 'sync_delayed') return 'Sync delayed';
+  if (display === 'pending_sync') return 'Pending sync';
+  return formatMetric(unit, value);
 }
 
 function groupMetrics(rows: EodFormMetric[]): { group: string; rows: EodFormMetric[] }[] {

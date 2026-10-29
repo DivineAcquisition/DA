@@ -198,7 +198,8 @@ function MetricLine({
   const target = mode === 'today' ? metric.target_today : metric.target_week;
   const pace = mode === 'today' ? metric.pace_today : metric.pace_week;
   const layer = mode === 'today' ? metric.target_layer_today : metric.target_layer_week;
-  const pendingSync = display === 'pending_sync';
+  const pendingSync = display === 'pending_sync' || display === 'sync_delayed';
+  const pendingLabel = display === 'sync_delayed' ? 'Sync delayed' : 'Pending sync';
   const showBar = showsTargetBar(metric, mode);
 
   return (
@@ -206,7 +207,7 @@ function MetricLine({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-white">{metric.label}</p>
-          {pendingSync ? <p className="mt-1 text-sm text-neutral-400">Pending sync</p> : <p className="mt-1 text-lg font-semibold tabular-nums">{formatMetric(metric.unit, value)}</p>}
+          {pendingSync ? <p className="mt-1 text-sm text-neutral-400">{pendingLabel}</p> : <p className="mt-1 text-lg font-semibold tabular-nums">{formatMetric(metric.unit, value)}</p>}
           {showBar && target != null ? (
             <p className="mt-1 text-xs text-neutral-400">
               Target {formatMetric(metric.unit, target)}

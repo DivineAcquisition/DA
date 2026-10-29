@@ -229,6 +229,7 @@ function Person({ row }: { row: TeamRow }) {
       <span>
         <span className="block font-medium text-white">{row.name}</span>
         <span className="block text-xs text-neutral-500">{row.email}</span>
+        {row.ghl_connected === false ? <span className="block text-[11px] text-neutral-500">GHL not connected</span> : null}
       </span>
     </Link>
   );

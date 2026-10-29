@@ -157,6 +157,15 @@ export type WorkspaceSettings = {
   eod_hours_worked_enabled: boolean;
   eod_note_to_manager_enabled: boolean;
   eod_min_text_chars: number;
+  ghl_sync_interval_minutes: number;
+  ghl_connect_seconds: number;
+  ghl_conversation_seconds: number;
+  ghl_reply_window_days: number;
+  ghl_noshow_window_days: number;
+  ghl_stl_pause_outside_shift: boolean;
+  ghl_stl_notouch_hours: number;
+  ghl_backfill_days: number;
+  ghl_sync_fail_after: number;
   client_feedback_token_days: number;
   cert_warning_days: number;
   cert_grace_days: number;

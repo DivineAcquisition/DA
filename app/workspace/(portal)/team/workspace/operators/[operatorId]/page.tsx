@@ -266,7 +266,9 @@ function Numbers({
                   <td className="py-2 text-white">{metric.label}</td>
                   <td className="py-2 tabular-nums">{formatCount(metric.operator)}</td>
                   {isAdmin ? (
-                    <td className="py-2 text-neutral-300">{metric.ghl == null ? 'Pending sync' : formatCount(metric.ghl)}</td>
+                    <td className="py-2 text-neutral-300">
+                      {metric.ghl_state === 'sync_delayed' ? 'Sync delayed' : metric.ghl == null ? 'Pending sync' : formatCount(metric.ghl)}
+                    </td>
                   ) : null}
                   <td className="py-2 text-neutral-400">
                     {metric.daily_target == null && metric.weekly_target == null

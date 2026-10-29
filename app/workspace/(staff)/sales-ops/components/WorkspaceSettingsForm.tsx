@@ -107,6 +107,20 @@ export default function WorkspaceSettingsForm({ settings: s }: { settings: Works
           />
         </Section>
 
+        <Section title="GHL sync">
+          <Num name="ghl_sync_interval_minutes" value={s.ghl_sync_interval_minutes} label="Sync interval (minutes)" />
+          <Num name="ghl_connect_seconds" value={s.ghl_connect_seconds} label="Connect threshold (seconds)" />
+          <Num name="ghl_conversation_seconds" value={s.ghl_conversation_seconds} label="Conversation threshold (seconds)" />
+          <Num name="ghl_reply_window_days" value={s.ghl_reply_window_days} label="Reply window (days)" />
+          <Num name="ghl_noshow_window_days" value={s.ghl_noshow_window_days} label="No-show recovery window (days)" />
+          <Num name="ghl_stl_notouch_hours" value={s.ghl_stl_notouch_hours} label="Speed-to-lead no-touch limit (hours)" />
+          <Num name="ghl_backfill_days" value={s.ghl_backfill_days} label="Backfill limit (days)" />
+          <Num name="ghl_sync_fail_after" value={s.ghl_sync_fail_after} label="Alert after this many failed syncs" />
+          <div className="md:col-span-2 lg:col-span-3">
+            <Toggle name="ghl_stl_pause_outside_shift" label="Pause the speed-to-lead clock outside the shift" defaultChecked={s.ghl_stl_pause_outside_shift} />
+          </div>
+        </Section>
+
         <Section title="Certification and review">
           <Num name="cert_warning_days" value={s.cert_warning_days} label="Warn the operator this many days before re-certification" />
           <Num name="cert_grace_days" value={s.cert_grace_days} label="Grace period after the re-certify date (days)" hint="Full access continues. Then the operator sees the not-certified page." />

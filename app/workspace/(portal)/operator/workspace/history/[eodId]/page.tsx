@@ -106,7 +106,7 @@ function NumberGroups({ rows }: { rows: EodNumber[] }) {
             {group.rows.map((row) => (
               <li key={`${group.group}-${row.label}`} className="flex items-center justify-between gap-3 border-t border-white/[0.06] py-2 text-sm">
                 <span className="text-neutral-300">{row.label}</span>
-                <span className="font-semibold text-white">{row.display === 'pending_sync' ? 'Pending sync' : formatMetric(row.unit, row.value)}</span>
+                <span className="font-semibold text-white">{row.display === 'sync_delayed' ? 'Sync delayed' : row.display === 'pending_sync' ? 'Pending sync' : formatMetric(row.unit, row.value)}</span>
               </li>
             ))}
           </ul>

@@ -11,6 +11,7 @@ export type TeamMetric = {
   operator: number | null;
   /** Present for DA Admin only. Null means GHL has not reported it. */
   ghl?: number | null;
+  ghl_state?: 'pending_sync' | 'sync_delayed' | 'number';
   daily_target: number | null;
   weekly_target: number | null;
   /** GHL-only metrics wait for sync. They do not mark a row behind. */
@@ -37,6 +38,7 @@ export type TeamRow = {
   working_day: boolean;
   eod_status: EodStatus | null;
   was_late: boolean;
+  ghl_connected?: boolean;
   needs_help?: boolean;
   escalated?: boolean;
   last_activity_at: string | null;
@@ -212,6 +214,7 @@ export function presentTeamRow(row: TeamRow, isAdmin: boolean): TeamRow {
     if (isAdmin) return metric;
     const rest = { ...metric };
     delete rest.ghl;
+    delete rest.ghl_state;
     return rest;
   });
   const next: TeamRow = { ...row, metrics, pace: paceForRow({ ...row, metrics }) };

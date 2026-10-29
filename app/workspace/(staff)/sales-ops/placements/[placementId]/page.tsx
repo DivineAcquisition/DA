@@ -10,6 +10,9 @@ import OutcomeEditor from '../../components/OutcomeEditor';
 import PlacementForm from '../../components/PlacementForm';
 import PlacementStatusControl from '../../components/PlacementStatusControl';
 import { ExcuseForm } from '../../eods/ReviewPanel';
+import GhlPlacement from '../../components/GhlPlacement';
+import { controlRpc } from '@/lib/ad/rpc';
+import { createClient } from '@/lib/supabase/server';
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -143,6 +146,7 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
             )}
             <ExcuseForm placementId={p.id} />
           </Panel>
+          <GhlSection placementId={p.id} />
         </div>
       </div>
     </>
@@ -241,5 +245,15 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
         </Panel>
       </div>
     </>
+  );
+}
+
+async function GhlSection({ placementId }: { placementId: string }) {
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<Parameters<typeof GhlPlacement>[0]['panel']>(supabase, 'so_ghl_panel', { p_placement: placementId });
+  return (
+    <Panel title="GHL">
+      {error || !data ? <p className="text-sm text-amber-200">{error ? error.message : 'GHL settings did not load.'}</p> : <GhlPlacement panel={data} />}
+    </Panel>
   );
 }

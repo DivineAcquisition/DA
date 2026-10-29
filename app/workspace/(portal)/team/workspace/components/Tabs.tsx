@@ -4,17 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const TABS = [
-  { href: '/workspace/team/workspace', label: 'Today', exact: true },
-  { href: '/workspace/team/workspace/operators', label: 'Operators' },
-  { href: '/workspace/team/workspace/eods', label: 'EODs' },
-  { href: '/workspace/team/workspace/activity', label: 'Activity Log' },
+  { href: '/workspace/team/workspace', label: 'Today', exact: true, admin: false },
+  { href: '/workspace/team/workspace/operators', label: 'Operators', admin: false },
+  { href: '/workspace/team/workspace/eods', label: 'EODs', admin: false },
+  { href: '/workspace/team/workspace/activity', label: 'Activity Log', admin: false },
+  { href: '/workspace/team/workspace/integrity', label: 'Data integrity', admin: true },
 ];
 
-export default function WorkspaceTabs() {
+export default function WorkspaceTabs({ showIntegrity = false }: { showIntegrity?: boolean }) {
   const pathname = usePathname() ?? '';
   return (
     <nav aria-label="Team Workspace" className="mb-5 flex gap-1 overflow-x-auto">
-      {TABS.map((tab) => {
+      {TABS.filter((tab) => showIntegrity || !tab.admin).map((tab) => {
         const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
         return (
           <Link

@@ -14,7 +14,15 @@ export default async function TodayPage() {
   const supabase = await createClient();
   await controlRpc(supabase, 'so_eod_sweep');
   const review = await controlRpc<unknown[]>(supabase, 'so_eod_index', { p_filter: 'needs_review' });
+  const roster = await controlRpc<{ placement_id: string; connected: boolean }[]>(supabase, 'so_ghl_roster');
   const { data, error } = await loadToday();
+  const connected = new Map((roster.data ?? []).map((row) => [row.placement_id, row.connected]));
+  if (data) {
+    data.operators = data.operators.map((row) => ({
+      ...row,
+      ghl_connected: row.placement_id ? connected.get(row.placement_id) ?? false : undefined,
+    }));
+  }
   if (error || !data) {
     return <p className="panel rounded-2xl px-5 py-4 text-sm text-flag-critical">{error ?? 'The team view did not load.'}</p>;
   }

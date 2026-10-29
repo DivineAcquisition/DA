@@ -1,3 +1,4 @@
+import { syncDueSales } from './sales-sync';
 import { connect, serviceClient, type ServiceClient } from './client';
 import { checkSession, readLocationShape, readLocationUsers } from './health';
 import { runJob, type ClaimedJob } from './provision';
@@ -90,6 +91,14 @@ export async function runWorker(options: { budgetMs?: number; jobsOnly?: boolean
       if (count >= 0) summary.polled += 1;
     } catch (error) {
       summary.errors.push(`poll ${location.case_file_id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  if (timeLeft() > 8_000) {
+    try {
+      await syncDueSales(db, deadline);
+    } catch (error) {
+      summary.errors.push(`sales sync: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   return summary;

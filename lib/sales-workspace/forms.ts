@@ -63,6 +63,14 @@ const INTEGER_SETTINGS = [
   'view_as_idle_minutes',
   'placement_review_months',
   'eod_min_text_chars',
+  'ghl_sync_interval_minutes',
+  'ghl_connect_seconds',
+  'ghl_conversation_seconds',
+  'ghl_reply_window_days',
+  'ghl_noshow_window_days',
+  'ghl_stl_notouch_hours',
+  'ghl_backfill_days',
+  'ghl_sync_fail_after',
 ] as const;
 
 const NULLABLE_INTEGER_SETTINGS = [
@@ -79,6 +87,7 @@ export function settingsPayload(fd: Form): { ok: true; value: Record<string, unk
     eod_edit_rule: text(fd, 'eod_edit_rule'),
     eod_hours_worked_enabled: fd.get('eod_hours_worked_enabled') === 'on',
     eod_note_to_manager_enabled: fd.get('eod_note_to_manager_enabled') === 'on',
+    ghl_stl_pause_outside_shift: fd.get('ghl_stl_pause_outside_shift') === 'on',
   };
   for (const key of ['mismatch_tolerance_pct', 'mismatch_small_count_gap', ...INTEGER_SETTINGS] as const) {
     const n = optionalNumber(text(fd, key));

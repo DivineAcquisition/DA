@@ -74,8 +74,8 @@ export type MetricRow = {
   section: 'primary' | 'other';
   operator_editable: boolean;
   by_outcome: boolean;
-  today_display: 'number' | 'pending_sync';
-  week_display: 'number' | 'pending_sync';
+  today_display: 'number' | 'pending_sync' | 'sync_delayed';
+  week_display: 'number' | 'pending_sync' | 'sync_delayed';
   today: number | null;
   week: number | null;
   target_today: number | null;
@@ -149,7 +149,7 @@ export type EodNumber = {
   group: string;
   label: string;
   unit: string;
-  display: 'number' | 'pending_sync';
+  display: 'number' | 'pending_sync' | 'sync_delayed';
   value: number | null;
 };
 
