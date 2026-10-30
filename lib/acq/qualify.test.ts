@@ -412,7 +412,8 @@ describe('founding landing media', () => {
     expect(readFileSync('lib/acq/config.ts', 'utf8')).toContain(
       'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
     );
-    expect(readFileSync('app/go/page.tsx', 'utf8')).toContain('IclosedEmbed');
+    expect(readFileSync('app/go/page.tsx', 'utf8')).toContain('AuditForm');
+    expect(readFileSync('app/go/page.tsx', 'utf8')).not.toContain('IclosedEmbed');
   });
 
   it('defaults the thank-you booking calendar to the issued GHL widget', () => {

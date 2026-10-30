@@ -4,9 +4,9 @@ const s = cleaningSettings;
 
 export function cleaningHeadline(settings: CleaningSettings = s) {
   return {
-    start: `We'll Book ${settings.firstCleans} First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In ${settings.launchTime},`,
-    dropOnPhone: 'Without You Or Your VA Chasing Leads,',
-    end: 'And You Only Pay When A New Client Goes Recurring.',
+    start: `We'll book ${settings.firstCleans} first cleans from homeowners who only talked to you, then turn them into recurring clients.`,
+    dropOnPhone: '',
+    end: `Ads live in ${settings.launchTime}. You pay only when a new client goes recurring.`,
   };
 }
 
@@ -33,56 +33,20 @@ export const CLEANING_SUBMIT = 'Request My Free Audit';
 export function cleaningFaqs(settings: CleaningSettings = s) {
   return [
     {
-      q: 'Meta leads for cleaning are just price shoppers. Why would these be different?',
-      a: 'Many are, when nobody screens them or sells the plan. Every lead here answers the home-size and frequency questions, then a real person books the first clean with the recurring plan on the table. You only pay when a client actually goes recurring.',
+      q: 'Why would these leads be different?',
+      a: 'Each one is asked about the home and how often they want a clean. A person on our team books the first clean with a weekly, biweekly, or monthly plan on the table. You pay only when they go recurring.',
     },
     {
-      q: 'I already have a VA. Why do I need this?',
-      a: "Keep your VA. We handle the new leads from your ads and the recurring-plan conversation, and your VA keeps running your existing clients. Most VAs aren't on at 9 p.m. or on Sunday afternoon, and that's when many requests come in.",
+      q: 'I already have a VA.',
+      a: 'Keep them on your current clients. We handle new quote requests from your ads, including the ones that come in at night and on weekends.',
     },
     {
-      q: 'How do you know which clients were yours?',
-      a: 'Every lead is tagged from the first contact, and a client counts only if they came through our ads and booked within 90 days of that first contact. Referrals and existing clients never count. You can see every record.',
-    },
-    {
-      q: 'Does this work with my booking software?',
-      a: "We book into the system you already use, either directly or through your calendar. We'll confirm on the audit.",
-    },
-    {
-      q: 'Will texts annoy homeowners?',
-      a: "Texts only go to people who asked for a quote through your ad, between 8 a.m. and 8 p.m., with a daily limit. The first message says it's an automated assistant for your company, and anyone can reply STOP.",
-    },
-    {
-      q: 'Who owns the ad account?',
-      a: "You do. It's built in your Meta account with your card. If you leave, it stays with you.",
-    },
-    {
-      q: 'Who pays for the ads?',
-      a: `You do, directly to Meta, at least ${settings.minimumAdBudget} a month. We never mark up ad spend.`,
+      q: 'Who pays for the ads, and who owns the account?',
+      a: `You pay Meta directly, at least ${settings.minimumAdBudget}. The ad account, page, and leads stay yours. Leave with 30 days' notice and you keep them.`,
     },
     {
       q: "What's the guarantee?",
       a: `If we don't book ${settings.firstCleans} first cleans within ${settings.promiseWindow}, we keep working and your next ${settings.feeFreeClients} new recurring clients are fee-free.`,
-    },
-    {
-      q: 'What if my teams are full?',
-      a: "Then it's not the right time, and we'll tell you on the audit. We set ad spend to match the capacity you actually have.",
-    },
-    {
-      q: 'Do you also help with past and cancelled clients?',
-      a: "Yes. Win-back follow-up for clients who pause or cancel is part of the system. On the audit we'll look at how big that list is.",
-    },
-    {
-      q: 'How fast does this start?',
-      a: `Ads go live about ${settings.launchTime} after we have access to your ad account, page, and booking system. Our team calls qualified leads from day one. Automated texting starts once carrier approval clears, which can take a few extra days.`,
-    },
-    {
-      q: 'Can I leave?',
-      a: "Yes. 30 days' notice. You keep everything. Fees still apply to new clients from our ads who go recurring within the attribution window.",
-    },
-    {
-      q: 'Why do I get a call instead of a calendar?',
-      a: 'Because a five-minute call makes sure the audit is worth your time. Malik calls you back personally.',
     },
   ] as const;
 }

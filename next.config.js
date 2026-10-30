@@ -20,6 +20,7 @@ const nextConfig = {
       { source: '/roofing/:path*', destination: '/acq/roofing/:path*' },
       { source: '/cleaning', destination: '/go/cleaning' },
       { source: '/cleaning/:path*', destination: '/go/cleaning/:path*' },
+      { source: '/thanks', destination: '/go/thanks' },
     ];
   },
   async headers() {

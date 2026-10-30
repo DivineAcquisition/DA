@@ -17,9 +17,9 @@ const interDisplay = Inter({
   display: 'swap',
 });
 
-const title = 'Divine Acquisition | Grow Your Residential & Remote Cleaning Business On Autopilot';
+const title = 'Divine Acquisition | Own Your Leads for Cleaning Companies';
 const description =
-  'Missed-call booking, quote follow-up, and recurring conversion for remote residential cleaning companies. Live in 14 days.';
+  'Exclusive quote requests from your own ads, a first text within minutes, and a person who books the first clean on a recurring plan. You pay only when a client goes recurring.';
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -27,18 +27,17 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://go.divineacquisition.io'),
   alternates: { canonical: 'https://go.divineacquisition.io/' },
   openGraph: {
-    title: 'Divine Acquisition | More recurring cleans from the leads you already buy',
-    description:
-      'We install the booking and follow-up backend so Facebook and Google leads stop dying in voicemail. Keep Jobber or Housecall Pro.',
+    title,
+    description,
     url: 'https://go.divineacquisition.io/',
     siteName: 'Divine Acquisition',
-    images: [{ url: '/icon-512.png', width: 512, height: 512, alt: 'Divine Acquisition' }],
+    images: [{ url: '/cleaning/finished-home.svg', alt: 'A bright finished home' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Divine Acquisition | More recurring cleans from the leads you already buy',
-    description:
-      'We install the booking and follow-up backend so Facebook and Google leads stop dying in voicemail. Keep Jobber or Housecall Pro.',
+    title,
+    description,
+    images: ['/cleaning/finished-home.svg'],
   },
   robots: { index: true, follow: true },
 };
