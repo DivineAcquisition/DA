@@ -43,6 +43,15 @@ begin
 
   perform pg_temp.as_user('10300000-0000-4000-8000-0000000000b1');
   assert (public.so_nav_counts() ->> 'escalations') = '0', 'managers do not receive the escalations count';
+  assert (public.so_nav_counts() ->> 'holds') = '0', 'managers do not receive the holds count';
+  assert (public.so_nav_counts() ->> 'eods') is not null;
+  assert (public.so_nav_counts() ->> 'reports') is not null;
+  begin
+    perform public.so_sales_operator_ids();
+    raise exception 'a manager listed sales operators';
+  exception when others then
+    if sqlerrm not like '%admin%' and sqlerrm not like 'permission_denied%' then raise; end if;
+  end;
   begin
     perform public.so_ghl_panel(v_id);
     raise exception 'a manager opened the GHL connection';

@@ -56,6 +56,8 @@ export type Operator = {
   trainingAssignments: TrainingAssignment[];
   /** Whether the operator has a sign-in, which View As needs. */
   hasAccount?: boolean;
+  /** Enrolled in the DA Operator Academy. Absent when that list could not be read. */
+  salesOperator?: boolean;
 };
 
 export type TrainingAssignment = {

@@ -1,4 +1,5 @@
 import { appUrl } from '@/lib/apps';
+import { navSlots } from '@/lib/workspace/nav-slots';
 import type { PortalContext, Stage } from './types';
 
 /**
@@ -49,14 +50,24 @@ const BASE = '/workspace/operator';
 
 const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client' | 'work' | 'performance' | 'training'>, NavItem> = {
   today: { key: 'today', label: 'My Day', short: 'My Day', href: BASE },
-  record: { key: 'record', label: 'My Record', short: 'Record', href: `${BASE}/record` },
-  standards: { key: 'standards', label: 'My Standards', short: 'Standards', href: `${BASE}/standards` },
+  record: { key: 'record', label: 'Record', short: 'Record', href: `${BASE}/record` },
+  standards: { key: 'standards', label: 'Standards', short: 'Standards', href: `${BASE}/standards` },
   commitments: { key: 'commitments', label: "DA's Commitments", short: 'Commitments', href: `${BASE}/commitments` },
-  growth: { key: 'growth', label: 'Pay & Growth', short: 'Pay & Growth', href: `${BASE}/growth` },
-  playbook: { key: 'playbook', label: 'Training Playbook', short: 'Playbook', href: `${BASE}/playbook` },
+  growth: { key: 'growth', label: 'Pay and Growth', short: 'Pay', href: `${BASE}/growth` },
+  playbook: { key: 'playbook', label: 'Playbook', short: 'Playbook', href: `${BASE}/playbook` },
   pay: { key: 'pay', label: 'Pay', short: 'Pay', href: `${BASE}/pay` },
   agreements: { key: 'agreements', label: 'Agreements', short: 'Agreements', href: `${BASE}/agreements` },
 };
+
+/** Score and Focus plan render only after navSlots turns them on and their pages exist. */
+export const SALES_PERFORMANCE_TABS: NavItem[] = [
+  ...(navSlots.operatorScore
+    ? [{ key: 'performance' as const, label: 'Score', short: 'Score', href: `${BASE}/performance/score` }]
+    : []),
+  ...(navSlots.operatorFocusPlan
+    ? [{ key: 'performance' as const, label: 'Focus plan', short: 'Focus', href: `${BASE}/performance/focus` }]
+    : []),
+];
 
 /** Sales operators. End of day is the sales EOD, not the VA attendance page. */
 const SALES_NAV: NavItem[] = [

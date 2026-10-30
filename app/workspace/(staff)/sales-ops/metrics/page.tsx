@@ -3,6 +3,7 @@ import { listMetrics, salesOpsRole } from '@/lib/workspace/sales-ops-queries';
 import { Badge, EmptyState, PageHeader } from '../../components/ui';
 import { ws } from '../../components/tokens';
 import MetricEditor from '../components/MetricEditor';
+import SettingsNav from '../components/SettingsNav';
 
 export default async function MetricsPage() {
   const [metrics, role] = await Promise.all([listMetrics(), salesOpsRole()]);
@@ -10,6 +11,7 @@ export default async function MetricsPage() {
 
   return (
     <>
+      <SettingsNav />
       <PageHeader
         title="Metric definitions"
         description="What operators log and what GHL reports. GHL-only metrics are never editable by operators."

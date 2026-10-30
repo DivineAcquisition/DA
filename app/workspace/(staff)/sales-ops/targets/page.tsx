@@ -3,6 +3,7 @@ import { formatDate, formatDateTime } from '@/lib/workspace/format';
 import { listDefaultTargets, listMetrics, salesOpsRole, type TargetRow } from '@/lib/workspace/sales-ops-queries';
 import { DataTable, EmptyState, PageHeader } from '../../components/ui';
 import DefaultTargetForm from '../components/DefaultTargetForm';
+import SettingsNav from '../components/SettingsNav';
 
 const typeLabel = (t: string | null) => (t ? PLACEMENT_TYPES.find((x) => x.value === t)?.label ?? t : 'All types');
 const value = (n: number | null) => (n === null ? '—' : String(n));
@@ -31,6 +32,7 @@ export default async function TargetsPage() {
 
   return (
     <>
+      <SettingsNav />
       <PageHeader
         title="Default targets"
         description="Targets start empty. Set them here; managers can override per placement. Every change is kept with its effective date."

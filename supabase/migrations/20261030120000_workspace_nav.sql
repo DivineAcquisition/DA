@@ -115,9 +115,15 @@ declare
   v_late integer;
   v_missed integer;
   v_review integer;
+  v_reports integer := 0;
+  v_holds integer := 0;
   v_escalations integer := 0;
 begin
   if not app.is_admin() and not app.is_manager() then
+    if app.academy_reviews() then
+      select count(*) into v_holds from public.academy_hold where status = 'open';
+      return jsonb_build_object('home', 0, 'escalations', 0, 'eods', 0, 'reports', 0, 'holds', coalesce(v_holds, 0));
+    end if;
     raise exception 'permission_denied: managers and DA Admin only' using errcode = '42501';
   end if;
   v_admin := app.is_admin();
@@ -128,12 +134,19 @@ begin
   into v_late, v_missed, v_review
   from public.sales_eod e
   where e.work_date >= current_date - 14;
+  select count(*) into v_reports from public.sales_report where status = 'ready';
   if v_admin then
     select count(*) into v_escalations from public.escalation where status = 'open';
+    select count(*) into v_holds from public.academy_hold where status = 'open';
+  elsif app.academy_reviews() then
+    select count(*) into v_holds from public.academy_hold where status = 'open';
   end if;
   return jsonb_build_object(
     'home', coalesce(v_late, 0) + coalesce(v_missed, 0) + coalesce(v_review, 0) + coalesce(v_escalations, 0),
-    'escalations', coalesce(v_escalations, 0)
+    'escalations', coalesce(v_escalations, 0),
+    'eods', coalesce(v_review, 0),
+    'reports', coalesce(v_reports, 0),
+    'holds', coalesce(v_holds, 0)
   );
 end;
 $$;
@@ -234,3 +247,29 @@ $$;
 
 revoke all on function public.portal_training_due() from public, anon;
 grant execute on function public.portal_training_due() to authenticated;
+
+-- Who on the operator roster is enrolled as a sales operator. DA Admin only.
+create or replace function public.so_sales_operator_ids()
+returns uuid[]
+language plpgsql
+stable
+security definer
+set search_path = ''
+as $$
+begin
+  if not app.is_admin() or app.is_impersonating() then
+    raise exception 'admin_required: the operator split is DA Admin only' using errcode = '42501';
+  end if;
+  return coalesce((
+    select array_agg(e.operator_id)
+    from public.academy_enrollment e
+    join public.academy_program p on p.id = e.program_id
+    where e.operator_id is not null
+      and p.slug = 'da-operator-academy'
+      and e.status <> 'withdrawn'
+  ), '{}');
+end;
+$$;
+
+revoke all on function public.so_sales_operator_ids() from public, anon;
+grant execute on function public.so_sales_operator_ids() to authenticated;

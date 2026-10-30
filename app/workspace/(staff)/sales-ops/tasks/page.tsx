@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
+import SettingsNav from '../components/SettingsNav';
 import TaskDesk, { type StaffTask, type TaskRosterRow } from './TaskDesk';
 
 export const metadata: Metadata = { title: 'Operator tasks' };
@@ -15,6 +16,8 @@ export default async function SalesOpsTasksPage({ searchParams }: { searchParams
   const tasks = placementId ? await controlRpc<StaffTask[]>(supabase, 'so_task_list', { p_placement_id: placementId }) : { data: [], error: null };
 
   return (
+    <>
+    <SettingsNav />
     <TaskDesk
       basePath="/workspace/sales-ops/tasks"
       roster={rows}
@@ -22,5 +25,6 @@ export default async function SalesOpsTasksPage({ searchParams }: { searchParams
       tasks={tasks.data ?? []}
       error={roster.error ? readable(roster.error) : tasks.error ? readable(tasks.error) : null}
     />
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SALES_PERFORMANCE_TABS } from '@/lib/portal/zones';
 
 const ITEMS = [
   { key: 'record', label: 'Shift reviews', href: '/workspace/operator/record' },
@@ -99,6 +100,35 @@ export function TrainingNav({ current, academyHref }: { current: 'playbook' | 's
       >
         Academy
       </a>
+    </nav>
+  );
+}
+
+/** Pay is always shown. Score and Focus plan appear when their slots are turned on. */
+export function PerformanceNav({ current }: { current: 'pay' | 'score' | 'focus' }) {
+  const items = [
+    { key: 'pay', label: 'Pay', href: '/workspace/operator/pay' },
+    ...SALES_PERFORMANCE_TABS.map((item) => ({
+      key: item.href.endsWith('/focus') ? 'focus' : 'score',
+      label: item.label,
+      href: item.href,
+    })),
+  ];
+  if (items.length < 2) return null;
+  return (
+    <nav aria-label="Performance" className="-mx-1 mb-4 flex gap-1 overflow-x-auto px-1">
+      {items.map((item) => (
+        <Link
+          key={item.href}
+          href={item.href}
+          aria-current={item.key === current ? 'page' : undefined}
+          className={`shrink-0 rounded-full px-3 py-1.5 text-xs font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF] ${
+            item.key === current ? 'bg-[#6A00FF] text-white' : 'text-neutral-400 hover:text-white'
+          }`}
+        >
+          {item.label}
+        </Link>
+      ))}
     </nav>
   );
 }

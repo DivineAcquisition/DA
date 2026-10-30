@@ -96,10 +96,13 @@ export async function loadOpsData(): Promise<OpsData> {
     // adjusted a statement, because an operator cannot read the profile table.
     untyped(supabase).from('v_staff_name').select('profile_id, display_name').order('display_name'),
   ]);
+  const salesLookup = await supabase.rpc('so_sales_operator_ids' as never);
 
   const now = new Date().toISOString();
 
   const staffRows = (staff ?? []) as { profile_id: string; display_name: string }[];
+  const salesIds =
+    salesLookup.error || !Array.isArray(salesLookup.data) ? null : new Set(salesLookup.data as string[]);
   const staffNames = new Map(staffRows.map((row) => [row.profile_id, row.display_name]));
 
   const industryNames = new Map<string, string>(
@@ -147,6 +150,7 @@ export async function loadOpsData(): Promise<OpsData> {
         certifiedOn: row.certified_on,
         joinedOn: row.joined_on ?? row.created_at.slice(0, 10),
         hasAccount: Boolean(row.profile_id),
+        salesOperator: salesIds ? salesIds.has(row.id) : undefined,
         preferredChannel: hyphen(row.preferred_channel) as Operator['preferredChannel'],
         trainingAssignments: (
           (row.operator_training ?? []) as {

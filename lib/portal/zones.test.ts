@@ -9,7 +9,7 @@ describe('stage navigation', () => {
       'Today',
       'Record',
       'Tasks',
-      'Pay & Growth',
+      'Pay and Growth',
       'Training',
     ]);
     expect(menuFor(ctx('placed')).map((z) => z.label)).toEqual([

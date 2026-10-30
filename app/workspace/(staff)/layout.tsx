@@ -64,7 +64,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!session.isAdmin) {
     if (session.role === 'manager' && !holdAccess) {
-      if (!managerPathAllowed(pathname)) redirect('/workspace/team/workspace');
+      if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
       const counts = await loadNavCounts();
       return (
         <RequireAdminMfa email={session.email}>
@@ -79,7 +79,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       return (
         <RequireAdminMfa email={session.email}>
           <div className="da-workspace">
-            <Shell email={session.email} holdsOnly>
+            <Shell email={session.email} holdsOnly counts={await loadNavCounts()}>
               {children}
             </Shell>
           </div>

@@ -58,7 +58,8 @@ describe('findActive', () => {
     expect(activeLabels('/workspace/growth/ingestion')).toEqual(['Sales', 'Ingestion']);
     expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['Admin', 'Data integrity']);
     expect(activeLabels('/workspace/sales-ops/placements/abc')).toEqual(['Team', 'Placements']);
-    expect(activeLabels('/workspace/sales-ops')).toEqual(['Admin', 'Sales settings', 'Setup']);
+    expect(activeLabels('/workspace/sales-ops')).toEqual(['Admin', 'Sales settings']);
+    expect(activeLabels('/workspace/sales-ops/metrics')).toEqual(['Admin', 'Sales settings', 'Metrics']);
   });
 
   it('hides Academy entries the viewer cannot use', () => {

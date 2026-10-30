@@ -29,9 +29,15 @@ export default function OperatorsPage() {
 function Roster() {
   const { gateway } = useOps();
   const [group, setGroup] = useState<OperatorStatus | 'all'>('all');
+  const [role, setRole] = useState<'all' | 'va' | 'sales'>('all');
 
   const operators = gateway.allOperators();
-  const filtered = group === 'all' ? operators : operators.filter((operator) => operator.status === group);
+  const roleKnown = operators.length > 0 && operators.every((operator) => typeof operator.salesOperator === 'boolean');
+  const filtered = operators.filter((operator) => {
+    if (group !== 'all' && operator.status !== group) return false;
+    if (!roleKnown || role === 'all') return true;
+    return role === 'sales' ? operator.salesOperator === true : operator.salesOperator !== true;
+  });
 
   const counts = operators.reduce<Record<string, number>>((acc, operator) => {
     acc[operator.status] = (acc[operator.status] || 0) + 1;
@@ -63,6 +69,28 @@ function Roster() {
           title="Filter"
           actions={
             <div className="flex gap-1 overflow-x-auto">
+              {roleKnown
+                ? (
+                    [
+                      ['all', 'All roles'],
+                      ['va', 'VAs'],
+                      ['sales', 'Sales operators'],
+                    ] as const
+                  ).map(([id, label]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setRole(id)}
+                      className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-[12px] font-medium transition-colors ${
+                        role === id
+                          ? 'bg-[#6A00FF] text-white'
+                          : 'text-neutral-500 hover:bg-white/[0.04] hover:text-white'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))
+                : null}
               {GROUPS.map((option) => (
                 <button
                   key={option.id}

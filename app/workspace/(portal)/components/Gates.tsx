@@ -70,7 +70,7 @@ export function ManagerShell({
   const nav = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false, role: 'manager', counts });
   const active = findActive(nav, pathname);
   useEffect(() => {
-    if (!allowed) router.replace('/workspace/team/workspace');
+    if (!allowed) router.replace('/workspace/team/board');
   }, [allowed, router]);
   if (!allowed) return null;
 

@@ -31,6 +31,7 @@ import {
   findActive,
   searchNav,
   type ActiveMatch,
+  type NavCounts,
   type NavIcon,
   type NavItem,
   type NavSection,
@@ -614,7 +615,7 @@ export default function Shell({
   showHolds?: boolean;
   holdsOnly?: boolean;
   role?: 'admin' | 'manager';
-  counts?: { home: number; escalations: number };
+  counts?: NavCounts;
 }) {
   const pathname = usePathname();
   const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);

@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import { navSlots } from '@/lib/workspace/nav-slots';
 import {
   BadgeDollarSign,
   BookOpenCheck,
@@ -62,7 +63,16 @@ export type NavSection = { id: string; heading: string; tone: NavTone; items: Na
  * and Inbox from the same list. Nested pages are children, so search and the
  * active state find them.
  */
-export type NavCounts = { home: number; escalations: number };
+export type NavCounts = {
+  home: number;
+  escalations: number;
+  /** EODs that need review. Shown on the Team Workspace EODs tab. */
+  eods?: number;
+  /** Reports in Ready for Review. Shown on the Team Workspace Reports tab. */
+  reports?: number;
+  /** Open academy holds. Shown on Holds. */
+  holds?: number;
+};
 
 const withBadge = (item: NavLeaf, count: number | undefined): NavLeaf =>
   count && count > 0 ? { ...item, badge: count } : item;
@@ -111,16 +121,19 @@ const ACADEMY_ITEM: NavItem = {
   ],
 };
 
-const HOLDS_ITEM: NavItem = {
-  href: '/workspace/academy/holds',
-  label: 'Holds',
-  icon: ShieldCheck,
-  children: [
-    { href: '/workspace/academy/holds/grading', label: 'Grading', icon: ClipboardCheck },
-    { href: '/workspace/academy/holds/practicals', label: 'Practicals', icon: FilePenLine },
-    { href: '/workspace/academy/holds/summary', label: 'Summary', icon: ChartNoAxesCombined },
-  ],
-};
+function holdsItem(count?: number): NavItem {
+  return {
+    href: '/workspace/academy/holds',
+    label: 'Holds',
+    icon: ShieldCheck,
+    badge: count && count > 0 ? count : undefined,
+    children: [
+      { href: '/workspace/academy/holds/grading', label: 'Grading', icon: ClipboardCheck },
+      { href: '/workspace/academy/holds/practicals', label: 'Practicals', icon: FilePenLine },
+      { href: '/workspace/academy/holds/summary', label: 'Summary', icon: ChartNoAxesCombined },
+    ],
+  };
+}
 
 export function buildNav({
   showAcademy,
@@ -135,7 +148,7 @@ export function buildNav({
   role?: 'admin' | 'manager';
   counts?: NavCounts;
 }): NavSection[] {
-  if (holdsOnly) return [{ id: 'people', heading: 'People', tone: 'fuchsia', items: [HOLDS_ITEM] }];
+  if (holdsOnly) return [{ id: 'people', heading: 'People', tone: 'fuchsia', items: [holdsItem(counts?.holds)] }];
   if (role === 'manager') {
     return [
       { id: 'home', heading: 'Home', tone: 'violet', items: [withBadge({ href: '/workspace/operations', label: 'Overview', icon: Gauge }, counts?.home)] },
@@ -156,7 +169,7 @@ export function buildNav({
       children: [{ href: '/workspace/recipients', label: 'Recipients', icon: Contact }],
     },
     ...(showAcademy ? [ACADEMY_ITEM] : []),
-    ...(showHolds ? [HOLDS_ITEM] : []),
+    ...(showHolds ? [holdsItem(counts?.holds)] : []),
   ];
 
   return [
@@ -235,6 +248,9 @@ export function buildNav({
         { href: '/workspace/growth/billing', label: 'Billing', icon: ReceiptText, aliases: ['/da/billing'] },
         { href: '/workspace/growth/payouts', label: 'Payouts', icon: HandCoins, aliases: ['/da/payouts'] },
         { href: '/workspace/growth/margin', label: 'Margin', icon: Percent, aliases: ['/da/margin'] },
+        ...(navSlots.payImpact
+          ? [{ href: '/workspace/growth/pay-impact', label: 'Pay Impact', icon: HandCoins }]
+          : []),
       ],
     },
     {
@@ -248,8 +264,8 @@ export function buildNav({
           href: '/workspace/sales-ops/settings',
           label: 'Sales settings',
           icon: Settings2,
+          aliases: ['/workspace/sales-ops'],
           children: [
-            { href: '/workspace/sales-ops', label: 'Setup', icon: Target, exact: true },
             { href: '/workspace/sales-ops/metrics', label: 'Metrics', icon: ChartNoAxesCombined },
             { href: '/workspace/sales-ops/targets', label: 'Targets', icon: Target },
             { href: '/workspace/sales-ops/tasks', label: 'Tasks', icon: ClipboardList },
@@ -259,6 +275,7 @@ export function buildNav({
         { href: '/workspace/settings', label: 'Workspace settings', icon: Settings2 },
         { href: '/workspace/templates', label: 'Templates', icon: FileSignature },
         { href: '/workspace/mapping', label: 'Field mapping', icon: NotebookPen },
+        { href: '/workspace/ops/notifications', label: 'Notifications routing', icon: Inbox, aliases: ['/workspace/admin/notifications'] },
         {
           href: '/workspace/control',
           label: 'Control',
@@ -270,7 +287,6 @@ export function buildNav({
             { href: '/workspace/control/lockdown', label: 'Lockdown', icon: ShieldCheck },
           ],
         },
-        { href: '/workspace/ops/notifications', label: 'Notifications', icon: Inbox, aliases: ['/workspace/admin/notifications'] },
       ],
     },
   ];

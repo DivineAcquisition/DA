@@ -3,7 +3,7 @@ import { loadPortal } from '@/lib/portal/load';
 import type { Statement } from '@/lib/portal/types';
 import { renderPortal } from '../components/frame';
 import PayView from '../components/PayView';
-import { GrowthNav } from '../components/RecordNav';
+import { GrowthNav, PerformanceNav } from '../components/RecordNav';
 
 export const metadata: Metadata = { title: 'Pay' };
 export const dynamic = 'force-dynamic';
@@ -19,7 +19,7 @@ export default async function PayPage() {
   });
   return renderPortal(load, 'pay', (data, _placementId, context) => (
     <>
-      {context.stage === 'inactive' || context.sales_operator ? null : <GrowthNav current="pay" />}
+      {context.sales_operator ? <PerformanceNav current="pay" /> : context.stage === 'inactive' ? null : <GrowthNav current="pay" />}
       <PayView statements={data.statements} />
     </>
   ));

@@ -85,7 +85,7 @@ export default async function VistrialLayout({ children }: { children: React.Rea
 
   // Managers oversee the operators in their scope from the team page.
   if (session.role === 'manager') {
-    if (!managerPathAllowed(pathname)) redirect('/workspace/team/workspace');
+    if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
     const counts = await loadNavCounts();
     return (
       <ManagerShell name={session.fullName ?? session.email} counts={counts}>
