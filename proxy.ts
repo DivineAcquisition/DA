@@ -135,7 +135,8 @@ const isPublicTokenPath = (pathname: string) =>
   pathname.startsWith('/p/') ||
   pathname.startsWith('/c/') ||
   pathname.startsWith('/s/') ||
-  pathname.startsWith('/o/');
+  pathname.startsWith('/o/') ||
+  pathname.startsWith('/r/');
 
 const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },
@@ -352,6 +353,13 @@ export async function proxy(request: NextRequest) {
           ? `/workspace/operations${pathname.slice('/vistrial/ops'.length)}`
           : `/workspace${pathname.slice('/vistrial'.length)}`;
     return NextResponse.redirect(new URL(`${next}${request.nextUrl.search}`, request.url), 308);
+  }
+  if ((onTeamHost || local) && pathname.startsWith('/r/')) {
+    const response = NextResponse.next();
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+    response.headers.set('Referrer-Policy', 'no-referrer');
+    response.headers.set('Cache-Control', 'private, no-store');
+    return response;
   }
   if ((legacyOpsHost || onTeamHost) && !isServicePath) {
     const internal = pathname === '/' ? '/workspace/operator' : pathname.startsWith('/workspace') ? pathname : `/workspace${pathname}`;

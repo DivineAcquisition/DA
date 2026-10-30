@@ -33,6 +33,10 @@
       "schedule": "* * * * *"
     },
     {
+      "path": "/api/cron/sales-reports",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/cron/booking-messages",
       "schedule": "* * * * *"
     }

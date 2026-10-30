@@ -198,6 +198,19 @@ export async function uploadFile(
 }
 
 /** Lists a folder's files, so the sync can find anything added outside the app. */
+/** Finds or creates a folder. Does not change sharing. */
+export async function ensureDriveFolder(name: string, parentId: string): Promise<DriveFolder> {
+  const safe = name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  const query = encodeURIComponent(
+    `name = '${safe}' and '${parentId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+  );
+  const found = await driveFetch<{ files: DriveFolder[] }>(
+    `/files?q=${query}&fields=files(id,name,webViewLink)&pageSize=5&supportsAllDrives=true&includeItemsFromAllDrives=true`,
+  );
+  if (found.files?.[0]) return found.files[0];
+  return createFolder(name, parentId);
+}
+
 export async function listFolder(folderId: string): Promise<DriveFile[]> {
   const query = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
   const body = await driveFetch<{ files: DriveFile[] }>(

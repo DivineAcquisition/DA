@@ -38,6 +38,11 @@ const nextConfig = {
         source: '/o/:path*',
         headers: PRIVATE_LINK_HEADERS,
       },
+      {
+        // Client report links: one report, no index, no shared cache.
+        source: '/r/:path*',
+        headers: PRIVATE_LINK_HEADERS,
+      },
     ];
   },
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { saveReportSecretAction, testReportDestinationAction } from '@/lib/sales-reports/actions';
 import { saveWorkspaceSettingsAction } from '@/lib/workspace/sales-ops-actions';
 import type { WorkspaceSettings } from '@/lib/workspace/sales-ops-queries';
 import { Card, Field, Input, Select, Toggle } from '../../components/ui';
@@ -121,6 +122,43 @@ export default function WorkspaceSettingsForm({ settings: s }: { settings: Works
           </div>
         </Section>
 
+        <Section title="Client reports">
+          <Field label="Reply-to" hint="Clients reply here. Blank uses the team reply-to.">
+            <Input name="report_reply_to" defaultValue={s.report_reply_to ?? ''} />
+          </Field>
+          <Num name="report_weekly_dow" value={s.report_weekly_dow} label="Default weekly send day (1 = Monday)" />
+          <Field label="Default weekly send time">
+            <Input name="report_weekly_time" defaultValue={s.report_weekly_time ?? '09:00'} />
+          </Field>
+          <Num name="report_approval_hours" value={s.report_approval_hours} label="Approval window (hours)" />
+          <Num name="report_low_rating" value={s.report_low_rating} label="Low client rating is this or below" />
+          <Num name="report_fail_alert_after" value={s.report_fail_alert_after} label="Alert after this many failed deliveries" />
+          <Field label="Client report page domain" hint="Blank uses the operator workspace domain.">
+            <Input name="report_page_origin" defaultValue={s.report_page_origin ?? ''} placeholder="https://team.divineacquisition.io" />
+          </Field>
+          <Field label="DA Client Reports folder id">
+            <Input name="report_drive_folder_id" defaultValue={s.report_drive_folder_id ?? ''} />
+          </Field>
+          <Field label="Airtable base id">
+            <Input name="report_airtable_base_id" defaultValue={s.report_airtable_base_id ?? ''} />
+          </Field>
+          <Field label="ClickUp folder id">
+            <Input name="report_clickup_folder_id" defaultValue={s.report_clickup_folder_id ?? ''} />
+          </Field>
+          <Field label="ClickUp Ops Escalations list id">
+            <Input name="report_clickup_escalation_list_id" defaultValue={s.report_clickup_escalation_list_id ?? ''} />
+          </Field>
+          <Field label="ClickUp user map" hint='JSON of profile id to ClickUp user id. Blank leaves the saved map.'>
+            <Input name="report_clickup_users" defaultValue={s.report_clickup_users ? JSON.stringify(s.report_clickup_users) : ''} />
+          </Field>
+          <div className="space-y-3 md:col-span-2 lg:col-span-3">
+            <Toggle name="report_drive_enabled" label="Save PDFs to Google Drive" defaultChecked={s.report_drive_enabled} />
+            <Toggle name="report_discord_enabled" label="Post to Discord" defaultChecked={s.report_discord_enabled} />
+            <Toggle name="report_airtable_enabled" label="Sync to Airtable" defaultChecked={s.report_airtable_enabled} />
+            <Toggle name="report_clickup_enabled" label="Create ClickUp tasks" defaultChecked={s.report_clickup_enabled} />
+          </div>
+        </Section>
+
         <Section title="Certification and review">
           <Num name="cert_warning_days" value={s.cert_warning_days} label="Warn the operator this many days before re-certification" />
           <Num name="cert_grace_days" value={s.cert_grace_days} label="Grace period after the re-certify date (days)" hint="Full access continues. Then the operator sees the not-certified page." />
@@ -128,6 +166,29 @@ export default function WorkspaceSettingsForm({ settings: s }: { settings: Works
           <Num name="view_as_idle_minutes" value={s.view_as_idle_minutes} label="View As ends after this many idle minutes" />
         </Section>
       </ActionForm>
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        {([
+          ['discord_ops', 'Discord ops webhook', s.report_discord_ops_last4],
+          ['discord_esc', 'Discord escalations webhook', s.report_discord_esc_last4],
+          ['airtable', 'Airtable token', s.report_airtable_last4],
+          ['clickup', 'ClickUp token', s.report_clickup_last4],
+        ] as const).map(([kind, label, last4]) => (
+          <div key={kind} className="space-y-3 rounded-xl border border-white/10 p-4">
+            <ActionForm action={saveReportSecretAction} submitLabel={`Save ${label}`}>
+              <input type="hidden" name="kind" value={kind} />
+              <Field label={label} hint={last4 ? `Stored ····${last4}. Leave blank to keep it. Type clear to remove it.` : 'Shown once, then only the last four characters.'}>
+                <Input name="secret" type="password" autoComplete="off" />
+              </Field>
+            </ActionForm>
+            <ActionForm action={testReportDestinationAction} submitLabel="Test connection">
+              <input type="hidden" name="kind" value={kind} />
+            </ActionForm>
+          </div>
+        ))}
+        <ActionForm action={testReportDestinationAction} submitLabel="Test Drive">
+          <input type="hidden" name="kind" value="drive" />
+        </ActionForm>
+      </div>
     </Card>
   );
 }

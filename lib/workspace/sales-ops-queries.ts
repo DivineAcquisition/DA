@@ -174,6 +174,26 @@ export type WorkspaceSettings = {
   speed_to_lead_target_seconds: number | null;
   target_override_min_pct: number | null;
   target_override_max_pct: number | null;
+  report_reply_to: string | null;
+  report_weekly_dow: number;
+  report_weekly_time: string;
+  report_approval_hours: number;
+  report_low_rating: number;
+  report_page_origin: string | null;
+  report_drive_enabled: boolean;
+  report_discord_enabled: boolean;
+  report_airtable_enabled: boolean;
+  report_clickup_enabled: boolean;
+  report_drive_folder_id: string | null;
+  report_discord_ops_last4: string | null;
+  report_discord_esc_last4: string | null;
+  report_airtable_base_id: string | null;
+  report_airtable_last4: string | null;
+  report_clickup_folder_id: string | null;
+  report_clickup_last4: string | null;
+  report_clickup_escalation_list_id: string | null;
+  report_clickup_users: Record<string, string>;
+  report_fail_alert_after: number;
   updated_at: string;
 };
 
@@ -275,5 +295,11 @@ export async function getWorkspaceSettings(): Promise<WorkspaceSettings | null> 
   const supabase = await workspaceClient();
   if (!supabase) return null;
   const { data } = await supabase.from('team_setting').select('*').eq('id', 1).maybeSingle();
-  return (data as WorkspaceSettings | null) ?? null;
+  if (!data) return null;
+  const row = data as WorkspaceSettings & Record<string, unknown>;
+  delete row.report_discord_ops_secret;
+  delete row.report_discord_esc_secret;
+  delete row.report_airtable_secret;
+  delete row.report_clickup_secret;
+  return row;
 }

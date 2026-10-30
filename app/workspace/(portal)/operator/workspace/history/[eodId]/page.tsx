@@ -15,9 +15,10 @@ export const dynamic = 'force-dynamic';
 export default async function EodDetailPage({ params }: { params: Promise<{ eodId: string }> }) {
   const { eodId } = await params;
   const supabase = await createClient();
-  const [report, session] = await Promise.all([
+  const [report, session, clientNotes] = await Promise.all([
     controlRpc<EodDetail>(supabase, 'so_eod_read', { p_eod_id: eodId }),
     controlRpc<{ time_zone: string | null }>(supabase, 'so_session'),
+    controlRpc<{ rating: number; working: string | null; change: string | null; inaccurate: boolean; inaccurate_note: string | null; name: string | null; at: string }[]>(supabase, 'so_eod_client_feedback', { p_eod: eodId }),
   ]);
   const { data, error } = report;
   const zone = session.data?.time_zone ?? 'America/New_York';
@@ -72,7 +73,17 @@ export default async function EodDetailPage({ params }: { params: Promise<{ eodI
           </section>
           <section className={brand.panel}>
             <h2 className={`${brand.heading} text-lg`}>Client feedback</h2>
-            <p className="mt-2 text-sm text-neutral-400">Client feedback shows here when the client report goes out. Nothing to answer yet.</p>
+            {(clientNotes.data ?? []).length === 0 ? <p className="mt-2 text-sm text-neutral-400">Client feedback shows here when the client report goes out. Nothing to answer yet.</p> : null}
+            <ul className="mt-3 space-y-3">
+              {(clientNotes.data ?? []).map((note) => (
+                <li key={note.at} className="text-sm text-neutral-200">
+                  <p className="text-xs text-neutral-500">Rating {note.rating} of 5{note.name ? ` · ${note.name}` : ''}{note.inaccurate ? ' · Marked inaccurate' : ''}</p>
+                  {note.working ? <p className="mt-1">{note.working}</p> : null}
+                  {note.change ? <p className="mt-1">{note.change}</p> : null}
+                  {note.inaccurate_note ? <p className="mt-1">{note.inaccurate_note}</p> : null}
+                </li>
+              ))}
+            </ul>
           </section>
         </article>
       )}

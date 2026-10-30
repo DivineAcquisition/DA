@@ -7,6 +7,7 @@ const TABS = [
   { href: '/workspace/team/workspace', label: 'Today', exact: true, admin: false },
   { href: '/workspace/team/workspace/operators', label: 'Operators', admin: false },
   { href: '/workspace/team/workspace/eods', label: 'EODs', admin: false },
+  { href: '/workspace/team/workspace/reports', label: 'Reports', admin: false },
   { href: '/workspace/team/workspace/activity', label: 'Activity Log', admin: false },
   { href: '/workspace/team/workspace/integrity', label: 'Data integrity', admin: true },
 ];

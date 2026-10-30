@@ -11,7 +11,8 @@ import PlacementForm from '../../components/PlacementForm';
 import PlacementStatusControl from '../../components/PlacementStatusControl';
 import { ExcuseForm } from '../../eods/ReviewPanel';
 import GhlPlacement from '../../components/GhlPlacement';
-import { controlRpc } from '@/lib/ad/rpc';
+import ReportPlacement from '../../components/ReportPlacement';
+import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
@@ -147,6 +148,7 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
             <ExcuseForm placementId={p.id} />
           </Panel>
           <GhlSection placementId={p.id} />
+          <ReportSection placementId={p.id} />
         </div>
       </div>
     </>
@@ -228,6 +230,7 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
             ))}
           </ul>
         </Panel>
+        <ReportSection placementId={placementId} />
         <Panel title="Excuse a day">
           <p className="text-sm text-[var(--ws-dim)]">No EOD is due, and reminders stop. The operator can see the day. They cannot excuse themselves.</p>
           <ExcuseForm placementId={placementId} />
@@ -245,6 +248,16 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
         </Panel>
       </div>
     </>
+  );
+}
+
+async function ReportSection({ placementId }: { placementId: string }) {
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<Parameters<typeof ReportPlacement>[0]['panel']>(supabase, 'so_report_panel', { p_placement: placementId });
+  return (
+    <Panel title="Client reporting">
+      {error || !data ? <p className="text-sm text-amber-200">{error ? readable(error) : 'Client reporting did not load.'}</p> : <ReportPlacement placementId={placementId} panel={data} />}
+    </Panel>
   );
 }
 

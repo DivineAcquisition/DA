@@ -88,7 +88,39 @@ export function settingsPayload(fd: Form): { ok: true; value: Record<string, unk
     eod_hours_worked_enabled: fd.get('eod_hours_worked_enabled') === 'on',
     eod_note_to_manager_enabled: fd.get('eod_note_to_manager_enabled') === 'on',
     ghl_stl_pause_outside_shift: fd.get('ghl_stl_pause_outside_shift') === 'on',
+    report_drive_enabled: fd.get('report_drive_enabled') === 'on',
+    report_discord_enabled: fd.get('report_discord_enabled') === 'on',
+    report_airtable_enabled: fd.get('report_airtable_enabled') === 'on',
+    report_clickup_enabled: fd.get('report_clickup_enabled') === 'on',
+    report_reply_to: text(fd, 'report_reply_to'),
+    report_weekly_time: text(fd, 'report_weekly_time') || '09:00',
+    report_page_origin: text(fd, 'report_page_origin'),
+    report_drive_folder_id: text(fd, 'report_drive_folder_id'),
+    report_airtable_base_id: text(fd, 'report_airtable_base_id'),
+    report_clickup_folder_id: text(fd, 'report_clickup_folder_id'),
+    report_clickup_escalation_list_id: text(fd, 'report_clickup_escalation_list_id'),
   };
+  const dow = optionalNumber(text(fd, 'report_weekly_dow'));
+  const approval = optionalNumber(text(fd, 'report_approval_hours'));
+  const low = optionalNumber(text(fd, 'report_low_rating'));
+  const fails = optionalNumber(text(fd, 'report_fail_alert_after'));
+  if (dow === 'invalid' || approval === 'invalid' || low === 'invalid' || fails === 'invalid') {
+    return { ok: false, error: 'Report timing needs a number.' };
+  }
+  value.report_weekly_dow = dow ?? 1;
+  value.report_approval_hours = approval ?? 24;
+  value.report_low_rating = low ?? 2;
+  value.report_fail_alert_after = fails ?? 3;
+  const clickupUsers = text(fd, 'report_clickup_users');
+  if (clickupUsers) {
+    try {
+      const parsed = JSON.parse(clickupUsers) as unknown;
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return { ok: false, error: 'ClickUp user map must be a JSON object.' };
+      value.report_clickup_users = parsed;
+    } catch {
+      return { ok: false, error: 'ClickUp user map must be JSON.' };
+    }
+  }
   for (const key of ['mismatch_tolerance_pct', 'mismatch_small_count_gap', ...INTEGER_SETTINGS] as const) {
     const n = optionalNumber(text(fd, key));
     if (n === 'invalid' || n === null) return { ok: false, error: `${key.replace(/_/g, ' ')} needs a number.` };
