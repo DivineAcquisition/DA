@@ -66,7 +66,7 @@ export function AuditForm() {
         trackCleaningLead(result.monthlyRevenue, result.recurringShare, result.eventId);
       }
       const next = withNicheTracking(
-        `/thanks?name=${encodeURIComponent(firstName.trim())}`,
+        `/cleaning/thanks?name=${encodeURIComponent(firstName.trim())}`,
         tracking,
       );
       window.location.assign(next);

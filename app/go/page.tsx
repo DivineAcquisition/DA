@@ -1,213 +1,362 @@
-import type { Metadata } from 'next';
-import Link from 'next/link';
-import Logo from '@/app/components/Logo';
-import { LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
+import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { ShineBorder } from '@/components/ui/shine-border';
+import { GO_VSL_MEDIA_ID, wistiaAspectRatio } from '@/lib/go/config';
+import { CircleCheck, FileWarning, Moon, PhoneMissed, UserRoundX, X } from 'lucide-react';
 import {
-  CLEANING_CTA,
-  CLEANING_STICKY_CTA,
-  cleaningFaqs,
-  cleaningFoundingBar,
-  cleaningGateLine,
-  cleaningHeadline,
-  cleaningProofLine,
-} from '@/lib/cleaning/copy';
-import { cleaningFee, cleaningSettings } from '@/lib/cleaning/settings';
-import { AuditForm } from './cleaning/AuditForm';
-import { CleaningPageView } from './cleaning/Pixel';
-import './cleaning/cleaning.css';
+  CALENDAR,
+  CTA_LABEL,
+  FACEBOOK_DISCLAIMER,
+  FAQ,
+  FINAL_CTA,
+  FIT_HEADLINE,
+  FIT_NO,
+  FIT_NO_TITLE,
+  FIT_YES,
+  FIT_YES_TITLE,
+  FOUNDING_OFFER,
+  HEADLINE_ACCENT,
+  HEADLINE_AFTER,
+  HEADLINE_BEFORE,
+  INCLUDED,
+  INCLUDED_FOOTNOTE,
+  INCLUDED_TITLE,
+  LANDING_TRUST,
+  MATH,
+  MATH_HEADLINE,
+  MATH_LEAD,
+  PILL_BANNER,
+  PROBLEMS,
+  PROBLEMS_HEADLINE,
+  PROCESS,
+  PROCESS_HEADLINE,
+  SUBHEADLINE,
+  SYSTEMS,
+  SYSTEMS_HEADLINE,
+  SYSTEMS_LEAD,
+  TESTIMONIALS,
+  TESTIMONIALS_HEADLINE,
+  TESTIMONIALS_LEAD,
+  VIDEO_LABEL,
+} from '@/lib/go/copy';
+import { cookies } from 'next/headers';
+import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
+import { ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
+import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
+import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
+import { nicheTrackingFromSearch } from '@/lib/acq/niche-tracking';
+import { DemoLink } from './components/DemoLink';
+import { GoScene } from './components/GoScenes';
+import { GoWistia } from './components/GoWistia';
 
-const settings = cleaningSettings;
-const offerOn = settings.foundingPartnerOffer;
-const headline = cleaningHeadline();
-
-export const metadata: Metadata = {
-  title: { absolute: 'Divine Acquisition | Own Your Leads for Cleaning Companies' },
-  description:
-    'Exclusive quote requests from your own ads, a first text within minutes, and a person who books the first clean on a recurring plan. You pay only when a client goes recurring.',
-  openGraph: {
-    title: 'Divine Acquisition | Own Your Leads for Cleaning Companies',
-    description:
-      'Exclusive quote requests from your own ads, a first text within minutes, and follow-up after every clean. You pay only when a client goes recurring.',
-    url: 'https://go.divineacquisition.io/',
-    images: [{ url: '/cleaning/finished-home.svg', alt: 'A bright finished home' }],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Divine Acquisition | Own Your Leads for Cleaning Companies',
-    description:
-      'Exclusive quote requests from your own ads, a first text within minutes, and follow-up after every clean. You pay only when a client goes recurring.',
-    images: ['/cleaning/finished-home.svg'],
-  },
-};
-
-function Cta() {
+function Check() {
   return (
-    <a className="acq-button clean-cta" href="#request">
-      {CLEANING_CTA}
+    <svg viewBox="0 0 20 20" aria-hidden>
+      <path d="m4 10 4 4 8-8" />
+    </svg>
+  );
+}
+
+const PROBLEM_ICONS = [PhoneMissed, Moon, FileWarning, UserRoundX] as const;
+
+function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: typeof PhoneMissed; tone?: 'brand' | 'red' }) {
+  return (
+    <span className={tone === 'red' ? 'go-saas-icon go-saas-icon-red' : 'go-saas-icon'}>
+      <Icon aria-hidden />
+    </span>
+  );
+}
+
+function BookLink() {
+  return (
+    <a className="acq-button" href="#calendar">
+      {CTA_LABEL}
     </a>
   );
 }
 
-export default function CleaningHomePage() {
+export default async function CleaningFunnelPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const tracking = nicheTrackingFromSearch(await searchParams);
+  const jar = await cookies();
+  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+    fbp: jar.get('_fbp')?.value,
+    fbc: jar.get('_fbc')?.value,
+  });
+
   return (
-    <div className="acq-coaches clean-page">
-      <CleaningPageView />
-      {offerOn ? <p className="clean-bar">{cleaningFoundingBar()}</p> : null}
-      <header className="clean-top">
-        <Link href="/" aria-label="Divine Acquisition">
-          <Logo className="h-7 w-auto" />
-        </Link>
-        <a className="acq-button" href="#request">
-          {CLEANING_STICKY_CTA}
-        </a>
-      </header>
-
-      <main>
-        <section className="clean-hero">
-          <div className="clean-wrap">
-            <p className="clean-pill">ATTENTION: RESIDENTIAL CLEANING COMPANY OWNERS</p>
-            <h1>
-              {headline.start} {headline.end}
-            </h1>
-            <p className="clean-proof">{cleaningProofLine()}</p>
-            {settings.mysteryShopStat ? <p className="clean-proof clean-proof-extra">{settings.mysteryShopStat}</p> : null}
-            <p className="clean-sub">
-              We run the ads in your account, text new quote requests within minutes from 8 a.m. to 8 p.m., and a person on our team books the first clean with a recurring plan.
-            </p>
-            <p className="clean-gate">{cleaningGateLine()}</p>
-            <Cta />
-            <ul className="clean-chips">
-              <li>Pay only when a client goes recurring</li>
-              <li>One company per market</li>
-              <li>You keep the ad account</li>
-            </ul>
-          </div>
-        </section>
-
-        <section className="clean-section clean-glow">
-          <div className="clean-wrap">
-            <h2>You&apos;re losing clients between the quote request and the second clean.</h2>
-            <ul className="clean-cards">
-              <li className="clean-card">
-                <h3>The same request went to other companies.</h3>
-                <p>The homeowner booked whoever answered first or quoted lowest.</p>
-              </li>
-              <li className="clean-card">
-                <h3>It came in after your VA logged off.</h3>
-                <p>By morning they had already booked someone else.</p>
-              </li>
-              <li className="clean-card">
-                <h3>The one-time clean never came back.</h3>
-                <p>Nobody offered a weekly, biweekly, or monthly plan, or called when they cancelled.</p>
-              </li>
-            </ul>
-            <Cta />
-          </div>
-        </section>
-
-        <section className="clean-section">
-          <div className="clean-wrap">
-            <h2>The Owned Booking Engine</h2>
-            <ol className="clean-engine">
-              <li className="clean-panel">
-                <h3>Ads in an account you own.</h3>
-                <p>Your photos, your service area. Every lead is yours.</p>
-              </li>
-              <li className="clean-panel">
-                <h3>A fast text, then a real person.</h3>
-                <p>From 8 a.m. to 8 p.m. an assistant asks about the home and how often. Then someone on our team books the first clean in your system.</p>
-              </li>
-              <li className="clean-panel">
-                <h3>Follow-up after the clean.</h3>
-                <p>A check-in, a review request, and a win-back if they pause or cancel.</p>
-              </li>
-            </ol>
-            <p className="clean-score">
-              Each week: quote requests, first cleans booked, cleans completed, new recurring clients, and win-backs.
-            </p>
-          </div>
-        </section>
-
-        <section className="clean-section">
-          <div className="clean-wrap">
-            {offerOn ? (
-              <>
-                <h2>You only pay when a new client goes recurring.</h2>
-                <ul className="clean-checks">
-                  <li>No setup fee. No monthly fee. {settings.foundingSpotsPerMarket} spots per market.</li>
-                  <li>You pay Meta directly, at least {settings.minimumAdBudget}.</li>
-                  <li>
-                    We earn {cleaningFee()} after their first recurring clean, checked in your booking software.
-                  </li>
-                  <li>
-                    Miss {settings.firstCleans} first cleans within {settings.promiseWindow}? Your next {settings.feeFreeClients} new recurring clients are fee-free.
-                  </li>
-                </ul>
-              </>
-            ) : (
-              <h2>Pricing is set after your audit.</h2>
-            )}
-            <Cta />
-          </div>
-        </section>
-
-        <section className="clean-section">
-          <div className="clean-wrap">
-            <h2>Who it&apos;s for</h2>
-            <div className="clean-fit">
-              <article className="clean-panel">
-                <h3>Built for you if</h3>
-                <ul>
-                  <li>You do $15K or more a month, mostly house cleaning</li>
-                  <li>Your teams can take more homes</li>
-                  <li>You can put {settings.minimumAdBudget} into ads</li>
-                  <li>We can book into your software or calendar</li>
-                </ul>
-              </article>
-              <article className="clean-panel clean-not">
-                <h3>Not a fit if</h3>
-                <ul>
-                  <li>You clean alone, or only do commercial work</li>
-                  <li>Your schedule is full</li>
-                  <li>You compete only on the lowest price</li>
-                  <li>You won&apos;t share booking records</li>
-                </ul>
-              </article>
+    <div className="acq-coaches min-h-screen antialiased">
+      <section className="lx-hero">
+        <div className="lx-wrap lx-hero-inner">
+          <AnimatedShinyText className="lx-pill mx-0 max-w-none text-brand-300">{PILL_BANNER}</AnimatedShinyText>
+          <h1 className="lx-headline">
+            {HEADLINE_BEFORE}
+            {HEADLINE_ACCENT ? <span className="lx-accent">{HEADLINE_ACCENT}</span> : null}
+            {HEADLINE_AFTER}
+          </h1>
+          <p className="lx-lead">{SUBHEADLINE}</p>
+          <p className="lx-requirement">{VIDEO_LABEL}</p>
+          <div className="lx-video-wrap go-magic">
+            <div className="lx-video-shell">
+              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={14} />
+              <BorderBeam size={90} duration={9} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+              <GoWistia mediaId={GO_VSL_MEDIA_ID} />
             </div>
-            <p className="clean-score">One residential cleaning company per market. When your area is taken, it&apos;s closed.</p>
           </div>
-        </section>
+          <DemoLink />
+          <BookLink />
+          <ul className="lx-trust">
+            {LANDING_TRUST.map((item) => (
+              <li key={item}>
+                <Check />
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-        <section className="clean-section">
-          <div className="clean-wrap clean-faq">
-            <h2>FAQ</h2>
-            {cleaningFaqs().map((item) => (
-              <details key={item.q}>
-                <summary>{item.q}</summary>
-                <p>{item.a}</p>
+      <section className="lx-section" id="results">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{TESTIMONIALS_HEADLINE}</h2>
+          <p className="lx-intro">{TESTIMONIALS_LEAD}</p>
+          <ul className="go-results">
+            {TESTIMONIALS.map((item) => (
+              <li key={item.name} className="lx-card">
+                <p className="go-kicker">{item.videoId ? 'Live testimonial' : 'Interview coming soon'}</p>
+                <div className="go-person">
+                  <span className="go-initials">{item.initials}</span>
+                  <div>
+                    <p className="go-name">{item.name}</p>
+                    <p className="go-role">{item.role}</p>
+                  </div>
+                </div>
+                {item.videoId ? (
+                  <GoWistia mediaId={item.videoId} aspect={wistiaAspectRatio(item.videoAspect)} />
+                ) : (
+                  <div className="go-placeholder">
+                    <p>Nathan&apos;s interview is being recorded.</p>
+                  </div>
+                )}
+                <blockquote className="go-quote">&ldquo;{item.quote}&rdquo;</blockquote>
+                <ul className="go-stats">
+                  {item.stats.map((stat) => (
+                    <li key={stat.label}>
+                      <strong>{stat.value}</strong>
+                      <span>{stat.label}</span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="lx-section" id="product">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{INCLUDED_TITLE}</h2>
+          <ul className="lx-offer">
+            {INCLUDED.map((item) => (
+              <li key={item.title} className="lx-card go-saas-card">
+                <GoScene title={item.title} />
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </li>
+            ))}
+          </ul>
+          <p className="lx-callout">{INCLUDED_FOOTNOTE}</p>
+          <div className="lx-center">
+            <BookLink />
+          </div>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{PROBLEMS_HEADLINE}</h2>
+          <ul className="lx-patterns">
+            {PROBLEMS.map((problem, index) => {
+              const Icon = PROBLEM_ICONS[index] ?? PhoneMissed;
+              return (
+                <li key={problem.title} className="lx-card lx-pattern go-problem">
+                  <SaasIcon icon={Icon} tone="red" />
+                  <h3>{problem.title}</h3>
+                  <p>{problem.description}</p>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{SYSTEMS_HEADLINE}</h2>
+          <p className="lx-intro">{SYSTEMS_LEAD}</p>
+          <ol className="lx-steps">
+            {SYSTEMS.map((system) => (
+              <li key={system.key} className="lx-card go-saas-card">
+                <GoScene title={system.title} />
+                <h3>{system.title}</h3>
+                <p>{system.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{PROCESS_HEADLINE}</h2>
+          <ol className="lx-steps">
+            {PROCESS.map((step) => (
+              <li key={step.title} className="lx-card go-saas-card">
+                <GoScene title={step.title} />
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </li>
+            ))}
+          </ol>
+          <div className="lx-center">
+            <BookLink />
+          </div>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{MATH_HEADLINE}</h2>
+          <p className="lx-intro">{MATH_LEAD}</p>
+          <ul className="lx-steps">
+            {MATH.map((item) => (
+              <li key={item.title} className="lx-card">
+                <h3>{item.title}</h3>
+                <p className="go-delta">
+                  {item.from} → <span>{item.to}</span>
+                </p>
+                <p>{item.caption}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{FIT_HEADLINE}</h2>
+          <ul className="lx-audience">
+            <li className="lx-card lx-featured">
+              <h3 className="go-fit-title">
+                <CircleCheck aria-hidden />
+                {FIT_YES_TITLE}
+              </h3>
+              <ul className="go-fit-list">
+                {FIT_YES.map((item) => (
+                  <li key={item}>
+                    <CircleCheck aria-hidden />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+            <li className="lx-card go-not-fit">
+              <h3 className="go-fit-title">
+                <X aria-hidden />
+                {FIT_NO_TITLE}
+              </h3>
+              <ul className="go-fit-list">
+                {FIT_NO.map((item) => (
+                  <li key={item}>
+                    <X aria-hidden />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap lx-hero-inner">
+          <h2 className="lx-heading">{FOUNDING_OFFER.eyebrow}</h2>
+          <p className="lx-callout">
+            <strong>{FOUNDING_OFFER.lead}</strong> {FOUNDING_OFFER.body}
+          </p>
+          <BookLink />
+        </div>
+      </section>
+
+      <section className="lx-section" id="faq">
+        <div className="lx-wrap">
+          <h2 className="lx-heading">{FAQ.headline}</h2>
+          <div className="lx-faq">
+            {FAQ.items.map((item) => (
+              <details key={item.question}>
+                <summary>
+                  <span>{item.question}</span>
+                  <span className="lx-plus" aria-hidden />
+                </summary>
+                <p className="lx-answer">{item.answer}</p>
               </details>
             ))}
           </div>
-        </section>
-
-        <section className="clean-section">
-          <div className="clean-wrap">
-            <h2>Get your free Lead Leak Audit.</h2>
-            <p>{settings.callbackPromise} The call is about five minutes. Before it, we time how fast your company answers a quote request.</p>
-            <AuditForm />
-          </div>
-        </section>
-      </main>
-
-      <footer className="clean-footer">
-        <div className="clean-wrap">
-          <p>Divine Acquisition LLC, Lanham, Maryland.</p>
-          <p>
-            <a href={LEGAL_PRIVACY_URL}>Privacy Policy</a>
-            {' · '}
-            <a href={LEGAL_TERMS_URL}>Terms</a>
-          </p>
         </div>
+      </section>
+
+      <section className="lx-section" id="calendar">
+        <div className="lx-wrap">
+          <div className="lx-hero-inner">
+            <h2 className="lx-heading">
+              {CALENDAR.titleBefore}
+              <span className="lx-accent">{CALENDAR.titleAccent}</span>
+              {CALENDAR.titleAfter}
+            </h2>
+            <p className="lx-lead">{CALENDAR.body}</p>
+          </div>
+          <IclosedEmbed
+            url={calendarSrc}
+            title={ACQ_ICLOSED_TITLE}
+            contentName="Cleaning strategy session"
+            contentCategory="cleaning"
+            eventName="Schedule"
+          />
+        </div>
+      </section>
+
+      <section className="lx-section">
+        <div className="lx-wrap lx-hero-inner">
+          <h2 className="lx-heading">{FINAL_CTA.headline}</h2>
+          <p className="lx-lead">{FINAL_CTA.body}</p>
+          <p className="lx-requirement">{FINAL_CTA.caption}</p>
+          <BookLink />
+        </div>
+      </section>
+
+      <footer className="lx-foot">
+        <ul className="go-foot-links">
+          <li>
+            <a href="#results">Results</a>
+          </li>
+          <li>
+            <a href="#product">What&apos;s included</a>
+          </li>
+          <li>
+            <a href="#faq">FAQ</a>
+          </li>
+          <li>
+            <a href="#calendar">Book a session</a>
+          </li>
+        </ul>
+        <p>
+          <a href="mailto:hello@divineacquisition.io">hello@divineacquisition.io</a>
+        </p>
+        <p>© {new Date().getFullYear()} Divine Acquisition. All rights reserved.</p>
+        <p className="mx-auto mt-4 max-w-2xl">{FACEBOOK_DISCLAIMER}</p>
       </footer>
     </div>
   );

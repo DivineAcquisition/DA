@@ -22,14 +22,10 @@ describe('coaches application route', () => {
     expect(rewrite).toContain('/go/invite/luis');
   });
 
-  it('serves the home offer and the thank-you page on the cleaning host', async () => {
+  it('rewrites the cleaning host home page into the go surface', async () => {
     const home = await proxy(new NextRequest('https://go.divineacquisition.io/', { headers: { host: 'go.divineacquisition.io' } }));
     expect(home.status).not.toBe(404);
-    const thanks = await proxy(
-      new NextRequest('https://go.divineacquisition.io/thanks', { headers: { host: 'go.divineacquisition.io' } }),
-    );
-    expect(thanks.status).not.toBe(404);
-    expect(thanks.headers.get('x-middleware-rewrite') ?? '').toContain('/go/thanks');
+    expect(home.headers.get('x-middleware-rewrite') ?? '').toContain('/go');
   });
 
   it('does not rewrite the cleaning audit API into the cleaning pages', async () => {

@@ -1,11 +1,11 @@
 /** Landing copy for the residential cleaning funnel. Source: revenueweave-hub. */
 
-export const PILL_BANNER = 'For remote-operated residential cleaning companies doing $15K+/month';
+export const PILL_BANNER = 'ATTENTION: RESIDENTIAL CLEANING OWNERS WITH TEAMS';
 
-export const HEADLINE_BEFORE = 'More jobs. More referrals. ';
-export const HEADLINE_ACCENT = 'More recurring revenue.';
-export const HEADLINE_AFTER =
-  ' Built for remote cleaning companies that run on systems, not phone calls.';
+export const HEADLINE_BEFORE =
+  "We'll Book 10 First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In 7 Days, Without You Or Your VA Chasing Leads, And You Only Pay When A Client Goes Recurring.";
+export const HEADLINE_ACCENT = '';
+export const HEADLINE_AFTER = '';
 
 export const SUBHEADLINE =
   "We'll install AI-powered booking, follow-up, and retention so you stop chasing leads and start building a business that grows on autopilot.";
