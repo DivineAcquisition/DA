@@ -19,7 +19,7 @@ export default async function PayPage() {
   });
   return renderPortal(load, 'pay', (data, _placementId, context) => (
     <>
-      {context.stage === 'inactive' ? null : <GrowthNav current="pay" />}
+      {context.stage === 'inactive' || context.sales_operator ? null : <GrowthNav current="pay" />}
       <PayView statements={data.statements} />
     </>
   ));

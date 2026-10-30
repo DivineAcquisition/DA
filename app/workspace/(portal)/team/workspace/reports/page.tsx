@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { controlRpc, readable } from '@/lib/ad/rpc';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, getSessionContext } from '@/lib/supabase/server';
 
 export const metadata: Metadata = { title: 'Reports' };
 export const dynamic = 'force-dynamic';
@@ -24,7 +24,7 @@ type Row = {
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const query = await searchParams;
-  const supabase = await createClient();
+  const [supabase, session] = await Promise.all([createClient(), getSessionContext()]);
   await controlRpc(supabase, 'so_report_sweep');
   const { data, error } = await controlRpc<Row[]>(supabase, 'so_report_list', { p_status: query.status ?? null });
   if (error) return <p className="text-sm text-[#FFB020]">{readable(error)}</p>;
@@ -35,7 +35,11 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
           <h1 className="text-2xl font-semibold text-white">Reports</h1>
           <p className="mt-1 text-sm text-neutral-400">Ready for Review is waiting on a manager. Nothing sends until it is approved, unless that placement turned approval off.</p>
         </div>
-        <Link href="/workspace/team/workspace/reports/deliveries" className="text-sm text-neutral-400 hover:text-white">Deliveries</Link>
+        {session?.isAdmin ? (
+          <Link href="/workspace/team/workspace/reports/deliveries" className="text-sm text-neutral-400 hover:text-white">
+            Deliveries
+          </Link>
+        ) : null}
       </div>
       <form className="flex gap-2" method="get">
         <select name="status" defaultValue={query.status ?? ''} aria-label="Status" className="h-9 rounded-lg border border-white/10 bg-ink-950 px-2 text-sm">

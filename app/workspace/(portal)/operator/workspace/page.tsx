@@ -4,11 +4,11 @@ import { controlRpc, readable } from '@/lib/ad/rpc';
 import { appUrl } from '@/lib/apps';
 import type { CertificationNotice } from '@/lib/sales-workspace/types';
 import { firstName, NO_ACCESS_COPY } from '@/lib/sales-workspace/view';
-import { createClient, getSessionContext } from '@/lib/supabase/server';
+import { createClient } from '@/lib/supabase/server';
 import ActiveDashboard from './dashboard/ActiveDashboard';
 import { isActiveDashboard, type DashboardResponse } from '@/lib/sales-workspace/dashboard';
-import { ViewAsBanner } from './ViewAsBanner';
-import WorkspaceFrame, { brand, DetailGrid, StatePanel } from './WorkspaceFrame';
+import { brand, DetailGrid, StatePanel } from './WorkspaceFrame';
+import { WorkspaceShell } from './shell';
 
 export const metadata: Metadata = { title: 'Workspace' };
 export const dynamic = 'force-dynamic';
@@ -18,15 +18,14 @@ export const dynamic = 'force-dynamic';
  * Every other state is the access page from the foundation.
  */
 export default async function WorkspacePage() {
-  const [supabase, session] = await Promise.all([createClient(), getSessionContext()]);
+  const supabase = await createClient();
   await controlRpc(supabase, 'so_eod_sweep');
   const { data, error } = await controlRpc<DashboardResponse>(supabase, 'so_dashboard');
-  const viewingAs = session?.impersonation?.target_full_name || session?.impersonation?.target_email || null;
 
   return (
-    <WorkspaceFrame wide={data?.state === 'active'} banner={viewingAs ? <ViewAsBanner name={viewingAs} /> : null}>
+    <WorkspaceShell wide={data?.state === 'active'}>
       {error || !data ? <Unavailable message={error ? readable(error) : null} /> : <StateView state={data} />}
-    </WorkspaceFrame>
+    </WorkspaceShell>
   );
 }
 

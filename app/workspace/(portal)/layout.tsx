@@ -14,6 +14,8 @@ import { OpsProvider } from '@/lib/vistrial/store';
 import type { Actor } from '@/lib/vistrial/types';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { ManagerShell, OperatorGate } from './components/Gates';
+import { loadNavCounts } from '@/lib/workspace/nav-counts';
+import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 import HubSignIn from './components/HubSignIn';
 
 export const metadata: Metadata = {
@@ -83,7 +85,13 @@ export default async function VistrialLayout({ children }: { children: React.Rea
 
   // Managers oversee the operators in their scope from the team page.
   if (session.role === 'manager') {
-    return <ManagerShell name={session.fullName ?? session.email}>{children}</ManagerShell>;
+    if (!managerPathAllowed(pathname)) redirect('/workspace/team/workspace');
+    const counts = await loadNavCounts();
+    return (
+      <ManagerShell name={session.fullName ?? session.email} counts={counts}>
+        {children}
+      </ManagerShell>
+    );
   }
 
   if (!session.isAdmin || session.role === 'contractor' || session.role === 'client') {

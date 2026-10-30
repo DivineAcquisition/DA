@@ -77,10 +77,10 @@ export default async function SalesOpsOverviewPage() {
       {team ? (
         <div className="mb-8 grid gap-3 sm:grid-cols-4">
           {[
-            ['Needs review', team.needs_review, '/workspace/sales-ops/eods'],
-            ['Late', team.late, '/workspace/sales-ops/eods?filter=late'],
-            ['Missed', team.missed, '/workspace/sales-ops/eods?filter=missed'],
-            ['Escalated', team.escalated, '/workspace/sales-ops/eods?filter=escalated'],
+            ['Needs review', team.needs_review, '/workspace/team/workspace/eods?status=needs_review'],
+            ['Late', team.late, '/workspace/team/workspace/eods?status=late'],
+            ['Missed', team.missed, '/workspace/team/workspace/eods?status=missed'],
+            ['Escalated', team.escalated, '/workspace/team/workspace/eods?status=escalated'],
           ].map(([label, count, href]) => (
             <Link key={String(label)} href={String(href)} className={`${ws.card} p-4`}>
               <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-300">{label}</p>

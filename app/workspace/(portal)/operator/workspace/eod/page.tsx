@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
+import { SalesEodNav } from '../../components/RecordNav';
 import { brand } from '../WorkspaceFrame';
 import { WorkspaceShell } from '../shell';
 import EodForm, { type EodFormData } from './EodForm';
@@ -18,6 +19,7 @@ export default async function EodPage({ searchParams }: { searchParams: Promise<
 
   return (
     <WorkspaceShell>
+      <SalesEodNav current="today" />
       {error || !data ? (
         <section className={brand.panel}>
           <p className={brand.eyebrow}>End of day</p>

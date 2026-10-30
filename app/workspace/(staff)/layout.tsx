@@ -3,6 +3,9 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
+import { managerPathAllowed } from '@/lib/workspace/manager-paths';
+import { loadNavCounts } from '@/lib/workspace/nav-counts';
+import { ManagerShell } from '@/app/workspace/(portal)/components/Gates';
 import { filePendingOperatorPackets } from '@/lib/workspace/placement-packet';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
@@ -61,10 +64,13 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!session.isAdmin) {
     if (session.role === 'manager' && !holdAccess) {
-      if (!pathname.startsWith('/workspace/sales-ops')) redirect('/workspace/sales-ops');
+      if (!managerPathAllowed(pathname)) redirect('/workspace/team/workspace');
+      const counts = await loadNavCounts();
       return (
         <RequireAdminMfa email={session.email}>
-          <div className="da-workspace min-h-screen bg-background text-card-foreground">{children}</div>
+          <ManagerShell name={session.fullName ?? session.email} counts={counts}>
+            {children}
+          </ManagerShell>
         </RequireAdminMfa>
       );
     }
@@ -94,7 +100,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   // PDF builder, so it runs here the next time an admin opens the workspace.
   await filePendingOperatorPackets().catch(() => ({ filed: 0, failed: 0 }));
 
-  const academy = await academyAdminSession();
+  const [academy, counts] = await Promise.all([academyAdminSession(), loadNavCounts()]);
   const studentPreview = pathname.includes('/workspace/academy/preview/');
 
   if (studentPreview) {
@@ -104,7 +110,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   return (
     <RequireAdminMfa email={session.email}>
       <div className="da-workspace">
-        <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)}>
+        <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)} counts={counts}>
           {children}
         </Shell>
       </div>

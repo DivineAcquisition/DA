@@ -37,7 +37,7 @@ export default function SalesHome({ placementId }: { placementId: string | null 
         <Card>
           <CardTitle>End of day</CardTitle>
           <p className="text-sm text-neutral-400">File what you worked at the end of the shift.</p>
-          <Link href="/workspace/operator/reports" className={`${btnSecondary} ${btnSizeSm} mt-4`}>
+          <Link href="/workspace/operator/workspace/eod" className={`${btnSecondary} ${btnSizeSm} mt-4`}>
             {placed ? 'File end of day' : 'End of day opens with a client'}
           </Link>
         </Card>

@@ -10,7 +10,7 @@ import { SEVERITY_LABEL, SEVERITY_TONE } from '@/lib/portal/labels';
 import { exitViewAsAction, extendViewAsAction } from '@/lib/portal/staffActions';
 import { formatDuration } from '@/lib/portal/time';
 import type { PortalContext } from '@/lib/portal/types';
-import { menuFor, zoneOf, zonesFor, type NavItem, type TabKey } from '@/lib/portal/zones';
+import { menuFor, phoneBarFor, zoneOf, zonesFor, type TabKey } from '@/lib/portal/zones';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import { Badge } from '../../components/ui';
 import AdminPanel from './AdminPanel';
@@ -25,15 +25,27 @@ function badgeFor(key: string, context: PortalContext): number {
       return (b.reviews_open ?? 0) + b.answers_ready;
     case 'growth':
       return (b.feedback_unread ?? 0) + b.pay_answers;
-    case 'pay':
-      return b.pay_answers;
     case 'tasks':
       return b.open_tasks;
+    case 'performance':
+    case 'pay':
+      return b.pay_answers;
     case 'inbox':
       return b.unread_notifications;
     default:
       return 0;
   }
+}
+
+function dueLabel(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const [year, month, day] = iso.slice(0, 10).split('-').map(Number);
+  if (!year || !month || !day) return null;
+  return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 export default function PortalShell({
@@ -57,8 +69,12 @@ export default function PortalShell({
   const showGate = context.blocking_notices.length > 0 && (blocked || (viewAs && !peek));
   const zones = zonesFor(context);
   const menu = menuFor(context);
-  const zone = zoneOf(tab, Boolean(context.sales_operator));
-  const menuCount = menu.reduce((sum, item) => sum + badgeFor(item.key, context), 0);
+  const phone = phoneBarFor(context);
+  const zone = zoneOf(tab, Boolean(context.sales_operator), context.stage);
+  const phoneHrefs = new Set(phone.map((item) => item.href));
+  const overflow = zones.filter((item) => !phoneHrefs.has(item.href));
+  const menuCount = [...overflow, ...menu].reduce((sum, item) => sum + badgeFor(item.key, context), 0);
+  const certDue = dueLabel(context.training_due?.recertify_on);
 
   return (
     <PortalProvider context={context} placementId={placementId}>
@@ -96,21 +112,27 @@ export default function PortalShell({
                 {zones.map((item) => {
                   const count = badgeFor(item.key, context);
                   const current = item.key === zone;
-                  return (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      aria-current={current ? 'page' : undefined}
-                      className={`flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
-                        current
-                          ? 'bg-brand-500/[0.14] text-brand-100 ring-1 ring-inset ring-brand-500/25'
-                          : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
-                      }`}
-                    >
+                  const className = `flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[13px] font-medium transition-colors ${
+                    current
+                      ? 'bg-[#6A00FF]/15 text-white ring-1 ring-inset ring-[#6A00FF]/40'
+                      : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
+                  }`;
+                  const inner = (
+                    <>
                       {item.label}
+                      {item.key === 'training' && certDue ? <span className="text-[10px] font-semibold text-[#937DFF]">Due {certDue}</span> : null}
                       {count > 0 ? (
-                        <span className="rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">{count}</span>
+                        <span className="rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white">{count}</span>
                       ) : null}
+                    </>
+                  );
+                  return item.href.startsWith('http') ? (
+                    <a key={item.key} href={item.href} className={className}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <Link key={item.key} href={item.href} aria-current={current ? 'page' : undefined} className={className}>
+                      {inner}
                     </Link>
                   );
                 })}
@@ -119,22 +141,31 @@ export default function PortalShell({
 
             <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 md:pb-12">{children}</main>
 
-            <MobileBar zones={zones} zone={zone} context={context} />
+            <MobileBar context={context} zone={zone} />
             <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Menu">
               <div className="grid gap-2">
-                {menu.map((item) => {
+                {[...overflow, ...menu].map((item) => {
                   const count = badgeFor(item.key, context);
-                  return (
-                    <Link
-                      key={item.key}
-                      href={item.href}
-                      onClick={() => setMoreOpen(false)}
-                      className={`flex items-center justify-between rounded-xl px-4 py-3 text-sm ${
-                        item.key === tab ? 'bg-brand-500/[0.14] text-brand-100' : 'bg-white/[0.03] text-neutral-200'
-                      }`}
-                    >
-                      {item.label}
-                      {count > 0 ? <span className="rounded-full bg-brand-500 px-2 text-[11px] font-bold text-ink-950">{count}</span> : null}
+                  const current = item.key === tab || item.key === zone;
+                  const className = `flex items-center justify-between rounded-xl px-4 py-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF] ${
+                    current ? 'bg-[#6A00FF]/20 text-white' : 'bg-white/[0.03] text-neutral-200'
+                  }`;
+                  const inner = (
+                    <>
+                      <span>
+                        {item.label}
+                        {item.key === 'training' && certDue ? <span className="mt-0.5 block text-[11px] text-[#937DFF]">Due {certDue}</span> : null}
+                      </span>
+                      {count > 0 ? <span className="rounded-full bg-[#6A00FF] px-2 text-[11px] font-bold text-white">{count}</span> : null}
+                    </>
+                  );
+                  return item.href.startsWith('http') ? (
+                    <a key={item.key} href={item.href} className={className} onClick={() => setMoreOpen(false)}>
+                      {inner}
+                    </a>
+                  ) : (
+                    <Link key={item.key} href={item.href} onClick={() => setMoreOpen(false)} className={className}>
+                      {inner}
                     </Link>
                   );
                 })}
@@ -156,15 +187,16 @@ export default function PortalShell({
   );
 }
 
-function MobileBar({ zones, zone, context }: { zones: NavItem[]; zone: string | null; context: PortalContext }) {
-  if (zones.length < 2) return null;
+function MobileBar({ zone, context }: { zone: string | null; context: PortalContext }) {
+  const items = phoneBarFor(context);
+  if (items.length < 2) return null;
   return (
     <nav
       aria-label="Zones"
       className="fixed inset-x-0 bottom-0 z-40 grid border-t border-white/[0.08] bg-ink-950/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden"
-      style={{ gridTemplateColumns: `repeat(${zones.length}, minmax(0, 1fr))` }}
+      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
     >
-      {zones.map((item) => {
+      {items.map((item) => {
         const count = badgeFor(item.key, context);
         const current = item.key === zone;
         return (
@@ -172,14 +204,14 @@ function MobileBar({ zones, zone, context }: { zones: NavItem[]; zone: string | 
             key={item.key}
             href={item.href}
             aria-current={current ? 'page' : undefined}
-            className={`relative flex flex-col items-center gap-0.5 px-1 py-2.5 text-[11px] font-medium ${
-              current ? 'text-brand-200' : 'text-neutral-500'
+            className={`relative flex flex-col items-center gap-0.5 px-1 py-2.5 text-[11px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF] ${
+              current ? 'text-white' : 'text-neutral-500'
             }`}
           >
-            <span className={`h-1 w-6 rounded-full ${current ? 'bg-brand-500' : 'bg-transparent'}`} />
+            <span className={`h-1 w-6 rounded-full ${current ? 'bg-[#6A00FF]' : 'bg-transparent'}`} />
             <span className="max-w-full truncate">{item.short}</span>
             {count > 0 ? (
-              <span className="absolute right-2 top-1.5 rounded-full bg-brand-500 px-1.5 text-[10px] font-bold text-ink-950">{count}</span>
+              <span className="absolute right-2 top-1.5 rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white">{count}</span>
             ) : null}
           </Link>
         );

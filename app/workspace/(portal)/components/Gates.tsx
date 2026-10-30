@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import Logo from '@/app/components/Logo';
 import { btnSecondary } from '@/app/components/ui';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
+import { buildNav, findActive, type NavCounts } from '@/lib/workspace/adminNav';
+import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 
 /**
  * A Sales Operator, or someone viewing as one, only ever sees the portal. Any
@@ -22,58 +24,139 @@ export function OperatorGate({ children }: { children: React.ReactNode }) {
   return inside ? <>{children}</> : null;
 }
 
-const MANAGER_PATHS = ['/workspace/team', '/workspace/inbox', '/workspace/operations'];
+const COLLAPSE_KEY = 'da-manager-sidebar-collapsed';
+const COLLAPSE_EVENT = 'da-manager-sidebar-toggle';
 
-/** Managers work from their team page: the operators in their scope, and View As. */
-export function ManagerShell({ name, children }: { name: string; children: React.ReactNode }) {
+function subscribeCollapsed(onChange: () => void) {
+  window.addEventListener(COLLAPSE_EVENT, onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(COLLAPSE_EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(COLLAPSE_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function writeCollapsed(value: boolean) {
+  try {
+    window.localStorage.setItem(COLLAPSE_KEY, value ? '1' : '0');
+  } catch {
+    /* The sidebar still collapses for this visit. */
+  }
+  window.dispatchEvent(new Event(COLLAPSE_EVENT));
+}
+
+/** Managers: Home, Team, and Inbox from the same list as DA Admin. Hidden screens redirect. */
+export function ManagerShell({
+  name,
+  counts,
+  children,
+}: {
+  name: string;
+  counts?: NavCounts;
+  children: React.ReactNode;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const allowed = MANAGER_PATHS.some((path) => pathname.startsWith(path));
-  const wide = pathname.startsWith('/workspace/team/workspace');
+  const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);
+  const allowed = managerPathAllowed(pathname);
+  const nav = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false, role: 'manager', counts });
+  const active = findActive(nav, pathname);
   useEffect(() => {
-    if (!allowed) router.replace('/workspace/team/board');
+    if (!allowed) router.replace('/workspace/team/workspace');
   }, [allowed, router]);
   if (!allowed) return null;
 
+  const links = nav.flatMap((group) => group.items);
+
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
-          <Link href="/workspace/team/board" className="flex items-center gap-2">
-            <Logo markOnly className="h-5 w-auto" />
-            <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
-          </Link>
-          <nav className="flex items-center gap-1 overflow-x-auto text-[13px]">
-            {[
-              { href: '/workspace/operations', label: 'Overview' },
-              { href: '/workspace/team', label: 'Team' },
-              { href: '/workspace/team/workspace', label: 'Team Workspace' },
-              { href: '/workspace/inbox', label: 'Inbox' },
-            ].map((item) => {
-              const current =
-                item.href === '/workspace/team'
-                  ? pathname.startsWith(item.href) && !pathname.startsWith('/workspace/team/workspace')
-                  : pathname.startsWith(item.href);
-              return (
+    <div className="min-h-screen bg-ink-950 text-white antialiased lg:flex">
+      <aside className={`hidden shrink-0 flex-col border-r border-white/[0.06] bg-ink-900 lg:flex ${collapsed ? 'w-[72px]' : 'w-60'}`}>
+        <div className={`flex h-14 items-center gap-2 border-b border-white/[0.06] ${collapsed ? 'justify-center px-2' : 'px-4'}`}>
+          <Logo markOnly className="h-5 w-auto" />
+          {collapsed ? null : <span className="text-sm font-semibold">Manager</span>}
+        </div>
+        <nav aria-label="Manager" className="flex-1 space-y-4 overflow-y-auto p-3">
+          {nav.map((group) => (
+            <div key={group.id}>
+              {collapsed ? null : (
+                <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">{group.heading}</p>
+              )}
+              <ul className="space-y-0.5">
+                {group.items.map((item) => {
+                  const current = active?.item.href === item.href;
+                  const Glyph = item.icon;
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        aria-current={current ? 'page' : undefined}
+                        aria-label={collapsed ? item.label : undefined}
+                        title={collapsed ? item.label : undefined}
+                        className={`flex items-center rounded-lg text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF] ${
+                          collapsed ? 'justify-center px-2 py-2' : 'justify-between px-2.5 py-2'
+                        } ${current ? 'bg-[#6A00FF] text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'}`}
+                      >
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Glyph className="size-4 shrink-0" strokeWidth={1.9} aria-hidden />
+                          {collapsed ? null : <span className="truncate">{item.label}</span>}
+                        </span>
+                        {!collapsed && item.badge ? (
+                          <span className="rounded-full bg-white/20 px-1.5 text-[10px] font-bold">{item.badge}</span>
+                        ) : null}
+                        {collapsed && item.badge ? <span className="sr-only">{item.badge}</span> : null}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+        <div className="border-t border-white/[0.06] p-3">
+          <button
+            type="button"
+            onClick={() => writeCollapsed(!collapsed)}
+            aria-pressed={collapsed}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className={`${btnSecondary} w-full px-3 py-2 text-xs`}
+          >
+            {collapsed ? '»' : 'Collapse'}
+          </button>
+          <form action={hubSignOutAction} className="mt-2">
+            <button type="submit" aria-label="Sign out" className={`${btnSecondary} w-full px-3 py-2 text-xs`}>
+              {collapsed ? 'Out' : 'Sign out'}
+            </button>
+          </form>
+          {collapsed ? null : <p className="mt-2 truncate px-1 text-[11px] text-neutral-500">{name}</p>}
+        </div>
+      </aside>
+      <div className="min-w-0 flex-1">
+        <nav aria-label="Manager" className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-3 py-2 lg:hidden">
+          {links.map((item) => {
+            const current = active?.item.href === item.href;
+            return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`rounded-full px-3 py-1.5 ${current ? 'bg-brand-500/[0.14] text-brand-100' : 'text-neutral-400 hover:text-white'}`}
+                aria-current={current ? 'page' : undefined}
+                className={`shrink-0 rounded-full px-3 py-1.5 text-xs ${current ? 'bg-[#6A00FF] text-white' : 'text-neutral-300'}`}
               >
                 {item.label}
+                {item.badge ? <span className="ml-1 rounded-full bg-white/20 px-1.5 text-[10px] font-bold">{item.badge}</span> : null}
               </Link>
-              );
-            })}
-            <form action={hubSignOutAction}>
-              <button type="submit" className={`${btnSecondary} ml-1 px-3 py-1.5 text-xs`}>
-                Sign out
-              </button>
-            </form>
-          </nav>
-        </div>
-      </header>
-      <main className={`mx-auto px-4 py-6 ${wide ? 'max-w-7xl' : 'max-w-5xl'}`}>{children}</main>
-      <p className="pb-6 text-center text-xs text-neutral-600">Signed in as {name}</p>
+            );
+          })}
+        </nav>
+        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+      </div>
     </div>
   );
 }

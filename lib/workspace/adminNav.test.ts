@@ -24,77 +24,70 @@ describe('normalizePath', () => {
 
 describe('findActive', () => {
   it('picks one entry: team sub-pages no longer also light up the roster', () => {
-    expect(activeLabels('/workspace/team/queues')).toEqual(['Workspace', 'Sales operators', 'Queues']);
-    expect(activeLabels('/workspace/team')).toEqual(['Workspace', 'Sales operators', 'Roster & View As']);
+    expect(activeLabels('/workspace/team/queues')).toEqual(['Team', 'Queues']);
+    expect(activeLabels('/workspace/team')).toEqual(['Team', 'Roster and View As']);
   });
 
   it('separates Holds from the Academy it lives under', () => {
-    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['Workspace', 'Holds', 'Grading']);
-    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['Workspace', 'Academy', 'Question bank']);
-    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['Workspace', 'Academy']);
+    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['People', 'Holds', 'Grading']);
+    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['People', 'Academy', 'Question bank']);
+    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['People', 'Academy']);
   });
 
   it('follows aliases and mirrored routes', () => {
-    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Workspace', 'Sales']);
-    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Workspace', 'Sales operators', 'Payroll']);
-    expect(activeLabels('/da/margin')).toEqual(['Workspace', 'Growth', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['Workspace', 'Sales operators', 'Invites']);
-    expect(activeLabels('/accounts/123')).toEqual(['Workspace', 'Sales', 'Accounts']);
+    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Sales', 'Sales calls']);
+    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Finance', 'Payroll']);
+    expect(activeLabels('/da/margin')).toEqual(['Finance', 'Margin']);
+    expect(activeLabels('/ad/invite')).toEqual(['People', 'Invites']);
+    expect(activeLabels('/accounts/123')).toEqual(['Sales', 'Sales calls', 'Accounts']);
   });
 
   it('lights Pipeline for a lead page', () => {
-    expect(activeLabels('/workspace/pipeline/abc')).toEqual(['Workspace', 'Pipeline']);
+    expect(activeLabels('/workspace/pipeline/abc')).toEqual(['Sales', 'Pipeline']);
   });
 
   it('returns nothing for pages outside the nav', () => {
     expect(activeLabels('/workspace/login')).toBeNull();
   });
 
-  it('keeps configuration screens out of the nav', () => {
-    const hrefs = full.flatMap((section) =>
-      section.items.flatMap((item) => [item, ...(item.children ?? [])].flatMap((leaf) => [leaf.href, ...(leaf.aliases ?? [])])),
-    );
-    for (const hidden of [
-      '/workspace/settings',
-      '/workspace/mapping',
-      '/workspace/templates',
-      '/workspace/control',
-      '/workspace/control/credentials',
-      '/workspace/control/lockdown',
-      '/workspace/control/audit',
-      '/workspace/control/alerts',
-      '/workspace/growth/ingestion',
-      '/workspace/admin/notifications',
-      '/workspace/team/settings',
-      '/workspace/team/ghl',
-      '/workspace/academy/import',
-      '/workspace/academy/practice',
-      '/workspace/academy/calibration',
-      '/ad',
-    ]) {
-      expect(hrefs).not.toContain(hidden);
-    }
-    expect(activeLabels('/workspace/team/ghl/access')).toBeNull();
-    expect(activeLabels('/workspace/control/credentials')).toBeNull();
+  it('gives configuration screens a home under Admin', () => {
+    expect(activeLabels('/workspace/settings')).toEqual(['Admin', 'Workspace settings']);
+    expect(activeLabels('/workspace/control/credentials')).toEqual(['Admin', 'Control', 'Credentials']);
+    expect(activeLabels('/workspace/team/ghl/access')).toEqual(['Clients', 'GHL', 'Access']);
+    expect(activeLabels('/workspace/team/settings')).toEqual(['Admin', 'Team settings']);
+    expect(activeLabels('/workspace/growth/ingestion')).toEqual(['Sales', 'Ingestion']);
+    expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['Admin', 'Data integrity']);
+    expect(activeLabels('/workspace/sales-ops/placements/abc')).toEqual(['Team', 'Placements']);
+    expect(activeLabels('/workspace/sales-ops')).toEqual(['Admin', 'Sales settings', 'Setup']);
   });
 
   it('hides Academy entries the viewer cannot use', () => {
     const plain = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false });
-    expect(plain.some((section) => section.id === 'academy')).toBe(false);
+    expect(plain.flatMap((section) => section.items.map((item) => item.label))).not.toContain('Academy');
+    expect(plain.map((section) => section.heading)).toEqual(['Home', 'Team', 'People', 'Sales', 'Clients', 'Finance', 'Admin']);
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
-    const labels = full.flatMap((section) => section.items.map((item) => item.label));
-    expect(labels).toEqual(['Overview', 'Pipeline', 'Clients', 'Sales operators', 'Team Workspace', 'Sales', 'Agreements', 'Growth', 'Academy', 'Holds']);
-    expect(activeLabels('/workspace/team/workspace')).toEqual(['Workspace', 'Team Workspace']);
-    expect(activeLabels('/workspace/team/workspace/operators/abc')).toEqual(['Workspace', 'Team Workspace']);
+    expect(activeLabels('/workspace/team/workspace')).toEqual(['Team', 'Team Workspace']);
+    expect(activeLabels('/workspace/team/workspace/operators/abc')).toEqual(['Team', 'Team Workspace']);
+  });
+
+  it('keeps the manager list to Home, Team, and Inbox', () => {
+    const manager = buildNav({ showAcademy: true, showHolds: true, holdsOnly: false, role: 'manager' });
+    expect(manager.map((section) => section.heading)).toEqual(['Home', 'Team', 'Inbox']);
+    const labels = manager.flatMap((section) => section.items.map((item) => item.label));
+    expect(labels).toContain('Placements');
+    expect(labels).not.toContain('Data integrity');
+    expect(labels).not.toContain('GHL');
+    expect(labels).not.toContain('Payroll');
+    expect(labels).not.toContain('Pay Impact');
   });
 });
 
 describe('searchNav', () => {
   it('finds sub-pages by their parent or section name', () => {
     expect(searchNav(full, 'payroll').map((hit) => hit.leaf.label)).toEqual(['Payroll']);
-    expect(searchNav(full, 'sales operators').map((hit) => hit.leaf.label)).toContain('View as');
-    expect(searchNav(full, 'credentials')).toEqual([]);
+    expect(searchNav(full, 'operators').map((hit) => hit.leaf.label)).toContain('Operators');
+    expect(searchNav(full, 'credentials').map((hit) => hit.leaf.label)).toContain('Credentials');
     expect(searchNav(full, '  ')).toEqual([]);
   });
 });

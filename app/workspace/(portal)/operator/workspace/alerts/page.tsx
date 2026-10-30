@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import type { AlertItem } from '@/lib/sales-workspace/dashboard';
 import { createClient } from '@/lib/supabase/server';
 import { AlertList } from '../dashboard/parts';
+import { SalesEodNav } from '../../components/RecordNav';
 import { brand } from '../WorkspaceFrame';
 import { WorkspaceShell } from '../shell';
 
@@ -21,10 +21,8 @@ export default async function AlertsPage() {
 
   return (
     <WorkspaceShell>
-      <Link href="/workspace/operator/workspace" className="text-sm text-neutral-400 hover:text-white">
-        Back to the dashboard
-      </Link>
-      <h1 className={`${brand.heading} mt-3 text-2xl`}>Alerts</h1>
+      <SalesEodNav current="alerts" />
+      <h1 className={`${brand.heading} text-2xl`}>Alerts</h1>
       <p className="mt-2 text-sm text-neutral-400">Newest first. Read alerts stay here.</p>
       {alerts.error ? <p className="mt-6 text-sm text-[#FFB020]">{readable(alerts.error)}</p> : null}
       {!alerts.error ? (

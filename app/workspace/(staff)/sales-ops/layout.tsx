@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { signOutAction } from '@/lib/workspace/actions';
 import { salesOpsRole } from '@/lib/workspace/sales-ops-queries';
 import { EmptyState } from '../components/ui';
 import SalesOpsTabs from './components/SalesOpsTabs';
@@ -20,17 +19,7 @@ export default async function SalesOpsLayout({ children }: { children: React.Rea
   }
   return (
     <div className="animate-rise">
-      {role === 'manager' ? (
-        <header className="mb-6 flex items-center justify-between gap-3">
-          <p className="text-sm text-[var(--ws-dim)]">Sales workspace. You can see every operator. DA Admin edits placements.</p>
-          <form action={signOutAction}>
-            <button type="submit" className="text-sm text-[var(--ws-dim)] hover:text-white">
-              Sign out
-            </button>
-          </form>
-        </header>
-      ) : null}
-      <SalesOpsTabs role={role} />
+      {role === 'admin' ? <SalesOpsTabs role={role} /> : null}
       {children}
     </div>
   );

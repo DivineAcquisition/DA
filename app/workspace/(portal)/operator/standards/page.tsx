@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
+import { appUrl } from '@/lib/apps';
 import { loadPortal } from '@/lib/portal/load';
 import type { StandardsData } from '@/lib/portal/types';
 import { renderPortal } from '../components/frame';
+import { TrainingNav } from '../components/RecordNav';
 import StandardsView from '../components/StandardsView';
 
 export const metadata: Metadata = { title: 'My Standards' };
@@ -18,5 +20,10 @@ export default async function StandardsPage({ searchParams }: { searchParams: Pr
   const months = [monthStart(0), monthStart(1), monthStart(2)];
   const month = months.includes(params.month ?? '') ? params.month! : months[0];
   const load = await loadPortal<StandardsData>('standards', (rpc) => rpc<StandardsData>('portal_standards', { p_month: month }));
-  return renderPortal(load, 'standards', (data) => <StandardsView data={data} month={month} months={months} />);
+  return renderPortal(load, 'standards', (data, _placementId, context) => (
+    <>
+      {context.stage === 'placed' && !context.sales_operator ? <TrainingNav current="standards" academyHref={appUrl('training')} /> : null}
+      <StandardsView data={data} month={month} months={months} />
+    </>
+  ));
 }

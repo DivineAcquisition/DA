@@ -38,6 +38,7 @@ export default async function MyDayPage() {
     return { data: { today, live, tasks, availability, ghl }, error: null };
   });
 
+  if (load.kind === 'ready' && load.context.sales_operator) redirect('/workspace/operator/workspace');
   if (load.kind === 'ready' && load.context.stage === 'inactive') redirect('/workspace/operator/pay');
 
   return renderPortal(load, 'today', (data, placementId, context) => {

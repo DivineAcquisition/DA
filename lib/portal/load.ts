@@ -43,9 +43,10 @@ export async function loadPortal<T>(
   // With a remembered placement, the tab loads alongside the context. The
   // database still refuses a placement that is not the VA's.
   const early = wanted && fetchTab ? fetchTab(rpc, wanted) : null;
-  const [context, sales] = await Promise.all([
+  const [context, sales, due] = await Promise.all([
     rpc<PortalContext>('portal_context', { p_tab: tab, p_placement_id: wanted }),
     rpc<boolean>('portal_is_sales_operator'),
+    rpc<PortalContext['training_due']>('portal_training_due'),
   ]);
 
   if (context.error || !context.data) {
@@ -54,6 +55,7 @@ export async function loadPortal<T>(
 
   const ctx = context.data;
   ctx.sales_operator = sales.data === true;
+  ctx.training_due = due.data ?? null;
   const placementId = ctx.selected_placement_id;
   const blocked = ctx.blocking_notices.length > 0 && !ctx.viewer.view_as;
 

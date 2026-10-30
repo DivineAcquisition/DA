@@ -81,7 +81,7 @@ function IconTile({ icon: Glyph, active, size = 'md' }: { icon: NavIcon; tone?: 
       className={cn(
         'shrink-0',
         size === 'lg' ? 'size-[18px]' : 'size-4',
-        active ? 'text-brand-200' : 'text-neutral-500 group-hover/row:text-neutral-200',
+        active ? 'text-white' : 'text-neutral-500 group-hover/row:text-neutral-200',
       )}
       strokeWidth={1.9}
       aria-hidden
@@ -97,7 +97,7 @@ function ActiveGlow({ layoutId }: { layoutId: string }) {
     <motion.span
       layoutId={layoutId}
       transition={{ type: 'spring', stiffness: 520, damping: 42 }}
-      className="absolute inset-0 -z-10 rounded-lg bg-brand-500/12 shadow-[inset_2px_0_0_#9a88fc]"
+      className="absolute inset-0 -z-10 rounded-lg bg-[#6A00FF]/20 shadow-[inset_2px_0_0_#6A00FF]"
       aria-hidden
     />
   );
@@ -134,11 +134,14 @@ function ExpandedItem({
         aria-current={isCurrent ? 'page' : undefined}
         className={cn(
           'flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-          containsActive ? 'text-brand-200' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
+          containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
         )}
       >
         <IconTile icon={item.icon} tone={section.tone} active={containsActive} />
         <span className="truncate">{item.label}</span>
+        {item.badge ? (
+          <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{item.badge}</span>
+        ) : null}
       </Link>
       {children.length ? (
         <CollapsibleTrigger
@@ -166,7 +169,7 @@ function ExpandedItem({
                 <li key={child.href} className="relative isolate">
                   {current ? (
                     <>
-                      <span className="absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-brand-500" aria-hidden />
+                      <span className="absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[#6A00FF]" aria-hidden />
                       <ActiveGlow layoutId={glowId} />
                     </>
                   ) : null}
@@ -177,11 +180,14 @@ function ExpandedItem({
                     aria-current={current ? 'page' : undefined}
                     className={cn(
                       'flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-                      current ? 'font-medium text-brand-200' : 'text-neutral-500 hover:bg-white/[0.04] hover:text-neutral-200',
+                      current ? 'font-medium text-white' : 'text-neutral-500 hover:bg-white/[0.04] hover:text-neutral-200',
                     )}
                   >
                     <Glyph className={cn('size-3.5 shrink-0', current ? 'text-brand-200' : 'opacity-70')} strokeWidth={1.9} aria-hidden />
                     <span className="truncate">{child.label}</span>
+                    {child.badge ? (
+                      <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{child.badge}</span>
+                    ) : null}
                   </Link>
                 </li>
               );
@@ -228,7 +234,10 @@ function CollapsedItem({
           >
             {containsActive ? <ActiveGlow layoutId={glowId} /> : null}
             <IconTile icon={item.icon} tone={section.tone} active={containsActive} size="lg" />
-            <span className="sr-only">{item.label}</span>
+            {item.badge ? (
+              <span className="absolute right-1 top-1 size-2 rounded-full bg-[#6A00FF]" aria-hidden />
+            ) : null}
+            <span className="sr-only">{item.badge ? `${item.label}, ${item.badge}` : item.label}</span>
           </TooltipTrigger>
           <TooltipPopup side="right" sideOffset={10} className="font-medium">
             {item.label}
@@ -596,12 +605,16 @@ export default function Shell({
   showAcademy = false,
   showHolds = false,
   holdsOnly = false,
+  role = 'admin',
+  counts,
 }: {
   email: string;
   children: React.ReactNode;
   showAcademy?: boolean;
   showHolds?: boolean;
   holdsOnly?: boolean;
+  role?: 'admin' | 'manager';
+  counts?: { home: number; escalations: number };
 }) {
   const pathname = usePathname();
   const collapsed = useSyncExternalStore(subscribeCollapsed, readCollapsed, () => false);
@@ -612,9 +625,12 @@ export default function Shell({
   const drawerOpen = drawerOpenOn === pathname;
   const signOutForm = useRef<HTMLFormElement>(null);
 
-  const nav = useMemo(() => buildNav({ showAcademy, showHolds, holdsOnly }), [showAcademy, showHolds, holdsOnly]);
-  const home = holdsOnly ? '/workspace/academy/holds' : '/workspace/operations';
-  const label = holdsOnly ? 'Review' : 'Admin';
+  const nav = useMemo(
+    () => buildNav({ showAcademy, showHolds, holdsOnly, role, counts }),
+    [showAcademy, showHolds, holdsOnly, role, counts],
+  );
+  const home = holdsOnly ? '/workspace/academy/holds' : role === 'manager' ? '/workspace/team/workspace' : '/workspace/operations';
+  const label = holdsOnly ? 'Review' : role === 'manager' ? 'Manager' : 'Admin';
 
   const navigating = pending !== null && pending.from === pathname;
   const active = findActive(nav, navigating ? pending.href : pathname);

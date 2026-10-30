@@ -9,14 +9,13 @@ const TABS = [
   { href: '/workspace/team/workspace/eods', label: 'EODs', admin: false },
   { href: '/workspace/team/workspace/reports', label: 'Reports', admin: false },
   { href: '/workspace/team/workspace/activity', label: 'Activity Log', admin: false },
-  { href: '/workspace/team/workspace/integrity', label: 'Data integrity', admin: true },
 ];
 
-export default function WorkspaceTabs({ showIntegrity = false }: { showIntegrity?: boolean }) {
+export default function WorkspaceTabs() {
   const pathname = usePathname() ?? '';
   return (
     <nav aria-label="Team Workspace" className="mb-5 flex gap-1 overflow-x-auto">
-      {TABS.filter((tab) => showIntegrity || !tab.admin).map((tab) => {
+      {TABS.map((tab) => {
         const active = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
         return (
           <Link

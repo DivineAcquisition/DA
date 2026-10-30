@@ -73,6 +73,8 @@ export type PortalContext = {
    * short client card. Not the admin portal, and not the wider VA account.
    */
   sales_operator?: boolean;
+  /** Re-certification date for the Training item. Null when none is stored. */
+  training_due?: { state: string; level: number | null; recertify_on: string | null } | null;
 };
 
 export type Window = { starts_at: string; ends_at: string };

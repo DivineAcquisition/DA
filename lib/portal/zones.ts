@@ -1,3 +1,4 @@
+import { appUrl } from '@/lib/apps';
 import type { PortalContext, Stage } from './types';
 
 /**
@@ -37,13 +38,16 @@ export type ZoneKey =
   | 'agreements'
   | 'eod'
   | 'sales'
-  | 'client';
+  | 'client'
+  | 'work'
+  | 'performance'
+  | 'training';
 
 export type NavItem = { key: ZoneKey | TabKey; label: string; short: string; href: string };
 
 const BASE = '/workspace/operator';
 
-const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client'>, NavItem> = {
+const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client' | 'work' | 'performance' | 'training'>, NavItem> = {
   today: { key: 'today', label: 'My Day', short: 'My Day', href: BASE },
   record: { key: 'record', label: 'My Record', short: 'Record', href: `${BASE}/record` },
   standards: { key: 'standards', label: 'My Standards', short: 'Standards', href: `${BASE}/standards` },
@@ -54,15 +58,19 @@ const ZONE: Record<Exclude<ZoneKey, 'eod' | 'sales' | 'client'>, NavItem> = {
   agreements: { key: 'agreements', label: 'Agreements', short: 'Agreements', href: `${BASE}/agreements` },
 };
 
-/** Sales Operators on the operator workspace. Training, end of day, sales, and the client card. */
+/** Sales operators. End of day is the sales EOD, not the VA attendance page. */
 const SALES_NAV: NavItem[] = [
-  { key: 'today', label: 'Training', short: 'Training', href: BASE },
-  { key: 'eod', label: 'End of day', short: 'End of day', href: `${BASE}/reports` },
-  { key: 'sales', label: 'Sales', short: 'Sales', href: `${BASE}/bookings` },
-  { key: 'client', label: 'Client', short: 'Client', href: `${BASE}/client` },
+  { key: 'today', label: 'Today', short: 'Today', href: `${BASE}/workspace` },
+  { key: 'eod', label: 'EODs', short: 'EODs', href: `${BASE}/workspace/eod` },
+  { key: 'work', label: 'Work', short: 'Work', href: `${BASE}/bookings` },
+  { key: 'tasks', label: 'Tasks', short: 'Tasks', href: `${BASE}/tasks` },
+  { key: 'performance', label: 'Performance', short: 'Performance', href: `${BASE}/pay` },
+  { key: 'training', label: 'Training', short: 'Training', href: appUrl('training') },
 ];
 
-const SALES_TABS: TabKey[] = ['today', 'reports', 'bookings', 'client', 'profile', 'inbox', 'notice', 'tasks'];
+const SALES_TABS: TabKey[] = [
+  'today', 'bookings', 'client', 'profile', 'inbox', 'notice', 'tasks', 'pay', 'agreements', 'availability',
+];
 
 const MENU: Record<'profile' | 'tasks' | 'inbox' | 'agreements' | 'availability', NavItem> = {
   profile: { key: 'profile', label: 'Profile', short: 'Profile', href: `${BASE}/profile` },
@@ -72,12 +80,22 @@ const MENU: Record<'profile' | 'tasks' | 'inbox' | 'agreements' | 'availability'
   availability: { key: 'availability', label: 'Availability', short: 'Availability', href: `${BASE}/availability` },
 };
 
+const PLACED = {
+  today: { ...ZONE.today, label: 'Today', short: 'Today' },
+  record: { ...ZONE.record, label: 'Record', short: 'Record' },
+  tasks: { ...MENU.tasks, label: 'Tasks', short: 'Tasks' },
+  pay: ZONE.pay,
+  growth: ZONE.growth,
+  training: { key: 'training' as const, label: 'Training', short: 'Training', href: `${BASE}/playbook` },
+  commitments: { key: 'commitments' as const, label: "DA's Commitments", short: 'Commitments', href: `${BASE}/commitments` },
+};
+
 /** The bottom bar on a phone, the tab row on a desktop. */
 export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 'has_pay' | 'sales_operator'>): NavItem[] {
   if (context.sales_operator) return SALES_NAV;
   switch (context.stage) {
     case 'placed':
-      return [ZONE.today, ZONE.record, ZONE.standards, ZONE.commitments, ZONE.growth];
+      return [PLACED.today, PLACED.record, PLACED.tasks, PLACED.growth, PLACED.training];
     case 'waiting':
       // Certified or on bench. A VA whose placement ended keeps that history.
       return context.has_history
@@ -92,11 +110,23 @@ export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 
   }
 }
 
+/** Phone bottom bar. The rest of the zones stay in the menu. */
+export function phoneBarFor(context: Pick<PortalContext, 'stage' | 'has_history' | 'has_pay' | 'sales_operator'>): NavItem[] {
+  if (context.sales_operator) {
+    return SALES_NAV.filter((item) => item.key === 'today' || item.key === 'eod' || item.key === 'tasks' || item.key === 'performance');
+  }
+  if (context.stage === 'placed') {
+    return [PLACED.today, PLACED.record, PLACED.tasks, PLACED.pay];
+  }
+  return zonesFor(context);
+}
+
 /** The menu at the top of every screen. */
 export function menuFor(context: Pick<PortalContext, 'stage' | 'sales_operator'>): NavItem[] {
-  if (context.sales_operator) return [MENU.profile, MENU.inbox];
+  if (context.sales_operator) return [MENU.profile, MENU.agreements, MENU.availability, MENU.inbox];
   switch (context.stage) {
     case 'placed':
+      return [MENU.profile, MENU.agreements, MENU.availability, MENU.inbox, PLACED.commitments];
     case 'waiting':
       return [MENU.profile, MENU.tasks, MENU.inbox, MENU.agreements, MENU.availability];
     case 'training':
@@ -109,13 +139,35 @@ export function menuFor(context: Pick<PortalContext, 'stage' | 'sales_operator'>
 }
 
 /** Which zone a page belongs to, so the right one is highlighted. */
-export function zoneOf(tab: TabKey, salesOperator = false): ZoneKey | null {
+export function zoneOf(tab: TabKey, salesOperator = false, stage?: Stage): string | null {
   if (salesOperator) {
-    if (tab === 'today' || tab === 'tasks') return 'today';
+    if (tab === 'today') return 'today';
     if (tab === 'reports') return 'eod';
-    if (tab === 'bookings') return 'sales';
-    if (tab === 'client') return 'client';
+    if (tab === 'bookings' || tab === 'client') return 'work';
+    if (tab === 'tasks') return 'tasks';
+    if (tab === 'pay') return 'performance';
     return null;
+  }
+  if (stage === 'placed') {
+    switch (tab) {
+      case 'today':
+        return 'today';
+      case 'record':
+      case 'bookings':
+      case 'escalations':
+      case 'reports':
+        return 'record';
+      case 'tasks':
+        return 'tasks';
+      case 'growth':
+      case 'pay':
+        return 'growth';
+      case 'playbook':
+      case 'standards':
+        return 'training';
+      default:
+        return null;
+    }
   }
   switch (tab) {
     case 'today':
@@ -136,6 +188,8 @@ export function zoneOf(tab: TabKey, salesOperator = false): ZoneKey | null {
       return 'playbook';
     case 'agreements':
       return 'agreements';
+    case 'tasks':
+      return 'tasks';
     default:
       return null;
   }

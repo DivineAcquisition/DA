@@ -26,9 +26,29 @@ type Panel = {
   missing: (string | null)[];
 };
 
-export default function GhlPlacement({ panel }: { panel: Panel }) {
+export default function GhlPlacement({ panel, mode = 'admin' }: { panel: Panel; mode?: 'admin' | 'mapping' }) {
   const missing = (panel.missing ?? []).filter(Boolean);
   const users = panel.catalog?.users ?? [];
+  if (mode === 'mapping') {
+    return (
+      <div className="space-y-4 text-sm">
+        <p className="text-[var(--ws-dim)]">Outcome mapping only. The connection, token, and GHL user stay with DA Admin.</p>
+        {missing.length > 0 ? (
+          <ul className="text-[var(--ws-dim)]">
+            {missing.map((item) => (
+              <li key={item}>Missing: {item}. That metric stays Pending sync.</li>
+            ))}
+          </ul>
+        ) : null}
+        <ActionForm action={saveGhlMappingAction} submitLabel="Save mapping">
+          <input type="hidden" name="placement_id" value={panel.placement_id} />
+          <Field label="Mapping JSON" hint="Applies from tomorrow.">
+            <Textarea name="mapping" rows={8} defaultValue={JSON.stringify(panel.mapping ?? {}, null, 2)} />
+          </Field>
+        </ActionForm>
+      </div>
+    );
+  }
   return (
     <div className="space-y-4 text-sm">
       <p className="text-white">

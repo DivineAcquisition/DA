@@ -14,6 +14,7 @@ async function refresh(fn: string, args: Record<string, unknown>, ok: string): P
   if (error) return { ok: false, error: readable(error) };
   revalidatePath('/workspace/sales-ops');
   revalidatePath('/workspace/sales-ops/eods');
+  revalidatePath('/workspace/team/workspace/eods');
   revalidatePath('/workspace/team/workspace');
   revalidatePath('/workspace/operator/workspace');
   return { ok: true, message: ok };

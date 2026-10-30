@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { getSessionContext } from '@/lib/supabase/server';
 import type { FeedbackContext, StaffNotice, StaffReview, StaffStandards } from '@/lib/team/types';
 import OperatorAccountability from '../../OperatorAccountability';
-import TeamNav from '../../TeamNav';
 import { Refused, teamRead } from '../../teamRead';
 
 export const metadata: Metadata = { title: 'Operator' };
@@ -19,7 +18,6 @@ export default async function OperatorPage({ params }: { params: Promise<{ opera
   ]);
   return (
     <>
-      <TeamNav />
       {standards.error || !standards.data ? (
         <Refused error={standards.error ?? 'Not available.'} />
       ) : (

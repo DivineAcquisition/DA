@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { formatDate, formatDateTime } from '@/lib/portal/time';
 import { EOD_STATUS_LABEL, formatMetric, type EodDetail, type EodNumber } from '@/lib/sales-workspace/dashboard';
 import { createClient } from '@/lib/supabase/server';
+import { SalesEodNav } from '../../../components/RecordNav';
 import { brand } from '../../WorkspaceFrame';
 import { WorkspaceShell } from '../../shell';
 import ReplyForm from '../ReplyForm';
@@ -26,9 +26,7 @@ export default async function EodDetailPage({ params }: { params: Promise<{ eodI
 
   return (
     <WorkspaceShell>
-      <Link href="/workspace/operator/workspace/history" className="text-sm text-neutral-400 hover:text-white">
-        Past EODs
-      </Link>
+      <SalesEodNav current="past" />
       {error || !data ? (
         <p className="mt-6 text-sm text-[#FFB020]">{error ? readable(error) : 'This EOD could not load.'}</p>
       ) : (

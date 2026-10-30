@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import { appUrl } from '@/lib/apps';
 import { loadPortal } from '@/lib/portal/load';
 import type { PlaybookData } from '@/lib/portal/types';
 import { renderPortal } from '../components/frame';
 import PlaybookView from '../components/PlaybookView';
+import { TrainingNav } from '../components/RecordNav';
 
 export const metadata: Metadata = { title: 'Playbook' };
 export const dynamic = 'force-dynamic';
@@ -36,5 +38,10 @@ export default async function PlaybookPage() {
       whenNoData: () => <TrainingSimulation data={simulation} />,
     });
   }
-  return renderPortal(load, 'playbook', (data) => <PlaybookView data={data} />, { needsPlacement: true });
+  return renderPortal(load, 'playbook', (data, _placementId, context) => (
+    <>
+      {context.stage === 'placed' && !context.sales_operator ? <TrainingNav current="playbook" academyHref={appUrl('training')} /> : null}
+      <PlaybookView data={data} />
+    </>
+  ), { needsPlacement: true });
 }

@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
+import { loadNavCounts } from '@/lib/workspace/nav-counts';
 import Shell from './Shell';
 import '../workspace.css';
 
@@ -22,10 +23,10 @@ export default async function UnifiedAdminChrome({
   email: string;
   children: React.ReactNode;
 }) {
-  const [academy, holds] = await Promise.all([academyAdminSession(), academyHoldSession()]);
+  const [academy, holds, counts] = await Promise.all([academyAdminSession(), academyHoldSession(), loadNavCounts()]);
   return (
     <div className="da-workspace">
-      <Shell email={email} showAcademy={Boolean(academy)} showHolds={Boolean(holds)}>
+      <Shell email={email} showAcademy={Boolean(academy)} showHolds={Boolean(holds)} counts={counts}>
         {children}
       </Shell>
     </div>

@@ -4,6 +4,7 @@ import { controlRpc, readable } from '@/lib/ad/rpc';
 import { formatDate } from '@/lib/portal/time';
 import { EOD_STATUS_LABEL, type EodListItem } from '@/lib/sales-workspace/dashboard';
 import { createClient } from '@/lib/supabase/server';
+import { SalesEodNav } from '../../components/RecordNav';
 import { brand } from '../WorkspaceFrame';
 import { WorkspaceShell } from '../shell';
 
@@ -17,10 +18,8 @@ export default async function HistoryPage() {
 
   return (
     <WorkspaceShell>
-      <Link href="/workspace/operator/workspace" className="text-sm text-neutral-400 hover:text-white">
-        Back to the dashboard
-      </Link>
-      <h1 className={`${brand.heading} mt-3 text-2xl`}>Past EODs</h1>
+      <SalesEodNav current="past" />
+      <h1 className={`${brand.heading} text-2xl`}>Past EODs</h1>
       <p className="mt-2 text-sm text-neutral-400">Submitted reports on this placement. Read only.</p>
       {error ? <p className="mt-6 text-sm text-[#FFB020]">{readable(error)}</p> : null}
       {!error && rows.length === 0 ? <p className="mt-6 text-sm text-neutral-400">No past EODs.</p> : null}

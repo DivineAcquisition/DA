@@ -42,7 +42,7 @@ function Roster() {
     <div className="space-y-7">
       <PageHeader
         eyebrow="Operators"
-        title="Roster"
+        title="Operators"
         description="Operators exist independently of any client. Their record carries tier, certification, and their full history across every placement they have held."
       />
 

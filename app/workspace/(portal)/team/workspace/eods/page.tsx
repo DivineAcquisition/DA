@@ -68,6 +68,8 @@ export default async function EodsPage({
         <select name="status" defaultValue={query.status ?? ''} aria-label="Status" className="h-9 rounded-lg border border-white/10 bg-ink-950 px-2 text-sm">
           <option value="">Status</option>
           <option value="needs_review">Needs review</option>
+          <option value="needs_help">Needs help</option>
+          <option value="escalated">Escalated</option>
           {(Object.keys(EOD_LABEL) as EodStatus[]).map((status) => (
             <option key={status} value={status}>
               {EOD_LABEL[status]}

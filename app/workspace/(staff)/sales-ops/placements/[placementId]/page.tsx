@@ -132,7 +132,7 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
               <ul className="space-y-2 text-sm">
                 {detail.eods.map((e) => (
                   <li key={e.id}>
-                    <Link href={`/workspace/sales-ops/eods/${e.id}`} className="text-white hover:underline">
+                    <Link href={`/workspace/team/workspace/eods/${e.id}`} className="text-white hover:underline">
                       {formatDate(e.work_date)}
                     </Link>{' '}
                     <span className="text-[var(--ws-dim)]">
@@ -164,7 +164,7 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
     <>
       <PageHeader
         title={`${p.operator_name} at ${p.client_name}`}
-        description="Read only. The assigned manager is who gets alerts and feedback. Every manager can see this placement."
+        description="Client reporting, positive outcomes, and GHL outcome mappings. The connection, token, and GHL user stay with DA Admin."
         actions={
           <Link href="/workspace/sales-ops/placements" className="text-sm text-[var(--ws-dim)] hover:text-white">
             All placements
@@ -221,7 +221,7 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
           <ul className="space-y-2 text-sm">
             {data.eods.map((e) => (
               <li key={e.id} className="text-[var(--ws-dim)]">
-                <Link href={`/workspace/sales-ops/eods/${e.id}`} className="text-white hover:underline">
+                <Link href={`/workspace/team/workspace/eods/${e.id}`} className="text-white hover:underline">
                   {formatDate(e.work_date)}
                 </Link>{' '}
                 {e.status.replaceAll('_', ' ')}
@@ -230,6 +230,7 @@ async function ManagerPlacement({ placementId }: { placementId: string }) {
             ))}
           </ul>
         </Panel>
+        <GhlSection placementId={placementId} manager />
         <ReportSection placementId={placementId} />
         <Panel title="Excuse a day">
           <p className="text-sm text-[var(--ws-dim)]">No EOD is due, and reminders stop. The operator can see the day. They cannot excuse themselves.</p>
@@ -261,12 +262,20 @@ async function ReportSection({ placementId }: { placementId: string }) {
   );
 }
 
-async function GhlSection({ placementId }: { placementId: string }) {
+async function GhlSection({ placementId, manager = false }: { placementId: string; manager?: boolean }) {
   const supabase = await createClient();
-  const { data, error } = await controlRpc<Parameters<typeof GhlPlacement>[0]['panel']>(supabase, 'so_ghl_panel', { p_placement: placementId });
+  const { data, error } = await controlRpc<Parameters<typeof GhlPlacement>[0]['panel']>(
+    supabase,
+    manager ? 'so_ghl_outcome_panel' : 'so_ghl_panel',
+    { p_placement: placementId },
+  );
   return (
-    <Panel title="GHL">
-      {error || !data ? <p className="text-sm text-amber-200">{error ? error.message : 'GHL settings did not load.'}</p> : <GhlPlacement panel={data} />}
+    <Panel title={manager ? 'GHL outcomes' : 'GHL'}>
+      {error || !data ? (
+        <p className="text-sm text-amber-200">{error ? readable(error) : 'GHL settings did not load.'}</p>
+      ) : (
+        <GhlPlacement panel={data} mode={manager ? 'mapping' : 'admin'} />
+      )}
     </Panel>
   );
 }
