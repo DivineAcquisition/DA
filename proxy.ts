@@ -209,6 +209,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/precall/') ||
       pathname === '/invite' ||
       pathname.startsWith('/invite/') ||
+      pathname === '/cleaning' ||
+      pathname.startsWith('/cleaning/') ||
       pathname.startsWith('/go'),
   },
   {
@@ -319,6 +321,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith(CRON_PREFIX) ||
     pathname === '/api/submit-lead' ||
     pathname === '/api/meta/capi' ||
+    pathname === '/api/go/cleaning-audit' ||
     pathname.startsWith('/api/acq/')
   ) {
     const response = NextResponse.next();

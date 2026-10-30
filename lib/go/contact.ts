@@ -100,3 +100,43 @@ export async function upsertStrategyContact(input: {
   }).catch(() => undefined);
   return contactId;
 }
+
+/** Lead Leak Audit request from /cleaning. Same GHL location as the cleaning funnel. */
+export async function recordCleaningAuditLead(input: {
+  firstName: string;
+  email: string;
+  phone: string;
+  company: string;
+  note: string;
+  tags: string[];
+}): Promise<string> {
+  const body: Record<string, unknown> = {
+    email: input.email,
+    phone: input.phone,
+    name: input.firstName,
+    firstName: input.firstName,
+    companyName: input.company,
+    source: 'cleaning',
+  };
+  const existingId = await findContact(input.email);
+  const payload = existingId
+    ? await ghl<{ contact?: { id?: string }; id?: string }>(`/contacts/${existingId}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      })
+    : await ghl<{ contact?: { id?: string }; id?: string }>('/contacts/', {
+        method: 'POST',
+        body: JSON.stringify({ ...body, locationId: ACQ_GHL_LOCATION_ID, tags: input.tags }),
+      });
+  const contactId = contactIdFrom(payload) ?? existingId;
+  if (!contactId) throw new Error('ghl_contact_failed: response missing contact id');
+  await ghl(`/contacts/${contactId}/tags`, {
+    method: 'POST',
+    body: JSON.stringify({ tags: input.tags }),
+  });
+  await ghl(`/contacts/${contactId}/notes`, {
+    method: 'POST',
+    body: JSON.stringify({ body: input.note }),
+  });
+  return contactId;
+}

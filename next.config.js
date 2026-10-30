@@ -18,6 +18,8 @@ const nextConfig = {
     return [
       { source: '/roofing', destination: '/acq/roofing' },
       { source: '/roofing/:path*', destination: '/acq/roofing/:path*' },
+      { source: '/cleaning', destination: '/go/cleaning' },
+      { source: '/cleaning/:path*', destination: '/go/cleaning/:path*' },
     ];
   },
   async headers() {
