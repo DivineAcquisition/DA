@@ -1,12 +1,16 @@
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
-import { wistiaAspectRatio } from '@/lib/go/config';
+import { BorderBeam } from '@/components/ui/border-beam';
+import { ShineBorder } from '@/components/ui/shine-border';
+import { GO_VSL_MEDIA_ID, wistiaAspectRatio } from '@/lib/go/config';
 import {
   CALENDAR,
+  CTA_LABEL,
   FACEBOOK_DISCLAIMER,
   PILL_BANNER,
   TESTIMONIALS,
   TESTIMONIALS_HEADLINE,
   TESTIMONIALS_LEAD,
+  VIDEO_LABEL,
 } from '@/lib/go/copy';
 import { cookies } from 'next/headers';
 import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
@@ -15,6 +19,14 @@ import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
 import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import { nicheTrackingFromSearch } from '@/lib/acq/niche-tracking';
 import { GoWistia } from './components/GoWistia';
+
+function BookLink() {
+  return (
+    <a className="acq-button" href="#calendar">
+      {CTA_LABEL}
+    </a>
+  );
+}
 
 export default async function CleaningFunnelPage({
   searchParams,
@@ -38,6 +50,15 @@ export default async function CleaningFunnelPage({
             Then Turn Them Into <span className="lx-accent">Recurring Clients.</span>
             <span className="go-hero-close">Done For You, Ads Live In 7 Days.</span>
           </h1>
+          <p className="lx-requirement">{VIDEO_LABEL}</p>
+          <div className="lx-video-wrap go-magic">
+            <div className="lx-video-shell">
+              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={14} />
+              <BorderBeam size={90} duration={9} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
+              <GoWistia mediaId={GO_VSL_MEDIA_ID} />
+            </div>
+          </div>
+          <BookLink />
         </div>
       </section>
 
