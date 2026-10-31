@@ -1,43 +1,12 @@
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
-import { BorderBeam } from '@/components/ui/border-beam';
-import { ShineBorder } from '@/components/ui/shine-border';
-import { GO_VSL_MEDIA_ID, wistiaAspectRatio } from '@/lib/go/config';
-import { CircleCheck, FileWarning, Moon, PhoneMissed, UserRoundX, X } from 'lucide-react';
+import { wistiaAspectRatio } from '@/lib/go/config';
 import {
   CALENDAR,
-  CTA_LABEL,
   FACEBOOK_DISCLAIMER,
-  FAQ,
-  FINAL_CTA,
-  FIT_HEADLINE,
-  FIT_NO,
-  FIT_NO_TITLE,
-  FIT_YES,
-  FIT_YES_TITLE,
-  FOUNDING_OFFER,
-  HEADLINE_ACCENT,
-  HEADLINE_AFTER,
-  HEADLINE_BEFORE,
-  INCLUDED,
-  INCLUDED_FOOTNOTE,
-  INCLUDED_TITLE,
-  LANDING_TRUST,
-  MATH,
-  MATH_HEADLINE,
-  MATH_LEAD,
   PILL_BANNER,
-  PROBLEMS,
-  PROBLEMS_HEADLINE,
-  PROCESS,
-  PROCESS_HEADLINE,
-  SUBHEADLINE,
-  SYSTEMS,
-  SYSTEMS_HEADLINE,
-  SYSTEMS_LEAD,
   TESTIMONIALS,
   TESTIMONIALS_HEADLINE,
   TESTIMONIALS_LEAD,
-  VIDEO_LABEL,
 } from '@/lib/go/copy';
 import { cookies } from 'next/headers';
 import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
@@ -45,35 +14,7 @@ import { ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
 import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import { nicheTrackingFromSearch } from '@/lib/acq/niche-tracking';
-import { DemoLink } from './components/DemoLink';
-import { GoScene } from './components/GoScenes';
 import { GoWistia } from './components/GoWistia';
-
-function Check() {
-  return (
-    <svg viewBox="0 0 20 20" aria-hidden>
-      <path d="m4 10 4 4 8-8" />
-    </svg>
-  );
-}
-
-const PROBLEM_ICONS = [PhoneMissed, Moon, FileWarning, UserRoundX] as const;
-
-function SaasIcon({ icon: Icon, tone = 'brand' }: { icon: typeof PhoneMissed; tone?: 'brand' | 'red' }) {
-  return (
-    <span className={tone === 'red' ? 'go-saas-icon go-saas-icon-red' : 'go-saas-icon'}>
-      <Icon aria-hidden />
-    </span>
-  );
-}
-
-function BookLink() {
-  return (
-    <a className="acq-button" href="#calendar">
-      {CTA_LABEL}
-    </a>
-  );
-}
 
 export default async function CleaningFunnelPage({
   searchParams,
@@ -89,33 +30,34 @@ export default async function CleaningFunnelPage({
 
   return (
     <div className="acq-coaches min-h-screen antialiased">
-      <section className="lx-hero">
+      <section className="lx-hero go-hero">
         <div className="lx-wrap lx-hero-inner">
           <AnimatedShinyText className="lx-pill mx-0 max-w-none text-brand-300">{PILL_BANNER}</AnimatedShinyText>
-          <h1 className="lx-headline">
-            {HEADLINE_BEFORE}
-            {HEADLINE_ACCENT ? <span className="lx-accent">{HEADLINE_ACCENT}</span> : null}
-            {HEADLINE_AFTER}
+          <h1 className="lx-headline go-hero-title">
+            We&apos;ll Book <span className="lx-accent">10 First Cleans</span> From Homeowners Who Only Talked To You,
+            Then Turn Them Into <span className="lx-accent">Recurring Clients.</span>
+            <span className="go-hero-close">Done For You, Ads Live In 7 Days.</span>
           </h1>
-          <p className="lx-lead">{SUBHEADLINE}</p>
-          <p className="lx-requirement">{VIDEO_LABEL}</p>
-          <div className="lx-video-wrap go-magic">
-            <div className="lx-video-shell">
-              <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={14} />
-              <BorderBeam size={90} duration={9} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
-              <GoWistia mediaId={GO_VSL_MEDIA_ID} />
-            </div>
+        </div>
+      </section>
+
+      <section className="lx-section" id="calendar">
+        <div className="lx-wrap">
+          <div className="lx-hero-inner">
+            <h2 className="lx-heading">
+              {CALENDAR.titleBefore}
+              <span className="lx-accent">{CALENDAR.titleAccent}</span>
+              {CALENDAR.titleAfter}
+            </h2>
+            <p className="lx-lead">{CALENDAR.body}</p>
           </div>
-          <DemoLink />
-          <BookLink />
-          <ul className="lx-trust">
-            {LANDING_TRUST.map((item) => (
-              <li key={item}>
-                <Check />
-                {item}
-              </li>
-            ))}
-          </ul>
+          <IclosedEmbed
+            url={calendarSrc}
+            title={ACQ_ICLOSED_TITLE}
+            contentName="Cleaning strategy session"
+            contentCategory="cleaning"
+            eventName="Schedule"
+          />
         </div>
       </section>
 
@@ -156,200 +98,13 @@ export default async function CleaningFunnelPage({
         </div>
       </section>
 
-      <section className="lx-section" id="product">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{INCLUDED_TITLE}</h2>
-          <ul className="lx-offer">
-            {INCLUDED.map((item) => (
-              <li key={item.title} className="lx-card go-saas-card">
-                <GoScene title={item.title} />
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </li>
-            ))}
-          </ul>
-          <p className="lx-callout">{INCLUDED_FOOTNOTE}</p>
-          <div className="lx-center">
-            <BookLink />
-          </div>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{PROBLEMS_HEADLINE}</h2>
-          <ul className="lx-patterns">
-            {PROBLEMS.map((problem, index) => {
-              const Icon = PROBLEM_ICONS[index] ?? PhoneMissed;
-              return (
-                <li key={problem.title} className="lx-card lx-pattern go-problem">
-                  <SaasIcon icon={Icon} tone="red" />
-                  <h3>{problem.title}</h3>
-                  <p>{problem.description}</p>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{SYSTEMS_HEADLINE}</h2>
-          <p className="lx-intro">{SYSTEMS_LEAD}</p>
-          <ol className="lx-steps">
-            {SYSTEMS.map((system) => (
-              <li key={system.key} className="lx-card go-saas-card">
-                <GoScene title={system.title} />
-                <h3>{system.title}</h3>
-                <p>{system.description}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{PROCESS_HEADLINE}</h2>
-          <ol className="lx-steps">
-            {PROCESS.map((step) => (
-              <li key={step.title} className="lx-card go-saas-card">
-                <GoScene title={step.title} />
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="lx-center">
-            <BookLink />
-          </div>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{MATH_HEADLINE}</h2>
-          <p className="lx-intro">{MATH_LEAD}</p>
-          <ul className="lx-steps">
-            {MATH.map((item) => (
-              <li key={item.title} className="lx-card">
-                <h3>{item.title}</h3>
-                <p className="go-delta">
-                  {item.from} → <span>{item.to}</span>
-                </p>
-                <p>{item.caption}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{FIT_HEADLINE}</h2>
-          <ul className="lx-audience">
-            <li className="lx-card lx-featured">
-              <h3 className="go-fit-title">
-                <CircleCheck aria-hidden />
-                {FIT_YES_TITLE}
-              </h3>
-              <ul className="go-fit-list">
-                {FIT_YES.map((item) => (
-                  <li key={item}>
-                    <CircleCheck aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </li>
-            <li className="lx-card go-not-fit">
-              <h3 className="go-fit-title">
-                <X aria-hidden />
-                {FIT_NO_TITLE}
-              </h3>
-              <ul className="go-fit-list">
-                {FIT_NO.map((item) => (
-                  <li key={item}>
-                    <X aria-hidden />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap lx-hero-inner">
-          <h2 className="lx-heading">{FOUNDING_OFFER.eyebrow}</h2>
-          <p className="lx-callout">
-            <strong>{FOUNDING_OFFER.lead}</strong> {FOUNDING_OFFER.body}
-          </p>
-          <BookLink />
-        </div>
-      </section>
-
-      <section className="lx-section" id="faq">
-        <div className="lx-wrap">
-          <h2 className="lx-heading">{FAQ.headline}</h2>
-          <div className="lx-faq">
-            {FAQ.items.map((item) => (
-              <details key={item.question}>
-                <summary>
-                  <span>{item.question}</span>
-                  <span className="lx-plus" aria-hidden />
-                </summary>
-                <p className="lx-answer">{item.answer}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="lx-section" id="calendar">
-        <div className="lx-wrap">
-          <div className="lx-hero-inner">
-            <h2 className="lx-heading">
-              {CALENDAR.titleBefore}
-              <span className="lx-accent">{CALENDAR.titleAccent}</span>
-              {CALENDAR.titleAfter}
-            </h2>
-            <p className="lx-lead">{CALENDAR.body}</p>
-          </div>
-          <IclosedEmbed
-            url={calendarSrc}
-            title={ACQ_ICLOSED_TITLE}
-            contentName="Cleaning strategy session"
-            contentCategory="cleaning"
-            eventName="Schedule"
-          />
-        </div>
-      </section>
-
-      <section className="lx-section">
-        <div className="lx-wrap lx-hero-inner">
-          <h2 className="lx-heading">{FINAL_CTA.headline}</h2>
-          <p className="lx-lead">{FINAL_CTA.body}</p>
-          <p className="lx-requirement">{FINAL_CTA.caption}</p>
-          <BookLink />
-        </div>
-      </section>
-
       <footer className="lx-foot">
         <ul className="go-foot-links">
           <li>
-            <a href="#results">Results</a>
-          </li>
-          <li>
-            <a href="#product">What&apos;s included</a>
-          </li>
-          <li>
-            <a href="#faq">FAQ</a>
-          </li>
-          <li>
             <a href="#calendar">Book a session</a>
+          </li>
+          <li>
+            <a href="#results">Results</a>
           </li>
         </ul>
         <p>

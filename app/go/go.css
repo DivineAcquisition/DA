@@ -834,7 +834,44 @@
   cursor: not-allowed;
 }
 
+.acq-coaches .go-hero {
+  padding: 2.5rem 1.25rem 2rem;
+  background:
+    radial-gradient(ellipse 70% 280px at 50% 0, rgba(106, 0, 255, 0.38), transparent 72%),
+    #07070b;
+}
+
+.acq-coaches .go-hero-title {
+  max-width: 18em;
+  margin-top: 1.15rem;
+  font-size: clamp(2.15rem, 5.4vw, 4.35rem);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+}
+
+.acq-coaches .go-hero-title .lx-accent {
+  font-style: italic;
+  font-weight: 700;
+}
+
+.acq-coaches .go-hero-close {
+  display: block;
+  max-width: 16em;
+  margin: 0.9rem auto 0;
+  color: #c3b6fe;
+  font-size: 0.42em;
+  font-style: normal;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
 @media (max-width: 700px) {
+  .acq-coaches .go-hero-title {
+    font-size: clamp(1.85rem, 8.4vw, 2.45rem);
+  }
+
   .acq-coaches .go-invite .lx-headline {
     font-size: 2.05rem;
   }
