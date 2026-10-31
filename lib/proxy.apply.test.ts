@@ -39,6 +39,15 @@ describe('coaches application route', () => {
     expect(rewrite.includes('/go/api/')).toBe(false);
   });
 
+  it('rewrites the sales operations page onto the acq surface', async () => {
+    const request = new NextRequest('https://acq.divineacquisition.io/operations', {
+      headers: { host: 'acq.divineacquisition.io' },
+    });
+    const response = await proxy(request);
+    expect(response.status).not.toBe(404);
+    expect(response.headers.get('x-middleware-rewrite') ?? '').toContain('/acq/operations');
+  });
+
   it('does not rewrite the application API into the coaches pages', async () => {
     const request = new NextRequest('https://acq.divineacquisition.io/api/acq/apply', {
       method: 'POST',

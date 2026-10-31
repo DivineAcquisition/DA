@@ -28,7 +28,7 @@ import { REVENUE_LEAK_NOINDEX } from './lib/acq/revenue-leak-content';
  *                                       reachable there too, for staff View As.
  *   ops. and vistrial. hosts        -> redirect to team. (VA paths) or admin. (staff)
  *   talent.divineacquisition.io     -> /assessment
- *   acq.divineacquisition.io        -> /acq  (coaches offer, /ai, and /leak for the Revenue Leak Audit)
+ *   acq.divineacquisition.io        -> /acq  (coaches offer, /ai, /leak, and /operations)
  *   go.divineacquisition.io         -> /go   (cleaning-company funnel, coaches layout)
  *   calls.divineacquisition.io      -> /calls
  *   onboard.divineacquisition.io    -> /onboard
@@ -238,6 +238,8 @@ const SURFACES: Surface[] = [
       pathname.startsWith('/ai/') ||
       pathname === '/leak' ||
       pathname.startsWith('/leak/') ||
+      pathname === '/operations' ||
+      pathname.startsWith('/operations/') ||
       pathname === '/api/meta/acq-capi' ||
       pathname === '/api/submit-lead' ||
       pathname === '/api/meta/capi' ||

@@ -44,6 +44,7 @@ export const SOURCE_TAGS = {
   foundingInstall: 'source - founding install application',
   roofing: 'source - roofing lead leak audit',
   cleaning: 'source - cleaning strategy session',
+  salesOperations: 'source - sales operations review',
   talent: 'source - talent assessment',
   aiFrontOffice: 'source - ai front office',
 } as const;
