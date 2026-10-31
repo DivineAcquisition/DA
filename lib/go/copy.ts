@@ -3,7 +3,7 @@
 export const PILL_BANNER = 'ATTENTION: RESIDENTIAL CLEANING OWNERS WITH TEAMS';
 
 export const HEADLINE_BEFORE =
-  "We'll Book 10 First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In 7 Days, Without You Or Your VA Chasing Leads, And You Only Pay When A Client Goes Recurring.";
+  "We'll Book 10 First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In 7 Days.";
 export const HEADLINE_ACCENT = '';
 export const HEADLINE_AFTER = '';
 
