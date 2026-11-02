@@ -4,11 +4,15 @@ import { useState, useTransition } from 'react';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSizeMd } from '@/app/components/ui';
-import { inputClass, labelClass } from './ui';
-import { hubSetPasswordAction } from '@/lib/vistrial/authActions';
+import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
+import type { PasswordResult } from '@/lib/auth/password';
 
 /** Reached from a password reset email: choose the new password, then continue. */
-export default function SetPassword() {
+export default function SetPasswordScreen({
+  action,
+}: {
+  action: (formData: FormData) => Promise<PasswordResult>;
+}) {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -24,7 +28,7 @@ export default function SetPassword() {
           action={(formData) => {
             setError(null);
             startTransition(async () => {
-              const result = await hubSetPasswordAction(formData);
+              const result = await action(formData);
               if (result && !result.ok) setError(result.error);
             });
           }}
@@ -41,7 +45,11 @@ export default function SetPassword() {
             </label>
             <input id="confirm" name="confirm" type="password" required minLength={12} autoComplete="new-password" className={inputClass} />
           </div>
-          {error ? <p className="text-sm text-flag-critical">{error}</p> : null}
+          {error ? (
+            <p role="alert" className="text-sm text-flag-critical">
+              {error}
+            </p>
+          ) : null}
           <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd} w-full`}>
             {pending ? 'Saving…' : 'Save and continue'}
           </button>

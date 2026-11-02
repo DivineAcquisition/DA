@@ -5,6 +5,7 @@ import AdminMfaGate from '@/app/components/AdminMfaGate';
 import { appUrl } from '@/lib/apps';
 import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { currentApp } from '@/lib/appsServer';
+import { passwordPageKind } from '@/lib/auth/password';
 import { adminMfaState } from '@/lib/auth/mfa';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import NotConfigured from '@/app/da/components/NotConfigured';
@@ -40,6 +41,10 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   if (pathname === '/workspace/auth/invite' || pathname.startsWith('/workspace/auth/invite/')) {
     return <>{children}</>;
   }
+  // The email form is public. The new-password form needs the recovery session,
+  // and it comes before any role gate.
+  const passwordPage = passwordPageKind(pathname);
+  if (passwordPage === 'forgot') return <>{children}</>;
   const operatorPath = pathname === '/workspace/operator' || pathname.startsWith('/workspace/operator/');
   const session = await getSessionContext();
   // The admin app has no VA screens of its own (only the View As mirror), so a
@@ -48,7 +53,7 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   if (!session) return <HubSignIn app={app ?? 'team'} />;
 
   // Opened from a password reset email: the new password comes before anything else.
-  if (pathname === '/workspace/reset-password') return <>{children}</>;
+  if (passwordPage === 'reset') return <>{children}</>;
 
   // session.role is who the screen presents as (the VA during View As);
   // canAccessControlPlane is the signed-in person's own role.

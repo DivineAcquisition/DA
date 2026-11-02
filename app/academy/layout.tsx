@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { headers } from 'next/headers';
 import NotConfigured from '@/app/da/components/NotConfigured';
+import { passwordPageKind } from '@/lib/auth/password';
 import { academyPathKind } from '@/lib/academy/paths';
 import { loadAcademyShell } from '@/lib/academy/load';
 import { academyContentOpen } from '@/lib/academy/types';
@@ -27,7 +28,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function AcademyLayout({ children }: { children: React.ReactNode }) {
   const h = await headers();
-  const kind = academyPathKind(h.get('x-pathname') ?? '');
+  const pathname = h.get('x-pathname') ?? '';
+  const kind = academyPathKind(pathname);
+  const passwordPage = passwordPageKind(pathname);
   const linkExpired = h.get('x-academy-link') === 'expired';
 
   let body: React.ReactNode;
@@ -35,7 +38,11 @@ export default async function AcademyLayout({ children }: { children: React.Reac
     body = <NotConfigured />;
   } else {
     const session = await getSessionContext();
-    if (!session) {
+    if (passwordPage === 'forgot') {
+      body = children;
+    } else if (passwordPage === 'reset') {
+      body = session ? children : <SignIn linkExpired />;
+    } else if (!session) {
       body = kind === 'missing' ? (
         <Chrome>
           <NotFoundScreen signedIn={false} />

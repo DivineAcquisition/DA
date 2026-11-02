@@ -1,6 +1,5 @@
 'use server';
 
-import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
@@ -8,14 +7,6 @@ import { inApp } from '@/lib/academy/comms';
 import { createClient } from '@/lib/supabase/server';
 
 export type AuthResult = { ok: true } | { ok: false; error: string };
-
-async function requestOrigin(): Promise<string> {
-  const h = await headers();
-  const hostHeader = h.get('host') || 'training.divineacquisition.io';
-  const hostname = hostHeader.split(':')[0];
-  const proto = h.get('x-forwarded-proto') || (hostname === 'localhost' || hostname === '127.0.0.1' ? 'http' : 'https');
-  return `${proto}://${hostHeader}`;
-}
 
 export async function academySignInAction(formData: FormData): Promise<AuthResult> {
   const supabase = await createClient();
@@ -39,17 +30,3 @@ export async function academySignOutAction(): Promise<void> {
   redirect('/academy');
 }
 
-/**
- * The reset link returns to this host. Supabase only honors it when the
- * training callback is on the project's redirect allow-list.
- */
-export async function academyResetAction(formData: FormData): Promise<AuthResult> {
-  const email = String(formData.get('email') ?? '').trim();
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: 'Enter the email you sign in with.' };
-  const supabase = await createClient();
-  const origin = await requestOrigin();
-  await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${origin}/academy/auth/callback?next=${encodeURIComponent('/academy')}`,
-  });
-  return { ok: true };
-}

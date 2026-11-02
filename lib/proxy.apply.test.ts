@@ -58,6 +58,17 @@ describe('coaches application route', () => {
     expect(response.headers.get('location')).toBe('https://team.divineacquisition.io/workspace/operator');
   });
 
+  it('serves the team forgot-password and reset-password screens', async () => {
+    for (const path of ['/workspace/forgot-password', '/workspace/reset-password']) {
+      const response = await proxy(
+        new NextRequest(`https://team.divineacquisition.io${path}`, {
+          headers: { host: 'team.divineacquisition.io' },
+        }),
+      );
+      expect(response.status).not.toBe(404);
+    }
+  });
+
   it('keeps admin screens off the team app', async () => {
     const response = await proxy(
       new NextRequest('https://team.divineacquisition.io/workspace/operations', {

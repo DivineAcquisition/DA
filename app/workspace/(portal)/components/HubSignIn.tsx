@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
 import { Badge, inputClass, labelClass } from './ui';
-import { hubResetRequestAction, hubSignInAction, hubSignOutAction } from '@/lib/vistrial/authActions';
+import { hubSignInAction, hubSignOutAction } from '@/lib/vistrial/authActions';
 
 /**
  * The front door of each app. It says what this is and nothing else: no
@@ -24,7 +25,6 @@ export default function HubSignIn({
 }) {
   const title = app === 'admin' ? 'Divine Acquisition Admin' : 'Divine Acquisition Team';
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'sign_in' | 'forgot' | 'sent'>('sign_in');
   const [pending, startTransition] = useTransition();
 
   return (
@@ -68,23 +68,11 @@ export default function HubSignIn({
               </button>
             </form>
           </>
-        ) : mode === 'sent' ? (
-          <>
-            <h1 className="mt-6 text-xl font-semibold">Check your email</h1>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-              If that address has a team account, a link to set a new password is on its way. It brings you back here.
-            </p>
-            <button type="button" onClick={() => setMode('sign_in')} className={`${btnSecondary} ${btnSizeSm} mt-6`}>
-              Back to sign in
-            </button>
-          </>
         ) : (
           <>
             <h1 className="mt-6 text-xl font-semibold">{title}</h1>
             <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-              {mode === 'forgot'
-                ? 'Enter the email you sign in with and we will send a link to set a new password.'
-                : app === 'admin' ? 'Sign in to the admin app.' : 'Sign in to your team account.'}
+              {app === 'admin' ? 'Sign in to the admin app.' : 'Sign in to your team account.'}
             </p>
 
             <form
@@ -92,12 +80,6 @@ export default function HubSignIn({
               action={(formData) => {
                 setError(null);
                 startTransition(async () => {
-                  if (mode === 'forgot') {
-                    const result = await hubResetRequestAction(formData);
-                    if (result.ok) setMode('sent');
-                    else setError(result.error);
-                    return;
-                  }
                   const result = await hubSignInAction(formData);
                   if (result && !result.ok) setError(result.error);
                 });
@@ -109,21 +91,19 @@ export default function HubSignIn({
                 </label>
                 <input id="email" name="email" type="email" required autoComplete="email" className={inputClass} />
               </div>
-              {mode === 'sign_in' ? (
-                <div>
-                  <label className={labelClass} htmlFor="password">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    required
-                    autoComplete="current-password"
-                    className={inputClass}
-                  />
-                </div>
-              ) : null}
+              <div>
+                <label className={labelClass} htmlFor="password">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  className={inputClass}
+                />
+              </div>
 
               {error && (
                 <p className="rounded-xl border border-flag-critical/25 bg-flag-critical/[0.08] px-3.5 py-2.5 text-sm text-flag-critical">
@@ -132,19 +112,12 @@ export default function HubSignIn({
               )}
 
               <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd} w-full`}>
-                {mode === 'forgot' ? (pending ? 'Sending…' : 'Send the link') : pending ? 'Signing in…' : 'Sign in'}
+                {pending ? 'Signing in…' : 'Sign in'}
               </button>
             </form>
-            <button
-              type="button"
-              onClick={() => {
-                setError(null);
-                setMode(mode === 'forgot' ? 'sign_in' : 'forgot');
-              }}
-              className="mt-4 text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline"
-            >
-              {mode === 'forgot' ? 'Back to sign in' : 'Forgot your password?'}
-            </button>
+            <Link href="/workspace/forgot-password" className="mt-4 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline">
+              Forgot your password?
+            </Link>
           </>
         )}
       </div>

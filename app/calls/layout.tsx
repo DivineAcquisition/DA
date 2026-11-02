@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { passwordPageKind } from '@/lib/auth/password';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import NotConfigured from '@/app/da/components/NotConfigured';
 import Shell from './components/Shell';
@@ -18,7 +20,11 @@ export const dynamic = 'force-dynamic';
 export default async function CallsLayout({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured) return <NotConfigured />;
 
+  const passwordPage = passwordPageKind((await headers()).get('x-pathname') ?? '');
+  if (passwordPage === 'forgot') return <>{children}</>;
+
   const session = await getSessionContext();
+  if (passwordPage === 'reset') return session ? <>{children}</> : <SignIn />;
   if (!session) return <SignIn />;
   if (!session.isAdmin) return <SignIn refusedFor={session.email} />;
 

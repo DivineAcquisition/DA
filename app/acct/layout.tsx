@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
-import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
-import { createClient } from '@/lib/supabase/server';
+import { passwordPageKind } from '@/lib/auth/password';
+import { createClient, getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import NotConfigured from '@/app/da/components/NotConfigured';
 import ClientShell from './components/ClientShell';
 import ClientSignIn from './components/ClientSignIn';
@@ -16,12 +16,15 @@ export default async function AcctLayout({ children }: { children: React.ReactNo
   if (!supabaseConfigured) return <NotConfigured />;
 
   const pathname = (await headers()).get('x-pathname') ?? '';
+  const passwordPage = passwordPageKind(pathname);
+  if (passwordPage === 'forgot') return <>{children}</>;
   // Invite acceptance must render before a client_account exists.
   if (pathname.startsWith('/acct/invite')) {
     return <>{children}</>;
   }
 
   const session = await getSessionContext();
+  if (passwordPage === 'reset') return session ? <>{children}</> : <ClientSignIn />;
   if (!session) return <ClientSignIn />;
 
   const supabase = await createClient();

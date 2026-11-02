@@ -37,6 +37,8 @@ describe('apps', () => {
   it('serves only VA screens on the team app', () => {
     expect(isTeamAppPath('/workspace/operator/pay')).toBe(true);
     expect(isTeamAppPath('/workspace/auth/leave')).toBe(true);
+    expect(isTeamAppPath('/workspace/forgot-password')).toBe(true);
+    expect(isTeamAppPath('/workspace/reset-password')).toBe(true);
     for (const path of ['/workspace', '/workspace/team', '/workspace/operations', '/workspace/admin/payroll', '/workspace/inbox', '/workspace/team/ghl']) {
       expect(isTeamAppPath(path)).toBe(false);
     }

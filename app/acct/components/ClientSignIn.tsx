@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import Backdrop from '@/app/components/Backdrop';
 import Logo from '@/app/components/Logo';
 import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
@@ -81,6 +82,9 @@ export default function ClientSignIn({ wrongAudience }: { wrongAudience?: string
                 {pending ? 'Signing in…' : 'Sign in'}
               </button>
             </form>
+            <Link href="/acct/forgot-password" className="mt-4 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline">
+              Forgot your password?
+            </Link>
 
             <p className="mt-5 text-xs leading-relaxed text-neutral-600">
               Accounts are created by invitation. If you were sent a link and it has expired, ask your Divine
