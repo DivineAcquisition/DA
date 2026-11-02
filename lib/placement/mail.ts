@@ -119,6 +119,37 @@ export function placementLetter(kind: string, payload: Payload) {
       reason: `You received this because the placement for ${client} was paused and your account manager chose to tell you.`,
     });
   }
+  if (kind.startsWith('alert.launch_health')) {
+    const failed = Array.isArray(payload.results)
+      ? payload.results
+          .filter((item) => item && typeof item === 'object' && (item as { result?: string }).result === 'fail' && !(item as { admin_only?: boolean }).admin_only)
+          .map((item) => (item as { reason?: string }).reason)
+          .filter(Boolean)
+      : [];
+    return letter({
+      purpose: 'alerts',
+      subject: `Health check failed for ${name} at ${client}`,
+      title: 'A launch health check failed',
+      paragraphs: [`${name} on ${client} failed the launch health check.`, ...failed.map(String)],
+      reason: 'You received this because a launch health check failed.',
+    });
+  }
+  if (kind.startsWith('alert.launch_day_summary')) {
+    const lines = [
+      `Day ${text(payload.day)} for ${name} on ${client}.`,
+      `EOD: ${text(payload.eod) || 'Not opened'}.`,
+      `Health check: ${text(payload.health) || 'Not run'}.`,
+      payload.needs_help ? 'The operator asked for help.' : 'No needs-help flag today.',
+    ];
+    if (payload.admin) lines.push(`Open first-week mismatches: ${text(payload.mismatches) || '0'}.`);
+    return letter({
+      purpose: 'alerts',
+      subject: `Launch day ${text(payload.day)}: ${name} at ${client}`,
+      title: 'Launch day summary',
+      paragraphs: lines,
+      reason: `You received this because launch summaries are on for ${client}.`,
+    });
+  }
   if (kind === 'operator.placement_ended') {
     return letter({
       purpose: 'team',

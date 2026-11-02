@@ -9,6 +9,7 @@ import { CertPill, EodPill, ShiftPill, When } from '../../components/Bits';
 import { ExcuseDays } from '../../components/EodReview';
 import { MessageForm, TargetForm, TaskForm } from '../../components/Forms';
 import HirePanel from '../HirePanel';
+import FirstWeek from '../../components/FirstWeek';
 
 export const metadata: Metadata = { title: 'Operator' };
 export const dynamic = 'force-dynamic';
@@ -65,6 +66,8 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
           <Fact label="Review date">{placement?.review_on ?? '—'}</Fact>
         </dl>
       </header>
+
+      {placement ? <FirstWeek placementId={placement.id} /> : null}
 
       <Section title="Today and this week">
         <Numbers title="Today" metrics={data.today} isAdmin={data.is_admin} />

@@ -3,6 +3,15 @@ import { notFound } from 'next/navigation';
 import { OfferBriefView } from '@/app/components/placement/OfferBrief';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import type { CheckItem } from '@/lib/placement/types';
+
+type LaunchStatus = {
+  summary_enabled: boolean;
+  summary_days: number;
+  combine_short_week: boolean;
+  review_due: boolean;
+  review: { decision: string; note: string; at: string } | null;
+  health: { overall: string; ran_at: string; results: { key: string; area: string; result: string; reason: string; admin_only?: boolean }[] } | null;
+};
 import type { OfferBrief } from '@/lib/placement/offer';
 import { ACTIVITY_CATEGORIES } from '@/lib/sales-workspace/types';
 import { isOpenEnd, STATUS_LABEL, statusFromDb } from '@/lib/sales-workspace/view';
@@ -14,6 +23,7 @@ import { ws } from '../../../components/tokens';
 import GhlPlacement from '../../components/GhlPlacement';
 import OutcomeEditor from '../../components/OutcomeEditor';
 import PlacementForm from '../../components/PlacementForm';
+import { HealthCheck, LaunchChecklist, LaunchSettingsForm, ReviewForm } from '../../components/LaunchControls';
 import PlacementLifecycle from '../../components/PlacementLifecycle';
 import PlacementStatusControl from '../../components/PlacementStatusControl';
 import ReportPlacement from '../../components/ReportPlacement';
@@ -67,10 +77,14 @@ export default async function PlacementPage({
   const role = await salesOpsRole();
   const current = TABS.some(([key]) => key === tab) ? tab : 'overview';
   const supabase = await createClient();
-  const extrasResult = await controlRpc<Extras>(supabase, 'so_placement_extras', { p_placement: placementId });
+  const [extrasResult, launchResult] = await Promise.all([
+    controlRpc<Extras>(supabase, 'so_placement_extras', { p_placement: placementId }),
+    controlRpc<LaunchStatus>(supabase, 'so_launch_status', { p_placement: placementId }),
+  ]);
   const extras = extrasResult.data;
+  const launch = launchResult.data;
 
-  if (role === 'manager') return <ManagerPlacement placementId={placementId} tab={current} extras={extras} />;
+  if (role === 'manager') return <ManagerPlacement placementId={placementId} tab={current} extras={extras} launch={launch} />;
   const [data, options, detail] = await Promise.all([getPlacement(placementId), placementFormOptions(), placementDetail(placementId)]);
   if (!data) notFound();
   const { placement: p, outcomes, ghl } = data;
@@ -172,7 +186,29 @@ export default async function PlacementPage({
       {current === 'reporting' ? <ReportSection placementId={p.id} /> : null}
       {current === 'ghl' ? <GhlSection placementId={p.id} /> : null}
       {current === 'targets' ? <Targets extras={extras} /> : null}
-      {current === 'checklist' ? <Checklist extras={extras} /> : null}
+      {current === 'checklist' ? (
+        <div className="space-y-6">
+          <Panel title="Launch checklist">
+            <LaunchChecklist placementId={p.id} items={extras?.checklist ?? []} isAdmin={role === 'admin'} />
+          </Panel>
+          <Panel title="Health check">
+            <HealthCheck placementId={p.id} isAdmin={role === 'admin'} latest={launch?.health ?? null} />
+          </Panel>
+          <Panel title="Launch summaries">
+            <LaunchSettingsForm
+              placementId={p.id}
+              enabled={launch?.summary_enabled ?? true}
+              days={launch?.summary_days ?? 5}
+              combine={launch?.combine_short_week ?? true}
+            />
+          </Panel>
+          {launch?.review_due ? (
+            <Panel title="30-day review">
+              {launch.review ? <p className="text-sm text-white">{launch.review.decision}. {launch.review.note}</p> : <ReviewForm placementId={p.id} />}
+            </Panel>
+          ) : null}
+        </div>
+      ) : null}
       {current === 'history' ? <History extras={extras} /> : null}
     </>
   );
@@ -195,7 +231,17 @@ function Tabs({ placementId, tab }: { placementId: string; tab: string }) {
   );
 }
 
-async function ManagerPlacement({ placementId, tab, extras }: { placementId: string; tab: string; extras: Extras | null }) {
+async function ManagerPlacement({
+  placementId,
+  tab,
+  extras,
+  launch,
+}: {
+  placementId: string;
+  tab: string;
+  extras: Extras | null;
+  launch: LaunchStatus | null;
+}) {
   const data = await placementDetail(placementId);
   if (!data) notFound();
   const p = data.placement;
@@ -250,7 +296,21 @@ async function ManagerPlacement({ placementId, tab, extras }: { placementId: str
       {tab === 'reporting' ? <ReportSection placementId={placementId} /> : null}
       {tab === 'ghl' ? <GhlSection placementId={placementId} manager /> : null}
       {tab === 'targets' ? <Targets extras={extras} /> : null}
-      {tab === 'checklist' ? <Checklist extras={extras} /> : null}
+      {tab === 'checklist' ? (
+        <div className="space-y-6">
+          <Panel title="Launch checklist">
+            <LaunchChecklist placementId={placementId} items={extras?.checklist ?? []} isAdmin={false} />
+          </Panel>
+          <Panel title="Health check">
+            <HealthCheck placementId={placementId} isAdmin={false} latest={launch?.health ?? null} />
+          </Panel>
+          {launch?.review_due ? (
+            <Panel title="30-day review">
+              {launch.review ? <p className="text-sm text-white">{launch.review.decision}. {launch.review.note}</p> : <ReviewForm placementId={placementId} />}
+            </Panel>
+          ) : null}
+        </div>
+      ) : null}
       {tab === 'history' ? <History extras={extras} /> : null}
     </>
   );
@@ -267,23 +327,6 @@ function Targets({ extras }: { extras: Extras | null }) {
             <span className="text-[var(--ws-dim)]">
               daily {target.daily ?? '—'} · weekly {target.weekly ?? '—'} · from {formatDate(target.from)}
             </span>
-          </li>
-        ))}
-      </ul>
-    </Panel>
-  );
-}
-
-function Checklist({ extras }: { extras: Extras | null }) {
-  return (
-    <Panel title="Launch checklist">
-      {!extras ? <p className="text-sm text-amber-200">The checklist did not load.</p> : null}
-      <ul className="space-y-2 text-sm">
-        {(extras?.checklist ?? []).map((item) => (
-          <li key={item.key}>
-            <span className="text-white">{item.blocking ? 'Open' : item.waived ? 'Waived' : 'Met'}</span>
-            <span className="text-[var(--ws-dim)]"> — {item.label}</span>
-            {item.waiver_reason ? <span className="text-[var(--ws-dim)]"> {item.waiver_reason}</span> : null}
           </li>
         ))}
       </ul>

@@ -685,10 +685,12 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
           <ul className="space-y-2">
             {checklist.map((item) => (
               <li key={item.key} className="rounded-lg border border-white/10 px-3 py-2">
-                <p>
-                  {item.blocking ? 'Still needed' : item.waived ? 'Waived' : 'Met'} — {item.label}
+                <p className={item.overdue ? 'text-red-300' : undefined}>
+                  {item.overdue ? 'Overdue' : item.blocking ? 'Still needed before activation' : item.waived ? 'Waived' : item.met ? 'Met' : 'Open'} — {item.label}
                 </p>
-                {item.waiver_reason ? <p className="text-neutral-400">{item.waiver_reason}</p> : null}
+                {item.fix && !item.met && !item.waived ? <p className="text-neutral-300">{item.fix}</p> : null}
+                {item.waiver_reason ? <p className="text-neutral-400">Waived: {item.waiver_reason}</p> : null}
+                {item.checked_by ? <p className="text-neutral-400">Confirmed by {item.checked_by}.</p> : null}
                 {bundle.role === 'admin' && item.blocking ? (
                   <div className="mt-2 flex gap-2">
                     <Input value={waivers[item.key] ?? ''} placeholder="Reason for the waiver" onChange={(event) => setWaivers({ ...waivers, [item.key]: event.target.value })} />

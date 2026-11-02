@@ -8,6 +8,7 @@ const TABS = [
   { href: '/workspace/team/workspace', label: 'Today', exact: true, badge: '' as 'eods' | 'reports' | '' },
   { href: '/workspace/team/workspace/operators', label: 'Operators', badge: '' as const },
   { href: '/workspace/team/workspace/placements', label: 'Placements', badge: '' as const },
+  { href: '/workspace/team/workspace/launches', label: 'Launches', badge: 'launches' as const },
   { href: '/workspace/team/workspace/eods', label: 'EODs', badge: 'eods' as const },
   { href: '/workspace/team/workspace/reports', label: 'Reports', badge: 'reports' as const },
   { href: '/workspace/team/workspace/activity', label: 'Activity Log', badge: '' as const },
@@ -16,9 +17,9 @@ const TABS = [
     : []),
 ];
 
-export default function WorkspaceTabs({ eods = 0, reports = 0 }: { eods?: number; reports?: number }) {
+export default function WorkspaceTabs({ eods = 0, reports = 0, launches = 0 }: { eods?: number; reports?: number; launches?: number }) {
   const pathname = usePathname() ?? '';
-  const counts = { eods, reports };
+  const counts = { eods, reports, launches };
   return (
     <nav aria-label="Team Workspace" className="mb-5 flex gap-1 overflow-x-auto">
       {TABS.map((tab) => {

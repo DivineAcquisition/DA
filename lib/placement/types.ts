@@ -118,10 +118,18 @@ export function normalizePayload(value: unknown): WizardPayload {
 export type CheckItem = {
   key: string;
   label: string;
+  fix?: string;
+  href?: string;
+  gate?: 'activation' | 'two_days' | 'first_report';
+  automatic?: boolean;
   met: boolean;
   waived?: boolean;
   waiver_reason?: string | null;
+  overdue?: boolean;
   blocking?: boolean;
+  open?: boolean;
+  checked_at?: string | null;
+  checked_by?: string | null;
 };
 
 export type BoardRow = {

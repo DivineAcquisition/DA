@@ -31,11 +31,17 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ r
   const supabase = await createClient();
   const { data, error } = await controlRpc<Detail>(supabase, 'so_report_get', { p_id: reportId });
   if (error || !data) return <p className="text-sm text-[#FFB020]">{error ? readable(error) : 'Report not found.'}</p>;
+  const flag = await controlRpc<{ first: boolean; operator_first: string | null }>(supabase, 'so_launch_report_flag', { p_report: reportId });
   const report = data.client;
   const chosen = new Set(data.win_eod_ids ?? []);
   return (
     <div className="space-y-6">
       <Link href="/workspace/team/workspace/reports" className="text-sm text-neutral-400 hover:text-white">Reports</Link>
+      {flag.data?.first ? (
+        <p className="rounded-xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm text-white">
+          First report for this client. Add a short intro about {flag.data.operator_first || 'the operator'} and what to expect next week.
+        </p>
+      ) : null}
       <header>
         <p className="text-xs uppercase tracking-[0.14em] text-brand-300">{data.status}</p>
         <h1 className="mt-1 text-2xl font-semibold text-white">{report.client}</h1>
