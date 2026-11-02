@@ -10,6 +10,7 @@ const TABS = [
   { href: '/workspace/sales-ops/targets', label: 'Default targets', admin: false },
   { href: '/workspace/sales-ops/tasks', label: 'Tasks', admin: false },
   { href: '/workspace/team/workspace/eods', label: 'EODs', admin: false },
+  { href: '/workspace/sales-ops/templates', label: 'Placement templates', admin: true },
   { href: '/workspace/sales-ops/settings', label: 'Settings', admin: true },
 ];
 

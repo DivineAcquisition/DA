@@ -11,6 +11,7 @@ import { FormResult } from './ActionForm';
 
 const VERB: Record<WorkspaceStatus, string> = {
   pending: 'Back to pending',
+  scheduled: 'Scheduled',
   active: 'Activate',
   paused: 'Pause',
   ended: 'End placement',
@@ -32,6 +33,9 @@ export default function PlacementStatusControl({
   const next = NEXT_STATUSES[status];
 
   if (next.length === 0) {
+    if (status === 'scheduled') {
+      return <p className="text-sm text-[var(--ws-dim)]">This placement is scheduled. It becomes active when the shift starts.</p>;
+    }
     return <p className="text-sm text-[var(--ws-dim)]">This placement has ended. Its status no longer changes.</p>;
   }
 

@@ -46,12 +46,14 @@ export function isOpenEnd(value: string | null | undefined): boolean {
 
 export function statusFromDb(status: string): WorkspaceStatus {
   if (status === 'draft') return 'pending';
+  if (status === 'scheduled') return 'scheduled';
   if (status === 'renewed') return 'ended';
   return status as WorkspaceStatus;
 }
 
 export const STATUS_LABEL: Record<WorkspaceStatus, string> = {
   pending: 'Pending',
+  scheduled: 'Scheduled',
   active: 'Active',
   paused: 'Paused',
   ended: 'Ended',
@@ -60,6 +62,7 @@ export const STATUS_LABEL: Record<WorkspaceStatus, string> = {
 /** Which status changes an admin can make from each status. Mirrors so_set_placement_status(). */
 export const NEXT_STATUSES: Record<WorkspaceStatus, WorkspaceStatus[]> = {
   pending: ['active', 'ended'],
+  scheduled: [],
   active: ['paused', 'ended'],
   paused: ['active', 'ended'],
   ended: [],

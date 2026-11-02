@@ -269,6 +269,7 @@ export function buildNav({
             { href: '/workspace/sales-ops/metrics', label: 'Metrics', icon: ChartNoAxesCombined },
             { href: '/workspace/sales-ops/targets', label: 'Targets', icon: Target },
             { href: '/workspace/sales-ops/tasks', label: 'Tasks', icon: ClipboardList },
+            { href: '/workspace/sales-ops/templates', label: 'Placement templates', icon: FileSignature },
           ],
         },
         { href: '/workspace/team/settings', label: 'Team settings', icon: Settings2 },
