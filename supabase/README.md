@@ -208,6 +208,21 @@ The Next.js surface lives at `/ad` (host `ad.divineacquisition.io` via
 `admin.divineacquisition.io`). Accounts are invited from `/ad/invites`;
 acceptance is at `/ad/invite?token=…`.
 
+### Auth emails
+
+Supabase's default messages are not what people receive. The branded templates
+live in `supabase/templates/` and are rendered by `lib/email/auth-templates.ts`
+from the same layout as the rest of the mail. Each file is a Go template:
+`{{ .ConfirmationURL }}`, `{{ .Token }}`, and the other auth fields stay
+literal.
+
+Hosted projects do not read those files. Paste the subject and HTML into
+Authentication → Email Templates
+(`https://supabase.com/dashboard/project/hfgattcqlzuyahqywuoq/auth/templates`),
+including the security notifications, or push `mailer_subjects_*` and
+`mailer_templates_*_content` through the Management API. The keys are the
+`subjectKey` and `contentKey` on each template.
+
 ### Host routing
 
 Each property is a dedicated host. On that host only its surface is served;
