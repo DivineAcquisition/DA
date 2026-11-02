@@ -1,3 +1,4 @@
+import { releaseIntroductionAction } from '@/lib/placement/actions';
 import { saveReportConfigAction, saveReportSecretAction, testReportAction } from '@/lib/sales-reports/actions';
 import ActionForm from './ActionForm';
 
@@ -64,6 +65,10 @@ export default function ReportPlacement({ placementId, panel }: { placementId: s
         <label className="block text-sm">Extra CC
           <input name="extra_cc" defaultValue={(panel.extra_cc ?? []).join(', ')} className="mt-1 w-full rounded-lg border border-white/10 bg-transparent px-3 py-2" />
         </label>
+      </ActionForm>
+      <ActionForm action={releaseIntroductionAction} submitLabel="Release the introduction and send it">
+        <input type="hidden" name="placement_id" value={placementId} />
+        <p className="text-sm text-[var(--ws-dim)]">A held introduction stays unsent until you release it. Releasing sends it to the client recipients.</p>
       </ActionForm>
       <ActionForm action={testReportAction} submitLabel="Send test report to me">
         <input type="hidden" name="placement_id" value={placementId} />

@@ -80,9 +80,9 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
     connected: boolean;
     warning: string | null;
     users: Array<{ id: string; name: string; email: string }>;
-    rows: Array<{ key: string; label: string; pool: string; suggestedName: string; options: Array<{ id: string; name: string }>; suggestedId: string | null }>;
+    rows: Array<{ key: string; label: string; pool: string; suggestedName: string; multiple: boolean; options: Array<{ id: string; name: string }>; suggestedId: string | null }>;
   } | null>(null);
-  const [picked, setPicked] = useState<Record<string, string>>({});
+  const [picked, setPicked] = useState<Record<string, string[]>>({});
   const [confirmed, setConfirmed] = useState<Record<string, boolean>>({});
   const [waivers, setWaivers] = useState<Record<string, string>>({});
 
@@ -476,6 +476,7 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             <Select value={payload.reporting.intro} onChange={(event) => setPayload({ ...payload, reporting: { ...payload.reporting, intro: event.target.value as WizardPayload['reporting']['intro'] } })}>
               <option value="activation">Send when this placement is activated</option>
               <option value="date">Schedule for a date</option>
+              <option value="hold">Hold for preview. Do not send until released.</option>
               <option value="none">Do not send</option>
             </Select>
           </Field>
@@ -483,6 +484,9 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             <Field label="Introduction date">
               <Input type="date" value={payload.reporting.intro_on} onChange={(event) => setPayload({ ...payload, reporting: { ...payload.reporting, intro_on: event.target.value } })} />
             </Field>
+          ) : null}
+          {payload.reporting.intro === 'hold' ? (
+            <p className="text-amber-200">The introduction is saved for your preview. Activating does not send it. Release it from the placement when you have read it.</p>
           ) : null}
         </section>
       ) : null}
@@ -538,7 +542,7 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
                     return;
                   }
                   setProposal(read.proposal);
-                  setPicked(Object.fromEntries(read.proposal.rows.map((row) => [row.key, row.suggestedId ?? ''])));
+                  setPicked(Object.fromEntries(read.proposal.rows.map((row) => [row.key, row.suggestedId ? [row.suggestedId] : []])));
                   setError(read.proposal.warning);
                 });
               }}
@@ -573,7 +577,7 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             <ol className="list-decimal space-y-1 pl-5 text-neutral-300">
               <li>In the client sub-account, open Settings, then My Staff.</li>
               <li>Add the operator with their own email. Do not share a login.</li>
-              <li>Give them the calendars and pipelines this placement uses.</li>
+              <li>Give them the calendars, pipelines, or tags this placement uses. A booking in another tool is marked with tags.</li>
               <li>Come back here, read GHL again, and choose that user.</li>
             </ol>
           ) : null}
@@ -589,20 +593,51 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             <div key={row.key} className="rounded-xl border border-white/10 p-3">
               <p className="font-medium text-white">{row.label}</p>
               <p className="text-neutral-400">Suggested name: {row.suggestedName}</p>
-              {row.options.length === 0 || !row.suggestedId ? (
+              {row.options.length === 0 || (row.suggestedName && !row.suggestedId) ? (
                 <p className="text-amber-200">
-                  Nothing in GHL matched. Create a {row.pool === 'calendars' ? 'calendar' : row.pool === 'stages' ? 'stage' : row.pool === 'pipelines' ? 'pipeline' : 'tag'} named {row.suggestedName}, then read GHL again.
+                  Nothing in GHL matched. Create a {row.pool === 'calendars' ? 'calendar' : row.pool === 'stages' ? 'stage' : row.pool === 'pipelines' ? 'pipeline' : 'tag'}
+                  {row.suggestedName ? ` named ${row.suggestedName}` : ''}, then read GHL again.
                 </p>
               ) : null}
-              <Select value={picked[row.key] ?? ''} onChange={(event) => setPicked({ ...picked, [row.key]: event.target.value })}>
-                <option value="">Do not map yet</option>
-                {row.options.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                    {option.id === row.suggestedId ? ' (suggested)' : ''}
-                  </option>
-                ))}
-              </Select>
+              {row.multiple ? (
+                <ul className="mt-2 max-h-40 space-y-1 overflow-auto">
+                  {row.options.map((option) => {
+                    const selected = (picked[row.key] ?? []).includes(option.id);
+                    return (
+                      <li key={option.id}>
+                        <label className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={(event) => {
+                              const current = picked[row.key] ?? [];
+                              setPicked({
+                                ...picked,
+                                [row.key]: event.target.checked ? [...current, option.id] : current.filter((id) => id !== option.id),
+                              });
+                            }}
+                          />
+                          {option.name}
+                          {option.id === row.suggestedId ? ' (suggested)' : ''}
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <Select
+                  value={(picked[row.key] ?? [])[0] ?? ''}
+                  onChange={(event) => setPicked({ ...picked, [row.key]: event.target.value ? [event.target.value] : [] })}
+                >
+                  <option value="">Do not map yet</option>
+                  {row.options.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name}
+                      {option.id === row.suggestedId ? ' (suggested)' : ''}
+                    </option>
+                  ))}
+                </Select>
+              )}
               <label className="mt-2 flex items-center gap-2">
                 <input type="checkbox" checked={Boolean(confirmed[row.key])} onChange={(event) => setConfirmed({ ...confirmed, [row.key]: event.target.checked })} />
                 Confirm this mapping
@@ -616,7 +651,8 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             onClick={() => {
               const chosen: Record<string, string[]> = {};
               for (const row of proposal?.rows ?? []) {
-                if (confirmed[row.key] && picked[row.key]) chosen[row.key] = [picked[row.key]];
+                const ids = (picked[row.key] ?? []).filter(Boolean);
+                if (confirmed[row.key] && ids.length) chosen[row.key] = ids;
               }
               const mapping = mappingFromConfirmed({ outcomes: payload.outcomes, confirmed: chosen });
               save(8, { ...payload, mapping_confirmed: true, ghl: { ...payload.ghl, mapping } });
@@ -679,6 +715,19 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
           <Summary label="Outcomes" value={payload.outcomes.map((outcome) => outcome.name).filter(Boolean).join(', ')} onEdit={() => setStep(5)} />
           <Summary label="Offer" value={payload.offer.one_liner} onEdit={() => setStep(6)} />
           <Summary label="Reporting" value={payload.reporting.recipients.concat(payload.reporting.extra).join(', ') || 'No recipients'} onEdit={() => setStep(7)} />
+          <Summary
+            label="Client introduction"
+            value={payload.reporting.intro === 'hold' ? 'Held for preview. Nothing is sent.' : payload.reporting.intro}
+            onEdit={() => setStep(7)}
+          />
+          {payload.reporting.intro === 'hold' ? (
+            <div className="rounded-lg border border-amber-200/40 px-3 py-2 text-amber-100">
+              <p className="font-medium">Introduction preview</p>
+              <p>{operator?.name || 'The operator'} is the Sales Operator Divine Acquisition is placing with {client?.name || 'the client'}.</p>
+              <p>The first shift is {payload.start_date || 'the start date'}.</p>
+              <p>This stays with you until you release it. The client does not receive it on activation.</p>
+            </div>
+          ) : null}
           <Summary label="GHL phone" value={payload.ghl.phone || 'Not set'} onEdit={() => setStep(8)} />
           <Summary label="First day" value={`${payload.first_day.length} tasks`} onEdit={() => setStep(9)} />
           <h3 className="text-base font-semibold text-white">Launch checklist</h3>

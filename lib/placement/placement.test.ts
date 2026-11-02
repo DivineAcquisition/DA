@@ -89,4 +89,25 @@ describe('GHL name ranking', () => {
     expect(saved.speed.ids).toEqual(['tag-speed']);
     expect(saved.reactivation.ids).toEqual([]);
   });
+
+  it('saves a tag combination when the client books outside GHL calendars', () => {
+    const saved = mappingFromConfirmed({
+      outcomes: [{ name: 'Cleaning booked' }, { name: 'Walkthrough booked' }, { name: 'Recurring plan booked' }],
+      confirmed: {
+        outcome_tags_all_0: ['booked-onetime', 'deposit-paid'],
+        outcome_tags_all_1: ['booked-walkthrough'],
+        outcome_tags_all_2: ['deposit-paid'],
+        outcome_tags_any_2: ['booked-weekly', 'booked-eow', 'booked-every4wks'],
+      },
+    });
+    expect(saved.outcomes).toEqual([
+      { name: 'Cleaning booked', tags: { all: ['booked-onetime', 'deposit-paid'], any: [] } },
+      { name: 'Walkthrough booked', tags: { all: ['booked-walkthrough'], any: [] } },
+      {
+        name: 'Recurring plan booked',
+        tags: { all: ['deposit-paid'], any: ['booked-weekly', 'booked-eow', 'booked-every4wks'] },
+      },
+    ]);
+    expect(bestMatch('', [{ id: 't', name: 'booked-onetime' }])).toBeNull();
+  });
 });

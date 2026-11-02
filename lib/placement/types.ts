@@ -30,7 +30,7 @@ export type WizardPayload = {
     send_time: string;
     daily: boolean;
     approval: boolean;
-    intro: 'activation' | 'date' | 'none';
+    intro: 'activation' | 'date' | 'none' | 'hold';
     intro_on: string;
   };
   reporting_confirmed: boolean;

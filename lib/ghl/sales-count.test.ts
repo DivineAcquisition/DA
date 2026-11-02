@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { countTouches, isManualUserActivity, isMismatch, median, talkMinutes, type GhlTouch } from './sales-count';
+import {
+  contactMatchesTags,
+  countTaggedOutcomes,
+  countTouches,
+  isManualUserActivity,
+  isMismatch,
+  median,
+  tagRulesFromMapping,
+  talkMinutes,
+  type GhlTouch,
+} from './sales-count';
 
 const options = { userId: 'op', connectSeconds: 10, conversationSeconds: 60, replyWindowDays: 7, recoveryWindowDays: 7 };
 
@@ -30,6 +40,30 @@ describe('sales GHL counting', () => {
     ];
     expect(countTouches(touches, options)).toHaveLength(0);
     expect(isManualUserActivity(touches[0], 'op')).toBe(false);
+  });
+
+  it('counts a booking from a tag combination, not a calendar', () => {
+    expect(contactMatchesTags(['booked-onetime', 'deposit-paid'], { all: ['booked-onetime', 'deposit-paid'], any: [] })).toBe(true);
+    expect(contactMatchesTags(['booked-onetime'], { all: ['booked-onetime', 'deposit-paid'], any: [] })).toBe(false);
+    expect(contactMatchesTags(['booked-eow', 'deposit-paid'], { all: ['deposit-paid'], any: ['booked-weekly', 'booked-eow', 'booked-every4wks'] })).toBe(true);
+    expect(contactMatchesTags(['booked-walkthrough'], { all: ['booked-walkthrough'], any: [] })).toBe(true);
+    const rules = tagRulesFromMapping({
+      mappingOutcomes: [{ name: 'Cleaning booked', tags: { all: ['tag-1', 'tag-2'], any: [] } }],
+      outcomeTypes: [{ id: 'out-1', name: 'Cleaning booked' }],
+      tags: [{ id: 'tag-1', name: 'booked-onetime' }, { id: 'tag-2', name: 'deposit-paid' }],
+    });
+    const lines = countTaggedOutcomes({
+      contacts: [
+        { id: 'c1', tags: ['booked-onetime', 'deposit-paid'], assignedTo: 'op', updatedAt: '2026-11-02T15:00:00Z' },
+        { id: 'c2', tags: ['booked-onetime', 'deposit-paid'], assignedTo: 'someone-else', updatedAt: '2026-11-02T15:00:00Z' },
+        { id: 'c3', tags: ['booked-onetime'], assignedTo: null, updatedAt: '2026-11-02T15:00:00Z' },
+      ],
+      userId: 'op',
+      outcomes: rules,
+      dayFor: () => '2026-11-02',
+    });
+    expect(lines.map((line) => line.contactId)).toEqual(['c1']);
+    expect(lines[0]?.outcomeId).toBe('out-1');
   });
 
   it('flags a gap past the larger of 10 percent and 3 on small counts', () => {
