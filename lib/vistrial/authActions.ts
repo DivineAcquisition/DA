@@ -4,11 +4,29 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
-import { appUrl } from '@/lib/apps';
+import { appHomePath, appUrl } from '@/lib/apps';
 import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { currentApp } from '@/lib/appsServer';
 
 export type AuthResult = { ok: true } | { ok: false; error: string };
+
+/**
+ * The page to open after a session change. On the team host, staff do not
+ * belong in the operator portal: the handoff signs them out of this host and
+ * sends them to the admin app. An operator stays on the team home.
+ */
+async function pathAfterAuth(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string> {
+  const app = await currentApp();
+  if (app !== 'team') return appHomePath(app);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return appHomePath('team');
+  const { data: profile } = await supabase.from('profile').select('role').eq('id', user.id).maybeSingle();
+  const role = (profile as { role?: string } | null)?.role ?? '';
+  if (role && role !== 'operator') return '/workspace/auth/leave?to=admin';
+  return appHomePath('team');
+}
 
 export async function hubSignInAction(formData: FormData): Promise<AuthResult> {
   const supabase = await createClient();
@@ -21,7 +39,7 @@ export async function hubSignInAction(formData: FormData): Promise<AuthResult> {
   if (error) return { ok: false, error: error.message };
 
   revalidatePath('/workspace', 'layout');
-  redirect('/workspace');
+  redirect(await pathAfterAuth(supabase));
 }
 
 export async function hubSignOutAction(): Promise<void> {
@@ -30,7 +48,7 @@ export async function hubSignOutAction(): Promise<void> {
   await controlRpc(supabase, 'end_impersonation', {});
   await supabase.auth.signOut();
   revalidatePath('/workspace', 'layout');
-  redirect('/workspace');
+  redirect(appHomePath(await currentApp()));
 }
 
 /**
@@ -61,5 +79,5 @@ export async function hubSetPasswordAction(formData: FormData): Promise<AuthResu
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { ok: false, error: error.message };
   revalidatePath('/workspace', 'layout');
-  redirect('/workspace');
+  redirect(await pathAfterAuth(supabase));
 }

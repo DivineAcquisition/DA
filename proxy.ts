@@ -375,6 +375,13 @@ export async function proxy(request: NextRequest) {
     if (pathname === '/') {
       return NextResponse.redirect(new URL('/workspace/operator', request.url), 307);
     }
+    // Sign-in, sign-out, and a new password used to continue at /workspace.
+    // That address is not a team screen, so the team host answered "Not found".
+    if (onTeamHost && (pathname === '/workspace' || pathname === '/workspace/')) {
+      const next = new URL('/workspace/operator', request.url);
+      next.search = request.nextUrl.search;
+      return NextResponse.redirect(next, 307);
+    }
     if (!isTeamAppPath(internal)) {
       return new NextResponse('Not found', { status: 404, headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' } });
     }

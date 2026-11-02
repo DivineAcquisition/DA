@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { appForHost, appForRole, appHosts, appUrl, isTeamAppPath, sessionRules } from './apps';
+import { appForHost, appForRole, appHomePath, appHosts, appUrl, isTeamAppPath, sessionRules } from './apps';
 
 describe('apps', () => {
   it('reads each address from configuration only', () => {
@@ -37,9 +37,15 @@ describe('apps', () => {
   it('serves only VA screens on the team app', () => {
     expect(isTeamAppPath('/workspace/operator/pay')).toBe(true);
     expect(isTeamAppPath('/workspace/auth/leave')).toBe(true);
-    for (const path of ['/workspace/team', '/workspace/operations', '/workspace/admin/payroll', '/workspace/inbox', '/workspace/team/ghl']) {
+    for (const path of ['/workspace', '/workspace/team', '/workspace/operations', '/workspace/admin/payroll', '/workspace/inbox', '/workspace/team/ghl']) {
       expect(isTeamAppPath(path)).toBe(false);
     }
+  });
+
+  it('sends the team app home to the operator portal', () => {
+    expect(appHomePath('team')).toBe('/workspace/operator');
+    expect(appHomePath('admin')).toBe('/workspace');
+    expect(appHomePath(null)).toBe('/workspace');
   });
 
   it('gives the admin app the stricter session', () => {

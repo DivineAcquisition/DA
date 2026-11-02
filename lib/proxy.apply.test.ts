@@ -48,6 +48,26 @@ describe('coaches application route', () => {
     expect(response.headers.get('x-middleware-rewrite') ?? '').toContain('/acq/operations');
   });
 
+  it('sends the team home to the operator portal instead of not found', async () => {
+    const response = await proxy(
+      new NextRequest('https://team.divineacquisition.io/workspace', {
+        headers: { host: 'team.divineacquisition.io' },
+      }),
+    );
+    expect(response.status).toBe(307);
+    expect(response.headers.get('location')).toBe('https://team.divineacquisition.io/workspace/operator');
+  });
+
+  it('keeps admin screens off the team app', async () => {
+    const response = await proxy(
+      new NextRequest('https://team.divineacquisition.io/workspace/operations', {
+        headers: { host: 'team.divineacquisition.io' },
+      }),
+    );
+    expect(response.status).toBe(404);
+    expect(await response.text()).toBe('Not found');
+  });
+
   it('does not rewrite the application API into the coaches pages', async () => {
     const request = new NextRequest('https://acq.divineacquisition.io/api/acq/apply', {
       method: 'POST',

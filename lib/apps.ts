@@ -90,6 +90,15 @@ export function appForRole(role: string | null | undefined): AppKey | null {
 }
 
 /**
+ * Where sign-in, sign-out, and a new password return.
+ * The team app's home is the operator portal. `/workspace` itself is an admin
+ * address, and the team host answers it with "Not found".
+ */
+export function appHomePath(app: AppKey | null): string {
+  return app === 'team' ? '/workspace/operator' : '/workspace';
+}
+
+/**
  * The team app's screens, as internal /workspace paths: the operator portal,
  * its sign-in callback, password reset and the sign-out handoff. Every other
  * /workspace screen is the admin app.
