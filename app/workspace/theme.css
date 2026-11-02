@@ -194,47 +194,22 @@ html[data-product='workspace']:not(.dark) select optgroup {
   color: #0b0a11;
 }
 
-.theme-toggle.w-full {
-  display: flex;
-  width: 100%;
-}
-
-.theme-toggle.w-full button {
-  flex: 1;
-  padding-inline: 0.2rem;
-}
-
 .theme-toggle {
   display: inline-flex;
-  height: 2rem;
+  height: 2.25rem;
+  width: 2.25rem;
   align-items: center;
-  padding: 2px;
+  justify-content: center;
   border: 1px solid var(--field-border);
   border-radius: 0.75rem;
   background: var(--field-bg);
+  color: var(--strong, #fff);
   box-shadow: inset 0 1px 0 var(--field-highlight);
 }
 
-.theme-toggle button {
-  height: 1.7rem;
-  border-radius: 0.6rem;
-  padding: 0 0.7rem;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--muted-foreground, #6b6b76);
-}
-
-.theme-toggle-short {
-  display: none;
-}
-
-.theme-toggle.w-full .theme-toggle-full {
-  display: none;
-}
-
-.theme-toggle.w-full .theme-toggle-short {
-  display: inline;
+.theme-toggle:hover {
+  border-color: rgba(154, 136, 252, 0.45);
+  color: var(--color-brand-300);
 }
 
 html[data-product='workspace'] :is(button, [type='submit'], a.bg-brand-500, .auth-submit, .auth-alt) {
@@ -294,9 +269,16 @@ html[data-product='workspace'] :is(button, [type='submit'], a.bg-brand-500, .aut
   box-shadow: 0 0 0 3px rgba(154, 136, 252, 0.2);
 }
 
-.theme-toggle button[aria-pressed='true'] {
-  border: 1px solid rgba(102, 80, 216, 0.25);
-  background: linear-gradient(180deg, #d9d1fe 0%, #c3b6fe 42%, #9a88fc 100%);
-  color: #07070b;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+html[data-product='workspace'].dark .da-workspace {
+  --page: #151518;
+  --color-ink-950: #151518;
+  --color-ink-900: #1c1c22;
+  --color-ink-850: #26262e;
+  --color-background: #151518;
+  --color-card: #1c1c22;
+  --background: #151518;
+  --card: #1c1c22;
+  --color-sidebar: #1c1c22;
+  --field-bg: #26262e;
+  background-color: #151518;
 }

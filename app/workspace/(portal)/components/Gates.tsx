@@ -129,7 +129,7 @@ export function ManagerShell({
           ))}
         </nav>
         <div className="border-t border-white/[0.06] p-3">
-          <ThemeToggle className={collapsed ? 'mb-2 w-full justify-center px-0.5' : 'mb-2'} />
+          <ThemeToggle className={collapsed ? 'mx-auto mb-2' : 'mb-2'} />
           <button
             type="button"
             onClick={() => writeCollapsed(!collapsed)}

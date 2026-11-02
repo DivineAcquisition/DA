@@ -1,5 +1,6 @@
 'use client';
 
+import { Moon, Sun } from 'lucide-react';
 import { useLayoutEffect, useSyncExternalStore } from 'react';
 import { applyTheme, leaveWorkspaceTheme, readTheme, saveTheme, storedTheme, type Theme } from '@/lib/workspace/theme';
 
@@ -24,19 +25,15 @@ export function ThemeFrame({ children }: { children: React.ReactNode }) {
   return children;
 }
 
-/** White and black, the same two themes as the Vistrial workspace. */
+/** Sun switches to white. Moon switches to black. */
 export function ThemeToggle({ className = '' }: { className?: string }) {
   const [theme, setTheme] = useTheme();
+  const next: Theme = theme === 'dark' ? 'light' : 'dark';
+  const label = next === 'dark' ? 'Switch to the dark theme' : 'Switch to the light theme';
+  const Icon = theme === 'dark' ? Sun : Moon;
   return (
-    <div role="group" aria-label="Color theme" className={`theme-toggle ${className}`}>
-      <button type="button" aria-pressed={theme === 'light'} onClick={() => setTheme('light')}>
-        <span className="theme-toggle-full">White</span>
-        <span className="theme-toggle-short">W</span>
-      </button>
-      <button type="button" aria-pressed={theme === 'dark'} onClick={() => setTheme('dark')}>
-        <span className="theme-toggle-full">Black</span>
-        <span className="theme-toggle-short">B</span>
-      </button>
-    </div>
+    <button type="button" className={`theme-toggle ${className}`} aria-label={label} aria-pressed={theme === 'dark'} onClick={() => setTheme(next)}>
+      <Icon className="size-4" strokeWidth={1.8} aria-hidden />
+    </button>
   );
 }

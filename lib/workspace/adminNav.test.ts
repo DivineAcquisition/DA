@@ -29,43 +29,43 @@ describe('findActive', () => {
   });
 
   it('separates Holds from the Academy it lives under', () => {
-    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['People', 'Holds', 'Grading']);
-    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['People', 'Academy', 'Question bank']);
-    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['People', 'Academy']);
+    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['Team', 'Holds', 'Grading']);
+    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['Team', 'Academy', 'Question bank']);
+    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['Team', 'Academy']);
   });
 
   it('follows aliases and mirrored routes', () => {
-    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Sales', 'Sales calls']);
-    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Finance', 'Payroll']);
-    expect(activeLabels('/da/margin')).toEqual(['Finance', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['People', 'Invites']);
-    expect(activeLabels('/accounts/123')).toEqual(['Sales', 'Sales calls', 'Accounts']);
+    expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Clients', 'Sales calls']);
+    expect(activeLabels('/workspace/ops/payroll')).toEqual(['System', 'Payroll']);
+    expect(activeLabels('/da/margin')).toEqual(['System', 'Margin']);
+    expect(activeLabels('/ad/invite')).toEqual(['Team', 'Invites']);
+    expect(activeLabels('/accounts/123')).toEqual(['Clients', 'Sales calls', 'Accounts']);
   });
 
   it('lights Pipeline for a lead page', () => {
-    expect(activeLabels('/workspace/pipeline/abc')).toEqual(['Sales', 'Pipeline']);
+    expect(activeLabels('/workspace/pipeline/abc')).toEqual(['Clients', 'Pipeline']);
   });
 
   it('returns nothing for pages outside the nav', () => {
     expect(activeLabels('/workspace/login')).toBeNull();
   });
 
-  it('gives configuration screens a home under Admin', () => {
-    expect(activeLabels('/workspace/settings')).toEqual(['Admin', 'Workspace settings']);
-    expect(activeLabels('/workspace/control/credentials')).toEqual(['Admin', 'Control', 'Credentials']);
+  it('gives configuration screens a home under System', () => {
+    expect(activeLabels('/workspace/settings')).toEqual(['System', 'Workspace settings']);
+    expect(activeLabels('/workspace/control/credentials')).toEqual(['System', 'Control', 'Credentials']);
     expect(activeLabels('/workspace/team/ghl/access')).toEqual(['Clients', 'GHL', 'Access']);
-    expect(activeLabels('/workspace/team/settings')).toEqual(['Admin', 'Team settings']);
-    expect(activeLabels('/workspace/growth/ingestion')).toEqual(['Sales', 'Ingestion']);
-    expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['Admin', 'Data integrity']);
+    expect(activeLabels('/workspace/team/settings')).toEqual(['System', 'Team settings']);
+    expect(activeLabels('/workspace/growth/ingestion')).toEqual(['Clients', 'Ingestion']);
+    expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['System', 'Data integrity']);
     expect(activeLabels('/workspace/sales-ops/placements/abc')).toEqual(['Team', 'Placements']);
-    expect(activeLabels('/workspace/sales-ops')).toEqual(['Admin', 'Sales settings']);
-    expect(activeLabels('/workspace/sales-ops/metrics')).toEqual(['Admin', 'Sales settings', 'Metrics']);
+    expect(activeLabels('/workspace/sales-ops')).toEqual(['System', 'Sales settings']);
+    expect(activeLabels('/workspace/sales-ops/metrics')).toEqual(['System', 'Sales settings', 'Metrics']);
   });
 
   it('hides Academy entries the viewer cannot use', () => {
     const plain = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false });
     expect(plain.flatMap((section) => section.items.map((item) => item.label))).not.toContain('Academy');
-    expect(plain.map((section) => section.heading)).toEqual(['Home', 'Team', 'People', 'Sales', 'Clients', 'Finance', 'Admin']);
+    expect(plain.map((section) => section.heading)).toEqual(['Home', 'Team', 'Clients', 'System']);
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
     expect(activeLabels('/workspace/team/workspace')).toEqual(['Team', 'Team Workspace']);
