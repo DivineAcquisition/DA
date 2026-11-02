@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
 import { newPasswordError } from '@/lib/auth/password';
+import { sendRecoveryEmail } from '@/lib/email/recovery';
 import { appHomePath, appUrl } from '@/lib/apps';
 import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { currentApp } from '@/lib/appsServer';
@@ -60,14 +61,13 @@ export async function hubSignOutAction(): Promise<void> {
 export async function hubResetRequestAction(formData: FormData): Promise<AuthResult> {
   const email = String(formData.get('email') ?? '').trim();
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: 'Enter the email you sign in with.' };
-  const supabase = await createClient();
   const app = (await currentApp()) ?? 'team';
   const next = '/workspace/reset-password';
   const origin = app === 'team' ? (await loadOperatorWorkspaceDomain()).origin || appUrl('team') : appUrl(app);
-  await supabase.auth.resetPasswordForEmail(email, {
+  return sendRecoveryEmail({
+    email,
     redirectTo: `${origin}/workspace/auth/callback?next=${encodeURIComponent(next)}`,
   });
-  return { ok: true };
 }
 
 /** Sets a new password for the session the reset link opened. */

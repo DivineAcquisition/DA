@@ -5,6 +5,7 @@ import {
   newPasswordError,
   passwordPageKind,
   passwordResetEmailError,
+  recoveryTokenHash,
   resetNextPath,
 } from './password';
 
@@ -26,6 +27,13 @@ describe('password reset', () => {
     expect(passwordPageKind('/da')).toBeNull();
     expect(isForgotPasswordPath('/calls/forgot-password')).toBe(true);
     expect(isResetPasswordPath('/acct/reset-password')).toBe(true);
+  });
+
+  it('reads only a recovery token hash', () => {
+    const params = new URLSearchParams('token_hash=abc&type=recovery&next=%2Fworkspace%2Freset-password');
+    expect(recoveryTokenHash(params)).toBe('abc');
+    expect(recoveryTokenHash(new URLSearchParams('token_hash=abc&type=signup'))).toBeNull();
+    expect(recoveryTokenHash(new URLSearchParams('type=recovery'))).toBeNull();
   });
 
   it('only continues a recovery link to a reset screen', () => {

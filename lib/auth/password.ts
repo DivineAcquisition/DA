@@ -34,6 +34,13 @@ export function passwordPageKind(pathname: string): 'forgot' | 'reset' | null {
   return null;
 }
 
+/** The one-time recovery token on a link we sent. Other types stay on the code exchange. */
+export function recoveryTokenHash(params: { get(name: string): string | null }): string | null {
+  const token = params.get('token_hash')?.trim() ?? '';
+  if (!token || params.get('type') !== 'recovery') return null;
+  return token;
+}
+
 /** The page a recovery email may open. Anything else stays on the fallback. */
 export function resetNextPath(value: string | null, fallback: string): string {
   if (!value) return fallback;

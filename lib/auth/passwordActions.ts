@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { sendRecoveryEmail } from '@/lib/email/recovery';
 import { newPasswordError, passwordResetEmailError, type PasswordResult } from './password';
 
 async function requestOrigin(): Promise<string> {
@@ -17,6 +18,7 @@ async function requestOrigin(): Promise<string> {
 /**
  * Sends a reset link and gives the same answer whether or not the address has
  * an account. `callbackPath` is chosen by the surface, never by the form.
+ * The message goes out through Resend. Supabase only mints the one-time link.
  */
 export async function sendPasswordReset(formData: FormData, callbackPath: string): Promise<PasswordResult> {
   const email = String(formData.get('email') ?? '').trim();
@@ -25,10 +27,8 @@ export async function sendPasswordReset(formData: FormData, callbackPath: string
   if (!callbackPath.startsWith('/') || callbackPath.startsWith('//')) {
     return { ok: false, error: 'Enter the email you sign in with.' };
   }
-  const supabase = await createClient();
   const origin = await requestOrigin();
-  await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${origin}${callbackPath}` });
-  return { ok: true };
+  return sendRecoveryEmail({ email, redirectTo: `${origin}${callbackPath}` });
 }
 
 /** Saves the password from a recovery session, then opens that surface's home. */
