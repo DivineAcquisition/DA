@@ -13,6 +13,7 @@ import type { PortalContext } from '@/lib/portal/types';
 import { menuFor, phoneBarFor, zoneOf, zonesFor, type TabKey } from '@/lib/portal/zones';
 import SignOutButton from '@/app/components/auth/SignOutButton';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
+import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
 import { Badge } from '../../components/ui';
 import AdminPanel from './AdminPanel';
 import { Feedback, PortalProvider, Sheet, useAction } from './portal';
@@ -79,18 +80,20 @@ export default function PortalShell({
 
   return (
     <PortalProvider context={context} placementId={placementId}>
-      <div className={`min-h-screen bg-ink-950 text-white antialiased ${viewAs ? 'pt-[52px]' : ''}`}>
+      <div className={`relative min-h-screen bg-ink-950 text-white antialiased ${viewAs ? 'pt-[52px]' : ''}`}>
+        <WorkspaceAtmosphere />
         {viewAs ? <ViewAsBanner context={context} onPanel={() => setPanelOpen(true)} /> : null}
 
         {showGate ? (
           <BlockingNotices context={context} onPeek={viewAs ? () => setPeek(true) : undefined} />
         ) : (
           <>
-            <header className={`sticky z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl ${viewAs ? 'top-[52px]' : 'top-0'}`}>
+            <header className={`sticky z-40 border-b border-white/[0.06] bg-ink-950/80 backdrop-blur-xl ${viewAs ? 'top-[52px]' : 'top-0'}`}>
               <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
-                <Link href={zones[0]?.href ?? '/workspace/operator'} className="flex min-w-0 items-center gap-2">
+                <Link href={zones[0]?.href ?? '/workspace/operator'} className="relative z-10 flex min-w-0 items-center gap-2">
                   <Logo markOnly tone="current" className="h-5 w-auto shrink-0 text-[color:var(--strong)]" />
                   <span className="truncate text-sm font-semibold">{context.operator.name}</span>
+                  <StatusPill className="hidden sm:inline-flex">{context.stage}</StatusPill>
                 </Link>
                 <div className="flex items-center gap-2">
                   <ThemeToggle />
@@ -141,7 +144,7 @@ export default function PortalShell({
               </nav>
             </header>
 
-            <main className="mx-auto max-w-5xl px-4 pb-28 pt-5 md:pb-12">{children}</main>
+            <main className="relative z-10 mx-auto max-w-5xl px-4 pb-28 pt-5 md:pb-12">{children}</main>
 
             <MobileBar context={context} zone={zone} />
             <Sheet open={moreOpen} onClose={() => setMoreOpen(false)} title="Menu">

@@ -1,65 +1,80 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
-import Logo from '@/app/components/Logo';
-import Backdrop from '@/app/components/Backdrop';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import TeamAuthDesk from '@/app/components/auth/TeamAuthDesk';
 import { signInAction } from '@/lib/workspace/actions';
-import { Button, Field, Input, ws } from './ui';
 
+/** Administrator sign-in, on the same desk as the team app. */
 export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="da-admin-shell relative isolate flex min-h-svh items-center justify-center overflow-hidden bg-background px-5 py-12 text-card-foreground antialiased">
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div
-          className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
-          style={{
-            background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.18) 0%, transparent 70%)',
-            filter: 'blur(64px)',
-            animation: 'app-breathe 9s ease-in-out infinite',
-          }}
-        />
-      </div>
-      <Backdrop />
-      <div className={`${ws.card} relative z-10 w-full max-w-md animate-rise p-7 sm:p-8`}>
-        <div className="mb-8 flex flex-col items-center text-center">
-          <Logo className="h-8 w-auto" />
-          <h1 className="mt-6 font-heading text-[1.75rem] tracking-tight text-white">Administrator sign in</h1>
-          <p className="mt-2.5 text-[15px] leading-relaxed text-silver">Divine Acquisition admin workspace. Academy reviewers open the hold queue from here.</p>
+    <TeamAuthDesk
+      eyebrow="Admin"
+      title="Administrator sign in"
+      subtitle="Sign in to the admin workspace. Academy reviewers open the hold queue from here."
+    >
+      <form
+        className="space-y-3.5"
+        action={(formData) => {
+          setError(null);
+          startTransition(async () => {
+            const result = await signInAction(formData);
+            if (!result.ok) setError(result.error);
+          });
+        }}
+      >
+        <div className="auth-field-block">
+          <label className="auth-field-label" htmlFor="email">
+            Email
+          </label>
+          <div className="auth-field">
+            <Mail className="auth-field-icon" aria-hidden />
+            <input id="email" name="email" type="email" required autoComplete="username" placeholder="you@company.com" className="auth-input" />
+          </div>
         </div>
-
-        <form
-          className="space-y-4"
-          action={(formData) => {
-            setError(null);
-            startTransition(async () => {
-              const result = await signInAction(formData);
-              if (!result.ok) setError(result.error);
-            });
-          }}
-        >
-          <Field label="Email">
-            <Input name="email" type="email" autoComplete="username" required />
-          </Field>
-          <Field label="Password">
-            <Input name="password" type="password" autoComplete="current-password" required />
-          </Field>
-          {error && (
-            <p className="rounded-xl border border-flag-critical/30 bg-flag-critical/10 px-3 py-2 text-sm text-flag-critical">
-              {error}
-            </p>
-          )}
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
-        <Link href="/workspace/forgot-password" className="mt-4 inline-block text-sm text-silver underline-offset-4 hover:text-white hover:underline">
+        <div className="auth-field-block">
+          <label className="auth-field-label" htmlFor="password">
+            Password
+          </label>
+          <div className="auth-field">
+            <Lock className="auth-field-icon" aria-hidden />
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              autoComplete="current-password"
+              placeholder="Password"
+              className="auth-input auth-input--with-action"
+            />
+            <button
+              type="button"
+              className="auth-field-action"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              onClick={() => setShowPassword((value) => !value)}
+            >
+              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+            </button>
+          </div>
+        </div>
+        {error ? (
+          <p role="alert" className="auth-error">
+            {error}
+          </p>
+        ) : null}
+        <button type="submit" disabled={pending} className="auth-submit">
+          {pending ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+      <div className="mt-3">
+        <a href="/workspace/forgot-password" className="auth-alt w-full">
           Forgot your password?
-        </Link>
+        </a>
       </div>
-    </div>
+    </TeamAuthDesk>
   );
 }

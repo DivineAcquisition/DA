@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { PortalContext } from '@/lib/portal/types';
 import type { Result } from '@/lib/portal/actions';
+import { PointerCard } from '@/app/workspace/components/VistrialChrome';
 
 /**
  * What every portal component needs to know: whose portal this is, which
@@ -165,7 +166,13 @@ export function Sheet({
 }
 
 export function Card({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <section className={`panel rounded-2xl p-4 sm:p-5 ${className}`}>{children}</section>;
+  return (
+    <section className={`panel rounded-2xl ${className}`}>
+      <PointerCard>
+        <div className="p-4 sm:p-5">{children}</div>
+      </PointerCard>
+    </section>
+  );
 }
 
 export function CardTitle({ children, aside }: { children: React.ReactNode; aside?: React.ReactNode }) {

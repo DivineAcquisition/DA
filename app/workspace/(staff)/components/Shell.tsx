@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import Logo from '@/app/components/Logo';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
+import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
@@ -689,6 +690,7 @@ export default function Shell({
   return (
     <TooltipProvider delay={120}>
       <div className={cn('da-admin-shell relative isolate min-h-svh overflow-x-hidden bg-background text-card-foreground antialiased', interDisplay.variable)}>
+        <WorkspaceAtmosphere />
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div
             className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
@@ -788,6 +790,7 @@ export default function Shell({
             </nav>
 
             <div className="ml-auto flex items-center gap-2">
+              <StatusPill>Admin</StatusPill>
               <ThemeToggle />
               <button
                 type="button"

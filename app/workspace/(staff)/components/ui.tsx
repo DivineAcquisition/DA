@@ -3,6 +3,7 @@
 import { useEffect, useId, useState, useSyncExternalStore, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 import { createPortal } from 'react-dom';
 import { BorderBeam } from '@/components/ui/border-beam';
+import { PointerCard } from '@/app/workspace/components/VistrialChrome';
 import { Input as CossInput } from '@/components/ui/input';
 import { NativeSelect } from '@/components/ui/select';
 import { ShineBorder } from '@/components/ui/shine-border';
@@ -35,7 +36,7 @@ export function Button({
   const sizes = { sm: 'h-8 gap-1.5 px-2.5 text-sm', md: 'h-10 px-3.5 text-sm sm:h-9' };
   return (
     <button
-      className={`relative inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap transition-[box-shadow,transform,background-color,border-color,color] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`relative inline-flex shrink-0 items-center justify-center gap-2 rounded-xl font-medium whitespace-nowrap transition-[box-shadow,transform,background-color,border-color,color] duration-150 ease-out focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-64 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     />
   );
@@ -84,10 +85,12 @@ export function Card({
   beam?: boolean;
 }) {
   return (
-    <div className={cn(ws.card, 'panel-hover', className)}>
+    <div className={cn(ws.card, 'panel-hover overflow-hidden', className)}>
       {shine ? <ShineBorder borderWidth={1} duration={14} /> : null}
       {beam ? <BorderBeam borderWidth={1} colorFrom="#9A88FC" colorTo="#C3B6FE" /> : null}
-      <div className="relative z-[1]">{children}</div>
+      <PointerCard>
+        <div className="relative z-[1]">{children}</div>
+      </PointerCard>
     </div>
   );
 }

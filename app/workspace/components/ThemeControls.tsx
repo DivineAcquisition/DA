@@ -10,7 +10,7 @@ function subscribe(onChange: () => void): () => void {
 }
 
 export function useTheme(): [Theme, (theme: Theme) => void] {
-  const theme = useSyncExternalStore(subscribe, readTheme, () => 'light' as Theme);
+  const theme = useSyncExternalStore(subscribe, readTheme, () => 'dark' as Theme);
   return [theme, saveTheme];
 }
 

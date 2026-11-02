@@ -1,6 +1,6 @@
 /**
- * Team and admin workspaces follow Vistrial: white by default, black when
- * the person switches. The public site stays on the dark class.
+ * Team and admin workspaces open black. White is only used after the person
+ * switches. The public site stays on the dark class.
  */
 
 export type Theme = 'light' | 'dark';
@@ -22,20 +22,28 @@ export function workspaceThemeActive(pathname: string, hasWorkspaceCookie: boole
   return true;
 }
 
+/** Black unless a saved choice says white. */
+export function themeFromStored(cookie: string | null, local: string | null): Theme {
+  if (cookie === 'light' || cookie === 'dark') return cookie;
+  if (local === 'light' || local === 'dark') return local;
+  return 'dark';
+}
+
 export function readTheme(): Theme {
-  if (typeof document === 'undefined') return 'light';
+  if (typeof document === 'undefined') return 'dark';
   return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 }
 
 export function storedTheme(): Theme {
-  if (typeof document === 'undefined') return 'light';
+  if (typeof document === 'undefined') return 'dark';
   const match = document.cookie.match(new RegExp(`(?:^|; )${THEME_KEY}=(light|dark)`));
-  if (match) return match[1] as Theme;
+  let local: string | null = null;
   try {
-    return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light';
+    local = localStorage.getItem(THEME_KEY);
   } catch {
-    return 'light';
+    local = null;
   }
+  return themeFromStored(match?.[1] ?? null, local);
 }
 
 export function applyTheme(theme: Theme): void {
@@ -68,4 +76,4 @@ export function leaveWorkspaceTheme(): void {
  * Runs before paint. The workspace cookie is set once someone is inside the
  * signed-in shell, so the sign-in desk stays dark.
  */
-export const THEME_SCRIPT = `(function(){try{if(!/(?:^|; )${WORKSPACE_KEY}=1/.test(document.cookie))return;var path=location.pathname;if(path!=="/workspace"&&path.indexOf("/workspace/")!==0)return;if(/\\/(forgot-password|reset-password|auth)(\\/|$)/.test(path)||/\\/login\\/?$/.test(path))return;document.documentElement.setAttribute("data-product","workspace");var m=document.cookie.match(/(?:^|; )${THEME_KEY}=(light|dark)/);var t=m?m[1]:null;try{t=t||localStorage.getItem("${THEME_KEY}")}catch(e){}if(t!=="dark"){document.documentElement.classList.remove("dark");var c=document.querySelector('meta[name="theme-color"]');if(c)c.setAttribute("content","${THEME_COLOR.light}")}}catch(e){}})()`;
+export const THEME_SCRIPT = `(function(){try{if(!/(?:^|; )${WORKSPACE_KEY}=1/.test(document.cookie))return;var path=location.pathname;if(path!=="/workspace"&&path.indexOf("/workspace/")!==0)return;if(/\\/(forgot-password|reset-password|auth)(\\/|$)/.test(path)||/\\/login\\/?$/.test(path))return;document.documentElement.setAttribute("data-product","workspace");var m=document.cookie.match(/(?:^|; )${THEME_KEY}=(light|dark)/);var t=m?m[1]:null;try{t=t||localStorage.getItem("${THEME_KEY}")}catch(e){}var c=document.querySelector('meta[name="theme-color"]');if(t==="light"){document.documentElement.classList.remove("dark");if(c)c.setAttribute("content","${THEME_COLOR.light}")}else if(c){c.setAttribute("content","${THEME_COLOR.dark}")}}catch(e){}})()`;
