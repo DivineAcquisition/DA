@@ -3,6 +3,8 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
+import { appUrl } from '@/lib/apps';
+import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 import {
   cancelDocuSealSubmission,
@@ -119,6 +121,11 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
 
   const session = await getSessionContext();
   if (session?.isAdmin) redirect('/workspace/overview');
+  if (session?.role === 'operator') {
+    await supabase.auth.signOut();
+    const team = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');
+    return { ok: false, error: `This is a team account. Sign in at ${team}` };
+  }
   if (session) {
     const gate = await createClient();
     const [review, manage] = await Promise.all([

@@ -29,7 +29,7 @@ async function fallbackRedirect(email: string, type: string): Promise<string> {
   if (role === 'operator') {
     const { loadOperatorWorkspaceDomain } = await import('@/lib/operator-workspace/domain');
     const origin = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');
-    const next = type === 'recovery' ? '/reset-password' : '/workspace/operator';
+    const next = type === 'recovery' ? '/workspace/reset-password' : '/workspace/operator';
     return `${origin}/workspace/auth/callback?next=${encodeURIComponent(next)}`;
   }
   if (!role) {
