@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+// The live hire flow is the team roster. This screen stays the operations roster.
 import { useState } from 'react';
 import { formatDay, formatPercent } from '@/lib/vistrial/format';
 import { OPERATOR_STATUS_LABELS } from '@/lib/vistrial/rules/lifecycle';
@@ -50,6 +51,11 @@ function Roster() {
         eyebrow="Operators"
         title="Operators"
         description="Operators exist independently of any client. Their record carries tier, certification, and their full history across every placement they have held."
+        actions={
+          <Link href="/workspace/team/workspace/operators/new" className="rounded-xl bg-[#6A00FF] px-4 py-2 text-sm font-semibold text-white">
+            Add operator
+          </Link>
+        }
       />
 
       <StatGrid>

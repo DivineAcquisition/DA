@@ -14,6 +14,7 @@ const TYPES = [
   ['placement', 'Placement'],
   ['target', 'Target'],
   ['role', 'Role'],
+  ['onboarding', 'Onboarding'],
   ['view_as', 'View as'],
   ['sign_in', 'Sign-in'],
   ['settings', 'Settings'],

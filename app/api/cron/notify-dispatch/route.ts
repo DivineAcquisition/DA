@@ -1,11 +1,12 @@
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
-import { Resend } from 'resend';
-import { RESEND_CC, RESEND_REPLY_TO } from '@/lib/assessment/config';
+import { idempotencyKey } from '@/lib/email/policy';
+import { sendAppEmail } from '@/lib/email/service';
 import { buildTeamEmail, type MailMessage } from '@/lib/team/email';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const maxDuration = 300;
 
 type Claimed = {
   from_name: string;
@@ -18,8 +19,8 @@ type Claimed = {
 type Attempt = { notification_id: string; channel: string; status: 'delivered' | 'failed' | 'skipped'; detail: string };
 
 /**
- * Vercel Cron (every 5 minutes): emails VA notifications from
- * notify.divineacquisition.io through Resend. Immediate messages go at once;
+ * Vercel Cron (every 5 minutes): emails operator notifications through Resend
+ * from the team sender (DA Operations). Immediate messages go at once;
  * normal ones are batched into one digest per VA during their working hours
  * (the database decides both). Every attempt, success or failure, is recorded
  * in notification_attempt. Discord and WhatsApp are recognised but not built,
@@ -44,26 +45,10 @@ export async function GET(request: NextRequest) {
 
   const supabase = createSupabaseClient(supabaseUrl, serviceKey, { auth: { persistSession: false, autoRefreshToken: false } });
 
-  // Replies must reach a person, never a no-reply address. Order: the address an
-  // admin set in Team settings, then TEAM_REPLY_TO, then the monitored address the
-  // other Resend senders already use (RESEND_REPLY_TO, then the first RESEND_CC).
-  const { data: setting } = await supabase.from('team_setting').select('reply_to').eq('id', 1).maybeSingle();
-  const replyTo =
-    (setting?.reply_to as string | null) ||
-    process.env.TEAM_REPLY_TO?.trim() ||
-    RESEND_REPLY_TO ||
-    RESEND_CC[0] ||
-    '';
-  if (!replyTo) {
-    return NextResponse.json({ ok: false, error: 'No monitored reply-to address is set; nothing claimed' }, { status: 503 });
-  }
-
   const { data, error } = await supabase.rpc('notify_claim_emails', { p_limit: 100 });
   if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   const claimed = data as Claimed;
 
-  const resend = new Resend(resendKey);
-  const from = `${claimed.from_name} <${claimed.from_address}>`;
   const attempts: Attempt[] = [];
   let sent = 0;
 
@@ -77,22 +62,34 @@ export async function GET(request: NextRequest) {
     }
     try {
       const mail = buildTeamEmail(message, claimed.base_url);
-      const result = await resend.emails.send({
-        from,
-        to: [message.to],
-        replyTo,
+      const result = await sendAppEmail({
+        purpose: 'team',
+        to: message.to,
         subject: mail.subject,
         html: mail.html,
         text: mail.text,
+        template: message.kind === 'digest' ? 'operator-digest' : 'operator-notice',
+        idempotencyKey: idempotencyKey(['operator-notify', ...[...ids].sort()]),
+        event: message.kind === 'digest' ? 'operator.digest' : 'operator.notice',
+        related: { operatorId: message.operator_id },
+        payload: { kind: message.kind, count: ids.length },
       });
-      if (result.error) throw new Error(result.error.message);
+      if (result.status === 'blocked') {
+        await supabase.rpc('notify_release_email_claims', { p_ids: ids });
+        continue;
+      }
+      if (result.status === 'suppressed') {
+        for (const id of ids) attempts.push({ notification_id: id, channel: 'email', status: 'skipped', detail: result.error ?? 'Suppressed' });
+        continue;
+      }
+      if (!result.ok || !result.id) throw new Error(result.error || 'Send failed');
       sent += 1;
       for (const id of ids) {
         attempts.push({
           notification_id: id,
           channel: 'email',
           status: 'delivered',
-          detail: `${message.kind === 'digest' ? 'Daily digest' : 'Sent'} via Resend${result.data?.id ? ` (${result.data.id})` : ''}`,
+          detail: `${message.kind === 'digest' ? 'Daily digest' : 'Sent'} via Resend (${result.id})`,
         });
       }
     } catch (cause) {

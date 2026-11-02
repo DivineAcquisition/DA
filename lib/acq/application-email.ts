@@ -1,7 +1,8 @@
-import { Resend } from 'resend';
 import { renderEmailHtml, textFooter } from '@/lib/email/layout';
+import { createHash } from 'node:crypto';
+import { idempotencyKey } from '@/lib/email/policy';
+import { requireSent, sendAppEmail } from '@/lib/email/service';
 import { ACQ_AUDIT_CC } from './config';
-import { WORKSPACE_RESEND_FROM } from '@/lib/workspace/email';
 import { AI_FRONT_OFFICE_OFFER } from '@/lib/ghl/tags';
 import type { QualificationPayload } from './qualify';
 
@@ -125,22 +126,32 @@ export async function sendCompletedApplicationEmail(input: {
   filename: string;
   pdf: Uint8Array;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
-  const resend = new Resend(apiKey);
-  const { data, error } = await resend.emails.send({
-    from: WORKSPACE_RESEND_FROM,
-    to: [input.to],
+  const footer = { reason: 'You received this because an application was completed.' };
+  const html = renderEmailHtml({
     subject: input.subject,
-    text: input.text,
-    attachments: [{ filename: input.filename, content: Buffer.from(input.pdf) }],
-    tags: [
-      { name: 'surface', value: 'acq' },
-      { name: 'type', value: 'application_alert' },
-    ],
+    preheader: input.subject,
+    eyebrow: 'Application',
+    title: input.subject,
+    bodyHtml: input.text
+      .split('\n')
+      .filter((line) => line.trim())
+      .map((line) => `<p style="margin:0 0 8px;font-family:Inter,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#c9c8d3;">${line.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</p>`)
+      .join(''),
+    footer,
   });
-  if (error || !data?.id) throw new Error(error?.message ?? 'Resend did not return an email id');
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'alerts',
+      to: input.to,
+      subject: input.subject,
+      html,
+      text: [input.text, '', ...textFooter(footer)].join('\n'),
+      template: 'application-completed',
+      idempotencyKey: idempotencyKey(['application-completed', createHash('sha256').update(`${input.to}\n${input.filename}\n${input.text}`).digest('hex')]),
+      event: 'application.completed',
+      attachments: [{ filename: input.filename, content: Buffer.from(input.pdf) }],
+    }),
+  );
 }
 
 export async function sendApplicationAlertEmail(input: {
@@ -149,30 +160,25 @@ export async function sendApplicationAlertEmail(input: {
   airtableRecordId?: string;
   scheduleUrl?: string;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
-  }
-
   const to = applicationNotifyTo();
   const content = buildApplicationAlertEmail(input);
-  const resend = new Resend(apiKey);
-  const { data, error } = await resend.emails.send({
-    from: WORKSPACE_RESEND_FROM,
-    to: [to],
-    replyTo: input.payload.email,
-    subject: content.subject,
-    html: content.html,
-    text: content.text,
-    tags: [
-      { name: 'surface', value: 'acq' },
-      { name: 'type', value: 'application_alert' },
-    ],
-  });
-
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'alerts',
+      to,
+      replyTo: input.payload.email,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      template: 'application-alert',
+      idempotencyKey: idempotencyKey([
+        'application-alert',
+        createHash('sha256')
+          .update(`${input.payload.email}|${input.ghlContactId ?? ''}|${input.airtableRecordId ?? ''}|${input.scheduleUrl ?? ''}`)
+          .digest('hex'),
+      ]),
+      event: 'application.alert',
+      payload: { applicant: input.payload.email, ghlContactId: input.ghlContactId },
+    }),
+  );
 }

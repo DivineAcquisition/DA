@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { controlRpc, readable, type ActionResult } from '@/lib/ad/rpc';
 import { appUrl } from '@/lib/apps';
+import { sendAccountInviteEmail } from '@/lib/email/auth-mail';
 import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
 import { createClient } from '@/lib/supabase/server';
 
@@ -94,19 +95,42 @@ export async function inviteAccountAction(formData: FormData): Promise<ActionRes
   if (error) return { ok: false, error: readable(error) };
   const row = Array.isArray(data) ? data[0] : data;
   revalidateAd('/ad/invites');
-  return {
-    ok: true,
-    message: row?.token
-      ? `Invite created. One-time link token (copy now): ${row.token}`
-      : 'Invite created.',
-  };
+  const email = String(formData.get('email') ?? '').trim().toLowerCase();
+  const role = String(formData.get('role') ?? 'operator');
+  const fullName = String(formData.get('full_name') ?? '') || null;
+  if (row?.token) {
+    try {
+      await sendAccountInviteEmail({ to: email, fullName, role, token: row.token });
+    } catch (sendError) {
+      const detail = sendError instanceof Error ? sendError.message : 'Email failed';
+      return { ok: false, error: `Invite created but the email failed: ${detail}. One-time link token (copy now): ${row.token}` };
+    }
+    return { ok: true, message: `Invite emailed to ${email}. One-time link token (copy now): ${row.token}` };
+  }
+  return { ok: true, message: 'Invite created.' };
 }
 
 export async function resendInviteAction(inviteId: string, _formData?: FormData): Promise<ActionResult> {
   const supabase = await createClient();
-  const { error } = await controlRpc(supabase, 'resend_invite', { p_invite_id: inviteId });
+  const { data, error } = await controlRpc<{ invite_id: string; token: string }[]>(supabase, 'resend_invite', { p_invite_id: inviteId });
   if (error) return { ok: false, error: readable(error) };
+  const row = Array.isArray(data) ? data[0] : data;
+  const { data: invite } = await supabase.from('account_invite').select('email, full_name, role').eq('id', inviteId).maybeSingle();
   revalidateAd('/ad/invites');
+  if (row?.token && invite?.email) {
+    try {
+      await sendAccountInviteEmail({
+        to: invite.email,
+        fullName: invite.full_name,
+        role: invite.role ?? 'operator',
+        token: row.token,
+      });
+    } catch (sendError) {
+      const detail = sendError instanceof Error ? sendError.message : 'Email failed';
+      return { ok: false, error: `Invite updated but the email failed: ${detail}. One-time link token (copy now): ${row.token}` };
+    }
+    return { ok: true, message: `Invite emailed to ${invite.email}.` };
+  }
   return { ok: true, message: 'Invite resent.' };
 }
 

@@ -1,6 +1,8 @@
-import { Resend } from 'resend';
 import { greetingName, renderEmailHtml, textFooter } from '@/lib/email/layout';
-import { RESEND_CC, RESEND_FROM, RESEND_REPLY_TO } from './config';
+import { createHash } from 'node:crypto';
+import { idempotencyKey } from '@/lib/email/policy';
+import { loadEmailIdentity, requireSent, sendAppEmail } from '@/lib/email/service';
+import { RESEND_CC } from './config';
 
 const TALENT_FOOTER = {
   reason: 'You received this email because you asked Divine Acquisition about placing operators with your business.',
@@ -11,6 +13,7 @@ export function buildAssessmentInviteEmail(input: {
   companyName?: string | null;
   bookingUrl: string;
   expiresAt: string;
+  replyTo?: string | null;
 }): { subject: string; html: string; text: string } {
   const firstName = greetingName(input.fullName);
   const company = input.companyName?.trim();
@@ -46,7 +49,7 @@ export function buildAssessmentInviteEmail(input: {
     '',
     '— Divine Acquisition',
     '',
-    ...textFooter(TALENT_FOOTER),
+    ...textFooter({ ...TALENT_FOOTER, replyTo: input.replyTo }),
   ].join('\n');
 
   const html = renderEmailHtml({
@@ -63,7 +66,7 @@ export function buildAssessmentInviteEmail(input: {
     cta: { href: input.bookingUrl, label: 'Choose a time' },
     showFallbackLink: true,
     note: expiry,
-    footer: TALENT_FOOTER,
+    footer: { ...TALENT_FOOTER, replyTo: input.replyTo },
   });
 
   return { subject, html, text };
@@ -74,35 +77,24 @@ async function sendTemplatedEmail(input: {
   subject: string;
   html: string;
   text: string;
-  type: string;
+  template: string;
+  idempotencyKey: string;
+  event: string;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
-  }
-
-  const resend = new Resend(apiKey);
   const cc = RESEND_CC.filter((email) => email.toLowerCase() !== input.to.toLowerCase());
-
-  const { data, error } = await resend.emails.send({
-    from: RESEND_FROM,
-    to: [input.to],
-    ...(cc.length > 0 ? { cc } : {}),
-    subject: input.subject,
-    html: input.html,
-    text: input.text,
-    ...(RESEND_REPLY_TO ? { replyTo: RESEND_REPLY_TO } : {}),
-    tags: [
-      { name: 'surface', value: 'assessment' },
-      { name: 'type', value: input.type },
-    ],
-  });
-
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'client',
+      to: input.to,
+      cc,
+      subject: input.subject,
+      html: input.html,
+      text: input.text,
+      template: input.template,
+      idempotencyKey: input.idempotencyKey,
+      event: input.event,
+    }),
+  );
 }
 
 export async function sendAssessmentInviteEmail(input: {
@@ -112,13 +104,16 @@ export async function sendAssessmentInviteEmail(input: {
   bookingUrl: string;
   expiresAt: string;
 }): Promise<{ id: string }> {
-  const content = buildAssessmentInviteEmail(input);
+  const identity = await loadEmailIdentity('client');
+  const content = buildAssessmentInviteEmail({ ...input, replyTo: identity.replyTo });
   return sendTemplatedEmail({
     to: input.to,
     subject: content.subject,
     html: content.html,
     text: content.text,
-    type: 'booking_invite',
+    template: 'assessment-invite',
+    idempotencyKey: idempotencyKey(['assessment-invite', createHash('sha256').update(input.bookingUrl).digest('hex')]),
+    event: 'assessment.invite',
   });
 }
 
@@ -143,6 +138,7 @@ function buildScheduledCallEmail(input: {
   meetUrl?: string | null;
   calendarUrl?: string | null;
   kind: 'confirmation' | 'reminder';
+  replyTo?: string | null;
 }): { subject: string; html: string; text: string } {
   const firstName = greetingName(input.fullName);
   const when = formatWhen(input.startsAt, input.timeZone);
@@ -174,7 +170,7 @@ function buildScheduledCallEmail(input: {
     '',
     '— Divine Acquisition',
     '',
-    ...textFooter(TALENT_FOOTER),
+    ...textFooter({ ...TALENT_FOOTER, replyTo: input.replyTo }),
   ]
     .filter((line): line is string => line !== null)
     .join('\n');
@@ -196,7 +192,7 @@ function buildScheduledCallEmail(input: {
       ...(input.calendarUrl ? [{ label: 'Calendar', value: 'Add to your calendar', href: input.calendarUrl }] : []),
     ],
     cta: input.meetUrl ? { href: input.meetUrl, label: 'Join Google Meet' } : null,
-    footer: TALENT_FOOTER,
+    footer: { ...TALENT_FOOTER, replyTo: input.replyTo },
   });
 
   return { subject, html, text };
@@ -212,13 +208,16 @@ export async function sendAssessmentBookingConfirmationEmail(input: {
   meetUrl?: string | null;
   calendarUrl?: string | null;
 }): Promise<{ id: string }> {
-  const content = buildScheduledCallEmail({ ...input, kind: 'confirmation' });
+  const identity = await loadEmailIdentity('client');
+  const content = buildScheduledCallEmail({ ...input, kind: 'confirmation', replyTo: identity.replyTo });
   return sendTemplatedEmail({
     to: input.to,
     subject: content.subject,
     html: content.html,
     text: content.text,
-    type: 'booking_confirmation',
+    template: 'assessment-confirmation',
+    idempotencyKey: idempotencyKey(['assessment-confirm', input.to, input.startsAt]),
+    event: 'assessment.confirmation',
   });
 }
 
@@ -232,12 +231,15 @@ export async function sendAssessmentBookingReminderEmail(input: {
   meetUrl?: string | null;
   calendarUrl?: string | null;
 }): Promise<{ id: string }> {
-  const content = buildScheduledCallEmail({ ...input, kind: 'reminder' });
+  const identity = await loadEmailIdentity('client');
+  const content = buildScheduledCallEmail({ ...input, kind: 'reminder', replyTo: identity.replyTo });
   return sendTemplatedEmail({
     to: input.to,
     subject: content.subject,
     html: content.html,
     text: content.text,
-    type: 'booking_reminder',
+    template: 'assessment-reminder',
+    idempotencyKey: idempotencyKey(['assessment-reminder', input.to, input.startsAt]),
+    event: 'assessment.reminder',
   });
 }

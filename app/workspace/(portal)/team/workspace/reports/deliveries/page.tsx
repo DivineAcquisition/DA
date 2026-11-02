@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { retryDeliveryAction } from '@/lib/sales-reports/actions';
+import EmailPanel, { type EmailQuery } from '../EmailPanel';
 import ReportForm from '../ReportForm';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 type Row = { id: string; channel: string; destination: string; status: string; at: string; error: string | null; client: string | null; attempt: number };
 
-export default async function DeliveriesPage({ searchParams }: { searchParams: Promise<{ channel?: string; status?: string }> }) {
+export default async function DeliveriesPage({ searchParams }: { searchParams: Promise<{ channel?: string; status?: string } & EmailQuery> }) {
   const session = await getSessionContext();
   if (!session?.isAdmin) return <p className="text-sm text-neutral-400">Deliveries are for DA Admin.</p>;
   const query = await searchParams;
@@ -22,7 +23,6 @@ export default async function DeliveriesPage({ searchParams }: { searchParams: P
     p_from: null,
     p_to: null,
   });
-  if (error) return <p className="text-sm text-[#FFB020]">{readable(error)}</p>;
   return (
     <div className="space-y-4">
       <Link href="/workspace/team/workspace/reports" className="text-sm text-neutral-400 hover:text-white">Reports</Link>
@@ -40,6 +40,7 @@ export default async function DeliveriesPage({ searchParams }: { searchParams: P
         </select>
         <button className="rounded-lg bg-white/10 px-3 text-sm" type="submit">Filter</button>
       </form>
+      {error ? <p className="text-sm text-[#FFB020]">{readable(error)}</p> : null}
       <ul className="divide-y divide-white/10 rounded-2xl border border-white/10">
         {(data ?? []).map((row) => (
           <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm">
@@ -56,6 +57,7 @@ export default async function DeliveriesPage({ searchParams }: { searchParams: P
           </li>
         ))}
       </ul>
+      {session.impersonation ? <p className="text-sm text-neutral-400">Exit View As to see the email log.</p> : <EmailPanel query={query} />}
     </div>
   );
 }

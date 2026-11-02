@@ -1,5 +1,6 @@
-import { Resend } from 'resend';
 import { appUrl } from '@/lib/apps';
+import { idempotencyKey } from '@/lib/email/policy';
+import { loadEmailIdentity, requireSent, sendAppEmail } from '@/lib/email/service';
 import { ensureDriveFolder, uploadFile } from '@/lib/drive/client';
 import { serviceClient, type UntypedClient } from '@/lib/workspace/db';
 import { buildClientReportEmail } from './email';
@@ -81,27 +82,26 @@ async function saveDrive(report: ReturnType<typeof asClientReport>, folderId: st
 }
 
 async function sendEmail(claim: Claim, pdf: Uint8Array, reportUrl: string | null) {
-  const key = process.env.RESEND_API_KEY?.trim();
-  if (!key) throw new Error('RESEND_API_KEY is not set');
-  if (!claim.reply_to) throw new Error('No reply-to address is set');
   if (!claim.to?.length) throw new Error('Add at least one recipient');
-  const mail = buildClientReportEmail(claim.client, { reportUrl });
-  const resend = new Resend(key);
-  const result = await resend.emails.send(
-    {
-      from: `${claim.from_name} <${claim.from_address}>`,
+  const identity = await loadEmailIdentity('client');
+  const mail = buildClientReportEmail(claim.client, { reportUrl, replyTo: identity.replyTo ?? claim.reply_to });
+  const sent = requireSent(
+    await sendAppEmail({
+      purpose: 'client',
       to: claim.to,
       cc: claim.cc?.filter(Boolean),
-      replyTo: claim.reply_to,
       subject: mail.subject,
       html: mail.html,
       text: mail.text,
+      template: claim.test ? 'client-report-test' : 'client-report',
+      idempotencyKey: idempotencyKey(['sales-report', claim.id, claim.resend_count]),
+      event: claim.test ? 'report.test' : claim.resend_pending ? 'report.resend' : 'report.send',
+      related: { reportId: claim.id },
+      payload: { kind: claim.kind, resendCount: claim.resend_count, test: claim.test },
       attachments: [{ filename: reportFileName(asClientReport(claim.client)), content: Buffer.from(pdf) }],
-    },
-    { idempotencyKey: `sales-report/${claim.id}/${claim.resend_count}` },
+    }),
   );
-  if (result.error) throw new Error(result.error.message);
-  return result.data?.id ?? '';
+  return sent.id;
 }
 
 async function sendOne(db: UntypedClient, claim: Claim) {

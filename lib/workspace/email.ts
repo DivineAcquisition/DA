@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import {
   greetingName,
   itemCardHtml,
@@ -6,14 +5,9 @@ import {
   renderEmailHtml,
   textFooter,
 } from '@/lib/email/layout';
-
-export const WORKSPACE_RESEND_FROM =
-  process.env.RESEND_AGREEMENT_FROM ??
-  process.env.RESEND_FROM ??
-  'Divine Acquisition <noreply@noreply.divineacquisition.io>';
-
-export const WORKSPACE_RESEND_REPLY_TO =
-  process.env.RESEND_AGREEMENT_REPLY_TO ?? process.env.RESEND_REPLY_TO ?? undefined;
+import { createHash } from 'node:crypto';
+import { idempotencyKey } from '@/lib/email/policy';
+import { requireSent, sendAppEmail } from '@/lib/email/service';
 
 /** Always CC ownership on agreement invites unless overridden. */
 export const WORKSPACE_AGREEMENT_CC = (
@@ -100,34 +94,22 @@ export async function sendAgreementInviteEmail(input: {
   onboardingUrl?: string | null;
   cc?: string[];
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
-  }
-
   const content = buildAgreementInviteEmail(input);
-  const resend = new Resend(apiKey);
   const cc = agreementInviteCc(input.to, input.cc);
-
-  const { data, error } = await resend.emails.send({
-    from: WORKSPACE_RESEND_FROM,
-    to: [input.to],
-    ...(cc.length > 0 ? { cc } : {}),
-    subject: content.subject,
-    html: content.html,
-    text: content.text,
-    ...(WORKSPACE_RESEND_REPLY_TO ? { replyTo: WORKSPACE_RESEND_REPLY_TO } : {}),
-    tags: [
-      { name: 'surface', value: 'workspace' },
-      { name: 'type', value: 'agreement_invite' },
-    ],
-  });
-
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'team',
+      to: input.to,
+      cc,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      template: 'agreement-invite',
+      idempotencyKey: idempotencyKey(['agreement-invite', createHash('sha256').update(input.signingUrl).digest('hex')]),
+      event: 'agreement.invite',
+      payload: { templateName: input.templateName, companyName: input.companyName },
+    }),
+  );
 }
 
 export function buildOnboardingEmail(input: {
@@ -163,22 +145,18 @@ export async function sendOnboardingEmail(input: {
   recipientName: string;
   url: string;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
   const content = buildOnboardingEmail(input);
-  const resend = new Resend(apiKey);
-  const { data, error } = await resend.emails.send({
-    from: WORKSPACE_RESEND_FROM,
-    to: [input.to],
-    subject: content.subject,
-    html: content.html,
-    text: content.text,
-    ...(WORKSPACE_RESEND_REPLY_TO ? { replyTo: WORKSPACE_RESEND_REPLY_TO } : {}),
-    tags: [
-      { name: 'surface', value: 'workspace' },
-      { name: 'type', value: 'operator_onboarding' },
-    ],
-  });
-  if (error || !data?.id) throw new Error(error?.message ?? 'Resend did not return an email id');
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'team',
+      to: input.to,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      template: 'operator-onboarding',
+      idempotencyKey: idempotencyKey(['operator-onboarding', createHash('sha256').update(input.url).digest('hex')]),
+      event: 'operator.onboarding',
+      payload: { recipientName: input.recipientName },
+    }),
+  );
 }

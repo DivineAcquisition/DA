@@ -1,9 +1,9 @@
 /**
  * One look for every email DA sends: the auth-page lockup, a single card,
  * and the brand footer. Table layout with inline styles, because Gmail and
- * Outlook drop <style> blocks and flexbox. The one style block only loads
- * Inter Display for clients that keep it (Apple Mail). Everyone else follows
- * the inline stack down to Helvetica and Arial.
+ * Outlook drop <style> blocks and flexbox. Plus Jakarta Sans and Inter load
+ * where the client allows them. Everyone else follows the inline stack down
+ * to Helvetica and Arial.
  */
 
 const SITE_URL = 'https://divineacquisition.io';
@@ -19,6 +19,8 @@ export const EMAIL_BRAND = {
   termsUrl: `${ACQ_ORIGIN}/terms`,
   /** Raster of the auth-page lockup (`app/components/Logo.tsx`), 788×116. */
   logoUrl: `${ACQ_ORIGIN}/email-logo.png`,
+  primary: '#6A00FF',
+  accent: '#937DFF',
 } as const;
 
 /** Display sizes of `logoUrl`. The file is exactly 4× the header size. */
@@ -27,11 +29,8 @@ const LOGO = {
   footer: { width: 163, height: 24 },
 } as const;
 
-const FONT_FILES = {
-  regular: `${ACQ_ORIGIN}/fonts/InterDisplay-Regular.woff2`,
-  italic: `${ACQ_ORIGIN}/fonts/InterDisplay-Italic.woff2`,
-  bold: `${ACQ_ORIGIN}/fonts/InterDisplay-Bold.woff2`,
-} as const;
+const FONT_LINK =
+  'https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@600;700&display=swap';
 
 const C = {
   canvas: '#07070b',
@@ -40,8 +39,8 @@ const C = {
   panel: '#0a0910',
   panelBorder: '#24222f',
   rule: '#1d1b27',
-  accent: '#9a88fc',
-  accentSoft: '#c3b6fe',
+  primary: EMAIL_BRAND.primary,
+  accent: EMAIL_BRAND.accent,
   formal: '#f87171',
   heading: '#ffffff',
   body: '#c9c8d3',
@@ -49,13 +48,8 @@ const C = {
   faint: '#5f5d6c',
 } as const;
 
-const FONT = "'Inter Display', Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif";
-
-function fontFaceCss(): string {
-  const face = (style: string, weight: number, file: string) =>
-    `@font-face{font-family:'Inter Display';font-style:${style};font-weight:${weight};font-display:swap;src:url('${file}') format('woff2');}`;
-  return `${face('normal', 400, FONT_FILES.regular)}${face('italic', 400, FONT_FILES.italic)}${face('normal', 700, FONT_FILES.bold)}`;
-}
+export const FONT_HEAD = "'Plus Jakarta Sans', Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif";
+export const FONT_BODY = "Inter, 'Helvetica Neue', Helvetica, Arial, sans-serif";
 
 function logoHtml(size: { width: number; height: number }, alt: string): string {
   return `<img src="${escapeHtml(EMAIL_BRAND.logoUrl)}" width="${size.width}" height="${size.height}" alt="${escapeHtml(alt)}" style="display:block;border:0;outline:none;width:${size.width}px;height:${size.height}px;" />`;
@@ -85,6 +79,8 @@ export type EmailFooter = {
   /** Client-facing mail links to the free audit; talent and team mail does not. */
   showAuditLink?: boolean;
   disclaimer?: string;
+  /** Shown on client mail so the person knows which inbox receives a reply. */
+  replyTo?: string | null;
 };
 
 export type EmailContent = {
@@ -109,14 +105,15 @@ export type EmailContent = {
 };
 
 export function paragraphHtml(text: string, color: string = C.body): string {
-  return `<p style="margin:0 0 16px;font-family:${FONT};font-size:16px;line-height:1.65;color:${color};">${escapeHtml(text).replace(/\n/g, '<br />')}</p>`;
+  return `<p style="margin:0 0 16px;font-family:${FONT_BODY};font-size:16px;line-height:1.65;color:${color};">${escapeHtml(text).replace(/\n/g, '<br />')}</p>`;
 }
 
 export function buttonHtml(href: string, label: string, formal = false): string {
-  const bg = formal ? C.formal : C.accent;
+  const bg = formal ? C.formal : C.primary;
+  const fg = formal ? C.canvas : '#ffffff';
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
 <td align="center" bgcolor="${bg}" style="border-radius:12px;background-color:${bg};">
-<a href="${escapeHtml(href)}" style="display:inline-block;padding:15px 30px;font-family:${FONT};font-size:15px;font-weight:700;line-height:1;color:${C.canvas};text-decoration:none;border-radius:12px;">${escapeHtml(label)}&nbsp;&rarr;</a>
+<a href="${escapeHtml(href)}" style="display:inline-block;padding:15px 30px;font-family:${FONT_HEAD};font-size:15px;font-weight:700;line-height:1;color:${fg};text-decoration:none;border-radius:12px;">${escapeHtml(label)}</a>
 </td></tr></table>`;
 }
 
@@ -124,12 +121,12 @@ export function detailsHtml(details: EmailDetail[]): string {
   const rows = details
     .map((detail, index) => {
       const value = detail.href
-        ? `<a href="${escapeHtml(detail.href)}" style="color:${C.accentSoft};text-decoration:none;word-break:break-all;">${escapeHtml(detail.value)}</a>`
+        ? `<a href="${escapeHtml(detail.href)}" style="color:${C.accent};text-decoration:none;word-break:break-all;">${escapeHtml(detail.value)}</a>`
         : escapeHtml(detail.value);
       const border = index === 0 ? '' : `border-top:1px solid ${C.panelBorder};`;
       return `<tr><td style="padding:14px 20px;${border}">
-<p style="margin:0;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${C.muted};">${escapeHtml(detail.label)}</p>
-<p style="margin:6px 0 0;font-family:${FONT};font-size:16px;line-height:1.5;color:${C.heading};">${value}</p>
+<p style="margin:0;font-family:${FONT_HEAD};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${C.muted};">${escapeHtml(detail.label)}</p>
+<p style="margin:6px 0 0;font-family:${FONT_BODY};font-size:16px;line-height:1.5;color:${C.heading};">${value}</p>
 </td></tr>`;
     })
     .join('');
@@ -139,24 +136,24 @@ export function detailsHtml(details: EmailDetail[]): string {
 /** A bordered block used for each item in a digest. */
 export function itemCardHtml(title: string, bodyHtml: string, link?: { href: string; label: string } | null): string {
   const action = link
-    ? `<p style="margin:4px 0 0;font-family:${FONT};font-size:14px;font-weight:700;"><a href="${escapeHtml(link.href)}" style="color:${C.accentSoft};text-decoration:none;">${escapeHtml(link.label)}&nbsp;&rarr;</a></p>`
+    ? `<p style="margin:4px 0 0;font-family:${FONT_HEAD};font-size:14px;font-weight:700;"><a href="${escapeHtml(link.href)}" style="color:${C.accent};text-decoration:none;">${escapeHtml(link.label)}</a></p>`
     : '';
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0 0 14px;background-color:${C.panel};border:1px solid ${C.panelBorder};border-radius:14px;"><tr><td style="padding:18px 20px;">
-<p style="margin:0 0 10px;font-family:${FONT};font-size:16px;font-weight:700;line-height:1.4;color:${C.heading};">${escapeHtml(title)}</p>
+<p style="margin:0 0 10px;font-family:${FONT_HEAD};font-size:16px;font-weight:700;line-height:1.4;color:${C.heading};">${escapeHtml(title)}</p>
 ${bodyHtml}${action}
 </td></tr></table>`;
 }
 
 function noteHtml(note: string): string {
   return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr>
-<td style="border-left:3px solid ${C.accent};padding:4px 0 4px 16px;">
-<p style="margin:0;font-family:${FONT};font-size:14px;line-height:1.65;color:${C.muted};">${escapeHtml(note).replace(/\n/g, '<br />')}</p>
+<td style="border-left:3px solid ${C.primary};padding:4px 0 4px 16px;">
+<p style="margin:0;font-family:${FONT_BODY};font-size:14px;line-height:1.65;color:${C.muted};">${escapeHtml(note).replace(/\n/g, '<br />')}</p>
 </td></tr></table>`;
 }
 
 function footerHtml(footer: EmailFooter): string {
   const link = (href: string, label: string) =>
-    `<a href="${escapeHtml(href)}" style="color:${C.accentSoft};text-decoration:none;">${escapeHtml(label)}</a>`;
+    `<a href="${escapeHtml(href)}" style="color:${C.accent};text-decoration:none;">${escapeHtml(label)}</a>`;
   const dot = `<span style="color:${C.faint};">&nbsp;&nbsp;&middot;&nbsp;&nbsp;</span>`;
   const links = [
     link(EMAIL_BRAND.siteUrl, EMAIL_BRAND.siteLabel),
@@ -165,14 +162,19 @@ function footerHtml(footer: EmailFooter): string {
     link(EMAIL_BRAND.termsUrl, 'Terms'),
   ].join(dot);
   const small = (text: string, top = 8) =>
-    `<p style="margin:${top}px 0 0;font-family:${FONT};font-size:12px;line-height:1.6;color:${C.faint};">${text}</p>`;
+    `<p style="margin:${top}px 0 0;font-family:${FONT_BODY};font-size:12px;line-height:1.6;color:${C.faint};">${text}</p>`;
+
+  const reply = footer.replyTo?.trim()
+    ? small(`Reply to this email at ${escapeHtml(footer.replyTo.trim())}.`, 16)
+    : '';
 
   return `<tr><td style="padding:36px 8px 0;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%"><tr><td style="border-top:1px solid ${C.rule};padding-top:28px;">
 ${logoHtml(LOGO.footer, 'DivineAcquisition')}
-<p style="margin:16px 0 0;font-family:${FONT};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
-<p style="margin:16px 0 0;font-family:${FONT};font-size:12px;line-height:1.8;">${links}</p>
-${small(escapeHtml(footer.reason), 16)}
+<p style="margin:16px 0 0;font-family:${FONT_HEAD};font-size:13px;font-style:italic;line-height:1.6;color:${C.muted};">${escapeHtml(EMAIL_BRAND.motto)}</p>
+<p style="margin:16px 0 0;font-family:${FONT_BODY};font-size:12px;line-height:1.8;">${links}</p>
+${small(escapeHtml(footer.reason).replace(/\n/g, '<br />'), 16)}
+${reply}
 ${footer.disclaimer ? small(escapeHtml(footer.disclaimer)) : ''}
 ${small(`&copy; ${new Date().getFullYear()} ${escapeHtml(EMAIL_BRAND.name)}. All rights reserved.`)}
 </td></tr></table>
@@ -191,8 +193,8 @@ export function renderEmailHtml(content: EmailContent): string {
     sections.push(`<tr><td style="padding:28px 40px 0;">${buttonHtml(content.cta.href, content.cta.label, content.cta.formal)}</td></tr>`);
     if (content.showFallbackLink) {
       sections.push(`<tr><td style="padding:14px 40px 0;">
-<p style="margin:0;font-family:${FONT};font-size:12px;line-height:1.6;color:${C.faint};">If the button does not open, paste this into your browser:<br />
-<a href="${escapeHtml(content.cta.href)}" style="color:${C.accentSoft};text-decoration:none;word-break:break-all;">${escapeHtml(content.cta.href)}</a></p>
+<p style="margin:0;font-family:${FONT_BODY};font-size:12px;line-height:1.6;color:${C.faint};">If the button does not open, paste this into your browser:<br />
+<a href="${escapeHtml(content.cta.href)}" style="color:${C.accent};text-decoration:none;word-break:break-all;">${escapeHtml(content.cta.href)}</a></p>
 </td></tr>`);
     }
   }
@@ -200,8 +202,8 @@ export function renderEmailHtml(content: EmailContent): string {
   if (content.note) sections.push(`<tr><td style="padding:28px 40px 0;">${noteHtml(content.note)}</td></tr>`);
   if (content.signoff) {
     sections.push(`<tr><td style="padding:28px 40px 0;">
-<p style="margin:0;font-family:${FONT};font-size:17px;font-style:italic;color:${C.heading};">${escapeHtml(content.signoff.name)}</p>
-${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${FONT};font-size:13px;color:${C.muted};">${escapeHtml(content.signoff.role)}</p>` : ''}
+<p style="margin:0;font-family:${FONT_HEAD};font-size:17px;font-style:italic;color:${C.heading};">${escapeHtml(content.signoff.name)}</p>
+${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${FONT_BODY};font-size:13px;color:${C.muted};">${escapeHtml(content.signoff.role)}</p>` : ''}
 </td></tr>`);
   }
 
@@ -214,11 +216,11 @@ ${content.signoff.role ? `<p style="margin:4px 0 0;font-family:${FONT};font-size
 <meta name="color-scheme" content="dark" />
 <meta name="supported-color-schemes" content="dark" />
 <!--[if !mso]><!-->
-<style>${fontFaceCss()}</style>
+<link href="${FONT_LINK}" rel="stylesheet" />
 <!--<![endif]-->
 <title>${escapeHtml(content.subject)}</title>
 </head>
-<body style="margin:0;padding:0;background-color:${C.canvas};font-family:${FONT};">
+<body style="margin:0;padding:0;background-color:${C.canvas};font-family:${FONT_BODY};">
 <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:${C.canvas};">${escapeHtml(content.preheader)}&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" bgcolor="${C.canvas}" style="background-color:${C.canvas};">
 <tr><td align="center" style="padding:40px 16px 48px;">
@@ -228,10 +230,10 @@ ${logoHtml(LOGO.header, 'DivineAcquisition')}
 </td></tr>
 <tr><td bgcolor="${C.card}" style="background-color:${C.card};border:1px solid ${C.cardBorder};border-radius:20px;">
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-<tr><td style="height:4px;line-height:4px;font-size:0;background-color:${C.accent};border-radius:20px 20px 0 0;">&nbsp;</td></tr>
+<tr><td style="height:4px;line-height:4px;font-size:0;background-color:${C.primary};border-radius:20px 20px 0 0;">&nbsp;</td></tr>
 <tr><td style="padding:36px 40px 0;">
-<p style="margin:0;font-family:${FONT};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.accent};">${escapeHtml(content.eyebrow)}</p>
-<h1 style="margin:14px 0 0;font-family:${FONT};font-size:30px;line-height:1.22;font-weight:700;color:${C.heading};">${escapeHtml(content.title)}</h1>
+<p style="margin:0;font-family:${FONT_HEAD};font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:${C.accent};">${escapeHtml(content.eyebrow)}</p>
+<h1 style="margin:14px 0 0;font-family:${FONT_HEAD};font-size:30px;line-height:1.22;font-weight:700;color:${C.heading};">${escapeHtml(content.title)}</h1>
 </td></tr>
 <tr><td style="padding:22px 40px 0;">${body.join('')}</td></tr>
 ${sections.join('\n')}
@@ -251,12 +253,14 @@ export function textFooter(footer: EmailFooter): string[] {
   return [
     '--',
     EMAIL_BRAND.name,
+    EMAIL_BRAND.motto,
     EMAIL_BRAND.siteUrl,
     ...(footer.showAuditLink ? [`Book a free audit: ${EMAIL_BRAND.auditUrl}`] : []),
     `Privacy policy: ${EMAIL_BRAND.privacyUrl}`,
     `Terms: ${EMAIL_BRAND.termsUrl}`,
     '',
     footer.reason,
+    ...(footer.replyTo?.trim() ? [`Reply to this email at ${footer.replyTo.trim()}.`] : []),
     ...(footer.disclaimer ? [footer.disclaimer] : []),
   ];
 }

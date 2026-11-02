@@ -8,6 +8,7 @@ import { loadOperator } from '@/lib/sales-workspace/team-data';
 import { CertPill, EodPill, ShiftPill, When } from '../../components/Bits';
 import { ExcuseDays } from '../../components/EodReview';
 import { MessageForm, TargetForm, TaskForm } from '../../components/Forms';
+import HirePanel from '../HirePanel';
 
 export const metadata: Metadata = { title: 'Operator' };
 export const dynamic = 'force-dynamic';
@@ -27,6 +28,7 @@ export default async function OperatorDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="space-y-5">
+      <HirePanel operatorId={operator.id} email={operator.email} name={operator.name} isAdmin={data.is_admin} />
       <header className="panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
