@@ -35,27 +35,36 @@ describe('email layout', () => {
     expect(html).toContain('Body &amp; more');
   });
 
-  it('sets Inter Display on every text style and uses the auth lockup', () => {
-    const html = renderEmailHtml(base);
+  it('uses Plus Jakarta Sans for headings, Inter for body, and the auth lockup', () => {
+    const html = renderEmailHtml({ ...base, cta: { href: 'https://example.com/go', label: 'Open' } });
     expect(html).toContain(EMAIL_BRAND.logoUrl);
     expect(html).toContain('alt="DivineAcquisition"');
-    expect(html).toContain('InterDisplay-Regular.woff2');
-    expect(html).toContain('InterDisplay-Italic.woff2');
-    expect(html).toContain('InterDisplay-Bold.woff2');
+    expect(html).toContain('Plus+Jakarta+Sans');
+    expect(html).toContain(EMAIL_BRAND.primary);
+    expect(html).toContain(EMAIL_BRAND.accent);
     expect(html).not.toContain('email-mark.png');
     expect(html).not.toMatch(/Georgia|Times New Roman/);
+    expect(html).toContain(`<h1 style="margin:14px 0 0;font-family:${"'Plus Jakarta Sans', Inter"}`);
     const families = html.match(/font-family:[^;}"]+/g) ?? [];
     expect(families.length).toBeGreaterThan(0);
     for (const family of families) {
-      expect(family.startsWith("font-family:'Inter Display'")).toBe(true);
+      expect(family).toContain('Helvetica');
+      expect(family).toContain('Arial');
     }
   });
 
-  it('keeps the password reset template on the same font and logo', () => {
+  it('puts the reply-to inbox in the footer when one is set', () => {
+    const html = renderEmailHtml({ ...base, footer: { reason: 'You booked a call.', replyTo: 'malik@divineacquisition.io' } });
+    expect(html).toContain('Reply to this email at malik@divineacquisition.io.');
+  });
+
+  it('keeps the password reset template on the same font, logo, and button', () => {
     const html = readFileSync(new URL('../../supabase/templates/recovery.html', import.meta.url), 'utf8');
     expect(html).toContain('/email-logo.png');
-    expect(html).toContain('Inter Display');
-    expect(html).toContain('InterDisplay-Bold.woff2');
+    expect(html).toContain('Plus Jakarta Sans');
+    expect(html).toContain('#6A00FF');
+    expect(html).toContain('{{ .ConfirmationURL }}');
+    expect(html).toContain('Devotion. Value. Exclusivity.');
     expect(html).not.toContain('email-mark.png');
     expect(html).not.toMatch(/Georgia|Times New Roman/);
   });

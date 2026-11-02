@@ -6,11 +6,6 @@ export const TALENT_BOOKING_URL =
 export const ASSESSMENT_ADMIN_HOST =
   process.env.NEXT_PUBLIC_ASSESSMENT_ADMIN_HOST ?? 'https://admin.divineacquisition.io';
 
-export const RESEND_FROM =
-  process.env.RESEND_FROM ?? 'Divine Acquisition Talent <noreply@noreply.divineacquisition.io>';
-
-export const RESEND_REPLY_TO = process.env.RESEND_REPLY_TO ?? undefined;
-
 /** Always CC'd on assessment invite emails. Comma-separated override via env. */
 export const RESEND_CC = (
   process.env.RESEND_CC ?? 'malik@divineacquisition.io'

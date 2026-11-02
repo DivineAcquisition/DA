@@ -1,5 +1,6 @@
-import { Resend } from 'resend';
 import { greetingName, paragraphHtml, renderEmailHtml, textFooter } from '@/lib/email/layout';
+import { idempotencyKey } from '@/lib/email/policy';
+import { loadEmailIdentity, requireSent, sendAppEmail } from '@/lib/email/service';
 import { ACQ_AUDIT_CC } from './config';
 
 export type AcqEmailKind = 'confirmation' | 'reminder_24h' | 'reminder_2h';
@@ -25,6 +26,7 @@ export function buildAcqAuditEmail(input: {
   timeZone: string;
   meetUrl?: string | null;
   kind: AcqEmailKind;
+  replyTo?: string | null;
 }): { subject: string; html: string; text: string } {
   const name = greetingName(input.fullName);
   const when = formatWhen(input.startsAt, input.timeZone);
@@ -72,7 +74,7 @@ export function buildAcqAuditEmail(input: {
     'Malik',
     'Founder, Divine Acquisition',
     '',
-    ...textFooter(footer),
+    ...textFooter({ ...footer, replyTo: input.replyTo }),
   ]
     .filter((line): line is string => line !== null)
     .join('\n');
@@ -93,7 +95,7 @@ export function buildAcqAuditEmail(input: {
     cta: input.meetUrl ? { href: input.meetUrl, label: 'Join Google Meet' } : null,
     extraHtml: `${paragraphHtml(effort)}${paragraphHtml(scope)}`,
     signoff: { name: 'Malik', role: 'Founder, Divine Acquisition' },
-    footer,
+    footer: { ...footer, replyTo: input.replyTo },
   });
 
   return { subject, html, text };
@@ -113,26 +115,21 @@ export async function sendAcqAuditEmail(input: {
   meetUrl?: string | null;
   kind: AcqEmailKind;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
-
-  const from =
-    process.env.RESEND_FROM?.trim() ||
-    'Divine Acquisition <noreply@noreply.divineacquisition.io>';
-  const content = buildAcqAuditEmail(input);
-  const resend = new Resend(apiKey);
+  const identity = await loadEmailIdentity('client');
+  const content = buildAcqAuditEmail({ ...input, replyTo: identity.replyTo });
   const cc = acqAuditCc(input.to);
-  const { data, error } = await resend.emails.send({
-    from,
-    to: [input.to],
-    ...(cc.length ? { cc } : {}),
-    subject: content.subject,
-    html: content.html,
-    text: content.text,
-    ...(process.env.RESEND_REPLY_TO ? { replyTo: process.env.RESEND_REPLY_TO } : {}),
-  });
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'client',
+      to: input.to,
+      cc,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      template: `acq-audit-${input.kind}`,
+      idempotencyKey: idempotencyKey(['acq-audit', input.kind, input.to, input.startsAt]),
+      event: `acq.audit.${input.kind}`,
+      payload: { kind: input.kind },
+    }),
+  );
 }

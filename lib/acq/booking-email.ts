@@ -1,10 +1,7 @@
-import { Resend } from 'resend';
 import { greetingName, renderEmailHtml, textFooter } from '@/lib/email/layout';
-import {
-  WORKSPACE_AGREEMENT_CC,
-  WORKSPACE_RESEND_FROM,
-  WORKSPACE_RESEND_REPLY_TO,
-} from '../workspace/email';
+import { idempotencyKey } from '@/lib/email/policy';
+import { loadEmailIdentity, requireSent, sendAppEmail } from '@/lib/email/service';
+import { WORKSPACE_AGREEMENT_CC } from '../workspace/email';
 
 function formatWhen(startsAt: string, timeZone: string): string {
   return new Date(startsAt).toLocaleString('en-US', {
@@ -26,6 +23,7 @@ export function buildProspectCallEmail(input: {
   durationMinutes: number;
   meetUrl?: string | null;
   calendarUrl?: string | null;
+  replyTo?: string | null;
 }): { subject: string; html: string; text: string } {
   const firstName = greetingName(input.fullName);
   const when = formatWhen(input.startsAt, input.timeZone);
@@ -57,7 +55,7 @@ export function buildProspectCallEmail(input: {
     '',
     '— Divine Acquisition',
     '',
-    ...textFooter(footer),
+    ...textFooter({ ...footer, replyTo: input.replyTo }),
   ]
     .filter((line): line is string => line !== null)
     .join('\n');
@@ -80,7 +78,7 @@ export function buildProspectCallEmail(input: {
     ],
     cta: input.meetUrl ? { href: input.meetUrl, label: 'Join Google Meet' } : null,
     note: agenda,
-    footer,
+    footer: { ...footer, replyTo: input.replyTo },
   });
 
   return { subject, html, text };
@@ -96,31 +94,20 @@ export async function sendProspectCallConfirmationEmail(input: {
   meetUrl?: string | null;
   calendarUrl?: string | null;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error('RESEND_API_KEY is not configured');
-  }
-
-  const content = buildProspectCallEmail(input);
+  const identity = await loadEmailIdentity('client');
+  const content = buildProspectCallEmail({ ...input, replyTo: identity.replyTo });
   const cc = WORKSPACE_AGREEMENT_CC.filter((email) => email !== input.to.toLowerCase());
-  const resend = new Resend(apiKey);
-  const { data, error } = await resend.emails.send({
-    from: WORKSPACE_RESEND_FROM,
-    to: [input.to],
-    ...(cc.length > 0 ? { cc } : {}),
-    subject: content.subject,
-    html: content.html,
-    text: content.text,
-    ...(WORKSPACE_RESEND_REPLY_TO ? { replyTo: WORKSPACE_RESEND_REPLY_TO } : {}),
-    tags: [
-      { name: 'surface', value: 'acq' },
-      { name: 'type', value: 'prospect_booking_confirmation' },
-    ],
-  });
-
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-
-  return { id: data.id };
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'client',
+      to: input.to,
+      cc,
+      subject: content.subject,
+      html: content.html,
+      text: content.text,
+      template: 'prospect-call',
+      idempotencyKey: idempotencyKey(['prospect-call', input.to, input.startsAt]),
+      event: 'prospect.call.confirmation',
+    }),
+  );
 }

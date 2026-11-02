@@ -1,5 +1,6 @@
-import { Resend } from 'resend';
 import { greetingName, paragraphHtml, renderEmailHtml, textFooter } from '@/lib/email/layout';
+import { idempotencyKey } from '@/lib/email/policy';
+import { loadEmailIdentity, requireSent, sendAppEmail } from '@/lib/email/service';
 import { ACQ_AUDIT_CC } from '@/lib/acq/config';
 import { GO_PRECALL_URL } from '@/lib/go/config';
 
@@ -26,6 +27,7 @@ export function buildGoSessionEmail(input: {
   timeZone: string;
   meetUrl?: string | null;
   kind: GoEmailKind;
+  replyTo?: string | null;
 }): { subject: string; html: string; text: string } {
   const name = greetingName(input.fullName);
   const when = formatSessionWhen(input.startsAt, input.timeZone);
@@ -64,7 +66,7 @@ export function buildGoSessionEmail(input: {
     'Malik',
     'Founder, Divine Acquisition',
     '',
-    ...textFooter(footer),
+    ...textFooter({ ...footer, replyTo: input.replyTo }),
   ]
     .filter((line): line is string => line !== null)
     .join('\n');
@@ -89,7 +91,7 @@ export function buildGoSessionEmail(input: {
       input.kind === 'confirmation' ? paragraphHtml(`Watch this before we talk: ${GO_PRECALL_URL}`) : ''
     }`,
     signoff: { name: 'Malik', role: 'Founder, Divine Acquisition' },
-    footer,
+    footer: { ...footer, replyTo: input.replyTo },
   });
 
   return { subject, html, text };
@@ -130,28 +132,21 @@ export async function sendGoSessionEmail(input: {
   kind: GoEmailKind;
   bookingId: string;
 }): Promise<{ id: string }> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
-
-  const from =
-    process.env.RESEND_FROM?.trim() || 'Divine Acquisition <noreply@noreply.divineacquisition.io>';
-  const content = buildGoSessionEmail(input);
-  const resend = new Resend(apiKey);
+  const identity = await loadEmailIdentity('client');
+  const content = buildGoSessionEmail({ ...input, replyTo: identity.replyTo });
   const cc = goSessionCc(input.to);
-  const { data, error } = await resend.emails.send(
-    {
-      from,
-      to: [input.to],
-      ...(cc.length ? { cc } : {}),
+  return requireSent(
+    await sendAppEmail({
+      purpose: 'client',
+      to: input.to,
+      cc,
       subject: content.subject,
       html: content.html,
       text: content.text,
-      ...(process.env.RESEND_REPLY_TO ? { replyTo: process.env.RESEND_REPLY_TO } : {}),
-    },
-    { idempotencyKey: `go-session/${input.bookingId}/${input.kind}` },
+      template: `go-session-${input.kind}`,
+      idempotencyKey: idempotencyKey(['go-session', input.bookingId, input.kind]),
+      event: `go.session.${input.kind}`,
+      payload: { bookingId: input.bookingId, kind: input.kind },
+    }),
   );
-  if (error || !data?.id) {
-    throw new Error(error?.message ?? 'Resend did not return an email id');
-  }
-  return { id: data.id };
 }
