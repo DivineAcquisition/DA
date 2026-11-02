@@ -267,6 +267,301 @@ a {
   animation: riseIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Team auth desk, from the Vistrial workspace sign-in. */
+@keyframes auth-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.auth-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
+  background: #07070b;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+.auth-stage-atmosphere {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.auth-stage-glow {
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  height: 34rem;
+  width: 46rem;
+  translate: -50% 0;
+  background: radial-gradient(ellipse at center, rgba(154, 136, 252, 0.34) 0%, transparent 68%);
+  filter: blur(72px);
+  animation: auth-breathe 8s ease-in-out infinite;
+}
+
+.auth-stage-glow-aux {
+  position: absolute;
+  right: -12%;
+  bottom: 8%;
+  height: 22rem;
+  width: 22rem;
+  background: radial-gradient(ellipse at center, rgba(154, 136, 252, 0.14) 0%, transparent 70%);
+  filter: blur(56px);
+}
+
+.auth-stage-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 42%, black 18%, transparent 78%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 42%, black 18%, transparent 78%);
+}
+
+.auth-stage-frame {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100svh;
+  align-items: center;
+  justify-content: center;
+  padding: 1.75rem 1.15rem 2.25rem;
+}
+
+.auth-desk-inner {
+  position: relative;
+  overflow: hidden;
+  width: min(26.5rem, 100%);
+  margin-inline: auto;
+  padding: 1.7rem 1.4rem 1.35rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.012) 38%, transparent 100%),
+    #0b0a11;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    0 28px 80px -32px rgba(0, 0, 0, 0.92),
+    0 0 90px -18px rgba(154, 136, 252, 0.42);
+}
+
+.auth-mark {
+  display: block;
+  height: 3.25rem;
+  width: auto;
+  margin: 0 auto 1.1rem;
+}
+
+.auth-eyebrow {
+  margin-bottom: 0.55rem;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-brand-300);
+}
+
+.auth-title {
+  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+  font-weight: 500;
+  letter-spacing: -0.038em;
+  line-height: 1.08;
+  color: #fff;
+}
+
+.auth-subtitle {
+  margin-top: 0.45rem;
+  margin-inline: auto;
+  max-width: 22rem;
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.44);
+}
+
+.auth-desk-body {
+  margin-top: 1.35rem;
+  text-align: left;
+}
+
+.auth-desk-foot {
+  margin-top: 1.25rem;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.28);
+}
+
+.auth-desk-foot a {
+  color: rgba(195, 182, 254, 0.8);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-field-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.auth-field-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(195, 182, 254, 0.72);
+}
+
+.auth-field {
+  position: relative;
+  isolation: isolate;
+  border-radius: 0.75rem;
+}
+
+.auth-field:focus-within {
+  box-shadow:
+    0 0 0 3px rgba(154, 136, 252, 0.18),
+    0 0 24px -8px rgba(154, 136, 252, 0.45);
+}
+
+.auth-input {
+  display: block;
+  width: 100%;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem 0 2.65rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, transparent 42%),
+    rgba(6, 6, 8, 0.78);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 14.5px;
+  line-height: 1.25;
+  color-scheme: dark;
+}
+
+.auth-input--with-action {
+  padding-right: 2.75rem;
+}
+
+.auth-input::placeholder {
+  color: rgba(163, 163, 163, 0.55);
+}
+
+.auth-input:focus,
+.auth-input:focus-visible {
+  outline: none;
+  border-color: rgba(154, 136, 252, 0.72);
+  background:
+    linear-gradient(180deg, rgba(154, 136, 252, 0.12) 0%, transparent 48%),
+    rgba(8, 8, 12, 0.88);
+}
+
+.auth-field-icon {
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 0.9rem;
+  width: 1rem;
+  height: 1rem;
+  transform: translateY(-50%);
+  color: rgba(163, 163, 163, 0.8);
+}
+
+.auth-field:focus-within .auth-field-icon {
+  color: var(--color-brand-300);
+}
+
+.auth-field-action {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  right: 0.3rem;
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  transform: translateY(-50%);
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  color: rgba(163, 163, 163, 0.85);
+}
+
+.auth-field-action:hover {
+  background: rgba(154, 136, 252, 0.14);
+  color: #fff;
+}
+
+.auth-submit {
+  display: inline-flex;
+  width: 100%;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(102, 80, 216, 0.25);
+  background: linear-gradient(180deg, #d9d1fe 0%, #c3b6fe 42%, #9a88fc 100%);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #07070b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 14px 32px -14px rgba(154, 136, 252, 0.85);
+}
+
+.auth-submit:disabled {
+  opacity: 0.64;
+}
+
+.auth-alt {
+  display: inline-flex;
+  height: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  padding: 0 0.9rem;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.auth-alt:hover:not(:disabled) {
+  border-color: rgba(154, 136, 252, 0.4);
+  background: rgba(154, 136, 252, 0.08);
+  color: #fff;
+}
+
+.auth-error {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(248, 113, 113, 0.1);
+  padding: 0.7rem 0.85rem;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #fecaca;
+}
+
 .animate-fade {
   animation: fadeIn 0.9s ease both;
 }

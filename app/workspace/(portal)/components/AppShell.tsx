@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/app/components/Logo';
 import { btnSecondary, btnSizeSm } from '@/app/components/ui';
-import { hubSignOutAction } from '@/lib/vistrial/authActions';
+import SignOutButton from '@/app/components/auth/SignOutButton';
 import { formatDayLong } from '@/lib/vistrial/format';
 import { useOps } from '@/lib/vistrial/store';
 import { Avatar, Badge, Panel } from './ui';
@@ -111,11 +111,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   <Avatar name={actor.name} size="sm" />
                   <span className="max-w-32 truncate text-[13px] font-medium text-white">{actor.name}</span>
                 </span>
-                <form action={hubSignOutAction}>
-                  <button type="submit" className={`${btnSecondary} ${btnSizeSm}`}>
-                    Sign out
-                  </button>
-                </form>
+                <SignOutButton full={false} />
               </div>
             </div>
 

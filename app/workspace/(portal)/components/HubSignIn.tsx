@@ -1,126 +1,152 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import Link from 'next/link';
-import Backdrop from '@/app/components/Backdrop';
-import Logo from '@/app/components/Logo';
-import { btnPrimary, btnSecondary, btnSizeMd, btnSizeSm } from '@/app/components/ui';
-import { Badge, inputClass, labelClass } from './ui';
-import { hubSignInAction, hubSignOutAction } from '@/lib/vistrial/authActions';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import TeamAuthDesk from '@/app/components/auth/TeamAuthDesk';
+import SignOutButton from '@/app/components/auth/SignOutButton';
+import { hubResetRequestAction, hubSignInAction } from '@/lib/vistrial/authActions';
 
 /**
- * The front door of each app. It says what this is and nothing else: no
- * clients, no pricing. The team app is for VAs and SDRs; the admin app for
- * owners, admins and managers.
+ * Team and admin front door, on the Vistrial auth desk.
+ * Forgot-password lives on this same screen and at /workspace/forgot-password.
  */
 export default function HubSignIn({
   app = 'team',
   wrongAudience,
   wrongApp,
+  initialMode = 'sign_in',
+  linkExpired = false,
 }: {
   app?: 'team' | 'admin';
   wrongAudience?: string;
-  /** A VA signed into the admin app: their account uses the team app. */
   wrongApp?: { email: string; url: string };
+  initialMode?: 'sign_in' | 'forgot';
+  linkExpired?: boolean;
 }) {
-  const title = app === 'admin' ? 'Divine Acquisition Admin' : 'Divine Acquisition Team';
+  const team = app !== 'admin';
+  const title = team ? 'Divine Acquisition Team' : 'Divine Acquisition Admin';
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<'sign_in' | 'forgot' | 'sent'>(initialMode);
+  const [showPassword, setShowPassword] = useState(false);
   const [pending, startTransition] = useTransition();
 
+  if (wrongApp) {
+    return (
+      <TeamAuthDesk eyebrow="Wrong app" title="Your account uses the team app" subtitle={`${wrongApp.email} signs in on the team site. The admin app is for owners, admins, and managers.`}>
+        <a href="/workspace/auth/leave?to=team" className="auth-submit">
+          Go to the team app
+        </a>
+        <p className="mt-3 text-center text-xs text-white/40">{wrongApp.url}</p>
+      </TeamAuthDesk>
+    );
+  }
+
+  if (wrongAudience) {
+    return (
+      <TeamAuthDesk eyebrow="No account here" title={title} subtitle={`${wrongAudience} is signed in, but it has no account in this app. Accounts are created by invitation.`}>
+        <SignOutButton />
+      </TeamAuthDesk>
+    );
+  }
+
+  if (mode === 'sent') {
+    return (
+      <TeamAuthDesk eyebrow="Account" title="Check your email" subtitle="If that address has an account, a link to set a new password is on its way. It brings you back here.">
+        <button type="button" onClick={() => setMode('sign_in')} className="auth-alt w-full">
+          Back to sign in
+        </button>
+      </TeamAuthDesk>
+    );
+  }
+
+  const forgot = mode === 'forgot';
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 py-12 text-white antialiased">
-      <Backdrop />
-
-      <div className="panel relative z-10 w-full max-w-md rounded-3xl p-6 sm:p-8">
-        <div className="flex items-center gap-2">
-          <Logo className="h-6 w-auto" />
-          {app === 'admin' ? (
-            <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
-          ) : null}
+    <TeamAuthDesk
+      eyebrow={team ? 'Team' : 'Admin'}
+      title={forgot ? 'Forgot your password?' : title}
+      subtitle={
+        forgot
+          ? linkExpired
+            ? 'That link has expired. Enter the email you sign in with and we will send a new one.'
+            : 'Enter the email you sign in with. We will send a link to set a new password.'
+          : team
+            ? 'Sign in to your team account.'
+            : 'Sign in to the admin app.'
+      }
+    >
+      <form
+        className="space-y-3.5"
+        action={(formData) => {
+          setError(null);
+          startTransition(async () => {
+            if (forgot) {
+              const result = await hubResetRequestAction(formData);
+              if (result.ok) setMode('sent');
+              else setError(result.error);
+              return;
+            }
+            const result = await hubSignInAction(formData);
+            if (result && !result.ok) setError(result.error);
+          });
+        }}
+      >
+        <div className="auth-field-block">
+          <label className="auth-field-label" htmlFor="email">
+            Email
+          </label>
+          <div className="auth-field">
+            <Mail className="auth-field-icon" aria-hidden />
+            <input id="email" name="email" type="email" required autoComplete="email" placeholder="you@company.com" className="auth-input" />
+          </div>
         </div>
-
-        {wrongApp ? (
-          <>
-            <Badge tone="warning" className="mt-6">
-              Wrong app
-            </Badge>
-            <h1 className="mt-4 text-xl font-semibold">Your account uses the team app</h1>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-400">
-              {wrongApp.email} is a team account. The admin app is for owners, admins and managers. Sign in to the team app instead.
-            </p>
-            <a href="/workspace/auth/leave?to=team" className={`${btnPrimary} ${btnSizeMd} mt-6`}>
-              Go to the team app
-            </a>
-            <p className="mt-3 text-xs text-neutral-500">{wrongApp.url}</p>
-          </>
-        ) : wrongAudience ? (
-          <>
-            <Badge tone="warning" className="mt-6">
-              No team account
-            </Badge>
-            <h1 className="mt-4 text-xl font-semibold">{title}</h1>
-            <p className="mt-3 text-sm leading-relaxed text-neutral-400">
-              {wrongAudience} is signed in, but it has no account in this app. Accounts are created by invitation.
-            </p>
-            <form action={hubSignOutAction} className="mt-6">
-              <button type="submit" className={`${btnSecondary} ${btnSizeSm}`}>
-                Sign out
+        {forgot ? null : (
+          <div className="auth-field-block">
+            <label className="auth-field-label" htmlFor="password">
+              Password
+            </label>
+            <div className="auth-field">
+              <Lock className="auth-field-icon" aria-hidden />
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                autoComplete="current-password"
+                placeholder="Password"
+                className="auth-input auth-input--with-action"
+              />
+              <button
+                type="button"
+                className="auth-field-action"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                onClick={() => setShowPassword((value) => !value)}
+              >
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
-            </form>
-          </>
+            </div>
+          </div>
+        )}
+        {error ? (
+          <p role="alert" className="auth-error">
+            {error}
+          </p>
+        ) : null}
+        <button type="submit" disabled={pending} className="auth-submit">
+          {forgot ? (pending ? 'Sending…' : 'Send the link') : pending ? 'Signing in…' : 'Sign in'}
+        </button>
+      </form>
+      <div className="mt-3">
+        {forgot ? (
+          <button type="button" onClick={() => { setError(null); setMode('sign_in'); }} className="auth-alt w-full">
+            Back to sign in
+          </button>
         ) : (
-          <>
-            <h1 className="mt-6 text-xl font-semibold">{title}</h1>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-400">
-              {app === 'admin' ? 'Sign in to the admin app.' : 'Sign in to your team account.'}
-            </p>
-
-            <form
-              className="mt-7 space-y-4"
-              action={(formData) => {
-                setError(null);
-                startTransition(async () => {
-                  const result = await hubSignInAction(formData);
-                  if (result && !result.ok) setError(result.error);
-                });
-              }}
-            >
-              <div>
-                <label className={labelClass} htmlFor="email">
-                  Email
-                </label>
-                <input id="email" name="email" type="email" required autoComplete="email" className={inputClass} />
-              </div>
-              <div>
-                <label className={labelClass} htmlFor="password">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  autoComplete="current-password"
-                  className={inputClass}
-                />
-              </div>
-
-              {error && (
-                <p className="rounded-xl border border-flag-critical/25 bg-flag-critical/[0.08] px-3.5 py-2.5 text-sm text-flag-critical">
-                  {error}
-                </p>
-              )}
-
-              <button type="submit" disabled={pending} className={`${btnPrimary} ${btnSizeMd} w-full`}>
-                {pending ? 'Signing in…' : 'Sign in'}
-              </button>
-            </form>
-            <Link href="/workspace/forgot-password" className="mt-4 inline-block text-sm text-neutral-400 underline-offset-4 hover:text-white hover:underline">
-              Forgot your password?
-            </Link>
-          </>
+          <a href="/workspace/forgot-password" className="auth-alt w-full">
+            Forgot your password?
+          </a>
         )}
       </div>
-    </div>
+    </TeamAuthDesk>
   );
 }

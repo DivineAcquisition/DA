@@ -11,7 +11,7 @@ import { exitViewAsAction, extendViewAsAction } from '@/lib/portal/staffActions'
 import { formatDuration } from '@/lib/portal/time';
 import type { PortalContext } from '@/lib/portal/types';
 import { menuFor, phoneBarFor, zoneOf, zonesFor, type TabKey } from '@/lib/portal/zones';
-import { hubSignOutAction } from '@/lib/vistrial/authActions';
+import SignOutButton from '@/app/components/auth/SignOutButton';
 import { Badge } from '../../components/ui';
 import AdminPanel from './AdminPanel';
 import { Feedback, PortalProvider, Sheet, useAction } from './portal';
@@ -170,11 +170,7 @@ export default function PortalShell({
                   );
                 })}
                 {viewAs ? null : (
-                  <form action={hubSignOutAction}>
-                    <button type="submit" className="w-full rounded-xl bg-white/[0.03] px-4 py-3 text-left text-sm text-neutral-400">
-                      Sign out
-                    </button>
-                  </form>
+                  <SignOutButton />
                 )}
               </div>
             </Sheet>

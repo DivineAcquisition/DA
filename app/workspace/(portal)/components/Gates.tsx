@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useSyncExternalStore } from 'react';
 import Logo from '@/app/components/Logo';
 import { btnSecondary } from '@/app/components/ui';
-import { hubSignOutAction } from '@/lib/vistrial/authActions';
+import SignOutButton from '@/app/components/auth/SignOutButton';
 import { buildNav, findActive, type NavCounts } from '@/lib/workspace/adminNav';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 
@@ -130,11 +130,7 @@ export function ManagerShell({
           >
             {collapsed ? '»' : 'Collapse'}
           </button>
-          <form action={hubSignOutAction} className="mt-2">
-            <button type="submit" aria-label="Sign out" className={`${btnSecondary} w-full px-3 py-2 text-xs`}>
-              {collapsed ? 'Out' : 'Sign out'}
-            </button>
-          </form>
+          <SignOutButton label={collapsed ? 'Out' : 'Sign out'} className="mt-2" />
           {collapsed ? null : <p className="mt-2 truncate px-1 text-[11px] text-neutral-500">{name}</p>}
         </div>
       </aside>

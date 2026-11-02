@@ -555,9 +555,18 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    let user: { id: string } | null = null;
+    try {
+      const result = await supabase.auth.getUser();
+      user = result.data.user;
+    } catch {
+      // A stale refresh cookie throws here and would block sign-in and
+      // forgot-password. Drop it so those pages can render.
+      user = null;
+      for (const cookie of request.cookies.getAll()) {
+        if (cookie.name.startsWith('sb-')) response.cookies.set(cookie.name, '', { path: '/', maxAge: 0 });
+      }
+    }
 
     // Per-app session rules: an idle timeout and a maximum session length,
     // stricter on the admin app. Cookies are host-only, like the auth cookies.

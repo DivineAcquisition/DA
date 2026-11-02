@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Logo from '@/app/components/Logo';
-import { hubSignOutAction } from '@/lib/vistrial/authActions';
+import SignOutButton from '@/app/components/auth/SignOutButton';
 import { jakarta } from './fonts';
 
 /** Divine Acquisition workspace brand: #6A00FF primary, #937DFF accent. */
@@ -43,11 +43,7 @@ export default function WorkspaceFrame({
             <Link href="/workspace/operator" className="rounded-lg px-2.5 py-1.5 text-neutral-400 hover:text-white">
               My Day
             </Link>
-            <form action={hubSignOutAction}>
-              <button type="submit" className={brand.ghostButton}>
-                Sign out
-              </button>
-            </form>
+            <SignOutButton full={false} />
           </nav>
         </div>
       </header>
