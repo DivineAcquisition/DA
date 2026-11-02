@@ -6,6 +6,7 @@ import { controlRpc, readable, type ActionResult } from '@/lib/ad/rpc';
 import { appUrl } from '@/lib/apps';
 import { sendAccountInviteEmail } from '@/lib/email/auth-mail';
 import { loadOperatorWorkspaceDomain } from '@/lib/operator-workspace/domain';
+import { asPasswordSession, establishInvitedAccount } from '@/lib/auth/invited-account';
 import { createClient } from '@/lib/supabase/server';
 
 const revalidateAd = (...paths: string[]) => {
@@ -146,6 +147,7 @@ export async function acceptInviteAction(formData: FormData): Promise<ActionResu
   const supabase = await createClient();
   const token = String(formData.get('token') ?? '');
   const password = String(formData.get('password') ?? '');
+  const confirm = String(formData.get('confirm') ?? '');
   const fullName = String(formData.get('full_name') ?? '') || null;
 
   const preview = await controlRpc<
@@ -163,26 +165,14 @@ export async function acceptInviteAction(formData: FormData): Promise<ActionResu
     return { ok: false, error: invite?.reason ?? 'This invitation link is not usable.' };
   }
 
-  // Accept requires a session. Create the auth user if needed, then sign in.
-  const { error: signUpError } = await supabase.auth.signUp({
+  // Public signup is closed, so the invitation creates the auth user itself.
+  const session = await establishInvitedAccount(asPasswordSession(supabase), {
     email: invite.email,
     password,
-    options: { data: { full_name: fullName ?? invite.full_name } },
+    confirm,
+    fullName: fullName ?? invite.full_name,
   });
-  if (signUpError && !/already/i.test(signUpError.message)) {
-    // If the user already exists, fall through to password sign-in.
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: invite.email,
-      password,
-    });
-    if (signInError) return { ok: false, error: signInError.message };
-  } else if (signUpError) {
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: invite.email,
-      password,
-    });
-    if (signInError) return { ok: false, error: signInError.message };
-  }
+  if (!session.ok) return session;
 
   const { error } = await controlRpc(supabase, 'accept_account_invite', {
     p_token: token,

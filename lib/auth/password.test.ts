@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  invitedSignInError,
   isForgotPasswordPath,
   isResetPasswordPath,
   newPasswordError,
@@ -17,6 +18,8 @@ describe('password reset', () => {
   it('requires two matching passwords of at least 12 characters', () => {
     expect(newPasswordError('short', 'short')).toBe('Use at least 12 characters.');
     expect(newPasswordError('long-enough-1', 'long-enough-2')).toBe('The two passwords do not match.');
+    expect(invitedSignInError('Invalid login credentials')).toMatch(/already exists/);
+    expect(invitedSignInError('Email not confirmed')).toBe('Email not confirmed');
     expect(newPasswordError('long-enough-1', 'long-enough-1')).toBeNull();
   });
 

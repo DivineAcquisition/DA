@@ -18,7 +18,7 @@ export function AcceptInviteForm({ initialToken }: { initialToken: string }) {
         <Logo className="h-6 w-auto" />
         <h1 className="mt-6 text-xl font-semibold">Accept invitation</h1>
         <p className="mt-2 text-sm text-neutral-400">
-          Set your password to activate the account. Uninvited signups stay pending with no scope.
+          Choose a password of at least 12 characters. This invitation creates the account. Public signup stays closed.
         </p>
         <form
           className="mt-7 space-y-4"
@@ -57,7 +57,22 @@ export function AcceptInviteForm({ initialToken }: { initialToken: string }) {
               name="password"
               type="password"
               required
-              minLength={10}
+              minLength={12}
+              autoComplete="new-password"
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass} htmlFor="confirm">
+              Confirm password
+            </label>
+            <input
+              id="confirm"
+              name="confirm"
+              type="password"
+              required
+              minLength={12}
+              autoComplete="new-password"
               className={inputClass}
             />
           </div>

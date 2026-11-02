@@ -13,6 +13,14 @@ export function newPasswordError(password: string, confirm: string): string | nu
   return null;
 }
 
+/** The sign-in that follows a closed signup. No password was saved, so this is not a wrong password. */
+export function invitedSignInError(message: string): string {
+  if (/invalid login credentials/i.test(message)) {
+    return 'An account for this email already exists, and this password does not match it. Use Forgot password on the sign-in page.';
+  }
+  return message;
+}
+
 function barePath(pathname: string): string {
   const path = pathname.split('?')[0]?.replace(/\/+$/, '') || '/';
   return path === '' ? '/' : path;
