@@ -18,6 +18,7 @@ import { ManagerShell, OperatorGate } from './components/Gates';
 import { loadNavCounts } from '@/lib/workspace/nav-counts';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 import HubSignIn from './components/HubSignIn';
+import { ThemeFrame } from '@/app/workspace/components/ThemeControls';
 
 export const metadata: Metadata = {
   title: {
@@ -66,7 +67,11 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   if (app === 'team') {
     if (isStaff) redirect('/workspace/auth/leave?to=admin');
     if (!isVa) return <HubSignIn app="team" wrongAudience={session.email} />;
-    return <OperatorGate>{children}</OperatorGate>;
+    return (
+      <ThemeFrame>
+        <OperatorGate>{children}</OperatorGate>
+      </ThemeFrame>
+    );
   }
 
   if (app === 'admin') {
@@ -93,9 +98,11 @@ export default async function VistrialLayout({ children }: { children: React.Rea
     if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
     const counts = await loadNavCounts();
     return (
-      <ManagerShell name={session.fullName ?? session.email} counts={counts}>
-        {children}
-      </ManagerShell>
+      <ThemeFrame>
+        <ManagerShell name={session.fullName ?? session.email} counts={counts}>
+          {children}
+        </ManagerShell>
+      </ThemeFrame>
     );
   }
 
@@ -108,8 +115,10 @@ export default async function VistrialLayout({ children }: { children: React.Rea
   const data = await loadOpsData();
 
   return (
-    <OpsProvider data={data} actor={actor}>
-      <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
-    </OpsProvider>
+    <ThemeFrame>
+      <OpsProvider data={data} actor={actor}>
+        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
+      </OpsProvider>
+    </ThemeFrame>
   );
 }

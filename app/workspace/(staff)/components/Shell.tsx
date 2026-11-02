@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import Logo from '@/app/components/Logo';
+import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
@@ -463,11 +464,11 @@ function SidebarContent({
         >
           {collapsed ? (
             <span className="flex size-10 items-center justify-center rounded-xl bg-linear-to-br from-brand-400/25 to-brand-700/10 ring-1 ring-inset ring-brand-300/25">
-              <Logo markOnly className="h-5 w-auto" />
+              <Logo markOnly tone="current" className="h-5 w-auto text-[color:var(--strong)]" />
             </span>
           ) : (
             <>
-              <Logo className="h-[21px] w-auto" />
+              <Logo tone="current" className="h-[21px] w-auto text-[color:var(--strong)]" />
               <span className="rounded-md border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">
                 {label}
               </span>
@@ -787,6 +788,7 @@ export default function Shell({
             </nav>
 
             <div className="ml-auto flex items-center gap-2">
+              <ThemeToggle />
               <button
                 type="button"
                 onClick={() => {

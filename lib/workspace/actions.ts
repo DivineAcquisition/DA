@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { appUrl } from '@/lib/apps';
@@ -139,6 +140,8 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
 }
 
 export async function signOutAction() {
+  const jar = await cookies();
+  jar.set('da-workspace', '', { path: '/', maxAge: 0 });
   const supabase = await workspaceClient();
   if (supabase) await supabase.auth.signOut();
   redirect('/workspace/login');

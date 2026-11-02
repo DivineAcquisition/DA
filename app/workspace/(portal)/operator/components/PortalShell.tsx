@@ -12,6 +12,7 @@ import { formatDuration } from '@/lib/portal/time';
 import type { PortalContext } from '@/lib/portal/types';
 import { menuFor, phoneBarFor, zoneOf, zonesFor, type TabKey } from '@/lib/portal/zones';
 import SignOutButton from '@/app/components/auth/SignOutButton';
+import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { Badge } from '../../components/ui';
 import AdminPanel from './AdminPanel';
 import { Feedback, PortalProvider, Sheet, useAction } from './portal';
@@ -88,10 +89,11 @@ export default function PortalShell({
             <header className={`sticky z-40 border-b border-white/[0.06] bg-ink-950/90 backdrop-blur-xl ${viewAs ? 'top-[52px]' : 'top-0'}`}>
               <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4">
                 <Link href={zones[0]?.href ?? '/workspace/operator'} className="flex min-w-0 items-center gap-2">
-                  <Logo markOnly className="h-5 w-auto shrink-0" />
+                  <Logo markOnly tone="current" className="h-5 w-auto shrink-0 text-[color:var(--strong)]" />
                   <span className="truncate text-sm font-semibold">{context.operator.name}</span>
                 </Link>
                 <div className="flex items-center gap-2">
+                  <ThemeToggle />
                   <PlacementSwitcher context={context} placementId={placementId} />
                   <button
                     type="button"

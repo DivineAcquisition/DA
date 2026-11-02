@@ -24,7 +24,7 @@ export function Input({
   ...props
 }: InputProps): React.ReactElement {
   const inputClassName = cn(
-    'h-10 w-full min-w-0 rounded-[inherit] bg-transparent px-4 text-sm leading-10 text-card-foreground outline-none placeholder:text-muted-foreground/72 sm:h-9 sm:leading-9',
+    'h-10 w-full min-w-0 rounded-[inherit] border-0 bg-transparent px-4 text-sm leading-10 text-[color:var(--strong)] outline-none placeholder:text-muted-foreground/72 sm:h-9 sm:leading-9',
     size === 'sm' && 'px-3 py-2 text-[13px]',
     size === 'lg' && 'px-4 py-3',
     props.type === 'search' &&
@@ -38,7 +38,7 @@ export function Input({
       className={
         cn(
           !unstyled &&
-            'relative inline-flex w-full rounded-xl border border-white/[0.09] bg-ink-850 text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] transition-shadow has-focus-visible:border-brand-500/55 has-focus-visible:ring-[3px] has-focus-visible:ring-brand-500/20 has-disabled:opacity-64 has-aria-invalid:border-destructive/40',
+            'relative inline-flex w-full rounded-xl border border-[color:var(--field-border)] bg-[var(--field-bg)] text-sm text-[color:var(--strong)] shadow-[inset_0_1px_0_var(--field-highlight)] transition-[border-color,box-shadow] hover:border-[color:var(--field-border-hover)] has-focus-visible:border-brand-500/55 has-focus-visible:ring-[3px] has-focus-visible:ring-brand-500/20 has-disabled:opacity-64 has-aria-invalid:border-destructive/40',
           className,
         ) || undefined
       }

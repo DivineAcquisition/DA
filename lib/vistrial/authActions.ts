@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
@@ -45,6 +46,8 @@ export async function hubSignInAction(formData: FormData): Promise<AuthResult> {
 }
 
 export async function hubSignOutAction(): Promise<void> {
+  const jar = await cookies();
+  jar.set('da-workspace', '', { path: '/', maxAge: 0 });
   const supabase = await createClient();
   // Signing out ends any View As session first, so none outlives the sign-in.
   await controlRpc(supabase, 'end_impersonation', {});

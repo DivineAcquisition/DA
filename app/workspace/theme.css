@@ -1,0 +1,245 @@
+/*
+ * Team and admin workspaces. White is the default. Black is html.dark.
+ * The public site never sets data-product, so these overrides leave it alone.
+ * Ink, white, and brand shades are Tailwind tokens: flipping the variable
+ * flips every utility that already uses them.
+ */
+
+:root {
+  --page: #07070b;
+  --strong: #ffffff;
+  --overlay: #ffffff;
+  --card: #0b0a11;
+  --panel-sheen: rgba(255, 255, 255, 0.055);
+  --panel-sheen-soft: rgba(255, 255, 255, 0.014);
+  --panel-border: rgba(255, 255, 255, 0.07);
+  --panel-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --field-bg: #100f18;
+  --field-border: rgba(255, 255, 255, 0.12);
+  --field-border-hover: rgba(255, 255, 255, 0.22);
+  --field-highlight: rgba(255, 255, 255, 0.06);
+}
+
+html[data-product='workspace']:not(.dark) {
+  color-scheme: light;
+  --page: #ffffff;
+  --strong: #0b0a11;
+  --overlay: #0b0a11;
+  --hairline: rgba(11, 10, 17, 0.08);
+  --card: #ffffff;
+  --panel-sheen: transparent;
+  --panel-sheen-soft: transparent;
+  --panel-border: rgba(11, 10, 17, 0.08);
+  --panel-shadow: 0 1px 2px rgba(11, 10, 17, 0.04), 0 12px 32px -22px rgba(11, 10, 17, 0.16);
+  --field-bg: #ffffff;
+  --field-border: rgba(11, 10, 17, 0.14);
+  --field-border-hover: rgba(11, 10, 17, 0.28);
+  --field-highlight: rgba(255, 255, 255, 0.9);
+
+  --color-white: #0b0a11;
+  --color-ink-950: #ffffff;
+  --color-ink-900: #ffffff;
+  --color-ink-850: #f6f6f9;
+  --color-ink-800: #f0f0f4;
+  --color-ink-700: #e4e4ea;
+
+  --color-neutral-200: #3f3f46;
+  --color-neutral-300: #3f3f46;
+  --color-neutral-400: #52525b;
+  --color-neutral-500: #6b6b76;
+
+  --color-brand-50: #1e1940;
+  --color-brand-100: #3a2f78;
+  --color-brand-200: #5140a9;
+  --color-brand-300: #6650d8;
+  --color-brand-400: #7e67f2;
+  --color-brand-600: #ae9dfd;
+  --color-brand-700: #c3b6fe;
+  --color-brand-800: #d9d1fe;
+  --color-brand-900: #ebe7ff;
+  --color-brand-950: #f5f3ff;
+
+  --color-flag-good: #047857;
+  --color-flag-warning: #b45309;
+  --color-flag-critical: #dc2626;
+
+  --color-background: #ffffff;
+  --color-foreground: #52525b;
+  --color-card: #ffffff;
+  --color-card-foreground: #0b0a11;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0b0a11;
+  --color-muted: #f6f6f9;
+  --color-muted-foreground: #6b6b76;
+  --color-accent: #f3f1ff;
+  --color-accent-foreground: #5140a9;
+  --color-secondary: #f3f1ff;
+  --color-secondary-foreground: #5140a9;
+  --color-border: rgba(11, 10, 17, 0.1);
+  --color-input: rgba(11, 10, 17, 0.14);
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #52525b;
+  --color-sidebar-border: rgba(11, 10, 17, 0.08);
+  --color-sidebar-accent: #f3f1ff;
+  --color-sidebar-accent-foreground: #5140a9;
+  --background: #ffffff;
+  --foreground: #52525b;
+  --card: #ffffff;
+  --card-foreground: #0b0a11;
+  --border: rgba(11, 10, 17, 0.1);
+  --muted-foreground: #6b6b76;
+}
+
+html[data-product='workspace']:not(.dark) body,
+html[data-product='workspace'].dark body {
+  background-color: var(--page);
+  color: var(--strong);
+}
+
+html[data-product='workspace'].dark {
+  color-scheme: dark;
+  --page: #07070b;
+  --strong: #ffffff;
+  --overlay: #ffffff;
+  --field-bg: #100f18;
+  --field-border: rgba(255, 255, 255, 0.12);
+  --field-border-hover: rgba(255, 255, 255, 0.22);
+  --card: #0b0a11;
+  --panel-border: rgba(255, 255, 255, 0.08);
+}
+
+html[data-product='workspace'] .panel {
+  background:
+    linear-gradient(180deg, var(--panel-sheen) 0%, var(--panel-sheen-soft) 38%, transparent 100%),
+    var(--card);
+  border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+  color: var(--strong);
+}
+
+html[data-product='workspace'] .da-workspace {
+  color: var(--strong);
+  background: var(--page);
+  --ws-page: var(--page);
+  --ws-rail: var(--color-sidebar, var(--card));
+  --ws-card: var(--card);
+  --ws-panel: var(--card);
+  --ws-border: var(--panel-border);
+  --ws-body: var(--foreground);
+  --ws-dim: var(--muted-foreground);
+}
+
+html[data-product='workspace']:not(.dark) .da-admin-shell :is(th) {
+  color: #6650d8;
+}
+
+html[data-product='workspace'] :is(button, a).bg-brand-500 {
+  border: 1px solid rgba(102, 80, 216, 0.25);
+  background-image: linear-gradient(180deg, #d9d1fe 0%, #c3b6fe 42%, #9a88fc 100%);
+  color: #07070b;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 10px 28px -12px rgba(154, 136, 252, 0.55);
+}
+
+html[data-product='workspace'] :is(button, a).bg-brand-500:hover {
+  background-image: linear-gradient(180deg, #ebe7ff 0%, #d9d1fe 42%, #ae9dfd 100%);
+}
+
+html[data-product='workspace'] :is(button, a).text-ink-950,
+html[data-product='workspace'] .text-ink-950 {
+  color: #07070b;
+}
+
+html[data-product='workspace'] .auth-alt {
+  border: 1px solid var(--field-border);
+  border-radius: 0.75rem;
+  background: var(--field-bg);
+  color: var(--strong);
+  box-shadow: inset 0 1px 0 var(--field-highlight);
+}
+
+html[data-product='workspace'] .auth-alt:hover:not(:disabled) {
+  border-color: rgba(154, 136, 252, 0.45);
+  background: var(--color-accent, #f3f1ff);
+  color: var(--color-accent-foreground, #5140a9);
+}
+
+html[data-product='workspace'] :where(input, textarea, select):not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']):not([type='hidden']):not([type='color']):not([type='submit']):not([type='button']):not([data-slot='input']):not([data-slot='textarea']) {
+  border: 1px solid var(--field-border);
+  border-radius: 0.75rem;
+  background-color: var(--field-bg);
+  color: var(--strong);
+  box-shadow: inset 0 1px 0 var(--field-highlight);
+}
+
+html[data-product='workspace'] :where(input, textarea, select):not([type='checkbox']):not([type='radio']):not([data-slot='input']):not([data-slot='textarea']):focus,
+html[data-product='workspace'] :where(input, textarea, select):not([type='checkbox']):not([type='radio']):not([data-slot='input']):not([data-slot='textarea']):focus-visible {
+  outline: none;
+  border-color: rgba(154, 136, 252, 0.55);
+  box-shadow: 0 0 0 3px rgba(154, 136, 252, 0.2);
+}
+
+html[data-product='workspace'] select {
+  color-scheme: light;
+}
+
+html[data-product='workspace'].dark select {
+  color-scheme: dark;
+}
+
+html[data-product='workspace']:not(.dark) select option,
+html[data-product='workspace']:not(.dark) select optgroup {
+  background-color: #ffffff;
+  color: #0b0a11;
+}
+
+.theme-toggle.w-full {
+  display: flex;
+  width: 100%;
+}
+
+.theme-toggle.w-full button {
+  flex: 1;
+  padding-inline: 0.2rem;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  height: 2rem;
+  align-items: center;
+  padding: 2px;
+  border: 1px solid var(--field-border);
+  border-radius: 0.75rem;
+  background: var(--field-bg);
+  box-shadow: inset 0 1px 0 var(--field-highlight);
+}
+
+.theme-toggle button {
+  height: 1.7rem;
+  border-radius: 0.6rem;
+  padding: 0 0.7rem;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted-foreground, #6b6b76);
+}
+
+.theme-toggle-short {
+  display: none;
+}
+
+.theme-toggle.w-full .theme-toggle-full {
+  display: none;
+}
+
+.theme-toggle.w-full .theme-toggle-short {
+  display: inline;
+}
+
+.theme-toggle button[aria-pressed='true'] {
+  border: 1px solid rgba(102, 80, 216, 0.25);
+  background: linear-gradient(180deg, #d9d1fe 0%, #c3b6fe 42%, #9a88fc 100%);
+  color: #07070b;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}

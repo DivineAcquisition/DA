@@ -25,11 +25,12 @@ export function Button({
 }) {
   const variants = {
     primary:
-      'border border-primary bg-primary text-primary-foreground shadow-xs shadow-primary/24 hover:bg-primary/90 active:scale-[0.98]',
+      'border border-[#6650d8]/25 bg-gradient-to-b from-[#d9d1fe] via-[#c3b6fe] to-[#9a88fc] text-[#07070b] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] hover:from-[#ebe7ff] hover:via-[#d9d1fe] hover:to-[#ae9dfd] active:scale-[0.98]',
     secondary:
-      'border border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/90',
+      'border border-[color:var(--field-border)] bg-gradient-to-b from-background to-[color-mix(in_srgb,var(--overlay)_6%,transparent)] text-foreground shadow-[inset_0_1px_0_var(--field-highlight)] hover:border-[color:var(--field-border-hover)]',
     ghost: 'border border-transparent text-foreground hover:bg-accent',
-    danger: 'border border-destructive bg-destructive text-white hover:bg-destructive/90',
+    danger:
+      'border border-[#991b1b]/30 bg-gradient-to-b from-[#fca5a5] to-[#dc2626] text-[#fff] shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] hover:from-[#fecaca] hover:to-[#ef4444]',
   };
   const sizes = { sm: 'h-8 gap-1.5 px-2.5 text-sm', md: 'h-10 px-3.5 text-sm sm:h-9' };
   return (

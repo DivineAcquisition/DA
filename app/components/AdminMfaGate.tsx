@@ -32,7 +32,7 @@ export default function AdminMfaGate({
     <div className="flex min-h-screen items-center justify-center bg-ink-950 px-4 py-12 text-white antialiased">
       <div className="panel w-full max-w-md rounded-3xl p-6 sm:p-8">
         <div className="flex items-center gap-2">
-          <Logo className="h-6 w-auto" />
+          <Logo tone="current" className="h-6 w-auto text-[color:var(--strong)]" />
           <span className="rounded-full border border-brand-400/40 bg-brand-500/15 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-brand-100">Admin</span>
         </div>
         <h1 className="mt-6 text-xl font-semibold">Two-factor sign-in</h1>

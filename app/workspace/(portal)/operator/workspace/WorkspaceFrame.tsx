@@ -6,11 +6,11 @@ import { jakarta } from './fonts';
 /** Divine Acquisition workspace brand: #6A00FF primary, #937DFF accent. */
 export const brand = {
   primaryButton:
-    'inline-flex h-10 items-center justify-center rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white shadow-[0_10px_30px_-12px_#6A00FF] transition-colors hover:bg-[#5a00d9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF]/60',
+    'inline-flex h-10 items-center justify-center rounded-xl border border-[#6650d8]/25 bg-gradient-to-b from-[#d9d1fe] via-[#c3b6fe] to-[#9a88fc] px-4 text-sm font-semibold text-[#07070b] shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] transition-colors hover:from-[#ebe7ff] hover:via-[#d9d1fe] hover:to-[#ae9dfd] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/40',
   ghostButton:
-    'inline-flex h-9 items-center justify-center rounded-xl border border-white/10 px-3 text-sm font-medium text-neutral-200 transition-colors hover:border-[#937DFF]/50 hover:text-white',
-  eyebrow: 'text-[11px] font-semibold uppercase tracking-[0.16em] text-[#937DFF]',
-  heading: 'font-[family-name:var(--font-jakarta)] font-bold tracking-tight text-white',
+    'inline-flex h-9 items-center justify-center rounded-xl border border-[color:var(--field-border)] bg-[var(--field-bg)] px-3 text-sm font-medium text-[color:var(--strong)] shadow-[inset_0_1px_0_var(--field-highlight)] transition-colors hover:border-brand-500/40',
+  eyebrow: 'text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300',
+  heading: 'font-[family-name:var(--font-jakarta)] font-bold tracking-tight text-[color:var(--strong)]',
   panel: 'rounded-3xl border border-white/[0.07] bg-white/[0.03] p-5 sm:p-6',
   warn: 'border-[#FFB020]/40 bg-[#FFB020]/10 text-[#FFB020]',
   ok: 'text-[#3DDC97]',

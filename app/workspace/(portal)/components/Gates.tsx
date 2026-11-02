@@ -6,6 +6,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 import Logo from '@/app/components/Logo';
 import { btnSecondary } from '@/app/components/ui';
 import SignOutButton from '@/app/components/auth/SignOutButton';
+import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { buildNav, findActive, type NavCounts } from '@/lib/workspace/adminNav';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 
@@ -80,7 +81,7 @@ export function ManagerShell({
     <div className="min-h-screen bg-ink-950 text-white antialiased lg:flex">
       <aside className={`hidden shrink-0 flex-col border-r border-white/[0.06] bg-ink-900 lg:flex ${collapsed ? 'w-[72px]' : 'w-60'}`}>
         <div className={`flex h-14 items-center gap-2 border-b border-white/[0.06] ${collapsed ? 'justify-center px-2' : 'px-4'}`}>
-          <Logo markOnly className="h-5 w-auto" />
+          <Logo markOnly tone="current" className="h-5 w-auto text-[color:var(--strong)]" />
           {collapsed ? null : <span className="text-sm font-semibold">Manager</span>}
         </div>
         <nav aria-label="Manager" className="flex-1 space-y-4 overflow-y-auto p-3">
@@ -121,6 +122,7 @@ export function ManagerShell({
           ))}
         </nav>
         <div className="border-t border-white/[0.06] p-3">
+          <ThemeToggle className={collapsed ? 'mb-2 w-full justify-center px-0.5' : 'mb-2'} />
           <button
             type="button"
             onClick={() => writeCollapsed(!collapsed)}
@@ -135,7 +137,8 @@ export function ManagerShell({
         </div>
       </aside>
       <div className="min-w-0 flex-1">
-        <nav aria-label="Manager" className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-3 py-2 lg:hidden">
+        <nav aria-label="Manager" className="flex items-center gap-1 overflow-x-auto border-b border-white/[0.06] px-3 py-2 lg:hidden">
+          <ThemeToggle className="mr-1 shrink-0" />
           {links.map((item) => {
             const current = active?.item.href === item.href;
             return (

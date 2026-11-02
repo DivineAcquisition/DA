@@ -53,7 +53,7 @@ export default async function ApplicationCasePage({ params }: { params: Promise<
       ) : null}
       {delivery?.pdf.status === 'done' ? (
         <p className="mt-4">
-          <a className="rounded-md bg-white px-3 py-2 text-sm text-black" href={`/workspace/acq-applications/${token}/pdf`}>
+          <a className="rounded-md bg-[#ffffff] px-3 py-2 text-sm text-[#0b0a11]" href={`/workspace/acq-applications/${token}/pdf`}>
             Open PDF
           </a>
         </p>

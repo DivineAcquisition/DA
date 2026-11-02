@@ -16,7 +16,7 @@ export function NativeSelect({
     <span className="relative block w-full" data-slot="select-control">
       <select
         className={cn(
-          'h-10 w-full cursor-pointer appearance-none rounded-xl border border-white/[0.09] bg-ink-850 px-4 pr-9 text-sm text-card-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] outline-none transition-shadow [color-scheme:dark] focus:border-brand-500/55 focus:ring-[3px] focus:ring-brand-500/20 disabled:opacity-64 sm:h-9',
+          'h-10 w-full cursor-pointer appearance-none rounded-xl border border-[color:var(--field-border)] bg-[var(--field-bg)] px-4 pr-9 text-sm text-[color:var(--strong)] shadow-[inset_0_1px_0_var(--field-highlight)] outline-none transition-shadow hover:border-[color:var(--field-border-hover)] focus:border-brand-500/55 focus:ring-[3px] focus:ring-brand-500/20 disabled:opacity-64 sm:h-9',
           className,
         )}
         data-slot="select"

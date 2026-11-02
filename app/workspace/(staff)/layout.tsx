@@ -11,6 +11,7 @@ import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
 import RequireAdminMfa from '@/app/components/RequireAdminMfa';
+import { ThemeFrame } from '@/app/workspace/components/ThemeControls';
 
 export const metadata: Metadata = {
   title: {
@@ -67,23 +68,27 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
       const counts = await loadNavCounts();
       return (
-        <RequireAdminMfa email={session.email}>
-          <ManagerShell name={session.fullName ?? session.email} counts={counts}>
-            {children}
-          </ManagerShell>
-        </RequireAdminMfa>
+        <ThemeFrame>
+          <RequireAdminMfa email={session.email}>
+            <ManagerShell name={session.fullName ?? session.email} counts={counts}>
+              {children}
+            </ManagerShell>
+          </RequireAdminMfa>
+        </ThemeFrame>
       );
     }
     if (holdAccess) {
       if (isLogin || !holdRoute) redirect('/workspace/academy/holds');
       return (
-        <RequireAdminMfa email={session.email}>
-          <div className="da-workspace">
-            <Shell email={session.email} holdsOnly counts={await loadNavCounts()}>
-              {children}
-            </Shell>
-          </div>
-        </RequireAdminMfa>
+        <ThemeFrame>
+          <RequireAdminMfa email={session.email}>
+            <div className="da-workspace">
+              <Shell email={session.email} holdsOnly counts={await loadNavCounts()}>
+                {children}
+              </Shell>
+            </div>
+          </RequireAdminMfa>
+        </ThemeFrame>
       );
     }
     if (!isLogin) redirect('/workspace/login');
@@ -104,16 +109,22 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   const studentPreview = pathname.includes('/workspace/academy/preview/');
 
   if (studentPreview) {
-    return <RequireAdminMfa email={session.email}>{children}</RequireAdminMfa>;
+    return (
+      <ThemeFrame>
+        <RequireAdminMfa email={session.email}>{children}</RequireAdminMfa>
+      </ThemeFrame>
+    );
   }
 
   return (
-    <RequireAdminMfa email={session.email}>
-      <div className="da-workspace">
-        <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)} counts={counts}>
-          {children}
-        </Shell>
-      </div>
-    </RequireAdminMfa>
+    <ThemeFrame>
+      <RequireAdminMfa email={session.email}>
+        <div className="da-workspace">
+          <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)} counts={counts}>
+            {children}
+          </Shell>
+        </div>
+      </RequireAdminMfa>
+    </ThemeFrame>
   );
 }

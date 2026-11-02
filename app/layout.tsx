@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { THEME_SCRIPT } from '@/lib/workspace/theme'
 import './globals.css'
 
 const inter = Inter({
@@ -76,11 +77,14 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={`${inter.variable} dark`}>
       <head>
         <link rel="preconnect" href="https://fast.wistia.com" />
       </head>
-      <body className="bg-ink-950 font-sans">{children}</body>
+      <body className="bg-ink-950 font-sans">
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        {children}
+      </body>
     </html>
   )
 }
