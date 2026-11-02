@@ -14,13 +14,16 @@ import {
 import { shiftLabel } from '@/lib/sales-workspace/view';
 import { brand } from '../WorkspaceFrame';
 import { WinsList } from './parts';
+import { LaunchWelcome, loadLaunchCard } from '@/app/components/placement/LaunchWelcome';
 import Board from './Board';
 
-export default function ActiveDashboard({ data }: { data: DashboardResponse & { state: 'active'; today: string; placement: NonNullable<DashboardResponse['placement']>; eod: NonNullable<DashboardResponse['eod']>; viewer: NonNullable<DashboardResponse['viewer']> } }) {
+export default async function ActiveDashboard({ data }: { data: DashboardResponse & { state: 'active'; today: string; placement: NonNullable<DashboardResponse['placement']>; eod: NonNullable<DashboardResponse['eod']>; viewer: NonNullable<DashboardResponse['viewer']> } }) {
   const placement = data.placement;
   const readOnly = data.viewer.view_as;
+  const launch = await loadLaunchCard();
   return (
     <div className="space-y-4">
+      <LaunchWelcome card={launch} />
       <section className={brand.panel}>
         <p className={brand.eyebrow}>Today · {formatDate(data.today)}</p>
         <div className="mt-3 flex flex-wrap items-center gap-2">

@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server';
 import { SalesEodNav } from '../../components/RecordNav';
 import { brand } from '../WorkspaceFrame';
 import { WorkspaceShell } from '../shell';
+import { EodGuide, loadLaunchCard } from '@/app/components/placement/LaunchWelcome';
 import EodForm, { type EodFormData } from './EodForm';
 
 export const metadata: Metadata = { title: 'End of day' };
@@ -15,7 +16,10 @@ export default async function EodPage({ searchParams }: { searchParams: Promise<
   const workDate = day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : null;
   const supabase = await createClient();
   await controlRpc(supabase, 'so_note_view', { p_tab: 'workspace_eod_form' });
-  const { data, error } = await controlRpc<EodFormData>(supabase, 'so_eod_form', { p_day: workDate });
+  const [{ data, error }, launch] = await Promise.all([
+    controlRpc<EodFormData>(supabase, 'so_eod_form', { p_day: workDate }),
+    loadLaunchCard(),
+  ]);
 
   return (
     <WorkspaceShell>
@@ -30,7 +34,10 @@ export default async function EodPage({ searchParams }: { searchParams: Promise<
           </Link>
         </section>
       ) : (
-        <EodForm data={data} />
+        <div className="space-y-4">
+          <EodGuide show={Boolean(launch?.show_guide)} />
+          <EodForm data={data} />
+        </div>
       )}
     </WorkspaceShell>
   );

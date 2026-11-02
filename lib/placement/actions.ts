@@ -124,5 +124,46 @@ export async function dispatchPlacementMail() {
 export async function sweepPlacements() {
   const supabase = await createClient();
   await controlRpc(supabase, 'so_placement_sweep');
+  await controlRpc(supabase, 'so_launch_sweep');
   await dispatchPlacementMail();
+}
+
+export async function runHealthCheckAction(placementId: string) {
+  const { data, error } = await rpc<{ overall: string; results: unknown }>('so_launch_health_run', {
+    p_placement: placementId,
+    p_source: 'manual',
+  });
+  if (error || !data) return { ok: false as const, error: readable(error) };
+  await dispatchPlacementMail();
+  revalidate();
+  return { ok: true as const, overall: data.overall };
+}
+
+export async function confirmLaunchAction(placementId: string, item: string): Promise<ActionResult> {
+  const { error } = await rpc('so_launch_confirm', { p_placement: placementId, p_item: item });
+  if (error) return { ok: false, error: readable(error) };
+  revalidate();
+  return { ok: true, message: 'Confirmed.' };
+}
+
+export async function saveLaunchSettingsAction(placementId: string, body: Record<string, unknown>): Promise<ActionResult> {
+  const { error } = await rpc('so_launch_settings', { p_placement: placementId, p_body: body });
+  if (error) return { ok: false, error: readable(error) };
+  revalidate();
+  return { ok: true, message: 'Launch settings saved.' };
+}
+
+export async function reviewLaunchAction(placementId: string, decision: string, note: string): Promise<ActionResult> {
+  const { error } = await rpc('so_launch_review', { p_placement: placementId, p_decision: decision, p_note: note });
+  if (error) return { ok: false, error: readable(error) };
+  revalidate();
+  revalidatePath('/workspace/team/workspace/launches');
+  return { ok: true, message: 'Review saved. Nothing was sent to the operator or the client.' };
+}
+
+export async function resolveSetupMismatchAction(mismatchId: string): Promise<ActionResult> {
+  const { error } = await rpc('so_launch_resolve_setup', { p_mismatch: mismatchId });
+  if (error) return { ok: false, error: readable(error) };
+  revalidate();
+  return { ok: true, message: 'Marked as a setup issue. It stays out of the open integrity list.' };
 }
