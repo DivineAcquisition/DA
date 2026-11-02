@@ -26,7 +26,15 @@ const NUMBER_LABEL: Record<(typeof KEY_METRIC_KEYS)[number], string> = {
 
 type SortKey = 'attention' | 'name' | 'client' | 'manager' | 'shift' | 'eod' | 'pace' | 'tasks' | 'cert';
 
-export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAdmin: boolean }) {
+export default function OperatorTable({
+  rows,
+  isAdmin,
+  readiness = {},
+}: {
+  rows: TeamRow[];
+  isAdmin: boolean;
+  readiness?: Record<string, { stage: string; met: number; ready: boolean }>;
+}) {
   const [query, setQuery] = useState('');
   const [manager, setManager] = useState('');
   const [client, setClient] = useState('');
@@ -34,6 +42,7 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
   const [eod, setEod] = useState('');
   const [shift, setShift] = useState('');
   const [cert, setCert] = useState('');
+  const [hireStage, setHireStage] = useState('');
   const [sort, setSort] = useState<SortKey>('attention');
   const [dir, setDir] = useState<'asc' | 'desc'>('asc');
 
@@ -50,11 +59,12 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
       if (eod && row.eod_status !== eod) return false;
       if (shift && row.shift_status !== shift) return false;
       if (cert && row.certification !== cert) return false;
+      if (hireStage && readiness[row.operator_id]?.stage !== hireStage) return false;
       return true;
     });
     const factor = dir === 'asc' ? 1 : -1;
     return filtered.sort((a, b) => factor * compare(a, b, sort) || a.name.localeCompare(b.name));
-  }, [rows, query, manager, client, placementType, eod, shift, cert, sort, dir]);
+  }, [rows, query, manager, client, placementType, eod, shift, cert, hireStage, readiness, sort, dir]);
 
   function toggle(next: SortKey) {
     if (sort === next) setDir((current) => (current === 'asc' ? 'desc' : 'asc'));
@@ -104,6 +114,19 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
           options={(Object.keys(SHIFT_LABEL) as ShiftStatus[]).map((key) => [key, SHIFT_LABEL[key]])}
         />
         <Select
+          label="Readiness"
+          value={hireStage}
+          onChange={setHireStage}
+          options={[
+            ['invited', 'Invited'],
+            ['onboarding', 'Onboarding'],
+            ['ready', 'Ready to place'],
+            ['placed', 'Placed'],
+            ['paused', 'Paused'],
+            ['offboarded', 'Off-boarded'],
+          ]}
+        />
+        <Select
           label="Certification"
           value={cert}
           onChange={setCert}
@@ -146,7 +169,7 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
                 {shown.map((row) => (
                   <tr key={row.placement_id ?? row.operator_id} className="border-t border-white/[0.06]">
                     <td className="py-3 pr-3">
-                      <Person row={row} />
+                      <Person row={row} readiness={readiness[row.operator_id]} />
                     </td>
                     <td className="py-3 pr-3">
                       <div className="text-white">{row.client_name ?? '—'}</div>
@@ -193,7 +216,7 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
           <ul className="space-y-3 md:hidden">
             {shown.map((row) => (
               <li key={row.placement_id ?? row.operator_id} className="panel rounded-2xl p-4">
-                <Person row={row} />
+                <Person row={row} readiness={readiness[row.operator_id]} />
                 <p className="mt-2 text-sm text-neutral-400">
                   {row.client_name ?? 'No client'} · {row.manager_name ?? 'No manager'}
                 </p>
@@ -220,7 +243,7 @@ export default function OperatorTable({ rows, isAdmin }: { rows: TeamRow[]; isAd
   );
 }
 
-function Person({ row }: { row: TeamRow }) {
+function Person({ row, readiness }: { row: TeamRow; readiness?: { stage: string; met: number; ready: boolean } }) {
   return (
     <Link href={`/workspace/team/workspace/operators/${row.operator_id}`} className="flex items-center gap-2">
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500/15 text-[11px] font-semibold text-brand-100">
@@ -229,6 +252,7 @@ function Person({ row }: { row: TeamRow }) {
       <span>
         <span className="block font-medium text-white">{row.name}</span>
         <span className="block text-xs text-neutral-500">{row.email}</span>
+        {readiness ? <span className="block text-[11px] text-neutral-400">{readiness.ready ? 'Ready to place' : readiness.stage} · {readiness.met} of 7 met</span> : null}
         {row.ghl_connected === false ? <span className="block text-[11px] text-neutral-500">GHL not connected</span> : null}
       </span>
     </Link>
