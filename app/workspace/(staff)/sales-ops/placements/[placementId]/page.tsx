@@ -1,19 +1,50 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { OfferBriefView } from '@/app/components/placement/OfferBrief';
+import { controlRpc, readable } from '@/lib/ad/rpc';
+import type { CheckItem } from '@/lib/placement/types';
+import type { OfferBrief } from '@/lib/placement/offer';
 import { ACTIVITY_CATEGORIES } from '@/lib/sales-workspace/types';
 import { isOpenEnd, STATUS_LABEL, statusFromDb } from '@/lib/sales-workspace/view';
 import { formatDate } from '@/lib/workspace/format';
 import { getPlacement, placementDetail, placementFormOptions, salesOpsRole } from '@/lib/workspace/sales-ops-queries';
+import { createClient } from '@/lib/supabase/server';
 import { Badge, PageHeader } from '../../../components/ui';
 import { ws } from '../../../components/tokens';
+import GhlPlacement from '../../components/GhlPlacement';
 import OutcomeEditor from '../../components/OutcomeEditor';
 import PlacementForm from '../../components/PlacementForm';
+import PlacementLifecycle from '../../components/PlacementLifecycle';
 import PlacementStatusControl from '../../components/PlacementStatusControl';
-import { ExcuseForm } from '../../eods/ReviewPanel';
-import GhlPlacement from '../../components/GhlPlacement';
 import ReportPlacement from '../../components/ReportPlacement';
-import { controlRpc, readable } from '@/lib/ad/rpc';
-import { createClient } from '@/lib/supabase/server';
+import { ExcuseForm } from '../../eods/ReviewPanel';
+
+const TABS = [
+  ['overview', 'Overview'],
+  ['schedule', 'Schedule and Work'],
+  ['offer', 'Offer Brief'],
+  ['reporting', 'Reporting'],
+  ['ghl', 'GHL'],
+  ['targets', 'Targets'],
+  ['checklist', 'Launch Checklist'],
+  ['history', 'History'],
+] as const;
+
+type Extras = {
+  wizard_id: string | null;
+  wizard_status: string | null;
+  scheduled_for: string | null;
+  pending_on: string | null;
+  pending_schedule: Record<string, unknown> | null;
+  end_on: string | null;
+  pause_return: string | null;
+  offer: Partial<OfferBrief>;
+  phone: string | null;
+  launch_week: boolean;
+  checklist: CheckItem[];
+  targets: Array<{ metric: string; daily: number | null; weekly: number | null; from: string }>;
+  history: Array<{ at: string; action: string; summary: string | null; actor: string | null }>;
+};
 
 function Panel({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -24,10 +55,22 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-export default async function PlacementPage({ params }: { params: Promise<{ placementId: string }> }) {
+export default async function PlacementPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ placementId: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { placementId } = await params;
+  const { tab = 'overview' } = await searchParams;
   const role = await salesOpsRole();
-  if (role === 'manager') return <ManagerPlacement placementId={placementId} />;
+  const current = TABS.some(([key]) => key === tab) ? tab : 'overview';
+  const supabase = await createClient();
+  const extrasResult = await controlRpc<Extras>(supabase, 'so_placement_extras', { p_placement: placementId });
+  const extras = extrasResult.data;
+
+  if (role === 'manager') return <ManagerPlacement placementId={placementId} tab={current} extras={extras} />;
   const [data, options, detail] = await Promise.all([getPlacement(placementId), placementFormOptions(), placementDetail(placementId)]);
   if (!data) notFound();
   const { placement: p, outcomes, ghl } = data;
@@ -38,15 +81,11 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
     <>
       <PageHeader
         title={`${p.operator?.name ?? 'Operator'} at ${p.client?.name ?? 'client'}`}
-        description={
-          p.placement_type
-            ? undefined
-            : 'This placement predates the workspace. Choose a type and categories below to bring it in.'
-        }
+        description={p.status === 'scheduled' && extras?.scheduled_for ? `Scheduled. It becomes active at the shift start on ${formatDate(extras.scheduled_for)}.` : undefined}
         actions={
           <>
-            <Badge tone={status === 'active' ? 'success' : status === 'pending' ? 'pending' : 'neutral'}>
-              {STATUS_LABEL[status]}
+            <Badge tone={p.status === 'active' ? 'success' : p.status === 'draft' || p.status === 'scheduled' ? 'pending' : 'neutral'}>
+              {p.status === 'draft' ? 'Draft' : p.status === 'scheduled' ? 'Scheduled' : STATUS_LABEL[status]}
             </Badge>
             <Link href="/workspace/sales-ops/placements" className="text-sm text-[var(--ws-dim)] hover:text-white">
               All placements
@@ -54,91 +93,50 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
           </>
         }
       />
+      <Tabs placementId={placementId} tab={current} />
+      {extras?.wizard_status === 'draft' && extras.wizard_id ? (
+        <p className="mb-4 text-sm">
+          <Link className="underline" href={`/workspace/sales-ops/placements/new?draft=${extras.wizard_id}`}>
+            Continue this draft in the wizard
+          </Link>
+        </p>
+      ) : null}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <PlacementForm options={options} placement={p} />
-          <Panel title="Positive outcomes">
-            <p className="text-sm text-[var(--ws-dim)]">
-              What counts as a win for this client. An active placement always keeps at least one.
-            </p>
-            <OutcomeEditor placementId={p.id} outcomes={outcomes} readOnly={ended} />
-          </Panel>
-        </div>
-
-        <div className="space-y-6">
+      {current === 'overview' ? (
+        <div className="grid gap-6 xl:grid-cols-2">
           <Panel title="Status">
-            <PlacementStatusControl
-              placementId={p.id}
-              status={status}
-              activeOutcomes={outcomes.filter((o) => o.active).length}
-            />
+            {extras?.wizard_id && p.status === 'draft' ? (
+              <p className="text-sm text-[var(--ws-dim)]">This draft is activated from the wizard, after the launch checklist.</p>
+            ) : (
+              <PlacementStatusControl placementId={p.id} status={status} activeOutcomes={outcomes.filter((outcome) => outcome.active).length} />
+            )}
+            <PlacementLifecycle placementId={p.id} status={p.status} offer={extras?.offer ?? {}} />
           </Panel>
-
           <Panel title="Review">
-            <p className="text-sm text-white">
-              {p.review_on ? formatDate(p.review_on) : 'Not set'}
-            </p>
+            <p className="text-sm text-white">{p.review_on ? formatDate(p.review_on) : 'Not set'}</p>
             <p className="text-xs leading-relaxed text-[var(--ws-dim)]">
               {isOpenEnd(p.end_date)
-                ? 'No end date. This placement stays active until someone ends it. The review date alerts the assigned manager and DA Admin.'
-                : `End date ${formatDate(p.end_date)}. Ending it is still a manual status change.`}
+                ? 'No end date. This placement stays active until someone ends it.'
+                : `End date ${formatDate(p.end_date)}.`}
+              {extras?.end_on ? ` Ending on ${formatDate(extras.end_on)}.` : ''}
+              {extras?.pause_return ? ` Expected back ${formatDate(extras.pause_return)}.` : ''}
+              {extras?.launch_week === false ? ' Launch week summary is off.' : ''}
             </p>
-          </Panel>
-
-          <Panel title="GHL links">
-            <dl className="space-y-3 text-sm">
-              <div>
-                <dt className="text-[var(--ws-dim)]">Client sub-account</dt>
-                <dd className="mt-0.5 text-white">
-                  {ghl.location ? (
-                    <>
-                      {ghl.location.location_name || 'Linked'}{' '}
-                      <span className="font-mono text-xs text-[var(--ws-dim)]">{ghl.location.location_id}</span>
-                    </>
-                  ) : (
-                    <Badge tone="pending">Not linked</Badge>
-                  )}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[var(--ws-dim)]">Operator&apos;s GHL user</dt>
-                <dd className="mt-0.5 text-white">
-                  {ghl.user ? (
-                    <>
-                      {ghl.user.name || ghl.user.email || 'Linked'}{' '}
-                      {ghl.user.deactivated_at ? <Badge tone="error">Deactivated</Badge> : null}
-                    </>
-                  ) : (
-                    <Badge tone="pending">Not linked</Badge>
-                  )}
-                </dd>
-              </div>
-            </dl>
-            <p className="text-xs leading-relaxed text-[var(--ws-dim)]">
-              These come from the existing GHL connection. Link the sub-account on the{' '}
-              <Link href={`/workspace/team/ghl/client/${p.case_file_id}`} className="underline hover:text-white">
-                client&apos;s GHL page
-              </Link>{' '}
-              and the operator under{' '}
-              <Link href="/workspace/team/ghl/access" className="underline hover:text-white">
-                GHL access
-              </Link>
-              . Keys stay in the vault and never reach operators or managers.
+            <p className="text-sm text-[var(--ws-dim)]">
+              GHL sub-account: {ghl.location ? ghl.location.location_name || ghl.location.location_id : 'Not linked'}. Operator user:{' '}
+              {ghl.user ? ghl.user.name || ghl.user.email || 'Linked' : 'Not linked'}.
+              {extras?.phone ? ` Phone: ${extras.phone.replaceAll('_', ' ')}.` : ''}
             </p>
           </Panel>
           <Panel title="End of day">
             {detail && detail.eods.length > 0 ? (
               <ul className="space-y-2 text-sm">
-                {detail.eods.map((e) => (
-                  <li key={e.id}>
-                    <Link href={`/workspace/team/workspace/eods/${e.id}`} className="text-white hover:underline">
-                      {formatDate(e.work_date)}
+                {detail.eods.map((eod) => (
+                  <li key={eod.id}>
+                    <Link href={`/workspace/team/workspace/eods/${eod.id}`} className="text-white hover:underline">
+                      {formatDate(eod.work_date)}
                     </Link>{' '}
-                    <span className="text-[var(--ws-dim)]">
-                      {e.status.replaceAll('_', ' ')}
-                      {e.was_late ? ' · late' : ''}
-                    </span>
+                    <span className="text-[var(--ws-dim)]">{eod.status.replaceAll('_', ' ')}{eod.was_late ? ' · late' : ''}</span>
                   </li>
                 ))}
               </ul>
@@ -147,108 +145,168 @@ export default async function PlacementPage({ params }: { params: Promise<{ plac
             )}
             <ExcuseForm placementId={p.id} />
           </Panel>
-          <GhlSection placementId={p.id} />
-          <ReportSection placementId={p.id} />
         </div>
-      </div>
+      ) : null}
+
+      {current === 'schedule' ? (
+        <div className="space-y-6">
+          {extras?.pending_on ? (
+            <p className="text-sm text-amber-200">A schedule change is waiting for the next working day, {formatDate(extras.pending_on)}.</p>
+          ) : null}
+          <PlacementForm options={options} placement={p} />
+          <Panel title="Positive outcomes">
+            <OutcomeEditor placementId={p.id} outcomes={outcomes} readOnly={ended} />
+          </Panel>
+        </div>
+      ) : null}
+
+      {current === 'offer' ? (
+        <Panel title="Offer brief">
+          <OfferBriefView
+            client={p.client?.name}
+            offer={extras?.offer ?? { one_liner: p.campaign_summary ?? '' }}
+            outcomes={outcomes.filter((outcome) => outcome.active).map((outcome) => ({ name: outcome.name, definition: outcome.definition }))}
+          />
+        </Panel>
+      ) : null}
+      {current === 'reporting' ? <ReportSection placementId={p.id} /> : null}
+      {current === 'ghl' ? <GhlSection placementId={p.id} /> : null}
+      {current === 'targets' ? <Targets extras={extras} /> : null}
+      {current === 'checklist' ? <Checklist extras={extras} /> : null}
+      {current === 'history' ? <History extras={extras} /> : null}
     </>
   );
 }
 
-async function ManagerPlacement({ placementId }: { placementId: string }) {
+function Tabs({ placementId, tab }: { placementId: string; tab: string }) {
+  return (
+    <nav aria-label="Placement" className="mb-6 flex gap-1 overflow-x-auto">
+      {TABS.map(([key, label]) => (
+        <Link
+          key={key}
+          href={`/workspace/sales-ops/placements/${placementId}?tab=${key}`}
+          aria-current={tab === key ? 'page' : undefined}
+          className={`shrink-0 rounded-lg px-3 py-1.5 text-sm ${tab === key ? 'bg-brand-500/15 text-white' : 'text-[var(--ws-dim)] hover:text-white'}`}
+        >
+          {label}
+        </Link>
+      ))}
+    </nav>
+  );
+}
+
+async function ManagerPlacement({ placementId, tab, extras }: { placementId: string; tab: string; extras: Extras | null }) {
   const data = await placementDetail(placementId);
   if (!data) notFound();
   const p = data.placement;
-  const categories = (p.activity_categories ?? []).map((c) => ACTIVITY_CATEGORIES.find((a) => a.value === c)?.label ?? c);
+  const categories = (p.activity_categories ?? []).map((category) => ACTIVITY_CATEGORIES.find((item) => item.value === category)?.label ?? category);
   return (
     <>
       <PageHeader
         title={`${p.operator_name} at ${p.client_name}`}
-        description="Client reporting, positive outcomes, and GHL outcome mappings. The connection, token, and GHL user stay with DA Admin."
+        description="The connection, token, and GHL user stay with DA Admin."
         actions={
           <Link href="/workspace/sales-ops/placements" className="text-sm text-[var(--ws-dim)] hover:text-white">
             All placements
           </Link>
         }
       />
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Panel title="Placement">
-          <dl className="grid gap-3 text-sm sm:grid-cols-2">
-            <div>
-              <dt className="text-[var(--ws-dim)]">Status</dt>
-              <dd className="text-white capitalize">{p.status}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--ws-dim)]">Manager</dt>
-              <dd className="text-white">{p.manager_name ?? 'Not assigned'}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--ws-dim)]">Shift</dt>
-              <dd className="text-white">
-                {p.shift_start}–{p.shift_end} {p.time_zone}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[var(--ws-dim)]">EOD deadline</dt>
-              <dd className="text-white">{p.eod_deadline}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--ws-dim)]">Review date</dt>
-              <dd className="text-white">{p.review_on ? formatDate(p.review_on) : 'Not set'}</dd>
-            </div>
-            <div>
-              <dt className="text-[var(--ws-dim)]">End date</dt>
-              <dd className="text-white">{isOpenEnd(p.end_date) ? 'None. Stays active until someone ends it.' : formatDate(p.end_date)}</dd>
-            </div>
-          </dl>
-          <p className="text-sm text-[var(--ws-dim)]">{categories.join(', ') || 'No categories'}</p>
-          {p.campaign_summary ? <p className="text-sm text-white">{p.campaign_summary}</p> : null}
-          <p className="text-sm text-[var(--ws-dim)]">{p.tracks_results ? 'Show rate and closes are tracked from GHL.' : 'Show rate and closes are off.'}</p>
-        </Panel>
-        <Panel title="Positive outcomes">
-          {data.outcomes.length === 0 ? <p className="text-sm text-[var(--ws-dim)]">None yet.</p> : null}
+      <Tabs placementId={placementId} tab={tab} />
+      {tab === 'overview' ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Panel title="Placement">
+            <p className="text-sm capitalize text-white">{p.status}</p>
+            <p className="text-sm text-[var(--ws-dim)]">
+              {p.shift_start}–{p.shift_end} {p.time_zone}. EOD {p.eod_deadline}.
+            </p>
+            <p className="text-sm text-[var(--ws-dim)]">{categories.join(', ') || 'No categories'}</p>
+            <p className="text-sm text-[var(--ws-dim)]">{p.tracks_results ? 'Show rate and closes are on.' : 'Show rate and closes are off.'}</p>
+          </Panel>
+          <Panel title="Changes">
+            <PlacementLifecycle placementId={placementId} status={p.status} offer={extras?.offer ?? {}} />
+          </Panel>
+        </div>
+      ) : null}
+      {tab === 'schedule' ? (
+        <Panel title="Schedule and work">
+          <p className="text-sm text-white">
+            {p.shift_start}–{p.shift_end} {p.time_zone}
+          </p>
+          <p className="text-sm text-[var(--ws-dim)]">{categories.join(', ')}</p>
           <ul className="space-y-2 text-sm">
-            {data.outcomes.map((o) => (
-              <li key={o.id}>
-                <span className="text-white">{o.name}</span>{' '}
-                <span className="text-[var(--ws-dim)]">{o.active ? o.definition : 'Retired'}</span>
+            {data.outcomes.map((outcome) => (
+              <li key={outcome.id}>
+                <span className="text-white">{outcome.name}</span> <span className="text-[var(--ws-dim)]">{outcome.definition}</span>
               </li>
             ))}
           </ul>
         </Panel>
-        <Panel title="End of day">
-          {data.eods.length === 0 ? <p className="text-sm text-[var(--ws-dim)]">No reports yet.</p> : null}
-          <ul className="space-y-2 text-sm">
-            {data.eods.map((e) => (
-              <li key={e.id} className="text-[var(--ws-dim)]">
-                <Link href={`/workspace/team/workspace/eods/${e.id}`} className="text-white hover:underline">
-                  {formatDate(e.work_date)}
-                </Link>{' '}
-                {e.status.replaceAll('_', ' ')}
-                {e.was_late ? ' · late' : ''}
-              </li>
-            ))}
-          </ul>
+      ) : null}
+      {tab === 'offer' ? (
+        <Panel title="Offer brief">
+          <OfferBriefView client={p.client_name} offer={extras?.offer ?? { one_liner: p.campaign_summary ?? '' }} outcomes={data.outcomes.filter((outcome) => outcome.active)} />
         </Panel>
-        <GhlSection placementId={placementId} manager />
-        <ReportSection placementId={placementId} />
-        <Panel title="Excuse a day">
-          <p className="text-sm text-[var(--ws-dim)]">No EOD is due, and reminders stop. The operator can see the day. They cannot excuse themselves.</p>
-          <ExcuseForm placementId={placementId} />
-        </Panel>
-        <Panel title="Feedback">
-          {data.feedback.length === 0 ? <p className="text-sm text-[var(--ws-dim)]">No feedback yet.</p> : null}
-          <ul className="space-y-2 text-sm">
-            {data.feedback.map((f) => (
-              <li key={f.id}>
-                <span className="text-[var(--ws-dim)]">{f.author_kind} · </span>
-                <span className="text-white">{f.body}</span>
-              </li>
-            ))}
-          </ul>
-        </Panel>
-      </div>
+      ) : null}
+      {tab === 'reporting' ? <ReportSection placementId={placementId} /> : null}
+      {tab === 'ghl' ? <GhlSection placementId={placementId} manager /> : null}
+      {tab === 'targets' ? <Targets extras={extras} /> : null}
+      {tab === 'checklist' ? <Checklist extras={extras} /> : null}
+      {tab === 'history' ? <History extras={extras} /> : null}
     </>
+  );
+}
+
+function Targets({ extras }: { extras: Extras | null }) {
+  return (
+    <Panel title="Targets">
+      {!extras || extras.targets.length === 0 ? <p className="text-sm text-[var(--ws-dim)]">No placement targets. Leaving these empty is the recommendation for a new placement. Defaults still apply.</p> : null}
+      <ul className="space-y-2 text-sm">
+        {(extras?.targets ?? []).map((target) => (
+          <li key={`${target.metric}-${target.from}`}>
+            <span className="text-white">{target.metric}</span>{' '}
+            <span className="text-[var(--ws-dim)]">
+              daily {target.daily ?? '—'} · weekly {target.weekly ?? '—'} · from {formatDate(target.from)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+}
+
+function Checklist({ extras }: { extras: Extras | null }) {
+  return (
+    <Panel title="Launch checklist">
+      {!extras ? <p className="text-sm text-amber-200">The checklist did not load.</p> : null}
+      <ul className="space-y-2 text-sm">
+        {(extras?.checklist ?? []).map((item) => (
+          <li key={item.key}>
+            <span className="text-white">{item.blocking ? 'Open' : item.waived ? 'Waived' : 'Met'}</span>
+            <span className="text-[var(--ws-dim)]"> — {item.label}</span>
+            {item.waiver_reason ? <span className="text-[var(--ws-dim)]"> {item.waiver_reason}</span> : null}
+          </li>
+        ))}
+      </ul>
+    </Panel>
+  );
+}
+
+function History({ extras }: { extras: Extras | null }) {
+  return (
+    <Panel title="History">
+      {(extras?.history ?? []).length === 0 ? <p className="text-sm text-[var(--ws-dim)]">No audit entries for this placement yet.</p> : null}
+      <ul className="space-y-2 text-sm">
+        {(extras?.history ?? []).map((event) => (
+          <li key={`${event.at}-${event.action}`}>
+            <span className="text-white">{event.summary || event.action}</span>
+            <span className="text-[var(--ws-dim)]">
+              {' '}
+              · {event.actor || 'System'} · {formatDate(event.at)}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
   );
 }
 

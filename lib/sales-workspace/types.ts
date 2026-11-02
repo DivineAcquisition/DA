@@ -78,5 +78,5 @@ export const METRIC_SOURCES = [
 
 export const METRIC_UNITS = ['count', 'minutes', 'percent', 'seconds'] as const;
 
-/** Placement status as the workspace names it. 'draft' is Pending. */
-export type WorkspaceStatus = 'pending' | 'active' | 'paused' | 'ended';
+/** Placement status as the workspace names it. 'draft' is still pending on older screens. */
+export type WorkspaceStatus = 'pending' | 'scheduled' | 'active' | 'paused' | 'ended';
