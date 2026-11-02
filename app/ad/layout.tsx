@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { passwordPageKind } from '@/lib/auth/password';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import UnifiedAdminChrome from '@/app/workspace/(staff)/components/UnifiedAdminChrome';
 import NotConfigured from './components/NotConfigured';
@@ -37,11 +38,14 @@ export default async function ControlLayout({ children }: { children: React.Reac
 
   const headerStore = await headers();
   const pathname = headerStore.get('x-pathname') ?? '';
+  const passwordPage = passwordPageKind(pathname);
+  if (passwordPage === 'forgot') return <>{children}</>;
   if (pathname === '/ad/invite' || pathname.startsWith('/ad/invite/')) {
     return <>{children}</>;
   }
 
   const session = await getSessionContext();
+  if (passwordPage === 'reset') return session ? <>{children}</> : <SignIn />;
   if (!session) return <SignIn />;
 
   const blocked = blockedMessage(session.state);

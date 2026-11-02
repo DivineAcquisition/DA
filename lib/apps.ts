@@ -100,11 +100,11 @@ export function appHomePath(app: AppKey | null): string {
 
 /**
  * The team app's screens, as internal /workspace paths: the operator portal,
- * its sign-in callback, password reset and the sign-out handoff. Every other
- * /workspace screen is the admin app.
+ * its sign-in callback, forgot-password, password reset and the sign-out handoff.
+ * Every other /workspace screen is the admin app.
  */
 export function isTeamAppPath(internalPath: string): boolean {
-  const prefixes = ['/workspace/operator', '/workspace/auth', '/workspace/reset-password'];
+  const prefixes = ['/workspace/operator', '/workspace/auth', '/workspace/forgot-password', '/workspace/reset-password'];
   return prefixes.some((p) => internalPath === p || internalPath.startsWith(`${p}/`));
 }
 

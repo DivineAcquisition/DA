@@ -241,5 +241,20 @@ host:
 - `https://training.divineacquisition.io/**`
 - `https://training.divineacquisition.io/academy/auth/callback`
 
+The same allow-list has to include each sign-in surface's recovery callback, or
+the email link will not return to that app:
+
+- `https://team.divineacquisition.io/workspace/auth/callback`
+- `https://admin.divineacquisition.io/workspace/auth/callback`
+- `https://admin.divineacquisition.io/da/auth/callback`
+- `https://admin.divineacquisition.io/ad/auth/callback`
+- `https://admin.divineacquisition.io/calls/auth/callback`
+- `https://admin.divineacquisition.io/admin/auth/callback`
+- `https://calls.divineacquisition.io/calls/auth/callback`
+- `https://acct.divineacquisition.io/acct/auth/callback`
+
+A host wildcard such as `https://admin.divineacquisition.io/**` covers every
+callback on that host.
+
 Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` on
 every deploy.

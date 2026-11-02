@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import Link from 'next/link';
 import Logo from '@/app/components/Logo';
 import Backdrop from '@/app/components/Backdrop';
 import { signInAction } from '@/lib/workspace/actions';
@@ -55,6 +56,9 @@ export default function LoginForm() {
             {pending ? 'Signing in…' : 'Sign in'}
           </Button>
         </form>
+        <Link href="/workspace/forgot-password" className="mt-4 inline-block text-sm text-silver underline-offset-4 hover:text-white hover:underline">
+          Forgot your password?
+        </Link>
       </div>
     </div>
   );

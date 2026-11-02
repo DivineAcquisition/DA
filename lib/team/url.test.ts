@@ -31,6 +31,7 @@ describe('team url', () => {
     expect(isVaPortalPath('/workspace')).toBe(false);
     expect(isVaPortalPath('/workspace/operator/record')).toBe(true);
     expect(isVaPortalPath('/workspace/auth/callback')).toBe(true);
+    expect(isVaPortalPath('/workspace/forgot-password')).toBe(true);
     expect(isVaPortalPath('/workspace/reset-password')).toBe(true);
     expect(isVaPortalPath('/workspace/team/board')).toBe(false);
     expect(isVaPortalPath('/workspace/team/ghl')).toBe(false);

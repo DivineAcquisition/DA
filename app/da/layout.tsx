@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { headers } from 'next/headers';
+import { passwordPageKind } from '@/lib/auth/password';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import UnifiedAdminChrome from '@/app/workspace/(staff)/components/UnifiedAdminChrome';
 import NotConfigured from './components/NotConfigured';
@@ -17,7 +19,11 @@ export const metadata: Metadata = {
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   if (!supabaseConfigured) return <NotConfigured />;
 
+  const passwordPage = passwordPageKind((await headers()).get('x-pathname') ?? '');
+  if (passwordPage === 'forgot') return <>{children}</>;
+
   const session = await getSessionContext();
+  if (passwordPage === 'reset') return session ? <>{children}</> : <SignIn />;
 
   if (!session) return <SignIn />;
   if (!session.isAdmin) return <SignIn refusedFor={session.email} />;
