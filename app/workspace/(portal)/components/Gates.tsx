@@ -7,7 +7,7 @@ import Logo from '@/app/components/Logo';
 import { btnSecondary } from '@/app/components/ui';
 import SignOutButton from '@/app/components/auth/SignOutButton';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
-import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
+import { StatusPill } from '@/app/workspace/components/VistrialChrome';
 import { buildNav, findActive, railRows, type NavCounts } from '@/lib/workspace/adminNav';
 import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
@@ -81,8 +81,7 @@ export function ManagerShell({
 
   return (
     <div className="relative min-h-screen bg-ink-950 text-white antialiased lg:flex">
-      <WorkspaceAtmosphere />
-      <aside className={`relative z-10 hidden shrink-0 flex-col border-r border-white/[0.06] bg-ink-900 lg:flex ${collapsed ? 'w-[72px]' : 'w-60'}`}>
+      <aside className={`admin-rail relative z-10 hidden shrink-0 flex-col lg:flex ${collapsed ? 'w-[72px]' : 'w-60'}`}>
         <div className={`flex h-14 items-center gap-2 border-b border-white/[0.06] ${collapsed ? 'justify-center px-2' : 'px-4'}`}>
           <Logo markOnly tone="current" className="h-5 w-auto text-[color:var(--strong)]" />
           {collapsed ? null : (

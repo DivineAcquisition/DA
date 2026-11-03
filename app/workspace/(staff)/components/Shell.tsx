@@ -20,7 +20,7 @@ import {
 import Logo from '@/app/components/Logo';
 import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
-import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
+import { StatusPill } from '@/app/workspace/components/VistrialChrome';
 import { BorderBeam } from '@/components/ui/border-beam';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
@@ -82,15 +82,17 @@ function initials(email: string) {
 
 function IconTile({ icon: Glyph, active, size = 'md' }: { icon: NavIcon; tone?: NavTone; active: boolean; size?: 'md' | 'lg' }) {
   return (
-    <Glyph
+    <span
       className={cn(
-        'shrink-0',
-        size === 'lg' ? 'size-[18px]' : 'size-4',
-        active ? 'text-white' : 'text-neutral-500 group-hover/row:text-neutral-200',
+        'flex shrink-0 items-center justify-center rounded-lg border',
+        size === 'lg' ? 'size-9' : 'size-8',
+        active
+          ? 'border-[#6650d8]/30 bg-gradient-to-b from-[#d9d1fe] to-[#9a88fc] text-[#07070b] shadow-[inset_0_1px_0_rgba(255,255,255,0.5)]'
+          : 'border-white/10 bg-white/[0.05] text-neutral-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] group-hover/row:border-brand-300/40 group-hover/row:text-white',
       )}
-      strokeWidth={1.9}
-      aria-hidden
-    />
+    >
+      <Glyph className={size === 'lg' ? 'size-4' : 'size-3.5'} strokeWidth={1.9} aria-hidden />
+    </span>
   );
 }
 
@@ -102,7 +104,7 @@ function ActiveGlow({ layoutId }: { layoutId: string }) {
     <motion.span
       layoutId={layoutId}
       transition={{ type: 'spring', stiffness: 520, damping: 42 }}
-      className="absolute inset-0 -z-10 rounded-lg bg-[#6A00FF]/20 shadow-[inset_2px_0_0_#6A00FF]"
+      className="absolute inset-0 -z-10 rounded-xl border border-[#9A88FC]/40 bg-[linear-gradient(180deg,rgba(154,136,252,0.28),rgba(154,136,252,0.08))] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_12px_28px_-16px_rgba(106,0,255,0.85)]"
       aria-hidden
     />
   );
@@ -140,7 +142,7 @@ function ExpandedItem({
         onClick={() => onNavigate(item.href)}
         aria-current={isCurrent ? 'page' : undefined}
         className={cn(
-          'flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
+          'flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
           containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
         )}
       >
@@ -457,12 +459,7 @@ function SidebarContent({
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(120%_70%_at_0%_0%,rgba(154,136,252,0.16),transparent_70%)]"
-        aria-hidden
-      />
-
-      <div className={cn('relative flex h-16 shrink-0 items-center', collapsed ? 'justify-center' : 'justify-between pl-4 pr-2.5')}>
+      <div className={cn('relative flex h-16 shrink-0 items-center border-b border-white/[0.06]', collapsed ? 'justify-center' : 'justify-between pl-4 pr-2.5')}>
         <Link
           href={home}
           prefetch
@@ -543,7 +540,7 @@ function SidebarContent({
                   }
                 }
               }}
-              className="h-9 w-full rounded-[10px] border border-white/[0.08] bg-white/[0.03] pl-8 pr-12 text-[13px] text-white placeholder:text-neutral-500 outline-none transition-[border-color,background-color,box-shadow] hover:border-white/[0.14] focus:border-brand-400/50 focus:bg-white/[0.05] focus:shadow-[0_0_0_3px] focus:shadow-brand-500/15 [&::-webkit-search-cancel-button]:hidden"
+              className="h-10 w-full rounded-xl border border-white/[0.12] bg-white/[0.06] pl-8 pr-12 text-[13px] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] placeholder:text-neutral-500 outline-none transition-[border-color,background-color,box-shadow] hover:border-brand-300/40 focus:border-brand-400/60 focus:shadow-[0_0_0_3px_rgba(154,136,252,0.2)] [&::-webkit-search-cancel-button]:hidden"
             />
             <span className="pointer-events-none absolute right-2 flex items-center gap-0.5">
               <Kbd className="bg-white/[0.06] text-neutral-400">⌘</Kbd>
@@ -603,7 +600,7 @@ function SidebarContent({
         </nav>
       </ScrollArea>
 
-      <div className={cn('relative shrink-0 border-t border-white/[0.06]', collapsed ? 'p-2' : 'p-3')}>
+      <div className={cn('relative shrink-0 border-t border-white/[0.08] bg-white/[0.03]', collapsed ? 'p-2' : 'p-3')}>
         <UserMenu email={email} label={label} collapsed={collapsed} variant="sidebar" onSignOut={onSignOut} />
       </div>
     </div>
@@ -698,31 +695,11 @@ export default function Shell({
   return (
     <TooltipProvider delay={120}>
       <div className={cn('da-admin-shell relative isolate min-h-svh overflow-x-hidden bg-background text-card-foreground antialiased', interDisplay.variable)}>
-        <WorkspaceAtmosphere />
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div
-            className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.18) 0%, transparent 70%)',
-              filter: 'blur(64px)',
-              animation: 'app-breathe 9s ease-in-out infinite',
-            }}
-          />
-          <div
-            className="absolute right-[-12%] bottom-[-18%] h-[380px] w-[380px]"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.1) 0%, transparent 70%)',
-              filter: 'blur(56px)',
-              animation: 'app-breathe 11s ease-in-out infinite',
-              animationDelay: '1.6s',
-            }}
-          />
-        </div>
         <form ref={signOutForm} action={signOutAction} hidden />
 
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-40 hidden bg-ink-900 text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
+            'admin-rail fixed inset-y-0 left-0 z-40 hidden text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
             collapsed ? 'w-[72px]' : 'w-[272px]',
           )}
         >
@@ -747,7 +724,7 @@ export default function Shell({
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] bg-ink-900 text-sidebar-foreground shadow-2xl"
+              className="admin-rail absolute inset-y-0 left-0 w-[86vw] max-w-[300px] text-sidebar-foreground shadow-2xl"
             >
               <button
                 type="button"
