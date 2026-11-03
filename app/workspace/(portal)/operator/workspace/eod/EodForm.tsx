@@ -282,7 +282,7 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
         <Review data={data} body={body} metrics={metrics} outcomes={outcomes} total={total} />
       ) : (
         <div className="flex flex-col gap-4">
-          <section className={`${brand.panel} ${token ? 'order-2' : ''}`}>
+          <section className={brand.panel} style={token ? { order: 2 } : undefined}>
             <h2 className={`${brand.heading} text-lg`}>Today’s numbers</h2>
             <p className="mt-1 text-sm text-neutral-400">Tap plus or minus. It saves on today’s log.</p>
             <div className="mt-4 space-y-5">
@@ -336,7 +336,7 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
             </div>
           </section>
 
-          <div className={`flex flex-col gap-4 ${token ? 'order-1' : ''}`}>
+          <div className="flex flex-col gap-4" style={token ? { order: 1 } : undefined}>
           {data.yesterday_plan.some((item) => item.text?.trim()) ? (
             <section className={brand.panel}>
               <h2 className={`${brand.heading} text-lg`}>Yesterday’s plan</h2>
