@@ -8,7 +8,8 @@ import { btnSecondary } from '@/app/components/ui';
 import SignOutButton from '@/app/components/auth/SignOutButton';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
-import { buildNav, findActive, type NavCounts } from '@/lib/workspace/adminNav';
+import { buildNav, findActive, railRows, type NavCounts } from '@/lib/workspace/adminNav';
+import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 
 /**
@@ -76,7 +77,7 @@ export function ManagerShell({
   }, [allowed, router]);
   if (!allowed) return null;
 
-  const links = nav.flatMap((group) => group.items);
+  const links = nav.flatMap((group) => railRows(group));
 
   return (
     <div className="relative min-h-screen bg-ink-950 text-white antialiased lg:flex">
@@ -94,12 +95,12 @@ export function ManagerShell({
         <nav aria-label="Manager" className="flex-1 space-y-4 overflow-y-auto p-3">
           {nav.map((group) => (
             <div key={group.id}>
-              {collapsed ? null : (
+              {collapsed || group.rail === 'tabs' ? null : (
                 <p className="px-2 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">{group.heading}</p>
               )}
               <ul className="space-y-0.5">
-                {group.items.map((item) => {
-                  const current = active?.item.href === item.href;
+                {railRows(group).map((item) => {
+                  const current = group.rail === 'tabs' ? active?.section.id === group.id : active?.item.href === item.href;
                   const Glyph = item.icon;
                   return (
                     <li key={item.href}>
@@ -147,7 +148,7 @@ export function ManagerShell({
         <nav aria-label="Manager" className="flex items-center gap-1 overflow-x-auto border-b border-white/[0.06] px-3 py-2 lg:hidden">
           <ThemeToggle className="mr-1 shrink-0" />
           {links.map((item) => {
-            const current = active?.item.href === item.href;
+            const current = item.label === active?.section.heading || active?.item.href === item.href;
             return (
               <Link
                 key={item.href}
@@ -161,7 +162,10 @@ export function ManagerShell({
             );
           })}
         </nav>
-        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+        <main className="mx-auto max-w-7xl px-4 py-6">
+          <SectionTabs active={active} />
+          {children}
+        </main>
       </div>
     </div>
   );

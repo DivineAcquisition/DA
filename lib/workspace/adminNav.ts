@@ -56,7 +56,21 @@ export type NavItem = NavLeaf & { children?: NavLeaf[] };
 /** Each section gets its own hue so the icon tiles read as groups at a glance. */
 export type NavTone = 'violet' | 'sky' | 'emerald' | 'amber' | 'rose' | 'fuchsia' | 'slate';
 
-export type NavSection = { id: string; heading: string; tone: NavTone; items: NavItem[] };
+/**
+ * `links` puts every item on the sidebar. `tabs` keeps one sidebar row and
+ * opens the rest as tabs on the page.
+ */
+export type NavRail = 'links' | 'tabs';
+
+export type NavSection = { id: string; heading: string; tone: NavTone; rail?: NavRail; items: NavItem[] };
+
+/** What the sidebar actually lists. Tab sections collapse to a single row. */
+export function railRows(section: NavSection): NavItem[] {
+  if (section.rail !== 'tabs' || section.items.length < 2) return section.items;
+  const badge = section.items.reduce((sum, item) => sum + (item.badge ?? 0), 0);
+  const first = section.items[0];
+  return [{ href: first.href, label: section.heading, icon: first.icon, badge: badge || undefined }];
+}
 
 /**
  * One home per screen. Four groups for DA Admin: Home, Team, Clients, and
@@ -82,6 +96,7 @@ function homeSection(counts?: NavCounts): NavSection {
     id: 'home',
     heading: 'Home',
     tone: 'violet',
+    rail: 'links',
     items: [
       withBadge({ href: '/workspace/operations', label: 'Overview', icon: Gauge }, counts?.home),
       { href: '/workspace/inbox', label: 'Inbox', icon: Inbox },
@@ -94,6 +109,7 @@ function teamSection(): NavSection {
     id: 'team',
     heading: 'Team',
     tone: 'sky',
+    rail: 'tabs',
     items: [
       { href: '/workspace/team/workspace', label: 'Team Workspace', icon: LayoutDashboard },
       { href: '/workspace/sales-ops/placements', label: 'Placements', icon: Target },
@@ -153,7 +169,7 @@ export function buildNav({
     return [
       { id: 'home', heading: 'Home', tone: 'violet', items: [withBadge({ href: '/workspace/operations', label: 'Overview', icon: Gauge }, counts?.home)] },
       teamSection(),
-      { id: 'inbox', heading: 'Inbox', tone: 'amber', items: [{ href: '/workspace/inbox', label: 'Inbox', icon: Inbox }] },
+      { id: 'inbox', heading: 'Inbox', tone: 'amber', rail: 'links', items: [{ href: '/workspace/inbox', label: 'Inbox', icon: Inbox }] },
     ];
   }
 
@@ -262,11 +278,18 @@ export function buildNav({
     },
   ];
 
+  const money = system.filter((item) =>
+    ['Payroll', 'Billing', 'Payouts', 'Margin', 'Pay Impact'].includes(item.label),
+  );
+  const settings = system.filter((item) => !money.includes(item));
+
   return [
     homeSection(counts),
-    { id: 'team', heading: 'Team', tone: 'sky', items: [...teamSection().items, ...people] },
-    { id: 'clients', heading: 'Clients', tone: 'amber', items: clients },
-    { id: 'system', heading: 'System', tone: 'slate', items: system },
+    teamSection(),
+    { id: 'people', heading: 'People', tone: 'fuchsia', rail: 'tabs', items: people },
+    { id: 'clients', heading: 'Clients', tone: 'amber', rail: 'tabs', items: clients },
+    { id: 'money', heading: 'Money', tone: 'rose', rail: 'tabs', items: money },
+    { id: 'settings', heading: 'Settings', tone: 'slate', rail: 'tabs', items: settings },
   ];
 }
 

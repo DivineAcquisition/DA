@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildNav, findActive, normalizePath, searchNav } from './adminNav';
+import { buildNav, findActive, normalizePath, railRows, searchNav } from './adminNav';
 
 const full = buildNav({ showAcademy: true, showHolds: true, holdsOnly: false });
 
@@ -29,16 +29,16 @@ describe('findActive', () => {
   });
 
   it('separates Holds from the Academy it lives under', () => {
-    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['Team', 'Holds', 'Grading']);
-    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['Team', 'Academy', 'Question bank']);
-    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['Team', 'Academy']);
+    expect(activeLabels('/workspace/academy/holds/grading')).toEqual(['People', 'Holds', 'Grading']);
+    expect(activeLabels('/workspace/academy/questions/new')).toEqual(['People', 'Academy', 'Question bank']);
+    expect(activeLabels('/workspace/academy/lessons/new')).toEqual(['People', 'Academy']);
   });
 
   it('follows aliases and mirrored routes', () => {
     expect(activeLabels('/workspace/hs/calls/new')).toEqual(['Clients', 'Sales calls']);
-    expect(activeLabels('/workspace/ops/payroll')).toEqual(['System', 'Payroll']);
-    expect(activeLabels('/da/margin')).toEqual(['System', 'Margin']);
-    expect(activeLabels('/ad/invite')).toEqual(['Team', 'Invites']);
+    expect(activeLabels('/workspace/ops/payroll')).toEqual(['Money', 'Payroll']);
+    expect(activeLabels('/da/margin')).toEqual(['Money', 'Margin']);
+    expect(activeLabels('/ad/invite')).toEqual(['People', 'Invites']);
     expect(activeLabels('/accounts/123')).toEqual(['Clients', 'Sales calls', 'Accounts']);
   });
 
@@ -51,21 +51,30 @@ describe('findActive', () => {
   });
 
   it('gives configuration screens a home under System', () => {
-    expect(activeLabels('/workspace/settings')).toEqual(['System', 'Workspace settings']);
-    expect(activeLabels('/workspace/control/credentials')).toEqual(['System', 'Control', 'Credentials']);
+    expect(activeLabels('/workspace/settings')).toEqual(['Settings', 'Workspace settings']);
+    expect(activeLabels('/workspace/control/credentials')).toEqual(['Settings', 'Control', 'Credentials']);
     expect(activeLabels('/workspace/team/ghl/access')).toEqual(['Clients', 'GHL', 'Access']);
-    expect(activeLabels('/workspace/team/settings')).toEqual(['System', 'Team settings']);
+    expect(activeLabels('/workspace/team/settings')).toEqual(['Settings', 'Team settings']);
     expect(activeLabels('/workspace/growth/ingestion')).toEqual(['Clients', 'Ingestion']);
-    expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['System', 'Data integrity']);
+    expect(activeLabels('/workspace/team/workspace/integrity')).toEqual(['Settings', 'Data integrity']);
     expect(activeLabels('/workspace/sales-ops/placements/abc')).toEqual(['Team', 'Placements']);
-    expect(activeLabels('/workspace/sales-ops')).toEqual(['System', 'Sales settings']);
-    expect(activeLabels('/workspace/sales-ops/metrics')).toEqual(['System', 'Sales settings', 'Metrics']);
+    expect(activeLabels('/workspace/sales-ops')).toEqual(['Settings', 'Sales settings']);
+    expect(activeLabels('/workspace/sales-ops/metrics')).toEqual(['Settings', 'Sales settings', 'Metrics']);
   });
 
   it('hides Academy entries the viewer cannot use', () => {
     const plain = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false });
     expect(plain.flatMap((section) => section.items.map((item) => item.label))).not.toContain('Academy');
-    expect(plain.map((section) => section.heading)).toEqual(['Home', 'Team', 'Clients', 'System']);
+    expect(plain.map((section) => section.heading)).toEqual(['Home', 'Team', 'People', 'Clients', 'Money', 'Settings']);
+    expect(plain.flatMap((section) => railRows(section).map((row) => row.label))).toEqual([
+      'Overview',
+      'Inbox',
+      'Team',
+      'People',
+      'Clients',
+      'Money',
+      'Settings',
+    ]);
     const reviewer = buildNav({ showAcademy: false, showHolds: false, holdsOnly: true });
     expect(reviewer.flatMap((section) => section.items.map((item) => item.label))).toEqual(['Holds']);
     expect(activeLabels('/workspace/team/workspace')).toEqual(['Team', 'Team Workspace']);

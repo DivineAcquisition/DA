@@ -18,6 +18,7 @@ import {
   X,
 } from 'lucide-react';
 import Logo from '@/app/components/Logo';
+import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
 import { BorderBeam } from '@/components/ui/border-beam';
@@ -31,6 +32,7 @@ import { cn } from '@/lib/utils';
 import {
   buildNav,
   findActive,
+  railRows,
   searchNav,
   type ActiveMatch,
   type NavCounts,
@@ -114,6 +116,7 @@ function ExpandedItem({
   onOpenChange,
   onNavigate,
   glowId,
+  marked = false,
 }: {
   section: NavSection;
   item: NavItem;
@@ -122,8 +125,9 @@ function ExpandedItem({
   onOpenChange: (open: boolean) => void;
   onNavigate: NavigateHandler;
   glowId: string;
+  marked?: boolean;
 }) {
-  const containsActive = active?.item === item;
+  const containsActive = marked || active?.item === item;
   const isCurrent = containsActive && !active?.child;
   const children = item.children ?? [];
 
@@ -208,14 +212,16 @@ function CollapsedItem({
   active,
   onNavigate,
   glowId,
+  marked = false,
 }: {
   section: NavSection;
   item: NavItem;
   active: ActiveMatch | null;
   onNavigate: NavigateHandler;
   glowId: string;
+  marked?: boolean;
 }) {
-  const containsActive = active?.item === item;
+  const containsActive = marked || active?.item === item;
   const children = item.children ?? [];
   const tileClass =
     'group/row relative isolate flex size-10 items-center justify-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-400/60';
@@ -557,33 +563,35 @@ function SidebarContent({
                 <div key={section.id}>
                   {collapsed ? (
                     <div className="mx-auto mb-2 h-px w-7 bg-white/[0.07]" aria-hidden />
-                  ) : (
+                  ) : section.rail === 'tabs' ? null : (
                     <p className="mb-1.5 flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
                       {section.heading}
                     </p>
                   )}
                   <ul className={collapsed ? 'flex flex-col items-center gap-1' : 'space-y-0.5'}>
-                    {section.items.map((item) => {
-                      const railItem = { ...item, children: undefined };
+                    {railRows(section).map((item) => {
+                      const marked = section.rail === 'tabs' && active?.section.id === section.id;
                       return collapsed ? (
                         <CollapsedItem
                           key={item.href}
                           section={section}
-                          item={railItem}
+                          item={item}
                           active={active}
                           onNavigate={navigate}
                           glowId={glowId}
+                          marked={marked}
                         />
                       ) : (
                         <ExpandedItem
                           key={item.href}
                           section={section}
-                          item={railItem}
+                          item={item}
                           active={active}
                           open={false}
                           onOpenChange={() => {}}
                           onNavigate={navigate}
                           glowId={glowId}
+                          marked={marked}
                         />
                       );
                     })}
@@ -817,6 +825,7 @@ export default function Shell({
 
           <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10">
             <div className="mx-auto w-full min-w-0 max-w-[1400px]">
+              <SectionTabs active={active} />
               {children}
               <footer className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
                 <a href="https://acq.divineacquisition.io/privacy" className="hover:text-card-foreground">Privacy</a>
