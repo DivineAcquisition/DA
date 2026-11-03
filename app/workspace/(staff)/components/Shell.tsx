@@ -20,8 +20,7 @@ import {
 import Logo from '@/app/components/Logo';
 import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
-import { StatusPill, WorkspaceAtmosphere } from '@/app/workspace/components/VistrialChrome';
-import { BorderBeam } from '@/components/ui/border-beam';
+import { StatusPill } from '@/app/workspace/components/VistrialChrome';
 import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
 import { Menu, MenuGroup, MenuGroupLabel, MenuItem, MenuLinkItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
@@ -80,17 +79,28 @@ function initials(email: string) {
   return ((parts[0]?.[0] ?? '?') + (parts[1]?.[0] ?? '')).toUpperCase();
 }
 
-function IconTile({ icon: Glyph, active, size = 'md' }: { icon: NavIcon; tone?: NavTone; active: boolean; size?: 'md' | 'lg' }) {
+function IconTile({
+  icon: Glyph,
+  tone = 'slate',
+  active,
+  size = 'md',
+}: {
+  icon: NavIcon;
+  tone?: NavTone;
+  active: boolean;
+  size?: 'md' | 'lg';
+}) {
   return (
-    <Glyph
+    <span
       className={cn(
-        'shrink-0',
-        size === 'lg' ? 'size-[18px]' : 'size-4',
-        active ? 'text-white' : 'text-neutral-500 group-hover/row:text-neutral-200',
+        'da-rail-well flex shrink-0 items-center justify-center rounded-[9px]',
+        `da-tone-${tone}`,
+        active && 'da-rail-well-active',
+        size === 'lg' ? 'size-8' : 'size-7',
       )}
-      strokeWidth={1.9}
-      aria-hidden
-    />
+    >
+      <Glyph className={size === 'lg' ? 'size-[17px]' : 'size-3.5'} strokeWidth={1.9} aria-hidden />
+    </span>
   );
 }
 
@@ -102,7 +112,7 @@ function ActiveGlow({ layoutId }: { layoutId: string }) {
     <motion.span
       layoutId={layoutId}
       transition={{ type: 'spring', stiffness: 520, damping: 42 }}
-      className="absolute inset-0 -z-10 rounded-lg bg-[#6A00FF]/20 shadow-[inset_2px_0_0_#6A00FF]"
+      className="da-rail-active absolute inset-0 -z-10"
       aria-hidden
     />
   );
@@ -129,25 +139,26 @@ function ExpandedItem({
 }) {
   const containsActive = marked || active?.item === item;
   const isCurrent = containsActive && !active?.child;
+  const showGlow = marked || isCurrent;
   const children = item.children ?? [];
 
   const row = (
     <div className="group/row relative isolate flex items-center">
-      {isCurrent ? <ActiveGlow layoutId={glowId} /> : null}
+      {showGlow ? <ActiveGlow layoutId={glowId} /> : null}
       <Link
         href={item.href}
         prefetch
         onClick={() => onNavigate(item.href)}
         aria-current={isCurrent ? 'page' : undefined}
         className={cn(
-          'flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-          containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
+          'flex min-w-0 flex-1 items-center gap-2.5 rounded-[0.8rem] px-1.5 py-1.5 text-[13.5px] font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
+          containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.045] hover:text-neutral-100',
         )}
       >
         <IconTile icon={item.icon} tone={section.tone} active={containsActive} />
         <span className="truncate">{item.label}</span>
         {item.badge ? (
-          <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{item.badge}</span>
+          <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-[#f7f4ff] tabular-nums">{item.badge}</span>
         ) : null}
       </Link>
       {children.length ? (
@@ -193,7 +204,7 @@ function ExpandedItem({
                     <Glyph className={cn('size-3.5 shrink-0', current ? 'text-brand-200' : 'opacity-70')} strokeWidth={1.9} aria-hidden />
                     <span className="truncate">{child.label}</span>
                     {child.badge ? (
-                      <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{child.badge}</span>
+                      <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-[#f7f4ff] tabular-nums">{child.badge}</span>
                     ) : null}
                   </Link>
                 </li>
@@ -357,9 +368,9 @@ function UserMenu({
   onSignOut: () => void;
 }) {
   const avatar = (
-    <span className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-brand-400/45 to-brand-700/30 text-[11px] font-semibold text-white ring-1 ring-inset ring-white/15">
+    <span className="da-rail-avatar relative flex size-9 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold text-[#f7f4ff]">
       {initials(email)}
-      <span className="absolute -bottom-px -right-px size-2.5 rounded-full bg-emerald-400 ring-2 ring-ink-900" aria-hidden />
+      <span className="da-rail-avatar-dot absolute -bottom-px -right-px size-2.5 rounded-full bg-emerald-400" aria-hidden />
     </span>
   );
 
@@ -373,21 +384,20 @@ function UserMenu({
         <MenuTrigger
           aria-label="Account"
           className={cn(
-            'relative flex w-full items-center gap-2.5 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.025] text-left outline-none transition-colors hover:bg-white/[0.05] focus-visible:ring-2 focus-visible:ring-brand-400/60',
-            collapsed ? 'justify-center p-1.5' : 'p-2',
+            'da-rail-account relative flex w-full items-center gap-2.5 overflow-hidden rounded-2xl text-left outline-none transition-colors hover:brightness-110 focus-visible:ring-2 focus-visible:ring-brand-400/60',
+            collapsed ? 'justify-center p-1.5' : 'px-2.5 py-2.5',
           )}
         >
           {avatar}
           {collapsed ? null : (
             <>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[13px] font-medium text-white">{email.split('@')[0]}</span>
-                <span className="block truncate text-[11px] text-neutral-500">{email}</span>
+                <span className="block truncate text-[13px] font-semibold tracking-tight text-white">{email.split('@')[0]}</span>
+                <span className="mt-0.5 block truncate text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-500">{label}</span>
               </span>
               <ChevronsUpDown className="size-3.5 shrink-0 text-neutral-500" strokeWidth={2} aria-hidden />
             </>
           )}
-          <BorderBeam size={60} duration={9} colorFrom="#9a88fc" colorTo="#52d6a4" borderWidth={1} />
         </MenuTrigger>
       )}
       <MenuPopup side={variant === 'header' ? 'bottom' : 'top'} align={variant === 'header' ? 'end' : 'start'} sideOffset={8} className="w-60">
@@ -457,29 +467,21 @@ function SidebarContent({
 
   return (
     <div className="relative flex h-full flex-col overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(120%_70%_at_0%_0%,rgba(154,136,252,0.16),transparent_70%)]"
-        aria-hidden
-      />
-
-      <div className={cn('relative flex h-16 shrink-0 items-center', collapsed ? 'justify-center' : 'justify-between pl-4 pr-2.5')}>
+      <div className={cn('da-rail-head relative flex shrink-0 items-center', collapsed ? 'justify-center px-3 py-4' : 'justify-between gap-2 px-4 pb-4 pt-5')}>
         <Link
           href={home}
           prefetch
           onClick={() => navigate(home)}
-          className="flex items-center gap-2.5 rounded-lg outline-none transition-opacity hover:opacity-85 focus-visible:ring-2 focus-visible:ring-brand-400/60"
+          className="flex min-w-0 items-center gap-3 rounded-xl outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-brand-400/60"
         >
-          {collapsed ? (
-            <span className="flex size-10 items-center justify-center rounded-xl bg-linear-to-br from-brand-400/25 to-brand-700/10 ring-1 ring-inset ring-brand-300/25">
-              <Logo markOnly tone="current" className="h-5 w-auto text-[color:var(--strong)]" />
+          <span className="da-rail-jewel">
+            <Logo markOnly tone="silver" className="h-[18px] w-auto" />
+          </span>
+          {collapsed ? null : (
+            <span className="flex min-w-0 flex-col">
+              <Logo tone="current" className="h-4 w-auto text-[color:var(--strong)]" />
+              <span className="da-rail-role mt-1.5">{label}</span>
             </span>
-          ) : (
-            <>
-              <Logo tone="current" className="h-[21px] w-auto text-[color:var(--strong)]" />
-              <span className="rounded-md border border-brand-400/30 bg-brand-500/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-200">
-                {label}
-              </span>
-            </>
           )}
         </Link>
         {!collapsed && onToggleCollapsed ? (
@@ -517,7 +519,7 @@ function SidebarContent({
           </div>
         ) : null
       ) : (
-        <div className="relative px-3 pb-3">
+        <div className="relative px-3.5 pb-3 pt-3.5">
           <label htmlFor={searchId} className="sr-only">
             Find a page
           </label>
@@ -543,7 +545,7 @@ function SidebarContent({
                   }
                 }
               }}
-              className="h-9 w-full rounded-[10px] border border-white/[0.08] bg-white/[0.03] pl-8 pr-12 text-[13px] text-white placeholder:text-neutral-500 outline-none transition-[border-color,background-color,box-shadow] hover:border-white/[0.14] focus:border-brand-400/50 focus:bg-white/[0.05] focus:shadow-[0_0_0_3px] focus:shadow-brand-500/15 [&::-webkit-search-cancel-button]:hidden"
+              className="da-rail-search h-10 w-full rounded-xl border border-white/[0.08] bg-white/[0.035] pl-8 pr-12 text-[13px] text-white placeholder:text-neutral-500 outline-none transition-[border-color,background-color,box-shadow] hover:border-white/[0.16] focus:border-brand-400/55 focus:bg-white/[0.05] focus:shadow-[0_0_0_3px] focus:shadow-brand-500/15 [&::-webkit-search-cancel-button]:hidden"
             />
             <span className="pointer-events-none absolute right-2 flex items-center gap-0.5">
               <Kbd className="bg-white/[0.06] text-neutral-400">⌘</Kbd>
@@ -562,11 +564,9 @@ function SidebarContent({
               {nav.map((section) => (
                 <div key={section.id}>
                   {collapsed ? (
-                    <div className="mx-auto mb-2 h-px w-7 bg-white/[0.07]" aria-hidden />
+                    <div className="da-rail-break" aria-hidden />
                   ) : section.rail === 'tabs' ? null : (
-                    <p className="mb-1.5 flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
-                      {section.heading}
-                    </p>
+                    <p className="da-rail-kicker">{section.heading}</p>
                   )}
                   <ul className={collapsed ? 'flex flex-col items-center gap-1' : 'space-y-0.5'}>
                     {railRows(section).map((item) => {
@@ -603,7 +603,7 @@ function SidebarContent({
         </nav>
       </ScrollArea>
 
-      <div className={cn('relative shrink-0 border-t border-white/[0.06]', collapsed ? 'p-2' : 'p-3')}>
+      <div className={cn('da-rail-foot relative shrink-0', collapsed ? 'p-2' : 'p-3')}>
         <UserMenu email={email} label={label} collapsed={collapsed} variant="sidebar" onSignOut={onSignOut} />
       </div>
     </div>
@@ -698,32 +698,12 @@ export default function Shell({
   return (
     <TooltipProvider delay={120}>
       <div className={cn('da-admin-shell relative isolate min-h-svh overflow-x-hidden bg-background text-card-foreground antialiased', interDisplay.variable)}>
-        <WorkspaceAtmosphere />
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div
-            className="absolute -top-[22%] left-1/2 h-[520px] w-[820px] -translate-x-1/2"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.18) 0%, transparent 70%)',
-              filter: 'blur(64px)',
-              animation: 'app-breathe 9s ease-in-out infinite',
-            }}
-          />
-          <div
-            className="absolute right-[-12%] bottom-[-18%] h-[380px] w-[380px]"
-            style={{
-              background: 'radial-gradient(ellipse at center, rgba(154,136,252,0.1) 0%, transparent 70%)',
-              filter: 'blur(56px)',
-              animation: 'app-breathe 11s ease-in-out infinite',
-              animationDelay: '1.6s',
-            }}
-          />
-        </div>
         <form ref={signOutForm} action={signOutAction} hidden />
 
         <aside
           className={cn(
-            'fixed inset-y-0 left-0 z-40 hidden bg-ink-900 text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
-            collapsed ? 'w-[72px]' : 'w-[272px]',
+            'da-admin-rail fixed inset-y-0 left-0 z-40 hidden text-sidebar-foreground transition-[width] duration-200 ease-linear lg:block',
+            collapsed ? 'w-[76px]' : 'w-[280px]',
           )}
         >
           <SidebarContent
@@ -747,7 +727,7 @@ export default function Shell({
               initial={{ x: -24, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 420, damping: 38 }}
-              className="absolute inset-y-0 left-0 w-[86vw] max-w-[300px] bg-ink-900 text-sidebar-foreground shadow-2xl"
+              className="da-admin-rail absolute inset-y-0 left-0 w-[86vw] max-w-[320px] text-sidebar-foreground shadow-2xl"
             >
               <button
                 type="button"
@@ -772,7 +752,7 @@ export default function Shell({
           </div>
         ) : null}
 
-        <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-linear', collapsed ? 'lg:pl-[72px]' : 'lg:pl-[272px]')}>
+        <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-linear', collapsed ? 'lg:pl-[76px]' : 'lg:pl-[280px]')}>
           <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl sm:px-6">
             <button
               type="button"
