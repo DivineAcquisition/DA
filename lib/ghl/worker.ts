@@ -8,9 +8,10 @@ import { readMessages, type PolledEvent } from './rules';
  * One pass of GHL work, run by Vercel Cron every minute and straight after any
  * admin action that queued something (a revoke must not wait for the clock):
  *
- *   1. jobs     grants, removals (first: priority 1), permission fixes, owners
- *   2. checks   health on schedule or on demand, then mapping and users
- *   3. polling  new conversation messages for every healthy sub-account
+ *   1. jobs         grants, removals (first: priority 1), permission fixes, owners
+ *   2. checks       health on schedule or on demand, then mapping and users
+ *   3. sales sync   placement counts, before the open-ended poll can use the minute
+ *   4. polling      new conversation messages for every healthy sub-account
  *
  * Each step stops when the time budget runs out; whatever is left is picked up
  * by the next run. Nothing loops tightly: a failure is recorded with its own
@@ -79,7 +80,17 @@ export async function runWorker(options: { budgetMs?: number; jobsOnly?: boolean
     }
   }
 
-  // 3. Conversation polling.
+  // 3. Placement counts. A requested sync has to run even when the location
+  // poll would use the rest of the minute. The poll is the open-ended step.
+  if (timeLeft() > 2_000) {
+    try {
+      await syncDueSales(db, deadline);
+    } catch (error) {
+      summary.errors.push(`sales sync: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  // 4. Conversation polling.
   const { data: locations } = await db
     .from('ghl_location')
     .select('case_file_id, poll_cursor, polled_at')
@@ -91,14 +102,6 @@ export async function runWorker(options: { budgetMs?: number; jobsOnly?: boolean
       if (count >= 0) summary.polled += 1;
     } catch (error) {
       summary.errors.push(`poll ${location.case_file_id}: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
-
-  if (timeLeft() > 8_000) {
-    try {
-      await syncDueSales(db, deadline);
-    } catch (error) {
-      summary.errors.push(`sales sync: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   return summary;
