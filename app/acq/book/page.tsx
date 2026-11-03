@@ -1,8 +1,12 @@
 import { cookies } from 'next/headers';
 import { BOOK_PAGE, FACEBOOK_DISCLAIMER } from '@/lib/acq/copy';
-import { ACQ_ICLOSED_TITLE, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import {
+  ACQ_ICLOSED_EVENT_URL,
+  ACQ_ICLOSED_TITLE,
+  trackingFromSearchParams,
+  type SearchParams,
+} from '@/lib/acq/config';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
-import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import IclosedEmbed from '../components/IclosedEmbed';
 
 export const metadata = {
@@ -13,7 +17,7 @@ export const metadata = {
   },
 };
 
-/** iClosed booking calendar for the coaching landing. Same event as the local-service audit. */
+/** iClosed booking calendar for the coaching landing (sales-operations audit). */
 export default async function AcqBookPage({
   searchParams,
 }: {
@@ -21,7 +25,7 @@ export default async function AcqBookPage({
 }) {
   const tracking = trackingFromSearchParams(await searchParams);
   const jar = await cookies();
-  const src = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+  const src = revenueLeakEmbedUrl(ACQ_ICLOSED_EVENT_URL, tracking, {
     fbp: jar.get('_fbp')?.value,
     fbc: jar.get('_fbc')?.value,
   });
