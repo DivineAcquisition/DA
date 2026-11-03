@@ -92,6 +92,29 @@ export async function submitEodLinkAction(token: string, body: EodBody): Promise
   return writeEodLink('so_eod_link_submit', token, body);
 }
 
+/** Change one number on the report the private link opens. */
+export async function logEodLinkAction(
+  token: string,
+  metricKey: string,
+  outcomeId: string | null,
+  amount: number,
+  mode: 'delta' | 'set',
+): Promise<ActionResult> {
+  const link = eodToken(token);
+  if (!link) return { ok: false, error: 'This link is not valid.' };
+  const supabase = await createClient();
+  const { error } = await controlRpc(supabase, 'so_eod_link_log', {
+    p_token: link,
+    p_metric_key: metricKey,
+    p_outcome_type_id: outcomeId,
+    p_amount: amount,
+    p_mode: mode,
+  });
+  if (error) return { ok: false, error: readable(error) };
+  revalidatePath(eodPublicPath(link));
+  return { ok: true, message: 'Saved.' };
+}
+
 export async function tickPlanAction(eodId: string, index: number, done: boolean): Promise<ActionResult> {
   return call('so_plan_tick', { p_eod_id: eodId, p_index: index, p_done: done }, 'Saved.');
 }

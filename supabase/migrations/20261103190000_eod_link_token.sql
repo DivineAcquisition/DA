@@ -100,7 +100,7 @@ begin
     v_target := app.so_target(v_pl.id, v_metric.key, v_day);
     v_metrics := v_metrics || jsonb_build_array(jsonb_build_object(
       'key', v_metric.key, 'label', v_metric.label, 'unit', v_metric.unit, 'group', app.so_group_label(v_group),
-      'editable', false,
+      'editable', v_metric.operator_editable and v_metric.source <> 'ghl' and v_open,
       'display', case
         when v_metric.source = 'ghl' then app.so_ghl_display(v_pl.id, v_metric.key, v_day, v_day)
         when v_pending then 'pending_sync' else 'number' end,
@@ -319,3 +319,131 @@ $$;
 
 revoke all on function public.so_eod_link_submit(text, jsonb) from public;
 grant execute on function public.so_eod_link_submit(text, jsonb) to anon, authenticated, service_role;
+
+create or replace function public.so_eod_link_log(
+  p_token text,
+  p_metric_key text,
+  p_outcome_type_id uuid,
+  p_amount numeric,
+  p_mode text
+)
+returns numeric
+language plpgsql
+volatile
+security definer
+set search_path = ''
+as $$
+declare
+  v_eod public.sales_eod;
+  v_op public.operator;
+  v_pl public.placement;
+  v_today date;
+  v_metric public.activity_metric;
+  v_day uuid;
+  v_current numeric;
+  v_next numeric;
+  v_existed boolean;
+  v_row public.activity_value;
+  v_group text;
+begin
+  v_eod := app.so_eod_from_token(p_token);
+  select * into v_op from public.operator where id = v_eod.operator_id;
+  select * into v_pl from public.placement where id = v_eod.placement_id;
+  v_today := app.so_work_date(v_pl, now());
+  if v_eod.work_date > v_today then
+    raise exception 'not_due: that working day has not started' using errcode = '23514';
+  end if;
+  perform app.so_sync_day(v_op.id, v_pl, v_today);
+  select * into v_eod from public.sales_eod where id = v_eod.id;
+  if not app.so_quick_log_open(v_pl, v_eod) then
+    raise exception 'eod_locked: today''s numbers are locked' using errcode = '42501';
+  end if;
+
+  select * into v_metric from public.activity_metric where key = p_metric_key and active;
+  if v_metric.key is null then
+    raise exception 'not_found: that metric is not on this workspace' using errcode = 'P0002';
+  end if;
+  if v_metric.source = 'ghl' or not v_metric.operator_editable then
+    raise exception 'ghl_only: % comes from GHL. It cannot be logged here.', v_metric.label using errcode = '42501';
+  end if;
+  v_group := app.so_metric_group(v_metric.key, v_metric.category);
+  if v_group is null
+     or (v_group in ('outbound', 'ghl') and not ('outbound_calling' = any(v_pl.activity_categories)))
+     or (v_group = 'follow_up' and not ('follow_up' = any(v_pl.activity_categories)))
+     or (v_group = 'reactivation' and not ('reactivation' = any(v_pl.activity_categories)))
+     or (v_group = 'results' and not v_pl.tracks_results) then
+    raise exception 'not_on_placement: that metric is not on this placement' using errcode = '42501';
+  end if;
+  if p_mode not in ('delta', 'set') then
+    raise exception 'invalid: log a change or a total' using errcode = '23514';
+  end if;
+  if p_mode = 'set' and coalesce(p_amount, -1) < 0 then
+    raise exception 'invalid: the number cannot be negative' using errcode = '23514';
+  end if;
+  if v_metric.by_outcome then
+    if p_outcome_type_id is null or not exists (
+      select 1 from public.placement_outcome_type o
+      where o.id = p_outcome_type_id and o.placement_id = v_pl.id and o.active
+    ) then
+      raise exception 'outcome_required: choose a positive outcome on this placement' using errcode = '23514';
+    end if;
+  elsif p_outcome_type_id is not null then
+    raise exception 'no_outcome: that metric is not logged per outcome' using errcode = '23514';
+  end if;
+
+  insert into public.activity_day (operator_id, placement_id, work_date)
+  values (v_op.id, v_pl.id, v_eod.work_date)
+  on conflict (operator_id, placement_id, work_date) do nothing;
+  select id into v_day from public.activity_day
+  where operator_id = v_op.id and placement_id = v_pl.id and work_date = v_eod.work_date;
+
+  select * into v_row
+  from public.activity_value
+  where activity_day_id = v_day
+    and metric_key = v_metric.key
+    and source = 'operator'
+    and outcome_type_id is not distinct from p_outcome_type_id
+  for update;
+
+  v_existed := v_row.id is not null;
+  v_current := coalesce(v_row.value, 0);
+  if p_mode = 'delta' then
+    v_next := greatest(0, least(100000, v_current + coalesce(p_amount, 0)));
+  else
+    v_next := least(100000, p_amount);
+  end if;
+  if v_metric.unit = 'minutes' and v_next > 1440 then
+    raise exception 'invalid: talk time for one day stays within 24 hours' using errcode = '23514';
+  end if;
+  if v_existed and v_next = v_current then
+    return v_next;
+  end if;
+  if not v_existed and v_next = 0 then
+    return 0;
+  end if;
+
+  if not v_existed then
+    insert into public.activity_value (activity_day_id, metric_key, outcome_type_id, source, value, updated_by)
+    values (v_day, v_metric.key, p_outcome_type_id, 'operator', v_next, null)
+    returning * into v_row;
+  else
+    update public.activity_value
+       set value = v_next, updated_by = null
+     where id = v_row.id
+    returning * into v_row;
+  end if;
+
+  insert into public.activity_value_change (
+    activity_day_id, metric_key, outcome_type_id, source, previous_value, new_value, changed_by
+  ) values (
+    v_day, v_metric.key, p_outcome_type_id, 'operator',
+    case when v_existed then v_current else null end,
+    v_next, null
+  );
+
+  return v_next;
+end;
+$$;
+
+revoke all on function public.so_eod_link_log(text, text, uuid, numeric, text) from public;
+grant execute on function public.so_eod_link_log(text, text, uuid, numeric, text) to anon, authenticated, service_role;

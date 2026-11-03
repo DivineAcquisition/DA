@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatDate, formatTime } from '@/lib/portal/time';
-import { logActivityAction, saveEodAction, saveEodLinkAction, submitEodAction, submitEodLinkAction, type EodBody } from '@/lib/sales-workspace/actions';
+import { logActivityAction, logEodLinkAction, saveEodAction, saveEodLinkAction, submitEodAction, submitEodLinkAction, type EodBody } from '@/lib/sales-workspace/actions';
 import { formatMetric } from '@/lib/sales-workspace/dashboard';
 import { brand } from '../WorkspaceFrame';
 
@@ -186,9 +186,12 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
   }
 
   async function adjust(kind: 'metric' | 'outcome', key: string, outcomeId: string | null, delta: number) {
-    if (!canWrite || token) return;
+    if (!canWrite) return;
     setPending(true);
-    const result = await logActivityAction(kind === 'metric' ? key : 'positive_outcomes', outcomeId, delta, 'delta', data.work_date);
+    const metricKey = kind === 'metric' ? key : 'positive_outcomes';
+    const result = token
+      ? await logEodLinkAction(token, metricKey, outcomeId, delta, 'delta')
+      : await logActivityAction(metricKey, outcomeId, delta, 'delta', data.work_date);
     setPending(false);
     if (!result.ok) {
       setError(result.error);
@@ -278,10 +281,10 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
       {step === 'review' ? (
         <Review data={data} body={body} metrics={metrics} outcomes={outcomes} total={total} />
       ) : (
-        <>
-          <section className={brand.panel}>
+        <div className="flex flex-col gap-4">
+          <section className={`${brand.panel} ${token ? 'order-2' : ''}`}>
             <h2 className={`${brand.heading} text-lg`}>Today’s numbers</h2>
-            <p className="mt-1 text-sm text-neutral-400">{token ? 'Numbers come from the log. This link edits the written report.' : 'Corrections save to today’s log, with the time.'}</p>
+            <p className="mt-1 text-sm text-neutral-400">Tap plus or minus. It saves on today’s log.</p>
             <div className="mt-4 space-y-5">
               {groupMetrics(metrics).map((group) => (
                 <div key={group.group}>
@@ -301,8 +304,8 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
                             <Step label={`Decrease ${row.label}`} disabled={pending || (row.value ?? 0) <= 0} onClick={() => adjust('metric', row.key, null, -1)} />
                             <Step label={`Increase ${row.label}`} disabled={pending} onClick={() => adjust('metric', row.key, null, 1)} sign="+" />
                           </div>
-                        ) : token ? null : (
-                          <p className="mt-2 text-xs text-neutral-500">{row.display === 'pending_sync' ? 'From GHL. You cannot edit this.' : 'Read only.'}</p>
+                        ) : (
+                          <p className="mt-2 text-xs text-neutral-500">{row.display === 'pending_sync' || row.display === 'sync_delayed' ? 'From GHL. You cannot edit this.' : 'Read only.'}</p>
                         )}
                       </li>
                     ))}
@@ -319,7 +322,7 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
                           <p className="text-sm font-semibold text-white">{outcome.name}</p>
                           <p className="text-sm text-neutral-300">{outcome.value}</p>
                         </div>
-                        {canWrite && !token ? (
+                        {canWrite ? (
                           <div className="mt-3 flex items-center gap-2">
                             <Step label={`Decrease ${outcome.name}`} disabled={pending || outcome.value <= 0} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, -1)} />
                             <Step label={`Increase ${outcome.name}`} disabled={pending} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, 1)} sign="+" />
@@ -333,6 +336,7 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
             </div>
           </section>
 
+          <div className={`flex flex-col gap-4 ${token ? 'order-1' : ''}`}>
           {data.yesterday_plan.some((item) => item.text?.trim()) ? (
             <section className={brand.panel}>
               <h2 className={`${brand.heading} text-lg`}>Yesterday’s plan</h2>
@@ -452,7 +456,8 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
               <textarea value={note} disabled={locked} onChange={(event) => { touch(); setNote(event.target.value); }} rows={3} className={`${fieldClass} mt-3`} />
             </section>
           ) : null}
-        </>
+          </div>
+        </div>
       )}
 
       <div className="flex flex-wrap gap-3">
@@ -557,4 +562,4 @@ function groupMetrics(rows: EodFormMetric[]): { group: string; rows: EodFormMetr
 }
 
 const fieldClass =
-  'w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-sm text-white outline-none focus:border-[#937DFF] disabled:opacity-60';
+  'w-full touch-manipulation rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-base text-white outline-none focus:border-[#937DFF] disabled:opacity-60';

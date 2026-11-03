@@ -22,13 +22,13 @@ function Frame({ children }: { children: React.ReactNode }) {
         aria-hidden
         className="pointer-events-none fixed inset-x-0 top-0 h-72 bg-[radial-gradient(60%_100%_at_50%_0%,rgba(106,0,255,0.22),transparent)]"
       />
-      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-ink-950/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-ink-950">
         <div className="mx-auto flex h-14 max-w-3xl items-center gap-2.5 px-4">
           <Logo markOnly className="h-5 w-auto" />
           <span className={`${brand.heading} text-[15px]`}>End of day</span>
         </div>
       </header>
-      <main className="relative mx-auto max-w-3xl px-4 py-8 sm:py-10">{children}</main>
+      <main className="relative z-10 mx-auto max-w-3xl px-4 py-8 sm:py-10">{children}</main>
     </div>
   );
 }
