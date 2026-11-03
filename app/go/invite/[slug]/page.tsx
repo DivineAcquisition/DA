@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
-import { ACQ_ICLOSED_HOME_SERVICE_TITLE } from '@/lib/acq/config';
+import { ACQ_ICLOSED_EVENT_URL, ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
-import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import { FACEBOOK_DISCLAIMER } from '@/lib/go/copy';
 import { inviteForSlug } from '@/lib/go/invites';
 
@@ -36,7 +35,7 @@ export default async function StrategyInvitePage({
   const invite = inviteForSlug((await params).slug);
   if (!invite) notFound();
   const jar = await cookies();
-  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, {}, {
+  const calendarSrc = revenueLeakEmbedUrl(ACQ_ICLOSED_EVENT_URL, {}, {
     fbp: jar.get('_fbp')?.value,
     fbc: jar.get('_fbc')?.value,
   });
@@ -89,7 +88,7 @@ export default async function StrategyInvitePage({
               <p>{invite.company}. Pick a time and the calendar will confirm the reminder number.</p>
               <IclosedEmbed
                 url={calendarSrc}
-                title={ACQ_ICLOSED_HOME_SERVICE_TITLE}
+                title={ACQ_ICLOSED_TITLE}
                 contentName="Cleaning strategy session"
                 contentCategory="cleaning"
                 eventName="Schedule"
