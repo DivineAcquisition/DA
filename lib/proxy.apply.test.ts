@@ -69,6 +69,29 @@ describe('coaches application route', () => {
     }
   });
 
+  it('serves a tokenized end of day on the team app without a workspace rewrite', async () => {
+    const response = await proxy(
+      new NextRequest('https://team.divineacquisition.io/eod/abc', {
+        headers: { host: 'team.divineacquisition.io' },
+      }),
+    );
+    expect(response.status).not.toBe(404);
+    expect(response.headers.get('x-middleware-rewrite') ?? '').not.toContain('/workspace');
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer');
+    expect(response.headers.get('x-robots-tag')).toContain('noindex');
+  });
+
+  it('does not rewrite the public end-of-day draft API on the team app', async () => {
+    const response = await proxy(
+      new NextRequest('https://team.divineacquisition.io/api/eod/draft', {
+        method: 'POST',
+        headers: { host: 'team.divineacquisition.io' },
+      }),
+    );
+    expect(response.status).not.toBe(404);
+    expect(response.headers.get('x-middleware-rewrite') ?? '').not.toContain('/workspace');
+  });
+
   it('keeps admin screens off the team app', async () => {
     const response = await proxy(
       new NextRequest('https://team.divineacquisition.io/workspace/operations', {

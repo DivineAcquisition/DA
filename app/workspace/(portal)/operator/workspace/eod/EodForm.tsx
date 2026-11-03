@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatDate, formatTime } from '@/lib/portal/time';
-import { logActivityAction, saveEodAction, submitEodAction, type EodBody } from '@/lib/sales-workspace/actions';
+import { logActivityAction, saveEodAction, saveEodLinkAction, submitEodAction, submitEodLinkAction, type EodBody } from '@/lib/sales-workspace/actions';
 import { formatMetric } from '@/lib/sales-workspace/dashboard';
 import { brand } from '../WorkspaceFrame';
 
@@ -67,7 +67,7 @@ function hoursTotal(start: string, end: string, breakMinutes: string): string | 
   return `${Math.round((minutes / 60) * 100) / 100} h`;
 }
 
-export default function EodForm({ data }: { data: EodFormData }) {
+export default function EodForm({ data, token }: { data: EodFormData; token?: string }) {
   const router = useRouter();
   const [wins, setWins] = useState(data.wins ?? '');
   const [blockers, setBlockers] = useState(data.blockers ?? '');
@@ -115,7 +115,9 @@ export default function EodForm({ data }: { data: EodFormData }) {
     if (!canWrite || step === 'done') return;
     if (!dirty.current) return;
     const timer = window.setTimeout(async () => {
-      const result = await saveEodAction(data.work_date, bodyRef.current);
+      const result = token
+        ? await saveEodLinkAction(token, bodyRef.current)
+        : await saveEodAction(data.work_date, bodyRef.current);
       if (result.ok) {
         setSavedAt(result.updated_at ?? new Date().toISOString());
         setStatus(result.status);
@@ -123,23 +125,23 @@ export default function EodForm({ data }: { data: EodFormData }) {
       }
     }, 700);
     return () => window.clearTimeout(timer);
-  }, [body, canWrite, data.work_date, step]);
+  }, [body, canWrite, data.work_date, step, token]);
 
   useEffect(() => {
     if (!canWrite) return;
     function leave() {
       if (!dirty.current) return;
       dirty.current = false;
-      void fetch('/api/workspace/eod-draft', {
+      void fetch(token ? '/api/eod/draft' : '/api/workspace/eod-draft', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ day: data.work_date, body: bodyRef.current }),
+        body: JSON.stringify(token ? { token, body: bodyRef.current } : { day: data.work_date, body: bodyRef.current }),
         keepalive: true,
       });
     }
     window.addEventListener('pagehide', leave);
     return () => window.removeEventListener('pagehide', leave);
-  }, [canWrite, data.work_date]);
+  }, [canWrite, data.work_date, token]);
 
   function touch() {
     dirty.current = true;
@@ -165,7 +167,13 @@ export default function EodForm({ data }: { data: EodFormData }) {
     }
     setPending(true);
     setError(null);
-    const result = alreadySubmitted ? await saveEodAction(data.work_date, body) : await submitEodAction(data.work_date, body);
+    const result = token
+      ? alreadySubmitted
+        ? await saveEodLinkAction(token, body)
+        : await submitEodLinkAction(token, body)
+      : alreadySubmitted
+        ? await saveEodAction(data.work_date, body)
+        : await submitEodAction(data.work_date, body);
     setPending(false);
     if (!result.ok) {
       setError(result.error);
@@ -178,7 +186,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
   }
 
   async function adjust(kind: 'metric' | 'outcome', key: string, outcomeId: string | null, delta: number) {
-    if (!canWrite) return;
+    if (!canWrite || token) return;
     setPending(true);
     const result = await logActivityAction(kind === 'metric' ? key : 'positive_outcomes', outcomeId, delta, 'delta', data.work_date);
     setPending(false);
@@ -199,9 +207,13 @@ export default function EodForm({ data }: { data: EodFormData }) {
         <p className={brand.eyebrow}>End of day · {formatDate(data.work_date, true)}</p>
         <h1 className={`${brand.heading} mt-2 text-2xl`}>Excused</h1>
         <p className="mt-3 text-sm text-neutral-300">No EOD is due. Reminders and escalation are off for this day.</p>
-        <Link href="/workspace/operator/workspace" className={`${brand.primaryButton} mt-6`}>
-          Back to the dashboard
-        </Link>
+        {token ? (
+          <p className="mt-6 text-sm text-neutral-400">You can close this page.</p>
+        ) : (
+          <Link href="/workspace/operator/workspace" className={`${brand.primaryButton} mt-6`}>
+            Back to the dashboard
+          </Link>
+        )}
       </section>
     );
   }
@@ -222,9 +234,13 @@ export default function EodForm({ data }: { data: EodFormData }) {
                 ? 'This report is marked late. Your manager has it.'
                 : 'This report is on time. Your manager has it.'}
         </p>
-        <button type="button" className={`${brand.primaryButton} mt-6`} onClick={() => router.push('/workspace/operator/workspace')}>
-          Back to the dashboard
-        </button>
+        {token ? (
+          <p className="mt-6 text-sm text-neutral-400">You can close this page.</p>
+        ) : (
+          <button type="button" className={`${brand.primaryButton} mt-6`} onClick={() => router.push('/workspace/operator/workspace')}>
+            Back to the dashboard
+          </button>
+        )}
       </section>
     );
   }
@@ -265,7 +281,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
         <>
           <section className={brand.panel}>
             <h2 className={`${brand.heading} text-lg`}>Today’s numbers</h2>
-            <p className="mt-1 text-sm text-neutral-400">Corrections save to today’s log, with the time.</p>
+            <p className="mt-1 text-sm text-neutral-400">{token ? 'Numbers come from the log. This link edits the written report.' : 'Corrections save to today’s log, with the time.'}</p>
             <div className="mt-4 space-y-5">
               {groupMetrics(metrics).map((group) => (
                 <div key={group.group}>
@@ -285,7 +301,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
                             <Step label={`Decrease ${row.label}`} disabled={pending || (row.value ?? 0) <= 0} onClick={() => adjust('metric', row.key, null, -1)} />
                             <Step label={`Increase ${row.label}`} disabled={pending} onClick={() => adjust('metric', row.key, null, 1)} sign="+" />
                           </div>
-                        ) : (
+                        ) : token ? null : (
                           <p className="mt-2 text-xs text-neutral-500">{row.display === 'pending_sync' ? 'From GHL. You cannot edit this.' : 'Read only.'}</p>
                         )}
                       </li>
@@ -303,7 +319,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
                           <p className="text-sm font-semibold text-white">{outcome.name}</p>
                           <p className="text-sm text-neutral-300">{outcome.value}</p>
                         </div>
-                        {canWrite ? (
+                        {canWrite && !token ? (
                           <div className="mt-3 flex items-center gap-2">
                             <Step label={`Decrease ${outcome.name}`} disabled={pending || outcome.value <= 0} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, -1)} />
                             <Step label={`Increase ${outcome.name}`} disabled={pending} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, 1)} sign="+" />
@@ -444,7 +460,7 @@ export default function EodForm({ data }: { data: EodFormData }) {
           <button type="button" className={brand.ghostButton} onClick={() => setStep('edit')}>
             Back
           </button>
-        ) : (
+        ) : token ? null : (
           <Link href="/workspace/operator/workspace" className={brand.ghostButton}>
             Dashboard
           </Link>

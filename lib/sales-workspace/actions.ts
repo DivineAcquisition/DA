@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { controlRpc, readable, type ActionResult } from '@/lib/ad/rpc';
+import { eodPublicPath, eodToken } from '@/lib/sales-workspace/eod-link';
 import { createClient } from '@/lib/supabase/server';
 
 const PATHS = [
@@ -65,6 +66,30 @@ export async function saveEodAction(day: string, body: EodBody): Promise<EodWrit
 
 export async function submitEodAction(day: string, body: EodBody): Promise<EodWriteResult> {
   return writeEod('so_eod_submit', day, body);
+}
+
+async function writeEodLink(fn: 'so_eod_link_save' | 'so_eod_link_submit', token: string, body: EodBody): Promise<EodWriteResult> {
+  const link = eodToken(token);
+  if (!link) return { ok: false, error: 'This link is not valid.' };
+  const supabase = await createClient();
+  const { data, error } = await controlRpc<{ status: string; updated_at?: string; was_late?: boolean; submitted_at?: string }>(
+    supabase,
+    fn,
+    { p_token: link, p_body: body },
+  );
+  if (error || !data) return { ok: false, error: readable(error) };
+  revalidatePath(eodPublicPath(link));
+  return { ok: true, ...data };
+}
+
+/** Save one report from its private link. The token is the credential. */
+export async function saveEodLinkAction(token: string, body: EodBody): Promise<EodWriteResult> {
+  return writeEodLink('so_eod_link_save', token, body);
+}
+
+/** Submit one report from its private link. The token is the credential. */
+export async function submitEodLinkAction(token: string, body: EodBody): Promise<EodWriteResult> {
+  return writeEodLink('so_eod_link_submit', token, body);
 }
 
 export async function tickPlanAction(eodId: string, index: number, done: boolean): Promise<ActionResult> {

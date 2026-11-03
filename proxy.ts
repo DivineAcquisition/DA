@@ -136,7 +136,8 @@ const isPublicTokenPath = (pathname: string) =>
   pathname.startsWith('/c/') ||
   pathname.startsWith('/s/') ||
   pathname.startsWith('/o/') ||
-  pathname.startsWith('/r/');
+  pathname.startsWith('/r/') ||
+  pathname.startsWith('/eod/');
 
 const SURFACES: Surface[] = [
   { hosts: CONTROL_HOSTS, prefix: CONTROL_PREFIX },
@@ -359,7 +360,7 @@ export async function proxy(request: NextRequest) {
           : `/workspace${pathname.slice('/vistrial'.length)}`;
     return NextResponse.redirect(new URL(`${next}${request.nextUrl.search}`, request.url), 308);
   }
-  if ((onTeamHost || local) && pathname.startsWith('/r/')) {
+  if ((onTeamHost || local) && (pathname.startsWith('/r/') || pathname.startsWith('/eod/'))) {
     const response = NextResponse.next();
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
     response.headers.set('Referrer-Policy', 'no-referrer');
@@ -462,7 +463,10 @@ export async function proxy(request: NextRequest) {
   const skipRewrite =
     Boolean(prefix && isPublicTokenPath(pathname)) ||
     Boolean(prefix === WORKSPACE_PREFIX && isUnifiedAdminPath(pathname)) ||
-    isOnboardOnLiveHost(prefix, pathname);
+    isOnboardOnLiveHost(prefix, pathname) ||
+    // The private end-of-day link autosaves here. A team-host rewrite would
+    // hide the route under /workspace and the draft would 404.
+    pathname.startsWith('/api/eod/');
 
   const isInternal =
     prefix !== null ||
