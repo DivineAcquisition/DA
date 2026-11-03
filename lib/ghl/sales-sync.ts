@@ -1,4 +1,12 @@
-import { countTouches, talkMinutes, type GhlTouch } from './sales-count';
+import {
+  countTaggedOutcomes,
+  countTouches,
+  tagRulesFromMapping,
+  talkMinutes,
+  type GhlTouch,
+  type TaggedContact,
+  type TaggedOutcomeLine,
+} from './sales-count';
 import { connect, type GhlSession, type ServiceClient } from './client';
 
 type Due = {
@@ -10,6 +18,8 @@ type Due = {
   shift_end: string;
   start_date: string;
   mapping: Record<string, unknown>;
+  catalog?: { tags?: Array<{ id?: string; name?: string }> };
+  outcome_types?: Array<{ id?: string; name?: string }>;
   rerun_from: string | null;
   rerun_to: string | null;
   backfill_days: number;
@@ -64,12 +74,36 @@ export async function syncSalesPlacement(db: ServiceClient, due: Due): Promise<v
       replyWindowDays: due.reply_window_days || 7,
       recoveryWindowDays: 7,
     });
+    const tagRules = tagRulesFromMapping({
+      mappingOutcomes: outcomeMaps(due.mapping),
+      outcomeTypes: (due.outcome_types ?? []).flatMap((row) => (row.id && row.name ? [{ id: row.id, name: row.name }] : [])),
+      tags: (due.catalog?.tags ?? []).flatMap((row) => (row.id && row.name ? [{ id: row.id, name: row.name }] : [])),
+    });
+    const tagged = tagRules.length
+      ? await readTaggedContacts(session, [...new Set(tagRules.flatMap((rule) => [...rule.all, ...rule.any]))])
+      : { ok: true as const, contacts: [] as TaggedContact[] };
+    const tagLines = tagged.ok
+      ? countTaggedOutcomes({
+          contacts: tagged.contacts,
+          userId: due.ghl_user_id,
+          outcomes: tagRules,
+          dayFor: (iso) => workDate(iso, due.time_zone),
+        })
+      : [];
     const byDay = new Map<string, typeof lines>();
     for (const line of lines) {
       const day = workDate(line.at, due.time_zone);
       const bucket = byDay.get(day) ?? [];
       bucket.push(line);
       byDay.set(day, bucket);
+    }
+    const tagsByDay = new Map<string, TaggedOutcomeLine[]>();
+    for (const line of tagLines) {
+      const day = workDate(line.at, due.time_zone);
+      const bucket = tagsByDay.get(day) ?? [];
+      bucket.push(line);
+      tagsByDay.set(day, bucket);
+      if (!byDay.has(day)) byDay.set(day, []);
     }
     if (byDay.size === 0) byDay.set(workDate(new Date().toISOString(), due.time_zone), []);
     const today = workDate(new Date().toISOString(), due.time_zone);
@@ -84,23 +118,39 @@ export async function syncSalesPlacement(db: ServiceClient, due: Due): Promise<v
       completed: task.completed === true || Boolean(task.dateCompleted) ? 'true' : 'false',
     })).filter((task) => task.id);
     const complete = ['dials_made', 'connects', 'conversations_held', 'talk_time_minutes', 'texts_sent', 'emails_sent', 'replies_received'];
+    if (tagged.ok && tagRules.length) complete.push('positive_outcomes');
     for (const [day, dayLines] of byDay) {
-      const counts = rollup(dayLines, touches);
+      const dayTags = tagsByDay.get(day) ?? [];
+      const counts = [
+        ...rollup(dayLines, touches),
+        ...rollupTags(dayTags),
+      ];
       await db.rpc('so_apply_ghl_day', {
         p_placement: due.placement_id,
         p_day: day,
         p_counts: counts,
-        p_evidence: dayLines.map((line) => ({ metric: line.metric, ghl_id: line.ghlId, ghl_type: line.metric, at: line.at, contact_id: line.contactId })),
+        p_evidence: [
+          ...dayLines.map((line) => ({ metric: line.metric, ghl_id: line.ghlId, ghl_type: line.metric, at: line.at, contact_id: line.contactId })),
+          ...dayTags.map((line) => ({
+            metric: 'positive_outcomes',
+            outcome_type_id: line.outcomeId,
+            ghl_id: line.contactId,
+            ghl_type: 'tag',
+            at: line.at,
+            contact_id: line.contactId,
+          })),
+        ],
         p_complete: complete,
         p_leads: [],
         p_tasks: day === today && tasks.ok ? taskRows : [],
       });
     }
+    const tagError = tagged.ok ? null : tagged.error;
     await db.rpc('so_ghl_sync_result', {
       p_placement: due.placement_id,
-      p_ok: conversations.ok || users.ok,
-      p_error: conversations.ok ? null : conversations.error,
-      p_records: records,
+      p_ok: (conversations.ok || users.ok) && !tagError,
+      p_error: tagError ?? (conversations.ok ? null : conversations.error),
+      p_records: records + tagLines.length,
     });
   } catch (error) {
     await db.rpc('so_ghl_sync_result', {
@@ -122,6 +172,76 @@ export async function syncDueSales(db: ServiceClient, deadline: number): Promise
     done += 1;
   }
   return done;
+}
+
+function outcomeMaps(mapping: Record<string, unknown>) {
+  const outcomes = mapping.outcomes;
+  if (!Array.isArray(outcomes)) return [];
+  return outcomes.flatMap((row) => {
+    if (!row || typeof row !== 'object') return [];
+    const record = row as { name?: unknown; tags?: { all?: unknown; any?: unknown } };
+    const tags = record.tags;
+    return [{
+      name: typeof record.name === 'string' ? record.name : '',
+      tags: tags
+        ? {
+            all: Array.isArray(tags.all) ? tags.all.map(String) : [],
+            any: Array.isArray(tags.any) ? tags.any.map(String) : [],
+          }
+        : undefined,
+    }];
+  });
+}
+
+function rollupTags(lines: TaggedOutcomeLine[]) {
+  const totals = new Map<string, number>();
+  for (const line of lines) totals.set(line.outcomeId, (totals.get(line.outcomeId) ?? 0) + 1);
+  return [...totals.entries()].map(([outcomeId, value]) => ({ metric: 'positive_outcomes', value, outcome_type_id: outcomeId }));
+}
+
+async function readTaggedContacts(session: GhlSession, tagNames: string[]): Promise<{ ok: true; contacts: TaggedContact[] } | { ok: false; error: string }> {
+  const locationId = session.info.locationId ?? '';
+  if (!locationId || tagNames.length === 0) return { ok: true, contacts: [] };
+  const seen = new Map<string, TaggedContact>();
+  for (const tag of tagNames) {
+    let searchAfter: unknown[] | undefined;
+    for (let page = 0; page < 5; page += 1) {
+      const response = await session.request('POST', '/contacts/search', {
+        purpose: 'sales sync outcome tags',
+        retrySafe: true,
+        body: {
+          locationId,
+          pageLimit: 100,
+          filters: [{ field: 'tags', operator: 'contains', value: tag }],
+          ...(searchAfter ? { searchAfter } : {}),
+        },
+      });
+      if (!response.ok) return { ok: false, error: response.error ?? `GHL did not return contacts tagged ${tag}.` };
+      const body = response.data && typeof response.data === 'object' ? (response.data as Record<string, unknown>) : {};
+      for (const row of listOf(response.data, 'contacts')) {
+        const contact = asContact(row);
+        if (contact) seen.set(contact.id, contact);
+      }
+      const next = body.searchAfter;
+      if (!Array.isArray(next) || next.length === 0) break;
+      searchAfter = next;
+    }
+  }
+  return { ok: true, contacts: [...seen.values()] };
+}
+
+function asContact(row: Record<string, unknown>): TaggedContact | null {
+  const id = String(row.id ?? '');
+  if (!id) return null;
+  const rawTags = Array.isArray(row.tags) ? row.tags : [];
+  const tags = rawTags.map((tag) => (typeof tag === 'string' ? tag : String((tag as { name?: string }).name ?? ''))).filter(Boolean);
+  const updated = row.dateUpdated ?? row.dateAdded;
+  return {
+    id,
+    tags,
+    assignedTo: row.assignedTo ? String(row.assignedTo) : null,
+    updatedAt: updated ? String(updated) : null,
+  };
 }
 
 function rollup(lines: { metric: string; ghlId: string }[], touches: GhlTouch[]) {

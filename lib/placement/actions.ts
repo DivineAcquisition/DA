@@ -128,6 +128,15 @@ export async function sweepPlacements() {
   await dispatchPlacementMail();
 }
 
+export async function releaseIntroductionAction(fd: FormData): Promise<ActionResult> {
+  const placementId = String(fd.get('placement_id') ?? '');
+  const { error } = await rpc('so_placement_release_intro', { p_placement: placementId });
+  if (error) return { ok: false, error: readable(error) };
+  await dispatchPlacementMail();
+  revalidate();
+  return { ok: true, message: 'The introduction was released and will send now.' };
+}
+
 export async function runHealthCheckAction(placementId: string) {
   const { data, error } = await rpc<{ overall: string; results: unknown }>('so_launch_health_run', {
     p_placement: placementId,

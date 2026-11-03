@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { asPasswordSession, establishInvitedAccount } from '@/lib/auth/invited-account';
 import { createClient } from '@/lib/supabase/server';
 
 /**
@@ -125,6 +126,7 @@ export async function activateClientInviteAction(formData: FormData): Promise<Ac
   const token = String(formData.get('token') ?? '').trim();
   const email = String(formData.get('email') ?? '').trim();
   const password = String(formData.get('password') ?? '');
+  const confirm = String(formData.get('confirm') ?? '');
   const fullName = String(formData.get('full_name') ?? '').trim();
 
   if (!token || !email || !password) {
@@ -136,17 +138,13 @@ export async function activateClientInviteAction(formData: FormData): Promise<Ac
   } = await supabase.auth.getUser();
 
   if (!user) {
-    const { error: signUpError } = await supabase.auth.signUp({
+    const session = await establishInvitedAccount(asPasswordSession(supabase), {
       email,
       password,
-      options: { data: { full_name: fullName || undefined } },
+      confirm,
+      fullName: fullName || null,
     });
-
-    if (signUpError) {
-      // Already registered — try signing in with the same credentials.
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInError) return { ok: false, error: signInError.message };
-    }
+    if (!session.ok) return session;
   }
 
   const { error } = await supabase.rpc('accept_client_invite', { p_token: token });

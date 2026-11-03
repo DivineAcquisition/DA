@@ -58,7 +58,21 @@ export function AcceptClientInviteForm({ token }: { token: string }) {
               name="password"
               type="password"
               required
-              minLength={10}
+              minLength={12}
+              autoComplete="new-password"
+              className={field}
+            />
+          </div>
+          <div>
+            <label className={label} htmlFor="confirm">
+              Confirm password
+            </label>
+            <input
+              id="confirm"
+              name="confirm"
+              type="password"
+              required
+              minLength={12}
               autoComplete="new-password"
               className={field}
             />

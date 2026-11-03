@@ -26,6 +26,7 @@ function score(name: string, needle: string): number {
 }
 
 export function bestMatch(wanted: string, options: Named[]): Named | null {
+  if (!wanted.trim()) return null;
   const ranked = rankNames(wanted, options);
   const top = ranked[0];
   if (!top || score(top.name, wanted.trim().toLowerCase()) === 0) return null;
@@ -60,6 +61,20 @@ export function mappingRows(input: {
         multiple: false,
       });
     }
+    rows.push({
+      key: `outcome_tags_all_${index}`,
+      label: `${outcome.name}: tags required together`,
+      pool: 'tags',
+      suggestedName: '',
+      multiple: true,
+    });
+    rows.push({
+      key: `outcome_tags_any_${index}`,
+      label: `${outcome.name}: one of these tags`,
+      pool: 'tags',
+      suggestedName: '',
+      multiple: true,
+    });
   });
   if (input.tracksSpeed) {
     rows.push({
@@ -107,8 +122,17 @@ export function mappingRows(input: {
   return rows;
 }
 
+export type TagRule = { all: string[]; any: string[] };
+
+export type SavedOutcome = {
+  name: string;
+  calendar_id?: string;
+  stage_id?: string;
+  tags?: TagRule;
+};
+
 export type SavedMapping = {
-  outcomes: Array<{ name: string; calendar_id?: string; stage_id?: string }>;
+  outcomes: SavedOutcome[];
   speed: { ids: string[] };
   reactivation: { ids: string[] };
   dispositions: Record<string, string[]>;
@@ -116,22 +140,36 @@ export type SavedMapping = {
   close_pipeline_ids: string[];
 };
 
+/** A win counts from a calendar, a stage, or a tag combination. Tags are for clients who book in another tool. */
+export function outcomeIsMapped(outcome: {
+  calendar_id?: string;
+  stage_id?: string;
+  tags?: { all?: string[]; any?: string[] };
+}): boolean {
+  const all = outcome.tags?.all?.filter(Boolean) ?? [];
+  const any = outcome.tags?.any?.filter(Boolean) ?? [];
+  return Boolean(outcome.calendar_id || outcome.stage_id || all.length > 0 || any.length > 0);
+}
+
 /** Confirmed rows become the mapping the sync already reads. Unconfirmed rows are left out. */
 export function mappingFromConfirmed(input: {
   outcomes: Array<{ name: string }>;
   confirmed: Record<string, string[]>;
 }): SavedMapping {
   const outcomes = input.outcomes.map((outcome, index) => {
-    const row: { name: string; calendar_id?: string; stage_id?: string } = { name: outcome.name };
+    const row: SavedOutcome = { name: outcome.name };
     const calendar = input.confirmed[`outcome_calendar_${index}`]?.[0];
     const stage = input.confirmed[`outcome_stage_${index}`]?.[0];
+    const all = (input.confirmed[`outcome_tags_all_${index}`] ?? []).filter(Boolean);
+    const any = (input.confirmed[`outcome_tags_any_${index}`] ?? []).filter(Boolean);
     if (calendar) row.calendar_id = calendar;
     if (stage) row.stage_id = stage;
+    if (all.length > 0 || any.length > 0) row.tags = { all, any };
     return row;
   });
   const disposition = (key: string) => input.confirmed[`disposition_${key}`] ?? [];
   return {
-    outcomes: outcomes.filter((outcome) => outcome.calendar_id || outcome.stage_id),
+    outcomes: outcomes.filter((outcome) => outcomeIsMapped(outcome)),
     speed: { ids: input.confirmed.speed ?? [] },
     reactivation: { ids: input.confirmed.reactivation ?? [] },
     dispositions: {

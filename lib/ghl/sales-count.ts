@@ -109,3 +109,76 @@ export function isMismatch(operator: number, ghl: number, tolerancePct: number, 
   const pctLimit = (Math.max(operator, ghl) * tolerancePct) / 100;
   return gap > Math.max(pctLimit, countLimit) && gap > 0;
 }
+
+export type TagRule = { all: string[]; any: string[] };
+
+export type TaggedContact = {
+  id: string;
+  tags: string[];
+  assignedTo: string | null;
+  updatedAt: string | null;
+};
+
+export type OutcomeTagSpec = { outcomeId: string; all: string[]; any: string[] };
+
+export type TaggedOutcomeLine = { outcomeId: string; contactId: string; at: string };
+
+function tagKey(value: string): string {
+  return value.trim().toLowerCase();
+}
+
+/** Every tag in `all` is required. At least one tag in `any` is required when that list is not empty. */
+export function contactMatchesTags(tags: string[], rule: TagRule): boolean {
+  const have = new Set(tags.map(tagKey).filter(Boolean));
+  const all = rule.all.map(tagKey).filter(Boolean);
+  const any = rule.any.map(tagKey).filter(Boolean);
+  if (all.length === 0 && any.length === 0) return false;
+  if (!all.every((tag) => have.has(tag))) return false;
+  if (any.length > 0 && !any.some((tag) => have.has(tag))) return false;
+  return true;
+}
+
+/** Turn saved tag ids into the names GHL stores on a contact, and attach the outcome row. */
+export function tagRulesFromMapping(input: {
+  mappingOutcomes: Array<{ name?: string; tags?: { all?: string[]; any?: string[] } }>;
+  outcomeTypes: Array<{ id: string; name: string }>;
+  tags: Array<{ id: string; name: string }>;
+}): OutcomeTagSpec[] {
+  const names = new Map(input.outcomeTypes.map((outcome) => [outcome.name.trim().toLowerCase(), outcome.id]));
+  const tagName = new Map(input.tags.map((tag) => [tag.id, tag.name]));
+  const resolve = (id: string) => tagName.get(id) ?? id;
+  const specs: OutcomeTagSpec[] = [];
+  for (const outcome of input.mappingOutcomes) {
+    const id = names.get((outcome.name ?? '').trim().toLowerCase());
+    if (!id || !outcome.tags) continue;
+    const all = (outcome.tags.all ?? []).map(resolve).filter(Boolean);
+    const any = (outcome.tags.any ?? []).map(resolve).filter(Boolean);
+    if (all.length + any.length === 0) continue;
+    specs.push({ outcomeId: id, all, any });
+  }
+  return specs;
+}
+
+/**
+ * A tagged contact counts for this operator when they are assigned to that GHL user,
+ * or when nobody is assigned. The work date is the contact's last update.
+ */
+export function countTaggedOutcomes(input: {
+  contacts: TaggedContact[];
+  userId: string;
+  outcomes: OutcomeTagSpec[];
+  dayFor: (iso: string) => string;
+}): TaggedOutcomeLine[] {
+  const lines: TaggedOutcomeLine[] = [];
+  for (const contact of input.contacts) {
+    if (contact.assignedTo && contact.assignedTo !== input.userId) continue;
+    if (!contact.updatedAt) continue;
+    const day = input.dayFor(contact.updatedAt);
+    if (!day) continue;
+    for (const outcome of input.outcomes) {
+      if (!contactMatchesTags(contact.tags, outcome)) continue;
+      lines.push({ outcomeId: outcome.outcomeId, contactId: contact.id, at: contact.updatedAt });
+    }
+  }
+  return lines;
+}
