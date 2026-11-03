@@ -128,14 +128,25 @@ export const ACQ_CAL_LINK =
 export const ACQ_CAL_BRAND = '#9A88FC';
 export const ACQ_CAL_ELEMENT_ID = 'my-cal-inline-practices';
 
-/** iClosed inline scheduler. Coaching, cleaning, and the local-service audit share this event. */
+/** iClosed inline scheduler. The coaching funnel books the sales-operations audit. */
 export const ACQ_ICLOSED_EMBED_SCRIPT = 'https://app.iclosed.io/assets/widget.js';
 export const ACQ_ICLOSED_EVENT_URL =
   process.env.NEXT_PUBLIC_ACQ_ICLOSED_URL?.trim() ||
-  process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() ||
   'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit';
 export const ACQ_ICLOSED_TITLE = 'DivineACQ™ Operation Audit';
 export const ACQ_ICLOSED_HEIGHT = 620;
+
+/**
+ * iClosed inline scheduler for the home-service audit. The roofers & remodelers
+ * (revenue-leak) landing and the cleaning funnel book this event. Override with
+ * NEXT_PUBLIC_ACQ_HOME_SERVICE_ICLOSED_URL; NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL
+ * still works for the revenue-leak landing.
+ */
+export const ACQ_ICLOSED_HOME_SERVICE_URL =
+  process.env.NEXT_PUBLIC_ACQ_HOME_SERVICE_ICLOSED_URL?.trim() ||
+  process.env.NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL?.trim() ||
+  'https://app.iclosed.io/e/divineacquisitionn/lb-audit';
+export const ACQ_ICLOSED_HOME_SERVICE_TITLE = 'DivineACQ™ Home Service Audit';
 
 /** Ad / click identifiers forwarded from the landing URL into the application. */
 export const TRACKING_PARAM_KEYS = [

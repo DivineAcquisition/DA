@@ -1,4 +1,4 @@
-import { ACQ_ICLOSED_EVENT_URL, ACQ_ICLOSED_TITLE } from './config';
+import { ACQ_ICLOSED_HOME_SERVICE_TITLE, ACQ_ICLOSED_HOME_SERVICE_URL } from './config';
 
 /**
  * All public copy for the Revenue Leak Audit landing page.
@@ -6,7 +6,7 @@ import { ACQ_ICLOSED_EVENT_URL, ACQ_ICLOSED_TITLE } from './config';
  *
  * Leave testimonials empty until the GoHighLevel page quotes are pasted in.
  * Leave guarantee as an empty string until the wording is ready.
- * The iClosed calendar is set. Override it with NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL.
+ * The iClosed home-service calendar is set. Override it with NEXT_PUBLIC_REVENUE_LEAK_ICLOSED_URL.
  * Leave video.url empty until the VSL link exists, or set NEXT_PUBLIC_REVENUE_LEAK_VSL_URL.
  */
 
@@ -315,9 +315,9 @@ export const REVENUE_LEAK = {
   booking: {
     label: 'Book your free audit',
     headline: 'Find out where your business is leaking.',
-    /** Same iClosed event as the coaching and cleaning pages. */
-    url: ACQ_ICLOSED_EVENT_URL,
-    widgetTitle: ACQ_ICLOSED_TITLE,
+    /** Home-service audit event, shared with the cleaning funnel. */
+    url: ACQ_ICLOSED_HOME_SERVICE_URL,
+    widgetTitle: ACQ_ICLOSED_HOME_SERVICE_TITLE,
     /** Schedule matches a booked call. Switch to Lead if that is the ad event. */
     event: 'Schedule' as 'Schedule' | 'Lead',
     pending: 'The booking calendar shows here once the iClosed link is added.',
