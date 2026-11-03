@@ -23,11 +23,11 @@ describe('revenue leak audit copy', () => {
     expect(REVENUE_LEAK_TESTIMONIALS).toEqual([]);
   });
 
-  it('embeds the AI operations audit calendar and the ads pixel', () => {
+  it('embeds the home-service audit calendar and the ads pixel', () => {
     expect(REVENUE_LEAK.booking.url).toBe(
-      'https://app.iclosed.io/e/divineacquisitionn/ai-operations-audit',
+      'https://app.iclosed.io/e/divineacquisitionn/lb-audit',
     );
-    expect(REVENUE_LEAK.booking.widgetTitle).toBe('DivineACQ™ Operation Audit');
+    expect(REVENUE_LEAK.booking.widgetTitle).toBe('DivineACQ™ Home Service Audit');
     expect(REVENUE_LEAK_META_PIXEL_ID).toBe('658113660313482');
   });
 

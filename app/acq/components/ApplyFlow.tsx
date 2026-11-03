@@ -18,6 +18,8 @@ import {
   type ApplyScreen,
 } from '@/lib/acq/application-copy';
 import {
+  ACQ_ICLOSED_EVENT_URL,
+  ACQ_ICLOSED_TITLE,
   ACQ_PRECALL_PATH,
   acqPublicPath,
   withTrackingQuery,
@@ -25,7 +27,6 @@ import {
 } from '@/lib/acq/config';
 import { LEGAL_DISCLAIMER_URL, LEGAL_PRIVACY_URL, LEGAL_TERMS_URL } from '@/lib/acq/copy';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
-import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import IclosedEmbed from './IclosedEmbed';
 import { trackPixel } from './MetaPixel';
 
@@ -245,11 +246,11 @@ export function ApplyDialog({
             {phase.name === 'screen' && phase.screen === 'calendar' ? (
               <div className="acq-apply-calendar">
                 <IclosedEmbed
-                  url={revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+                  url={revenueLeakEmbedUrl(ACQ_ICLOSED_EVENT_URL, tracking, {
                     fbp: browserClickCookie('_fbp'),
                     fbc: browserClickCookie('_fbc'),
                   })}
-                  title={REVENUE_LEAK.booking.widgetTitle}
+                  title={ACQ_ICLOSED_TITLE}
                   contentName="Free Sales Audit"
                   contentCategory="coaching"
                   eventName="Schedule"

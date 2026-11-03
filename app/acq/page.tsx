@@ -7,9 +7,13 @@ import { MagicCard } from '@/components/ui/magic-card';
 import { Marquee } from '@/components/ui/marquee';
 import { ShineBorder } from '@/components/ui/shine-border';
 import { cookies } from 'next/headers';
-import { ACQ_ICLOSED_TITLE, trackingFromSearchParams, type SearchParams } from '@/lib/acq/config';
+import {
+  ACQ_ICLOSED_EVENT_URL,
+  ACQ_ICLOSED_TITLE,
+  trackingFromSearchParams,
+  type SearchParams,
+} from '@/lib/acq/config';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
-import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import {
   AUDIENCE,
   BOOK_PAGE,
@@ -50,7 +54,7 @@ export default async function AcqLandingPage({
   const query = await searchParams;
   const tracking = trackingFromSearchParams(query);
   const jar = await cookies();
-  const calendarSrc = revenueLeakEmbedUrl(REVENUE_LEAK.booking.url, tracking, {
+  const calendarSrc = revenueLeakEmbedUrl(ACQ_ICLOSED_EVENT_URL, tracking, {
     fbp: jar.get('_fbp')?.value,
     fbc: jar.get('_fbc')?.value,
   });

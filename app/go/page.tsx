@@ -14,7 +14,7 @@ import {
 } from '@/lib/go/copy';
 import { cookies } from 'next/headers';
 import IclosedEmbed from '@/app/acq/components/IclosedEmbed';
-import { ACQ_ICLOSED_TITLE } from '@/lib/acq/config';
+import { ACQ_ICLOSED_HOME_SERVICE_TITLE } from '@/lib/acq/config';
 import { revenueLeakEmbedUrl } from '@/lib/acq/revenue-leak';
 import { REVENUE_LEAK } from '@/lib/acq/revenue-leak-content';
 import { nicheTrackingFromSearch } from '@/lib/acq/niche-tracking';
@@ -74,7 +74,7 @@ export default async function CleaningFunnelPage({
           </div>
           <IclosedEmbed
             url={calendarSrc}
-            title={ACQ_ICLOSED_TITLE}
+            title={ACQ_ICLOSED_HOME_SERVICE_TITLE}
             contentName="Cleaning strategy session"
             contentCategory="cleaning"
             eventName="Schedule"
