@@ -1,4 +1,4 @@
-import { EMAIL_IDENTITY_DEFAULTS, formatFrom, identityFromRow, type EmailIdentity } from './identity';
+import { EMAIL_IDENTITY_DEFAULTS, OPERATIONS_CC, formatFrom, identityFromRow, type EmailIdentity } from './identity';
 import {
   EMAIL_PURPOSES,
   backoffMs,
@@ -322,7 +322,9 @@ export async function sendAppEmail(input: SendAppEmailInput, deps: SendDeps = {}
       : async () => {});
 
   const to = uniqueEmails(Array.isArray(input.to) ? input.to : [input.to]).filter(isEmail);
-  const cc = uniqueEmails(input.cc ?? []).filter((email) => isEmail(email) && !to.includes(email));
+  const cc = uniqueEmails([...(input.cc ?? []), ...(input.purpose === 'team' ? [OPERATIONS_CC] : [])]).filter(
+    (email) => isEmail(email) && !to.includes(email),
+  );
   const loaded = await store.loadIdentities().catch(() => [] as EmailIdentity[]);
   const identity = resolveIdentity(input.purpose, loaded);
   const replyTo =

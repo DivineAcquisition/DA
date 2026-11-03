@@ -127,6 +127,7 @@ describe('sendAppEmail', () => {
     expect(second).toMatchObject({ ok: true, status: 'sent', id: 'em_1' });
     expect(calls).toEqual(['note/ana']);
     expect(first && store.rows.get(first.logId ?? '')?.sender).toBe('DA Operations <ops@updates.divineacquisition.io>');
+    expect(store.rows.get(first.logId ?? '')?.cc).toEqual(['malik@divineacquisition.io']);
   });
 
   it('retries a rate limit and stops on a rejected address', async () => {

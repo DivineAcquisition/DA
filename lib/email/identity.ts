@@ -6,6 +6,9 @@ import type { EmailPurpose } from './policy';
  */
 export const DEFAULT_REPLY_TO = 'malik@divineacquisition.io';
 
+/** Copied on every team email, including end-of-day mail to operators. */
+export const OPERATIONS_CC = 'malik@divineacquisition.io';
+
 export type EmailIdentity = {
   purpose: EmailPurpose;
   displayName: string;
