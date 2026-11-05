@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react';
 
 import { BlurFade } from '@/components/ui/blur-fade';
 import type { Tool } from '@/lib/site/content';
+import { SOCIAL_PATHS } from './social-paths';
 import { cn } from '@/lib/utils';
 
 export const shell = 'mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8';
@@ -172,5 +173,14 @@ export function ToolLogo({
     >
       {mark}
     </span>
+  );
+}
+
+/** X, YouTube, or Instagram mark in currentColor. */
+export function SocialIcon({ id, className }: { id: keyof typeof SOCIAL_PATHS; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={cn('size-4 fill-current', className)}>
+      <path d={SOCIAL_PATHS[id]} />
+    </svg>
   );
 }

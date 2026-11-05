@@ -315,7 +315,7 @@ export function ApproachRun() {
                 <span
                   className={cn(
                     'flex size-10 items-center justify-center rounded-xl transition-colors duration-500',
-                    state === 'queued' ? 'bg-white/[0.04] text-white/40' : 'bg-[#5a23fc]/20 text-[#c9bcff]',
+                    state === 'queued' ? 'bg-white/[0.04] text-white/40 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]' : 'da-icon-tile',
                   )}
                 >
                   {STEP_ICONS[index]}

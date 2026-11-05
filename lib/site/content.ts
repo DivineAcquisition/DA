@@ -7,7 +7,8 @@
 export const SITE = {
   name: 'Divine Acquisition',
   legalName: 'Divine Acquisition™',
-  origin: 'https://divineacquisition.io',
+  /** Vercel redirects the bare domain to www, so www is the canonical address. */
+  origin: 'https://www.divineacquisition.io',
   values: ['Devotion', 'Innovation', 'Value', 'Exclusivity'] as const,
   description:
     'Divine Acquisition helps established service businesses strengthen their sales operations and client experience. We diagnose what isn’t working, design the right processes, and implement the systems behind them.',
@@ -19,9 +20,9 @@ export const VISTRIAL_URL = 'https://vistrial.io';
 export const CAREERS_URL = 'https://hiring.divineacquisition.io';
 
 export const SOCIALS = [
-  { label: 'X', href: 'https://x.com/MalikSannie' },
-  { label: 'YouTube', href: 'https://www.youtube.com/@MalikSannie' },
-  { label: 'Instagram', href: 'https://www.instagram.com/maliksanniee/' },
+  { id: 'x', label: 'X', href: 'https://x.com/MalikSannie' },
+  { id: 'youtube', label: 'YouTube', href: 'https://www.youtube.com/@MalikSannie' },
+  { id: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/maliksanniee/' },
 ] as const;
 
 /* ------------------------------------------------------------------------ */

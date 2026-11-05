@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Check, Quote } from 'lucide-react';
+import { Bot, Check, FileCheck2, FileSearch, Quote, ShieldCheck } from 'lucide-react';
 
 import { BlurFade } from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
@@ -25,7 +25,7 @@ import {
   WORK,
 } from '@/lib/site/content';
 
-import { ArrowLink, ButtonLink, Eyebrow, Section, SectionHeading, shell, ToolLogo } from './components/primitives';
+import { ArrowLink, ButtonLink, Eyebrow, Section, SectionHeading, shell, SocialIcon, ToolLogo } from './components/primitives';
 import { SiteNav } from './components/site-nav';
 import { SystemMap } from './components/system-map';
 import { ApproachRun, FitCheck, HandoffTrace, OnboardingTrack, PipelineBoard } from './components/visuals';
@@ -81,9 +81,9 @@ function ToolStrip() {
       <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <Marquee pauseOnHover repeat={3} className="[--duration:55s] [--gap:2.75rem]">
           {TOOL_STRIP.map((tool) => (
-            <span key={tool.id} className="flex items-center gap-2.5 opacity-60 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0">
-              <ToolLogo tool={tool} size={20} tile={false} />
-              <span className="text-sm font-medium whitespace-nowrap text-white/80">{tool.name}</span>
+            <span key={tool.id} className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] py-1.5 pr-4 pl-1.5 transition-colors duration-300 hover:border-white/15 hover:bg-white/[0.05]">
+              <ToolLogo tool={tool} size={18} className="rounded-full" />
+              <span className="text-sm font-medium whitespace-nowrap text-white/75">{tool.name}</span>
             </span>
           ))}
         </Marquee>
@@ -391,9 +391,10 @@ function Founder() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="da-mono inline-flex h-8 items-center rounded-full border border-white/10 px-3 text-[10px] tracking-[0.14em] text-white/60 uppercase transition-colors hover:border-white/25 hover:text-white"
+                      aria-label={`${FOUNDER.name} on ${social.label}`}
+                      className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/65 transition-colors hover:border-[#9a88fc]/50 hover:bg-[#5a23fc]/15 hover:text-white"
                     >
-                      {social.label}
+                      <SocialIcon id={social.id} />
                     </a>
                   </li>
                 ))}
@@ -409,6 +410,13 @@ function Founder() {
 /* ------------------------------------------------------------------------ */
 /* 08 · Vistrial                                                             */
 /* ------------------------------------------------------------------------ */
+
+const PILLAR_ICONS = [
+  <Bot key="agents" className="size-4" aria-hidden />,
+  <FileSearch key="evidence" className="size-4" aria-hidden />,
+  <FileCheck2 key="deliverables" className="size-4" aria-hidden />,
+  <ShieldCheck key="approval" className="size-4" aria-hidden />,
+];
 
 function Vistrial() {
   return (
@@ -438,9 +446,9 @@ function Vistrial() {
               ))}
             </div>
             <ul className="mt-7 grid grid-cols-2 gap-2">
-              {VISTRIAL.pillars.map((pillar) => (
-                <li key={pillar} className="flex items-center gap-2.5 rounded-xl border border-white/[0.07] bg-white/[0.025] px-3 py-2.5 text-sm text-white/85">
-                  <span className="size-1.5 shrink-0 rounded-full bg-[#b59aff] shadow-[0_0_8px_1px_rgba(181,154,255,0.8)]" />
+              {VISTRIAL.pillars.map((pillar, index) => (
+                <li key={pillar} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-2.5 text-sm text-white/85">
+                  <span className="da-icon-tile flex size-8 shrink-0 items-center justify-center rounded-lg">{PILLAR_ICONS[index]}</span>
                   {pillar}
                 </li>
               ))}
@@ -553,7 +561,8 @@ function SiteFooter() {
                 </li>
                 {SOCIALS.map((social) => (
                   <li key={social.label}>
-                    <a href={social.href} target="_blank" rel="noopener noreferrer" className="text-sm text-white/60 transition-colors hover:text-white">
+                    <a href={social.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm text-white/60 transition-colors hover:text-white">
+                      <SocialIcon id={social.id} className="size-3.5" />
                       {social.label}
                     </a>
                   </li>

@@ -1,0 +1,15 @@
+{
+  "name": "Divine Acquisition",
+  "short_name": "Divine Acquisition",
+  "description": "Sales operations and client experience systems for established service businesses.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "icons": [
+    { "src": "/site/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/site/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/site/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

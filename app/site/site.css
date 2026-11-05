@@ -157,6 +157,16 @@ body:has(.da-site) {
   background: linear-gradient(90deg, transparent, rgba(181, 154, 255, 0.55), transparent);
 }
 
+/* Icon tile: violet glass with a lit top edge. */
+.da-icon-tile {
+  background: linear-gradient(180deg, rgba(154, 136, 252, 0.24) 0%, rgba(90, 35, 252, 0.1) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 0 0 1px rgba(154, 136, 252, 0.28),
+    0 8px 22px -12px rgba(90, 35, 252, 0.9);
+  color: #d9d0ff;
+}
+
 /* Moving light along an SVG path. Paths use pathLength="100". */
 .da-beam {
   stroke-dasharray: 14 86;

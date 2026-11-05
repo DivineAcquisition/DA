@@ -43,8 +43,8 @@ function DropdownItem({ link, onNavigate }: { link: NavLink; onNavigate: () => v
     <>
       <span
         className={cn(
-          'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg text-[#c9bcff] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
-          link.icon === 'vistrial' ? 'bg-black' : 'bg-[#1a1730]',
+          'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg',
+          link.icon === 'vistrial' ? 'bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]' : 'da-icon-tile',
         )}
       >
         {link.icon ? ICONS[link.icon] : <Layers className="size-[18px]" aria-hidden />}
