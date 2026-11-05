@@ -61,10 +61,10 @@ const CAREERS_HOSTS = hosts(
   process.env.VISTRIAL_CAREERS_HOSTS,
   'divineacquisition.io,www.divineacquisition.io',
 );
-// The company homepage (app/site). Empty by default, so nothing changes until
-// the apex moves over: set DA_SITE_HOSTS=divineacquisition.io,www.divineacquisition.io.
-// It is matched before careers, so those hosts then serve the homepage, not /hiring.
-const SITE_HOSTS = hosts(process.env.DA_SITE_HOSTS, '');
+// The company homepage (app/site) on the apex and www. It is matched before
+// careers, so these hosts serve the homepage, not /hiring. Careers stays on
+// hiring.divineacquisition.io. DA_SITE_HOSTS overrides the list.
+const SITE_HOSTS = hosts(process.env.DA_SITE_HOSTS, 'divineacquisition.io,www.divineacquisition.io');
 const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
 // The admin app: ADMIN_APP_URL (lib/apps), plus any DA_WORKSPACE_HOSTS.

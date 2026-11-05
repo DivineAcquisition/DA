@@ -15,25 +15,32 @@ describe('company homepage host', () => {
     vi.unstubAllEnvs();
   });
 
-  it('leaves the apex on the careers board until DA_SITE_HOSTS is set', async () => {
+  it.each(['https://www.divineacquisition.io/', 'https://divineacquisition.io/'])('serves the homepage at %s by default', async (url) => {
     const proxy = await loadProxy();
-    const home = await proxy(get('https://divineacquisition.io/'));
-    expect(home.headers.get('x-middleware-rewrite') ?? '').not.toContain('/site');
-    const hidden = await proxy(get('https://divineacquisition.io/site'));
-    expect(hidden.status).toBe(404);
-  });
-
-  it('serves the homepage on the apex once DA_SITE_HOSTS names it', async () => {
-    const proxy = await loadProxy('divineacquisition.io,www.divineacquisition.io');
-    const home = await proxy(get('https://divineacquisition.io/'));
+    const home = await proxy(get(url));
     expect(home.status).not.toBe(404);
     expect(home.headers.get('x-middleware-rewrite') ?? '').toContain('/site');
     expect(home.headers.get('X-Robots-Tag')).toBeNull();
   });
 
-  it('keeps other surfaces off the homepage host', async () => {
-    const proxy = await loadProxy('divineacquisition.io');
-    const foreign = await proxy(get('https://divineacquisition.io/hiring'));
+  it('keeps careers off the homepage host', async () => {
+    const proxy = await loadProxy();
+    const foreign = await proxy(get('https://www.divineacquisition.io/hiring'));
     expect(foreign.status).toBe(404);
+  });
+
+  it('leaves the careers host on the careers board', async () => {
+    const proxy = await loadProxy();
+    const careers = await proxy(get('https://hiring.divineacquisition.io/'));
+    expect(careers.status).not.toBe(404);
+    expect(careers.headers.get('x-middleware-rewrite') ?? '').not.toContain('/site');
+  });
+
+  it('follows DA_SITE_HOSTS when it is set', async () => {
+    const proxy = await loadProxy('preview.divineacquisition.io');
+    const preview = await proxy(get('https://preview.divineacquisition.io/'));
+    expect(preview.headers.get('x-middleware-rewrite') ?? '').toContain('/site');
+    const www = await proxy(get('https://www.divineacquisition.io/'));
+    expect(www.headers.get('x-middleware-rewrite') ?? '').not.toContain('/site');
   });
 });
