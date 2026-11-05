@@ -61,6 +61,10 @@ const CAREERS_HOSTS = hosts(
   process.env.VISTRIAL_CAREERS_HOSTS,
   'divineacquisition.io,www.divineacquisition.io',
 );
+// The company homepage (app/site). Empty by default, so nothing changes until
+// the apex moves over: set DA_SITE_HOSTS=divineacquisition.io,www.divineacquisition.io.
+// It is matched before careers, so those hosts then serve the homepage, not /hiring.
+const SITE_HOSTS = hosts(process.env.DA_SITE_HOSTS, '');
 const TALENT_HOSTS = hosts(process.env.VISTRIAL_TALENT_HOSTS, 'talent.divineacquisition.io');
 const ASSESSMENT_ADMIN_HOSTS = hosts(process.env.VISTRIAL_ASSESSMENT_ADMIN_HOSTS, '');
 // The admin app: ADMIN_APP_URL (lib/apps), plus any DA_WORKSPACE_HOSTS.
@@ -85,6 +89,7 @@ const ADMIN_PREFIX = '/da';
 const ACCT_PREFIX = '/acct';
 const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
+const SITE_PREFIX = '/site';
 const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
 const WORKSPACE_PREFIX = '/workspace';
@@ -100,6 +105,7 @@ const SURFACE_PREFIXES = [
   ACCT_PREFIX,
   OPS_PREFIX,
   HIRING_PREFIX,
+  SITE_PREFIX,
   ASSESSMENT_PREFIX,
   ASSESSMENT_ADMIN_PREFIX,
   WORKSPACE_PREFIX,
@@ -144,6 +150,11 @@ const SURFACES: Surface[] = [
   { hosts: ADMIN_HOSTS, prefix: ADMIN_PREFIX },
   { hosts: ACCT_HOSTS, prefix: ACCT_PREFIX },
   { hosts: TEAM_HOSTS, prefix: WORKSPACE_PREFIX },
+  {
+    hosts: SITE_HOSTS,
+    prefix: SITE_PREFIX,
+    allow: (pathname) => pathname === '/' || pathname.startsWith(SITE_PREFIX),
+  },
   {
     hosts: CAREERS_HOSTS,
     prefix: HIRING_PREFIX,
@@ -448,6 +459,7 @@ export async function proxy(request: NextRequest) {
     // Public marketing hosts: anything outside the surface is 404.
     if (
       surface.prefix === HIRING_PREFIX ||
+      surface.prefix === SITE_PREFIX ||
       surface.prefix === ACQ_PREFIX ||
       surface.prefix === GO_PREFIX ||
       surface.prefix === WORKSPACE_PREFIX
@@ -608,9 +620,10 @@ export async function proxy(request: NextRequest) {
   }
 
   // Acquisition landing is a public ad destination and must remain indexable.
+  // So is the company homepage.
   // The roofing ads page is the exception: paid traffic, not a search result.
   if (
-    (isInternal && prefix !== ACQ_PREFIX && prefix !== GO_PREFIX) ||
+    (isInternal && prefix !== ACQ_PREFIX && prefix !== GO_PREFIX && prefix !== SITE_PREFIX) ||
     pathname.startsWith(ONBOARD_PREFIX)
   ) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
