@@ -45,6 +45,7 @@ export const SOURCE_TAGS = {
   roofing: 'source - roofing lead leak audit',
   cleaning: 'source - cleaning strategy session',
   salesOperations: 'source - sales operations review',
+  salesOperationsDiagnostic: 'source - sales operations diagnostic',
   talent: 'source - talent assessment',
   aiFrontOffice: 'source - ai front office',
 } as const;
@@ -68,6 +69,9 @@ export const TAGS = {
   talentCandidate: 'talent - candidate',
   assessmentInvited: 'talent - assessment invited',
   assessmentBooked: 'talent - assessment booked',
+  diagnosticInquiry: 'diagnostic - new inquiry',
+  diagnosticContext: 'diagnostic - context received',
+  marketingOptIn: 'consent - marketing opt in',
 } as const;
 
 export const SPEND_QUALIFIED_TAGS = {

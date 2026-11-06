@@ -180,3 +180,53 @@ export async function recordSalesReviewLead(input: {
   });
   return contactId;
 }
+
+/**
+ * Contact from the company site (divineacquisition.io): the Sales Operations
+ * Diagnostic request and the pre-discovery questionnaire. Creates the contact
+ * or updates the one with this email, adds the tags, and attaches the answers
+ * as a note. No SMS consent tag: the site never opts anyone into texts.
+ */
+export async function recordSiteContact(input: {
+  email: string;
+  fullName?: string;
+  phone?: string;
+  company?: string;
+  website?: string | null;
+  source: string;
+  note: string;
+  tags: string[];
+}): Promise<string> {
+  const body: Record<string, unknown> = { email: input.email, source: input.source };
+  if (input.fullName) {
+    const name = splitName(input.fullName);
+    body.name = input.fullName;
+    body.firstName = name.firstName;
+    if (name.lastName) body.lastName = name.lastName;
+  }
+  if (input.phone) body.phone = input.phone;
+  if (input.company) body.companyName = input.company;
+  if (input.website) body.website = input.website;
+
+  const existingId = await findContact(input.email);
+  const payload = existingId
+    ? await ghl<{ contact?: { id?: string }; id?: string }>(`/contacts/${existingId}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      })
+    : await ghl<{ contact?: { id?: string }; id?: string }>('/contacts/', {
+        method: 'POST',
+        body: JSON.stringify({ ...body, locationId: ACQ_GHL_LOCATION_ID, tags: input.tags }),
+      });
+  const contactId = contactIdFrom(payload) ?? existingId;
+  if (!contactId) throw new Error('ghl_contact_failed: response missing contact id');
+  await ghl(`/contacts/${contactId}/tags`, {
+    method: 'POST',
+    body: JSON.stringify({ tags: input.tags }),
+  });
+  await ghl(`/contacts/${contactId}/notes`, {
+    method: 'POST',
+    body: JSON.stringify({ body: input.note }),
+  });
+  return contactId;
+}

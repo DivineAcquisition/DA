@@ -90,6 +90,10 @@ const ACCT_PREFIX = '/acct';
 const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
 const SITE_PREFIX = '/site';
+/** Homepage pages served at the root of the site host, e.g. /diagnostic -> /site/diagnostic. */
+const SITE_PAGES = ['/diagnostic', '/discovery'];
+const isSitePage = (pathname: string) =>
+  SITE_PAGES.some((page) => pathname === page || pathname.startsWith(`${page}/`));
 const ASSESSMENT_PREFIX = '/assessment';
 const ASSESSMENT_ADMIN_PREFIX = '/admin';
 const WORKSPACE_PREFIX = '/workspace';
@@ -153,7 +157,7 @@ const SURFACES: Surface[] = [
   {
     hosts: SITE_HOSTS,
     prefix: SITE_PREFIX,
-    allow: (pathname) => pathname === '/' || pathname.startsWith(SITE_PREFIX),
+    allow: (pathname) => pathname === '/' || pathname.startsWith(SITE_PREFIX) || isSitePage(pathname),
   },
   {
     hosts: CAREERS_HOSTS,
@@ -336,7 +340,8 @@ export async function proxy(request: NextRequest) {
     pathname === '/api/submit-lead' ||
     pathname === '/api/meta/capi' ||
     pathname === '/api/go/cleaning-audit' ||
-    pathname.startsWith('/api/acq/')
+    pathname.startsWith('/api/acq/') ||
+    pathname.startsWith('/api/site/')
   ) {
     const response = NextResponse.next();
     response.headers.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
@@ -344,6 +349,13 @@ export async function proxy(request: NextRequest) {
   }
 
   const local = isLocalHost(host);
+  // Previews and localhost have no site host, so the homepage's form pages
+  // answer at the same root paths they use in production.
+  if (local && isSitePage(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = `${SITE_PREFIX}${pathname}`;
+    return NextResponse.rewrite(url);
+  }
   const domain = local ? null : await loadOperatorWorkspaceDomain();
   if (domain && hostRole(host, domain) === 'retired' && domain.origin) {
     return NextResponse.redirect(new URL(`${pathname}${request.nextUrl.search}`, domain.origin), 308);

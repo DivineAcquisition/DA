@@ -36,6 +36,26 @@ describe('company homepage host', () => {
     expect(careers.headers.get('x-middleware-rewrite') ?? '').not.toContain('/site');
   });
 
+  it.each(['/diagnostic', '/diagnostic/book', '/discovery'])('serves %s on the homepage host', async (path) => {
+    const proxy = await loadProxy();
+    const page = await proxy(get(`https://www.divineacquisition.io${path}`));
+    expect(page.status).not.toBe(404);
+    expect(page.headers.get('x-middleware-rewrite') ?? '').toContain(`/site${path}`);
+  });
+
+  it('serves the form pages at the same paths on previews', async () => {
+    const proxy = await loadProxy();
+    const page = await proxy(get('https://da-git-branch.vercel.app/diagnostic'));
+    expect(page.headers.get('x-middleware-rewrite') ?? '').toContain('/site/diagnostic');
+  });
+
+  it('lets the form APIs through without a surface rewrite', async () => {
+    const proxy = await loadProxy();
+    const api = await proxy(new NextRequest('https://www.divineacquisition.io/api/site/diagnostic', { method: 'POST', headers: { host: 'www.divineacquisition.io' } }));
+    expect(api.status).not.toBe(404);
+    expect(api.headers.get('x-middleware-rewrite')).toBeNull();
+  });
+
   it('follows DA_SITE_HOSTS when it is set', async () => {
     const proxy = await loadProxy('preview.divineacquisition.io');
     const preview = await proxy(get('https://preview.divineacquisition.io/'));

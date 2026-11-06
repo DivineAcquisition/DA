@@ -3,11 +3,13 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
+  ArrowRight,
   ArrowUpRight,
   BookOpen,
   ChevronDown,
   Compass,
-  Handshake,
+  House,
+  Building2,
   Layers,
   Menu,
   Quote,
@@ -18,12 +20,13 @@ import {
   X,
 } from 'lucide-react';
 
-import { BOOKING_URL, NAV, type NavGroup, type NavLink } from '@/lib/site/content';
+import { DIAGNOSTIC_PATH, NAV, type NavGroup, type NavLink } from '@/lib/site/content';
 import { cn } from '@/lib/utils';
 
 const ICONS: Record<NonNullable<NavLink['icon']>, ReactNode> = {
   sales: <Target className="size-[18px]" aria-hidden />,
-  client: <Handshake className="size-[18px]" aria-hidden />,
+  b2b: <Building2 className="size-[18px]" aria-hidden />,
+  local: <House className="size-[18px]" aria-hidden />,
   // eslint-disable-next-line @next/next/no-img-element
   vistrial: <img src="/site/brand/vistrial-icon.png" alt="" width={22} height={22} className="size-[22px] rounded-[6px]" />,
   more: <Sparkles className="size-[18px]" aria-hidden />,
@@ -137,13 +140,12 @@ function Dropdown({
               ))}
               {group.id === 'services' ? (
                 <a
-                  href={BOOKING_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={DIAGNOSTIC_PATH}
+                  onClick={onClose}
                   className="mt-1 flex items-center justify-between rounded-xl bg-[#5a23fc]/15 px-4 py-3 text-sm text-[#dcd3ff] transition-colors hover:bg-[#5a23fc]/25"
                 >
-                  <span>Not sure where to start? Book a diagnostic.</span>
-                  <ArrowUpRight className="size-4" aria-hidden />
+                  <span>Book your Sales Operations diagnostic</span>
+                  <ArrowRight className="size-4" aria-hidden />
                 </a>
               ) : null}
             </div>
@@ -175,9 +177,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
           </div>
         ))}
         <a
-          href={BOOKING_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={DIAGNOSTIC_PATH}
           className="da-btn-primary flex h-12 items-center justify-center rounded-xl text-[15px] font-medium text-white"
         >
           <span className="relative z-[1]">Book a diagnostic</span>
@@ -256,9 +256,7 @@ export function SiteNav() {
 
           <div className="flex items-center gap-2">
             <a
-              href={BOOKING_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={DIAGNOSTIC_PATH}
               className="da-btn-primary hidden h-10 items-center rounded-xl px-4 text-sm font-medium text-white sm:inline-flex"
             >
               <span className="relative z-[1]">Book a diagnostic</span>

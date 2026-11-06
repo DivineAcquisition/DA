@@ -12,6 +12,7 @@ import {
   LineChart,
   Loader2,
   ScanSearch,
+  RotateCw,
   ShieldCheck,
   XCircle,
 } from 'lucide-react';
@@ -196,67 +197,43 @@ export function PipelineBoard() {
   );
 }
 
-/* ------------------------------------------------------------------------ */
-/* 03 · Client experience: onboarding that runs the same way every time      */
+/* 03 · A market's sales journey, stage by stage                             */
 /* ------------------------------------------------------------------------ */
 
-const ONBOARDING: Array<{ label: string; tool: Tool }> = [
-  { label: 'Agreement signed · sales notes attached', tool: TOOLS.hubspot },
-  { label: 'Kickoff scheduled', tool: TOOLS.calendly },
-  { label: 'Welcome sequence sent', tool: TOOLS.gmail },
-  { label: 'Delivery team briefed', tool: TOOLS.slack },
-  { label: 'First milestone delivered', tool: TOOLS.notion },
-  { label: '30-day review booked', tool: TOOLS.calendar },
-];
-
-export function OnboardingTrack() {
-  const ref = useRef<HTMLDivElement>(null);
-  const visible = useInViewOnce(ref, 0.3);
-  const done = useCycle(ONBOARDING.length + 1, 1300, visible, 4);
+/**
+ * The stages a market's opportunities move through. One stage lights at a
+ * time once the card is on screen; the last stage loops back to the first,
+ * because the next sale starts from the last one.
+ */
+export function JourneyFlow({ stages, label }: { stages: readonly string[]; label: string }) {
+  const ref = useRef<HTMLOListElement>(null);
+  const visible = useInViewOnce(ref, 0.4);
+  const active = useCycle(stages.length, 1500, visible, stages.length - 1);
 
   return (
-    <div ref={ref} className="relative rounded-xl border border-white/[0.06] bg-[#0b0b0d] p-3" aria-hidden>
-      <div className="mb-3 flex items-center justify-between px-1">
-        <span className="da-mono text-[10px] tracking-[0.16em] text-white/40 uppercase">Client lifecycle</span>
-        <span className="da-mono text-[10px] text-white/40">
-          {done}/{ONBOARDING.length}
-        </span>
-      </div>
-      <div className="mx-1 mb-3 h-1 overflow-hidden rounded-full bg-white/[0.06]">
-        <div
-          className="h-full rounded-full bg-gradient-to-r from-[#5a23fc] to-[#b59aff] transition-[width] duration-700 ease-out"
-          style={{ width: `${(done / ONBOARDING.length) * 100}%` }}
-        />
-      </div>
-      <ul className="space-y-1">
-        {ONBOARDING.map((item, index) => {
-          const complete = index < done;
-          const current = index === done;
-          return (
-            <li
-              key={item.label}
-              className={cn(
-                'flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition-colors duration-500',
-                current && 'bg-[#5a23fc]/12',
-              )}
-            >
-              <span
-                className={cn(
-                  'flex size-4 shrink-0 items-center justify-center rounded-full transition-all duration-500',
-                  complete ? 'bg-[#52d6a4]' : current ? 'ring-1 ring-[#9a88fc]' : 'ring-1 ring-white/15',
-                )}
-              >
-                {complete ? <Check className="size-2.5 text-black" /> : current ? <Loader2 className="size-2.5 animate-spin text-[#b59aff]" /> : null}
-              </span>
-              <span className={cn('min-w-0 flex-1 truncate text-[12px]', complete ? 'text-white/80' : current ? 'text-white' : 'text-white/40')}>
-                {item.label}
-              </span>
-              <ToolLogo tool={item.tool} size={10} />
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <ol ref={ref} aria-label={label} className="flex flex-wrap items-center gap-y-2">
+      {stages.map((stage, index) => (
+        <li key={stage} className="flex items-center">
+          <span
+            className={cn(
+              'da-mono rounded-full border px-2.5 py-1 text-[10px] tracking-[0.1em] uppercase transition-all duration-500',
+              index === active
+                ? 'border-[#9a88fc]/60 bg-[#5a23fc]/25 text-white shadow-[0_0_18px_-4px_rgba(90,35,252,0.9)]'
+                : index < active
+                  ? 'border-white/10 bg-white/[0.04] text-white/70'
+                  : 'border-white/[0.07] text-white/45',
+            )}
+          >
+            {stage}
+          </span>
+          {index < stages.length - 1 ? (
+            <ArrowRight aria-hidden className={cn('mx-1 size-3 transition-colors duration-500', index < active ? 'text-[#9a88fc]' : 'text-white/20')} />
+          ) : (
+            <RotateCw aria-hidden className="ml-1.5 size-3 text-[#9a88fc]/70" />
+          )}
+        </li>
+      ))}
+    </ol>
   );
 }
 

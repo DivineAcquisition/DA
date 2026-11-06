@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Bot, Check, FileCheck2, FileSearch, Quote, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Bot, Check, FileCheck2, FileSearch, Gauge, Inbox, RefreshCcw, Send, ShieldCheck } from 'lucide-react';
 
 import { BlurFade } from '@/components/ui/blur-fade';
 import { BorderBeam } from '@/components/ui/border-beam';
@@ -7,15 +7,15 @@ import { MagicCard } from '@/components/ui/magic-card';
 import { Marquee } from '@/components/ui/marquee';
 import {
   APPROACH,
-  BOOKING_URL,
+  ABOUT,
+  DIAGNOSTIC_PATH,
   CAREERS_URL,
   FINAL,
   FOUNDER,
   HERO,
   NAV,
-  PHILOSOPHY,
   PROBLEM,
-  SERVICES,
+  SALES_OPS,
   SITE,
   SOCIALS,
   TOOL_STRIP,
@@ -28,7 +28,7 @@ import {
 import { ArrowLink, ButtonLink, Eyebrow, Section, SectionHeading, shell, SocialIcon, ToolLogo } from './components/primitives';
 import { SiteNav } from './components/site-nav';
 import { SystemMap } from './components/system-map';
-import { ApproachRun, FitCheck, HandoffTrace, OnboardingTrack, PipelineBoard } from './components/visuals';
+import { ApproachRun, FitCheck, HandoffTrace, JourneyFlow, PipelineBoard } from './components/visuals';
 import { VistrialDemo } from './components/vistrial-demo';
 
 /* ------------------------------------------------------------------------ */
@@ -57,7 +57,7 @@ function Hero() {
           <p className="mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">{HERO.lead}</p>
           <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">{HERO.body}</p>
           <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-            <ButtonLink href={BOOKING_URL}>{HERO.primaryCta}</ButtonLink>
+            <ButtonLink href={DIAGNOSTIC_PATH}>{HERO.primaryCta}</ButtonLink>
             <ButtonLink href="#services" variant="ghost">
               {HERO.secondaryCta}
             </ButtonLink>
@@ -126,51 +126,127 @@ function Problem() {
 }
 
 /* ------------------------------------------------------------------------ */
-/* 03 · Services                                                             */
+/* 03 · Core service: Sales Operations Build Out                             */
 /* ------------------------------------------------------------------------ */
+
+const BUILD_ICONS = [
+  <Inbox key="intake" className="size-[18px]" aria-hidden />,
+  <Send key="follow-up" className="size-[18px]" aria-hidden />,
+  <Gauge key="visibility" className="size-[18px]" aria-hidden />,
+  <RefreshCcw key="reactivation" className="size-[18px]" aria-hidden />,
+];
 
 function Services() {
   return (
-    <Section id={SERVICES.id}>
-      <SectionHeading index={SERVICES.index} eyebrow={SERVICES.eyebrow} headline={SERVICES.headline} />
-      <div className="mt-14 grid gap-5 lg:grid-cols-2">
-        {SERVICES.items.map((service, index) => (
-          <article id={service.id} key={service.id} className="scroll-mt-28 rounded-[22px]">
+    <Section id={SALES_OPS.id}>
+      <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <div>
+          <Eyebrow index={SALES_OPS.index}>{SALES_OPS.eyebrow}</Eyebrow>
+          <h2 className="da-display da-gradient-text-soft mt-5 text-[2rem] leading-[1.06] font-semibold text-balance sm:text-5xl lg:text-[3.4rem]">
+            {SALES_OPS.name}
+          </h2>
+          <p className="da-display mt-4 text-xl font-medium text-[#c9bcff] sm:text-2xl">{SALES_OPS.positioning}</p>
+        </div>
+        <p className="text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">{SALES_OPS.positioningBody}</p>
+      </div>
+
+      <article id="sales-operations" className="mt-14 scroll-mt-28 rounded-[24px]">
+        <MagicCard
+          className="rounded-[24px] border border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))]"
+          contentClassName="grid gap-10 p-6 sm:p-8 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:p-10"
+          gradientColor="rgba(90, 35, 252, 0.14)"
+          gradientFrom="#5a23fc"
+          gradientTo="#b59aff"
+        >
+          <BorderBeam duration={12} size={160} colorFrom="#5a23fc" colorTo="#b59aff" borderWidth={1} />
+          <div>
+            <h3 className="da-display text-2xl leading-tight font-semibold tracking-tight text-white sm:text-[2rem]">{SALES_OPS.headline}</h3>
+            <div className="mt-5 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+              {SALES_OPS.body.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            <p className="da-display mt-6 text-lg font-medium text-white/90">{SALES_OPS.supporting}</p>
+            <div className="mt-7">
+              <ButtonLink href={DIAGNOSTIC_PATH}>{SALES_OPS.cta}</ButtonLink>
+            </div>
+          </div>
+          <PipelineBoard />
+        </MagicCard>
+      </article>
+
+      <p className="da-mono mt-16 text-[10px] tracking-[0.18em] text-white/40 uppercase">What we build</p>
+      <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {SALES_OPS.builds.map((build, index) => (
+          <li key={build.name} className="rounded-2xl">
             <MagicCard
-              className="h-full rounded-[22px] border border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))]"
-              contentClassName="flex h-full flex-col p-6 sm:p-8"
-              gradientColor="rgba(90, 35, 252, 0.14)"
+              className="h-full rounded-2xl border border-white/[0.07] bg-white/[0.02]"
+              contentClassName="flex h-full flex-col p-5"
+              gradientColor="rgba(90, 35, 252, 0.12)"
               gradientFrom="#5a23fc"
               gradientTo="#b59aff"
             >
-              <BorderBeam duration={10} delay={index * 5} size={140} colorFrom="#5a23fc" colorTo="#b59aff" borderWidth={1} />
-              {index === 0 ? <PipelineBoard /> : <OnboardingTrack />}
-              <p className="da-mono mt-8 text-xs tracking-[0.16em] text-[#9a88fc] uppercase">
-                {service.index} — {service.name}
-              </p>
-              <h3 className="da-display mt-3 text-2xl font-semibold tracking-tight text-white sm:text-[1.75rem]">{service.headline}</h3>
-              <div className="mt-4 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3]">
-                {service.body.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+              <div className="flex items-center justify-between">
+                <span className="da-icon-tile flex size-10 items-center justify-center rounded-xl">{BUILD_ICONS[index]}</span>
+                <span className="da-mono text-xs text-[#9a88fc]">{build.index}</span>
               </div>
-              <p className="da-mono mt-7 text-[10px] tracking-[0.18em] text-white/40 uppercase">What we build</p>
-              <ul className="mt-3 grid gap-2.5">
-                {service.builds.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[15px] text-white/85">
-                    <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md bg-[#5a23fc]/20 text-[#c9bcff]">
-                      <Check className="size-3" aria-hidden />
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto pt-8">
-                <ArrowLink href={BOOKING_URL}>{service.cta}</ArrowLink>
-              </div>
+              <h3 className="da-display mt-5 text-lg font-semibold tracking-tight text-white">{build.name}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/55">{build.body}</p>
             </MagicCard>
+          </li>
+        ))}
+      </ol>
+
+      <div className="mt-16 flex flex-wrap items-end justify-between gap-3">
+        <p className="da-mono text-[10px] tracking-[0.18em] text-white/40 uppercase">Who it serves</p>
+        <p className="text-sm text-white/50">{SALES_OPS.marketsIntro}</p>
+      </div>
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        {SALES_OPS.markets.map((market) => (
+          <article id={market.id} key={market.id} className="da-panel flex scroll-mt-28 flex-col rounded-2xl p-6 sm:p-7">
+            <p className="da-mono text-[10px] tracking-[0.16em] text-[#9a88fc] uppercase">{market.label}</p>
+            <h3 className="da-display mt-3 text-xl leading-snug font-semibold tracking-tight text-white sm:text-2xl">{market.headline}</h3>
+            <div className="mt-3 space-y-2.5 text-[15px] leading-relaxed text-[#a3a3a3]">
+              {market.body.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            <p className="da-mono mt-6 mb-2.5 text-[10px] tracking-[0.16em] text-white/40 uppercase">Typical sales journey</p>
+            <JourneyFlow stages={market.journey} label={`Typical sales journey: ${market.journey.join(', ')}`} />
+            <p className="da-mono mt-6 text-[10px] tracking-[0.16em] text-white/40 uppercase">Common implementation priorities</p>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+              {market.priorities.map((priority) => (
+                <li key={priority} className="flex items-start gap-2.5 text-sm text-white/80">
+                  <Check className="mt-0.5 size-3.5 shrink-0 text-[#b59aff]" aria-hidden />
+                  {priority}
+                </li>
+              ))}
+            </ul>
           </article>
         ))}
+      </div>
+
+      <div className="da-panel-violet mt-4 grid gap-8 rounded-2xl p-6 sm:p-8 lg:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <p className="da-mono text-[10px] tracking-[0.18em] text-[#b59aff] uppercase">{SALES_OPS.scopeTitle}</p>
+          <p className="mt-3 text-[15px] leading-relaxed text-white/80">{SALES_OPS.scopeIntro}</p>
+          <p className="mt-4 text-xs leading-relaxed text-white/45">{SALES_OPS.scopeNote}</p>
+        </div>
+        <ul className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
+          {SALES_OPS.scope.map((item) => (
+            <li key={item} className="flex items-start gap-2.5 text-sm text-white/85">
+              <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded bg-[#5a23fc]/25">
+                <Check className="size-2.5 text-[#d9d0ff]" aria-hidden />
+              </span>
+              {item}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-10 flex flex-col items-center gap-3 text-center">
+        <p className="da-display text-lg font-medium text-white/85">{SALES_OPS.supporting}</p>
+        <ButtonLink href={DIAGNOSTIC_PATH}>{SALES_OPS.cta}</ButtonLink>
       </div>
     </Section>
   );
@@ -194,7 +270,7 @@ function Approach() {
         <ApproachRun />
       </div>
       <div className="mt-10 flex justify-center">
-        <ButtonLink href={BOOKING_URL} variant="ghost">
+        <ButtonLink href={DIAGNOSTIC_PATH} variant="ghost">
           {APPROACH.cta}
         </ButtonLink>
       </div>
@@ -281,13 +357,13 @@ function Work() {
 }
 
 /* ------------------------------------------------------------------------ */
-/* 06 · Philosophy                                                           */
+/* 06 · About                                                                */
 /* ------------------------------------------------------------------------ */
 
-function Philosophy() {
-  const { image } = PHILOSOPHY;
+function About() {
+  const { image, central, statement } = ABOUT;
   return (
-    <section id={PHILOSOPHY.id} className="relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
+    <section id={ABOUT.id} className="relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
       <div aria-hidden className="pointer-events-none absolute top-1/4 left-[-10%] h-[520px] w-[520px] rounded-full bg-[#5a23fc]/15 blur-[120px]" />
       <BlurFade inView inViewMargin="-80px" offset={14} blur="4px" duration={0.6} className={shell}>
         <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
@@ -300,24 +376,55 @@ function Philosophy() {
               sizes="(min-width: 1024px) 420px, 80vw"
               className="h-auto w-full select-none [mask-image:linear-gradient(180deg,#000_55%,transparent_100%)]"
             />
-            <figcaption className="-mt-10 relative">
-              <Quote className="size-5 text-[#9a88fc]" aria-hidden />
-              <p className="da-display mt-2 text-lg leading-snug font-medium text-white/90">{image.quote}</p>
-              <p className="da-mono mt-2 text-[10px] tracking-[0.16em] text-white/45 uppercase">— {image.quoteSource}</p>
-              <p className="mt-4 text-[11px] text-white/30">{image.credit}</p>
+            <figcaption className="relative -mt-10">
+              <p className="da-mono text-[10px] tracking-[0.18em] text-[#9a88fc] uppercase">{ABOUT.centralLabel}</p>
+              <p className="da-display da-gradient-text mt-3 text-2xl leading-tight font-semibold tracking-tight sm:text-[1.7rem]">
+                {central.top}
+                <br />
+                {central.bottom}
+              </p>
+              <p className="mt-4 text-sm leading-relaxed text-white/55">{image.caption}</p>
+              <p className="mt-3 text-[11px] text-white/30">{image.credit}</p>
             </figcaption>
           </figure>
 
           <div>
-            <SectionHeading index={PHILOSOPHY.index} eyebrow={PHILOSOPHY.eyebrow} headline={PHILOSOPHY.headline} />
-            <div className="mt-6 max-w-xl space-y-3 text-base leading-relaxed text-[#a3a3a3] sm:text-lg">
-              {PHILOSOPHY.body.map((paragraph) => (
+            <SectionHeading index={ABOUT.index} eyebrow={ABOUT.eyebrow} headline={ABOUT.headline} />
+            <div className="mt-6 max-w-xl space-y-4 text-base leading-relaxed text-[#a3a3a3] sm:text-[17px]">
+              <p className="text-white/90">{ABOUT.lead}</p>
+              {ABOUT.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
-              <p className="text-white/90">{PHILOSOPHY.intro}</p>
             </div>
-            <ul className="mt-10 grid gap-3 sm:grid-cols-2">
-              {PHILOSOPHY.principles.map((principle) => (
+            <p className="da-display mt-7 max-w-xl border-l-2 border-[#9a88fc]/60 pl-5 text-lg leading-snug font-medium text-white sm:text-xl">
+              {ABOUT.measure}
+            </p>
+
+            <div className="da-panel-violet mt-10 rounded-2xl p-6 sm:p-7">
+              <h3 className="da-display text-xl leading-snug font-semibold tracking-tight text-white sm:text-2xl">{statement.headline}</h3>
+              <ul className="mt-4 space-y-1.5">
+                {statement.lines.map((line) => (
+                  <li key={line} className="da-display text-base font-medium text-[#c9bcff] sm:text-lg">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-sm leading-relaxed text-white/60 sm:text-[15px]">{statement.close}</p>
+            </div>
+
+            <div className="mt-10 flex flex-wrap items-center justify-between gap-3">
+              <p className="da-mono text-[10px] tracking-[0.18em] text-white/40 uppercase">{ABOUT.principlesLabel}</p>
+              <p className="da-mono flex flex-wrap items-center gap-1.5 text-[10px] tracking-[0.16em] text-white/55 uppercase" aria-label={SITE.values.join(', ')}>
+                {SITE.values.map((value, index) => (
+                  <span key={value} className="flex items-center gap-1.5">
+                    {value}
+                    {index < SITE.values.length - 1 ? <ArrowRight className="size-3 text-[#9a88fc]" aria-hidden /> : null}
+                  </span>
+                ))}
+              </p>
+            </div>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+              {ABOUT.principles.map((principle) => (
                 <li key={principle.name} className="rounded-2xl">
                   <MagicCard
                     className="h-full rounded-2xl border border-white/[0.07] bg-white/[0.02]"
@@ -347,6 +454,7 @@ function Philosophy() {
 /* ------------------------------------------------------------------------ */
 
 function Founder() {
+  const [opening, ...letter] = FOUNDER.paragraphs;
   return (
     <Section id={FOUNDER.id}>
       <div className="da-panel-violet relative overflow-hidden rounded-[28px] px-6 py-12 sm:px-12 sm:py-16 lg:px-16">
@@ -358,19 +466,18 @@ function Founder() {
           height={512}
           className="pointer-events-none absolute -right-10 -bottom-16 h-[420px] w-auto opacity-[0.05] select-none"
         />
-        <div className="relative grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-          <div>
+        <div className="relative grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+          <div className="lg:sticky lg:top-28 lg:self-start">
             <Eyebrow index={FOUNDER.index}>{FOUNDER.eyebrow}</Eyebrow>
             <h2 className="da-display da-gradient-text-soft mt-5 text-[2rem] leading-[1.08] font-semibold text-balance sm:text-[2.6rem]">
               {FOUNDER.headline}
             </h2>
           </div>
           <div>
-            <div className="space-y-4 text-base leading-relaxed text-white/75 sm:text-[17px]">
-              {FOUNDER.paragraphs.map((paragraph, index) => (
-                <p key={paragraph} className={index === 0 ? 'text-white' : undefined}>
-                  {paragraph}
-                </p>
+            <p className="da-display text-xl leading-snug font-medium text-white sm:text-[1.4rem]">{opening}</p>
+            <div className="mt-6 space-y-4 text-base leading-relaxed text-white/70 sm:text-[17px]">
+              {letter.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
             <div className="mt-10 flex flex-wrap items-center justify-between gap-6 border-t border-white/10 pt-6">
@@ -510,7 +617,7 @@ function FinalCta() {
             ))}
           </div>
           <div className="mt-10">
-            <ButtonLink href={BOOKING_URL}>{FINAL.cta}</ButtonLink>
+            <ButtonLink href={DIAGNOSTIC_PATH}>{FINAL.cta}</ButtonLink>
           </div>
         </div>
       </BlurFade>
@@ -555,7 +662,7 @@ function SiteFooter() {
               <p className="da-mono text-[10px] tracking-[0.18em] text-[#9a88fc] uppercase">Connect</p>
               <ul className="mt-4 space-y-2.5">
                 <li>
-                  <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" className="text-sm text-white/60 transition-colors hover:text-white">
+                  <a href={DIAGNOSTIC_PATH} className="text-sm text-white/60 transition-colors hover:text-white">
                     Book a diagnostic
                   </a>
                 </li>
@@ -611,7 +718,7 @@ export default function DivineAcquisitionHome() {
         <Services />
         <Approach />
         <Work />
-        <Philosophy />
+        <About />
         <Founder />
         <Vistrial />
         <WhoWeServe />

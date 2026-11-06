@@ -14,8 +14,15 @@ export const SITE = {
     'Divine Acquisition helps established service businesses strengthen their sales operations and client experience. We diagnose what isn’t working, design the right processes, and implement the systems behind them.',
 } as const;
 
-/** Where "Book a diagnostic" goes. Same form the current site's "Get in touch" uses. */
-export const BOOKING_URL = 'https://form.typeform.com/to/lvtP8G4E';
+/** The Sales Operations Diagnostic request form: the site's primary conversion. */
+export const DIAGNOSTIC_PATH = '/diagnostic';
+/** Booking step after the request. */
+export const DIAGNOSTIC_BOOK_PATH = '/diagnostic/book';
+/** Pre-discovery questionnaire, sent after a diagnostic is booked. */
+export const DISCOVERY_PATH = '/discovery';
+/** Current privacy policy for Divine Acquisition forms. */
+export const PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
+export const CONTACT_EMAIL = 'malik@divineacquisition.io';
 export const VISTRIAL_URL = 'https://vistrial.io';
 export const CAREERS_URL = 'https://hiring.divineacquisition.io';
 
@@ -37,7 +44,7 @@ export type NavLink = {
   external?: boolean;
   /** Shown but not clickable. */
   muted?: boolean;
-  icon?: 'sales' | 'client' | 'vistrial' | 'more' | 'approach' | 'work' | 'philosophy' | 'founder' | 'fit';
+  icon?: 'sales' | 'b2b' | 'local' | 'vistrial' | 'more' | 'approach' | 'work' | 'philosophy' | 'founder' | 'fit';
   badge?: string;
 };
 
@@ -50,15 +57,21 @@ export const NAV: NavGroup[] = [
     links: [
       {
         label: 'Sales Operations Build Out',
-        description: 'Pipelines, CRM architecture, intake, qualification, and follow-up.',
+        description: 'From the first opportunity to the next sale.',
         href: '#sales-operations',
         icon: 'sales',
       },
       {
-        label: 'Client Experience & Retention Build Out',
-        description: 'Onboarding, sales-to-service handoffs, communication, and retention.',
-        href: '#client-experience',
-        icon: 'client',
+        label: 'B2B Service Companies & Agencies',
+        description: 'Keep every opportunity moving beyond the discovery call.',
+        href: '#b2b',
+        icon: 'b2b',
+      },
+      {
+        label: 'High-End Local Service Businesses',
+        description: 'Stop letting valuable estimates go quiet.',
+        href: '#local-services',
+        icon: 'local',
       },
     ],
   },
@@ -89,7 +102,7 @@ export const NAV: NavGroup[] = [
     links: [
       { label: 'Our Approach', description: 'Diagnose, architect, implement, validate, improve.', href: '#approach', icon: 'approach' },
       { label: 'Our Work', description: 'Practical improvements. Documented outcomes.', href: '#work', icon: 'work' },
-      { label: 'Philosophy', description: 'The Divine Acquisition standard.', href: '#philosophy', icon: 'philosophy' },
+      { label: 'About', description: 'Understanding before intervention.', href: '#about', icon: 'philosophy' },
       { label: 'Founder', description: 'A note from Malik Sannie.', href: '#founder', icon: 'founder' },
       { label: 'Who We Serve', description: 'Built for companies ready to improve.', href: '#who-we-serve', icon: 'fit' },
     ],
@@ -130,57 +143,97 @@ export const PROBLEM = {
   close: 'We help businesses identify and address those gaps.',
 } as const;
 
-export type Service = {
-  id: string;
-  index: string;
-  name: string;
-  headline: string;
-  body: string[];
-  builds: string[];
-  cta: string;
-};
-
-export const SERVICES = {
+export const SALES_OPS = {
   id: 'services',
   index: '03',
-  eyebrow: 'Our services',
-  headline: 'Two Critical Areas. One Connected Business.',
-  items: [
+  eyebrow: 'Our core service',
+  name: 'Sales Operations Build Out',
+  positioning: 'From the First Opportunity to the Next Sale.',
+  positioningBody:
+    'We diagnose, design, and implement the systems that help service businesses manage opportunities, follow up consistently, maintain pipeline visibility, and identify valuable future customer opportunities.',
+  headline: 'Your Team Shouldn’t Have to Guess What Happens Next.',
+  body: [
+    'We design and implement the infrastructure behind your sales process—from lead qualification and follow-up to pipeline management, accountability, and future customer opportunities.',
+    'Our work connects the people, processes, and technologies your business depends on to manage sales activity with greater consistency and clarity.',
+  ],
+  builds: [
     {
-      id: 'sales-operations',
       index: '01',
-      name: 'Sales Operations Build Out',
-      headline: 'Make Every Opportunity Accountable.',
-      body: [
-        'We design and implement the processes behind your sales operation—from lead intake and qualification to sales conversations, proposals, and follow-up.',
-        'Give your team clear responsibilities, connected information, and greater visibility into the opportunities they’re managing.',
-      ],
-      builds: [
-        'Sales pipelines and CRM architecture',
-        'Intake, qualification, and follow-up workflows',
-        'Opportunity ownership and handoffs',
-        'Sales reporting and operational visibility',
-      ],
-      cta: 'Explore sales operations',
+      name: 'Lead Intake & Qualification',
+      body: 'Establish clear processes for capturing, organizing, qualifying, and assigning sales opportunities.',
     },
     {
-      id: 'client-experience',
       index: '02',
-      name: 'Client Experience & Retention Build Out',
-      headline: 'The Relationship Doesn’t End When the Deal Closes.',
-      body: [
-        'We improve the processes that support customers after the sale.',
-        'From onboarding and internal handoffs to communication, customer support, and retention, we help companies create a more consistent experience throughout the client lifecycle.',
-      ],
-      builds: [
-        'Client onboarding and service workflows',
-        'Sales-to-service handoff systems',
-        'Communication and accountability processes',
-        'Retention, reactivation, and client-success reporting',
-      ],
-      cta: 'Explore client experience',
+      name: 'Sales Follow-Up & Conversion',
+      body: 'Build the workflows that support consistent outreach, appointment management, proposal follow-up, and opportunity progression.',
     },
-  ] satisfies Service[],
+    {
+      index: '03',
+      name: 'Pipeline Visibility & Accountability',
+      body: 'Create the CRM structure, reporting, and responsibilities that help teams understand where opportunities stand and what needs to happen next.',
+    },
+    {
+      index: '04',
+      name: 'Reactivation & Expansion',
+      body: 'Build appropriate processes for reconnecting with dormant opportunities, following up after a sale, and identifying renewal, referral, or expansion opportunities.',
+    },
+  ],
+  supporting: 'Built Around Your Business. Designed for Your Team.',
+  cta: 'Book your Sales Operations diagnostic',
+  scopeTitle: 'Service scope',
+  scopeIntro: 'Depending on the approved Statement of Work, implementation may include:',
+  scope: [
+    'CRM configuration',
+    'Pipeline architecture',
+    'Lead qualification and routing',
+    'Follow-up processes',
+    'Proposal and estimate tracking',
+    'Sales accountability systems',
+    'Reporting dashboards',
+    'Appropriate automation and AI integrations',
+    'Customer reactivation workflows',
+    'Team training and operating documentation',
+  ],
+  scopeNote: 'These are possible deliverables, not a guarantee that every engagement includes all items.',
+  marketsIntro: 'One methodology, implemented to fit how each market actually sells.',
+  markets: [
+    {
+      id: 'b2b',
+      label: 'B2B Service Companies & Specialized Agencies',
+      headline: 'Keep Every Opportunity Moving Beyond the Discovery Call.',
+      body: [
+        'Complex service sales require more than a contact record.',
+        'We help B2B service companies establish the processes behind qualification, discovery, proposal management, follow-up, and pipeline accountability.',
+      ],
+      journey: ['Inquiry', 'Discovery', 'Proposal', 'Decision', 'Contract', 'Expansion'],
+      priorities: [
+        'Qualification and discovery processes',
+        'CRM and opportunity management',
+        'Proposal follow-up',
+        'Salesperson accountability',
+        'Pipeline visibility',
+        'Renewal and expansion tracking',
+      ],
+    },
+    {
+      id: 'local-services',
+      label: 'High-End Local Service Businesses',
+      headline: 'Stop Letting Valuable Estimates Go Quiet.',
+      body: [
+        'When your team is busy serving customers, valuable inquiries and estimates can lose momentum.',
+        'We build the sales processes that support timely response, consistent follow-up, clearer ownership, and greater visibility into the opportunities your business has already generated.',
+      ],
+      journey: ['Inquiry', 'Qualification', 'Estimate', 'Follow-up', 'Booking', 'Referral'],
+      priorities: [
+        'Lead-response processes',
+        'Estimate and proposal follow-up',
+        'Appointment tracking',
+        'CRM organization',
+        'Sales activity visibility',
+        'Customer reactivation and referrals',
+      ],
+    },
+  ],
 } as const;
 
 export const APPROACH = {
@@ -227,36 +280,47 @@ export const WORK = {
   pendingNote: 'Engagement files are published once each outcome has been verified with the client.',
 } as const;
 
-export const PHILOSOPHY = {
-  id: 'philosophy',
+export const ABOUT = {
+  id: 'about',
   index: '06',
-  eyebrow: 'The Divine Acquisition standard',
-  headline: 'Build Something Worth Keeping.',
+  eyebrow: 'About Divine Acquisition',
+  headline: 'We Believe the Greatest Creations Are Built to Endure.',
+  lead: 'Divine Acquisition was founded on a conviction: innovation should create value beyond the moment of its creation.',
   body: [
-    'We believe enduring businesses are built through more than acquisition.',
-    'They’re built through the value they create, the promises they keep, and the systems that allow that value to continue.',
+    'Businesses deserve more than temporary fixes and disconnected technologies. They deserve thoughtful systems, disciplined execution, and partners willing to understand the people and responsibilities behind the work.',
+    'We bring together management consulting, operational design, and technology to strengthen the systems behind sales and commercial execution—so ambitious founders can build organizations that are more capable, more deliberate, and better equipped to serve.',
   ],
-  intro: 'Four principles guide our work.',
+  measure:
+    'A business is not measured solely by what it acquires. It is also measured by what it builds, what it preserves, and the value it leaves behind.',
+  central: { top: 'Understanding Before Intervention.', bottom: 'Stewardship After Implementation.' },
+  centralLabel: 'Our central philosophy',
+  statement: {
+    headline: 'Innovation Without Understanding Creates Complexity.',
+    lines: ['Technology without judgment creates dependency.', 'Ambition without discipline creates fragility.'],
+    close:
+      'Meaningful innovation requires clarity of purpose, sound judgment, and responsibility for the consequences of our work.',
+  },
+  principlesLabel: 'Four founding principles',
   principles: [
     {
       numeral: 'I',
       name: 'Devotion',
-      body: 'We take our responsibilities seriously. Our client’s needs, the quality of our work, and the integrity of our commitments come first.',
+      body: 'Genuine commitment to the needs, people, and long-term well-being of the businesses we serve. Our responsibility extends beyond the system to the people who depend on it.',
     },
     {
       numeral: 'II',
       name: 'Innovation',
-      body: 'We question established processes and use technology intentionally to create better ways of operating.',
+      body: 'Not technology for its own sake, but the disciplined application of better ideas, methods, and systems to meaningful problems.',
     },
     {
       numeral: 'III',
       name: 'Value',
-      body: 'Our work should produce something useful, measurable where possible, and capable of supporting the business beyond the initial engagement.',
+      body: 'Our work is measured by its usefulness: improvements a business can understand, operate, measure, and sustain.',
     },
     {
       numeral: 'IV',
       name: 'Exclusivity',
-      body: 'We value depth, fit, and individual attention. We seek engagements where we can understand the business and deliver work appropriate to its particular needs.',
+      body: 'Exceptional work requires attention and honest selectivity. Exclusivity is earned through the quality of our commitments, not manufactured scarcity.',
     },
   ],
   image: {
@@ -264,8 +328,7 @@ export const PHILOSOPHY = {
     width: 900,
     height: 1140,
     alt: 'White line drawing of a marble bust of Marcus Aurelius, fading into the page.',
-    quote: 'Waste no more time arguing about what a good man should be. Be one.',
-    quoteSource: 'Marcus Aurelius, Meditations',
+    caption: 'Our thinking draws on Marcus Aurelius and the Stoics: duty, disciplined judgment, and acting for the benefit of others.',
     credit: 'Bust of Marcus Aurelius, Glyptothek Munich. Photo: Bibi Saint-Pol, public domain.',
   },
 } as const;
@@ -273,17 +336,23 @@ export const PHILOSOPHY = {
 export const FOUNDER = {
   id: 'founder',
   index: '07',
-  eyebrow: 'A note from our founder',
-  headline: 'Businesses Deserve More Than Another Collection of Tools.',
+  eyebrow: 'From our founder',
+  headline: 'To Create Is a Gift. To Create Value Is a Responsibility.',
   paragraphs: [
-    'I’m Malik Sannie, founder of Divine Acquisition.',
-    'My experience in sales and operating service businesses shaped the way I think about growth.',
-    'Acquiring customers matters. But what happens between the inquiry, the sale, and the ongoing client relationship matters just as much.',
-    'I founded Divine Acquisition to work on the systems behind those experiences.',
-    'Our ambition is to combine sound business judgment, thoughtful implementation, and emerging technology to help ambitious companies build stronger operations.',
+    'I’ve always believed that the ability to create something meaningful is one of the greatest gifts we possess.',
+    'But creation alone is not enough.',
+    'What matters is what we choose to build, why we build it, and whether it genuinely improves the lives of the people it reaches.',
+    'My study of philosophy, particularly the writings of Marcus Aurelius, has continually brought me back to the importance of duty, discipline, judgment, and responsibility.',
+    'Ambition without these qualities can produce impressive things that ultimately serve very little purpose.',
+    'I founded Divine Acquisition with the belief that innovation should be guided by something greater than novelty or personal success.',
+    'Our work should make businesses more capable. It should help founders see their operations more clearly, strengthen the experiences they provide, and create value that extends beyond a single transaction.',
+    'I want Divine Acquisition to be recognized not simply for what it builds, but for the devotion and thoughtfulness with which it serves.',
+    'We will continue to pursue innovation. We will continue to challenge conventional methods. And we will remain selective about the work we undertake.',
+    'But the quality of our judgment, the integrity of our commitments, and the well-being of those we serve must remain central.',
+    'Because the greatest measure of our work is not merely what we create for ourselves, but what our creations make possible for others.',
   ],
   name: 'Malik Sannie',
-  title: 'Founder, Divine Acquisition',
+  title: 'Founder, Divine Acquisition™',
 } as const;
 
 export const VISTRIAL = {
