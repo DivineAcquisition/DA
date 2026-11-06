@@ -47,6 +47,10 @@
     {
       "path": "/api/cron/hire-sweep",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/eod-mail",
+      "schedule": "* * * * *"
     }
   ]
 }
