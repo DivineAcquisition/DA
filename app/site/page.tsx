@@ -467,11 +467,28 @@ function Founder() {
           className="pointer-events-none absolute -right-10 -bottom-16 h-[420px] w-auto opacity-[0.05] select-none"
         />
         <div className="relative grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
-          <div className="lg:sticky lg:top-28 lg:self-start">
+          <div>
             <Eyebrow index={FOUNDER.index}>{FOUNDER.eyebrow}</Eyebrow>
             <h2 className="da-display da-gradient-text-soft mt-5 text-[2rem] leading-[1.08] font-semibold text-balance sm:text-[2.6rem]">
               {FOUNDER.headline}
             </h2>
+            <figure className="relative mt-8 max-w-[420px]">
+              <div aria-hidden className="absolute -inset-3 rounded-[26px] bg-[#9a88fc]/20 blur-2xl" />
+              <div className="relative overflow-hidden rounded-[22px] border border-[#9a88fc]/30 bg-[#0f0d17] p-1.5 shadow-[0_0_72px_-28px_rgba(154,136,252,0.8)]">
+                <Image
+                  src={FOUNDER.photo.src}
+                  width={FOUNDER.photo.width}
+                  height={FOUNDER.photo.height}
+                  alt={FOUNDER.photo.alt}
+                  sizes="(min-width: 1024px) 420px, 90vw"
+                  className="h-auto w-full rounded-[17px]"
+                />
+              </div>
+              <figcaption className="relative mt-3 flex items-center justify-between text-sm">
+                <span className="da-display font-semibold text-white">{FOUNDER.name}</span>
+                <span className="text-[#aaa4c4]">{FOUNDER.title}</span>
+              </figcaption>
+            </figure>
           </div>
           <div>
             <p className="da-display text-xl leading-snug font-medium text-white sm:text-[1.4rem]">{opening}</p>

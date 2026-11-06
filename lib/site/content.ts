@@ -353,6 +353,12 @@ export const FOUNDER = {
   ],
   name: 'Malik Sannie',
   title: 'Founder, Divine Acquisition™',
+  photo: {
+    src: '/site/malik-sannie.webp',
+    width: 900,
+    height: 1002,
+    alt: 'Black-and-white photo of Malik Sannie, founder of Divine Acquisition, seated in a restaurant.',
+  },
 } as const;
 
 export const VISTRIAL = {
