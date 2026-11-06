@@ -79,7 +79,7 @@ function TraceLine({ row, shown }: { row: TraceRow; shown: boolean }) {
       <span
         className={cn(
           'da-mono shrink-0 rounded-md px-2 py-1 text-[10px] tracking-[0.08em] uppercase',
-          row.state === 'ok' && 'bg-white/[0.05] text-white/55',
+          row.state === 'ok' && 'bg-[#211c30] text-white/55',
           row.state === 'warn' && 'bg-[#f0b45c]/10 text-[#f0b45c]',
           row.state === 'bad' && 'bg-[#f87171]/10 text-[#f87171]',
         )}
@@ -114,7 +114,7 @@ export function HandoffTrace() {
         ))}
         <li
           className={cn(
-            'relative my-2 ml-9 rounded-lg border border-dashed border-white/12 px-3 py-2 text-[12px] leading-snug text-white/55 transition-opacity duration-500',
+            'relative my-2 ml-9 rounded-lg border border-dashed border-[#9a88fc]/25 px-3 py-2 text-[12px] leading-snug text-white/55 transition-opacity duration-500',
             shown > TRACE_BEFORE.length ? 'opacity-100' : 'opacity-0',
           )}
         >
@@ -137,7 +137,7 @@ const NEXT_STEP = ['Call back within 1 hr', 'Discovery booked', 'Follow-up due d
 
 function MiniCard({ title, owner, faded }: { title: string; owner: string; faded?: boolean }) {
   return (
-    <div className={cn('rounded-lg border border-white/[0.06] bg-white/[0.025] p-2', faded && 'opacity-50')}>
+    <div className={cn('rounded-lg border border-[#9a88fc]/15 bg-[#16131f] p-2', faded && 'opacity-50')}>
       <div className="h-1.5 w-3/4 rounded-full bg-white/15" />
       <div className="mt-2 flex items-center justify-between">
         <span className="text-[10px] text-white/45">{title}</span>
@@ -153,7 +153,7 @@ export function PipelineBoard() {
   const stage = useCycle(STAGES.length, 2200, visible, 2);
 
   return (
-    <div ref={ref} className="relative rounded-xl border border-white/[0.06] bg-[#0b0b0d] p-3" aria-hidden>
+    <div ref={ref} className="relative rounded-xl border border-[#9a88fc]/15 bg-[#12101a] p-3" aria-hidden>
       <div className="mb-3 flex items-center justify-between px-1">
         <span className="da-mono text-[10px] tracking-[0.16em] text-white/40 uppercase">Pipeline</span>
         <span className="flex items-center gap-1.5">
@@ -164,7 +164,7 @@ export function PipelineBoard() {
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {STAGES.map((name, column) => (
-          <div key={name} className="min-w-0 rounded-lg bg-white/[0.015] p-1.5">
+          <div key={name} className="min-w-0 rounded-lg bg-[#16131f] p-1.5">
             <p className="mb-1.5 flex items-center justify-between px-0.5 text-[10px] text-white/50">
               <span className="truncate">{name}</span>
               <span className="text-white/25">{[3, 2, 2, 1][column]}</span>
@@ -173,7 +173,7 @@ export function PipelineBoard() {
               {stage === column ? (
                 <div key={`active-${column}`} className="da-enter rounded-lg border border-[#9a88fc]/60 bg-[#5a23fc]/15 p-2 shadow-[0_0_24px_-8px_rgba(90,35,252,0.9)]">
                   <p className="truncate text-[10px] font-medium text-white">Kitchen remodel</p>
-                  <p className="mt-1 truncate text-[9px] text-[#c9bcff]">{NEXT_STEP[column]}</p>
+                  <p className="mt-1 truncate text-[9px] text-[#c3b6fe]">{NEXT_STEP[column]}</p>
                   <div className="mt-1.5 flex items-center justify-between">
                     <ToolLogo tool={column === 0 ? TOOLS.googleAds : column === 3 ? TOOLS.stripe : TOOLS.calendly} size={9} />
                     <span className="flex size-4 items-center justify-center rounded-full bg-[#9a88fc] text-[8px] font-semibold text-black">JR</span>
@@ -188,7 +188,7 @@ export function PipelineBoard() {
       </div>
       <div className="mt-3 flex flex-wrap gap-1.5 px-1">
         {['Owner assigned', 'Next step dated', 'Source tracked'].map((chip) => (
-          <span key={chip} className="flex items-center gap-1 rounded-full bg-white/[0.04] px-2 py-0.5 text-[10px] text-white/55">
+          <span key={chip} className="flex items-center gap-1 rounded-full bg-[#1c1828] px-2 py-0.5 text-[10px] text-white/55">
             <Check className="size-2.5 text-[#52d6a4]" /> {chip}
           </span>
         ))}
@@ -220,8 +220,8 @@ export function JourneyFlow({ stages, label }: { stages: readonly string[]; labe
               index === active
                 ? 'border-[#9a88fc]/60 bg-[#5a23fc]/25 text-white shadow-[0_0_18px_-4px_rgba(90,35,252,0.9)]'
                 : index < active
-                  ? 'border-white/10 bg-white/[0.04] text-white/70'
-                  : 'border-white/[0.07] text-white/45',
+                  ? 'border-[#9a88fc]/20 bg-[#1c1828] text-white/70'
+                  : 'border-[#9a88fc]/15 text-white/45',
             )}
           >
             {stage}
@@ -258,12 +258,12 @@ function StepState({ state }: { state: 'done' | 'running' | 'queued' }) {
     );
   if (state === 'running')
     return (
-      <span className="da-mono inline-flex items-center gap-1 rounded-full whitespace-nowrap bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.12em] text-[#c9bcff] uppercase">
+      <span className="da-mono inline-flex items-center gap-1 rounded-full whitespace-nowrap bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.12em] text-[#c3b6fe] uppercase">
         <Loader2 className="size-2.5 animate-spin" aria-hidden /> In progress
       </span>
     );
   return (
-    <span className="da-mono inline-flex items-center gap-1 rounded-full bg-white/[0.04] px-2 py-0.5 text-[9px] tracking-[0.12em] text-white/40 uppercase">
+    <span className="da-mono inline-flex items-center gap-1 rounded-full bg-[#1c1828] px-2 py-0.5 text-[9px] tracking-[0.12em] text-white/40 uppercase">
       <CircleDashed className="size-2.5" aria-hidden /> Queued
     </span>
   );
@@ -285,14 +285,14 @@ export function ApproachRun() {
                 'flex h-full flex-col rounded-2xl border p-5 transition-all duration-700',
                 state === 'running'
                   ? 'border-[#9a88fc]/50 bg-[#5a23fc]/[0.08] shadow-[0_0_50px_-20px_rgba(90,35,252,0.95)]'
-                  : 'border-white/[0.07] bg-white/[0.02]',
+                  : 'border-[#9a88fc]/15 bg-[#16131f]',
               )}
             >
               <div className="flex items-center justify-between">
                 <span
                   className={cn(
                     'flex size-10 items-center justify-center rounded-xl transition-colors duration-500',
-                    state === 'queued' ? 'bg-white/[0.04] text-white/40 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]' : 'da-icon-tile',
+                    state === 'queued' ? 'bg-[#1c1828] text-white/40 shadow-[inset_0_0_0_1px_rgba(154,136,252,0.14)]' : 'da-icon-tile',
                   )}
                 >
                   {STEP_ICONS[index]}
@@ -301,7 +301,7 @@ export function ApproachRun() {
               </div>
               <h3 className="da-display mt-5 text-xl font-semibold tracking-tight text-white">{step.name}</h3>
               <p className="mt-2 flex-1 text-sm leading-relaxed text-white/55">{step.body}</p>
-              <div className="mt-5 flex flex-col items-start gap-2 border-t border-white/[0.06] pt-4">
+              <div className="mt-5 flex flex-col items-start gap-2 border-t border-[#9a88fc]/15 pt-4">
                 <span className="text-[11px] text-white/45">{step.artifact}</span>
                 <StepState state={state} />
               </div>
@@ -350,7 +350,7 @@ export function FitCheck() {
               key={criterion}
               className={cn(
                 'flex items-start gap-3 rounded-xl border px-4 py-3.5 transition-all duration-500',
-                on ? 'border-[#9a88fc]/25 bg-[#5a23fc]/[0.07]' : 'border-white/[0.06] bg-white/[0.015]',
+                on ? 'border-[#9a88fc]/25 bg-[#5a23fc]/[0.07]' : 'border-[#9a88fc]/15 bg-[#16131f]',
               )}
             >
               <span

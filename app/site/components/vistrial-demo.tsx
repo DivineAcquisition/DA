@@ -28,7 +28,7 @@ const FINDINGS: Array<{ claim: string; basis: Basis; sources: number }> = [
 
 const BASIS_STYLE: Record<Basis, string> = {
   observed: 'bg-[#52d6a4]/12 text-[#52d6a4]',
-  inferred: 'bg-[#9a88fc]/15 text-[#c9bcff]',
+  inferred: 'bg-[#9a88fc]/15 text-[#c3b6fe]',
   hypothesis: 'bg-[#f0b45c]/12 text-[#f0b45c]',
 };
 
@@ -129,9 +129,9 @@ export function VistrialDemo() {
   return (
     <div ref={ref} className="relative">
       <div aria-hidden className="absolute -inset-8 rounded-[40px] bg-[#5a23fc]/25 blur-3xl" />
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.09] bg-[#0b0b0d] shadow-[0_40px_100px_-40px_rgba(90,35,252,0.9)]">
+      <div className="relative overflow-hidden rounded-2xl border border-[#9a88fc]/25 bg-[#12101a] shadow-[0_40px_100px_-40px_rgba(90,35,252,0.9)]">
         {/* Browser chrome */}
-        <div className="flex items-center gap-3 border-b border-white/[0.06] bg-[#111113] px-4 py-2.5">
+        <div className="flex items-center gap-3 border-b border-[#9a88fc]/15 bg-[#15131f] px-4 py-2.5">
           <div className="flex gap-1.5" aria-hidden>
             <span className="size-2.5 rounded-full bg-white/12" />
             <span className="size-2.5 rounded-full bg-white/12" />
@@ -146,7 +146,7 @@ export function VistrialDemo() {
             <Lock className="size-3" aria-hidden />
             <span className="truncate">vistrial.io/research-studio</span>
           </a>
-          <span className="da-mono hidden rounded-full bg-white/[0.05] px-2 py-0.5 text-[9px] tracking-[0.12em] text-white/40 uppercase sm:inline">Sample data</span>
+          <span className="da-mono hidden rounded-full bg-[#211c30] px-2 py-0.5 text-[9px] tracking-[0.12em] text-white/40 uppercase sm:inline">Sample data</span>
         </div>
 
         <div className="p-4 sm:p-5">
@@ -165,7 +165,7 @@ export function VistrialDemo() {
           </div>
 
           {/* Run progress */}
-          <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+          <div className="mt-4 rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-3">
             <div className="flex items-center justify-between text-[12px]">
               <span key={step} className="da-enter flex items-center gap-2 text-white/85">
                 <Search className="size-3.5 text-[#b59aff]" aria-hidden />
@@ -175,7 +175,7 @@ export function VistrialDemo() {
                 Step {step + 1} of {STEPS.length}
               </span>
             </div>
-            <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-[#251f36]">
               <div className="h-full rounded-full bg-gradient-to-r from-[#5a23fc] to-[#b59aff] transition-[width] duration-700" style={{ width: `${pct}%` }} />
             </div>
             <ul className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
@@ -184,7 +184,7 @@ export function VistrialDemo() {
                   key={source.label}
                   className={cn(
                     'flex items-center gap-2 rounded-lg border px-2 py-1.5 transition-colors duration-500',
-                    step >= 1 && index <= step + 1 ? 'border-white/[0.09] bg-white/[0.03]' : 'border-white/[0.04] opacity-60',
+                    step >= 1 && index <= step + 1 ? 'border-[#9a88fc]/25 bg-[#16131f]' : 'border-white/[0.04] opacity-60',
                   )}
                 >
                   {source.tool ? <ToolLogo tool={source.tool} size={12} tile={false} /> : <Globe className="size-3 text-[#b59aff]" aria-hidden />}
@@ -203,7 +203,7 @@ export function VistrialDemo() {
               <li
                 key={finding.claim}
                 className={cn(
-                  'flex items-start justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.015] px-3 py-2.5 transition-opacity duration-500',
+                  'flex items-start justify-between gap-3 rounded-xl border border-[#9a88fc]/15 bg-[#16131f] px-3 py-2.5 transition-opacity duration-500',
                   step >= 2 || index === 0 ? 'opacity-100' : 'opacity-40',
                 )}
               >

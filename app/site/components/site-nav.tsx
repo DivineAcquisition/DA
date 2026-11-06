@@ -47,7 +47,7 @@ function DropdownItem({ link, onNavigate }: { link: NavLink; onNavigate: () => v
       <span
         className={cn(
           'mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg',
-          link.icon === 'vistrial' ? 'bg-black shadow-[inset_0_0_0_1px_rgba(255,255,255,0.1)]' : 'da-icon-tile',
+          link.icon === 'vistrial' ? 'bg-black shadow-[inset_0_0_0_1px_rgba(154,136,252,0.22)]' : 'da-icon-tile',
         )}
       >
         {link.icon ? ICONS[link.icon] : <Layers className="size-[18px]" aria-hidden />}
@@ -56,7 +56,7 @@ function DropdownItem({ link, onNavigate }: { link: NavLink; onNavigate: () => v
         <span className="flex items-center gap-2 text-sm font-medium text-white">
           {link.label}
           {link.badge ? (
-            <span className="da-mono rounded-full bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.14em] text-[#c9bcff] uppercase">{link.badge}</span>
+            <span className="da-mono rounded-full bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.14em] text-[#c3b6fe] uppercase">{link.badge}</span>
           ) : null}
           {link.external ? <ArrowUpRight className="size-3.5 text-white/40" aria-hidden /> : null}
         </span>
@@ -72,7 +72,7 @@ function DropdownItem({ link, onNavigate }: { link: NavLink; onNavigate: () => v
       href={link.href}
       {...linkProps(link)}
       onClick={onNavigate}
-      className="flex items-start gap-3 rounded-xl p-3 outline-none transition-colors hover:bg-white/[0.05] focus-visible:bg-white/[0.06]"
+      className="flex items-start gap-3 rounded-xl p-3 outline-none transition-colors hover:bg-[#211c30] focus-visible:bg-[#251f36]"
     >
       {body}
     </a>
@@ -113,7 +113,7 @@ function Dropdown({
         onClick={() => (open ? onClose() : onOpen())}
         className={cn(
           'flex h-9 items-center gap-1 rounded-full px-3.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[#9a88fc]',
-          open ? 'bg-white/[0.07] text-white' : 'text-white/75 hover:text-white',
+          open ? 'bg-[#28223a] text-white' : 'text-white/75 hover:text-white',
         )}
       >
         {group.label}
@@ -131,7 +131,7 @@ function Dropdown({
           >
             <div
               className={cn(
-                'da-hairline-top overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0e0e10]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_60px_-30px_rgba(90,35,252,0.6)] backdrop-blur-xl',
+                'da-hairline-top overflow-hidden rounded-2xl border border-[#9a88fc]/20 bg-[#13111c]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_60px_-30px_rgba(90,35,252,0.6)] backdrop-blur-xl',
                 wide ? 'grid w-[560px] grid-cols-2 gap-1' : 'w-[400px]',
               )}
             >
@@ -163,7 +163,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.18 }}
-      className="fixed inset-0 z-40 overflow-y-auto bg-[#080808]/97 px-4 pt-24 pb-10 backdrop-blur-xl lg:hidden"
+      className="fixed inset-0 z-40 overflow-y-auto bg-[#0b0a11]/97 px-4 pt-24 pb-10 backdrop-blur-xl lg:hidden"
     >
       <nav aria-label="Mobile" className="mx-auto max-w-md space-y-8">
         {NAV.map((group) => (
@@ -233,7 +233,7 @@ export function SiteNav() {
           className={cn(
             'mx-auto flex h-14 max-w-[1200px] items-center justify-between rounded-2xl pr-2 pl-4 transition-all duration-300 sm:pl-5',
             scrolled || mobile
-              ? 'border border-white/[0.07] bg-[#0b0b0d]/80 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl'
+              ? 'border border-[#9a88fc]/15 bg-[#12101a]/80 shadow-[0_20px_50px_-30px_rgba(0,0,0,0.9)] backdrop-blur-xl'
               : 'border border-transparent',
           )}
         >
@@ -266,7 +266,7 @@ export function SiteNav() {
               aria-label={mobile ? 'Close menu' : 'Open menu'}
               aria-expanded={mobile}
               onClick={() => setMobile((value) => !value)}
-              className="flex size-10 items-center justify-center rounded-xl text-white/80 outline-none hover:bg-white/[0.06] focus-visible:ring-2 focus-visible:ring-[#9a88fc] lg:hidden"
+              className="flex size-10 items-center justify-center rounded-xl text-white/80 outline-none hover:bg-[#251f36] focus-visible:ring-2 focus-visible:ring-[#9a88fc] lg:hidden"
             >
               {mobile ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
             </button>

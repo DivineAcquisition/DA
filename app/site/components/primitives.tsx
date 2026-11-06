@@ -11,8 +11,8 @@ export const shell = 'mx-auto w-full max-w-[1200px] px-4 sm:px-6 lg:px-8';
 /** `// 02  THE GAP BETWEEN ACTIVITY AND EXECUTION` */
 export function Eyebrow({ index, children, className }: { index?: string; children: ReactNode; className?: string }) {
   return (
-    <p className={cn('da-mono flex items-center gap-2 text-[11px] tracking-[0.18em] text-white/55 uppercase', className)}>
-      {index ? <span className="text-[#9a88fc]">{'// '}{index}</span> : null}
+    <p className={cn('da-mono flex items-center gap-2 text-[11px] tracking-[0.18em] text-[#c3b6fe]/80 uppercase', className)}>
+      {index ? <span className="text-[#9a88fc]/90">{'// '}{index}</span> : null}
       <span>{children}</span>
     </p>
   );
@@ -48,7 +48,7 @@ export function SectionHeading({
         {headline}
       </h2>
       {lead ? (
-        <p className={cn('mt-5 max-w-2xl text-base leading-relaxed text-[#a3a3a3] sm:text-lg', center && 'mx-auto')}>{lead}</p>
+        <p className={cn('mt-5 max-w-2xl text-base leading-relaxed text-[#aaa4c4] sm:text-lg', center && 'mx-auto')}>{lead}</p>
       ) : null}
     </div>
   );
@@ -124,7 +124,7 @@ export function ArrowLink({ href, children, className }: { href: string; childre
       href={href}
       {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
       className={cn(
-        'da-mono group inline-flex items-center gap-2 text-xs tracking-[0.16em] text-[#c9bcff] uppercase transition-colors hover:text-white',
+        'da-mono group inline-flex items-center gap-2 text-xs tracking-[0.16em] text-[#c3b6fe] uppercase transition-colors hover:text-white',
         className,
       )}
     >
@@ -166,7 +166,7 @@ export function ToolLogo({
     <span
       title={tool.name}
       className={cn(
-        'inline-flex shrink-0 items-center justify-center rounded-lg bg-[#1a1a1a] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]',
+        'inline-flex shrink-0 items-center justify-center rounded-lg bg-[#1d1a29] shadow-[inset_0_0_0_1px_rgba(154,136,252,0.18)]',
         className,
       )}
       style={{ width: size + 14, height: size + 14 }}

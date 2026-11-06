@@ -22,7 +22,7 @@ export default async function DiscoveryPage({ searchParams }: Props) {
         <h1 className="da-display da-gradient-text mt-5 text-[2.2rem] leading-[1.05] font-semibold text-balance sm:text-5xl">
           Help Us Understand Your Sales Operation
         </h1>
-        <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+        <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
           <p className="text-white/85">The more context we have about your current sales process, the more productive our conversation can be.</p>
           <p>You don’t need perfect numbers. Share what you know, and indicate when a figure is an estimate.</p>
         </div>

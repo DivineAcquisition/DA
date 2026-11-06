@@ -1,26 +1,28 @@
 /*
- * Divine Acquisition company site. Dark, with the violet of divineacquisition.io:
- * #5A23FC for glows and fills, #9A88FC / #B59AFF for light accents, #0F0F0F
- * and #121212 surfaces, white text with #999 secondary.
+ * Divine Acquisition company site. Dark, with two purples: the deep violet of
+ * divineacquisition.io (#5A23FC) for buttons and strong glows, and Vistrial's
+ * lavender (#9A88FC, #C3B6FE) for accents, borders, and soft card glows.
+ * Surfaces are solid and lavender-tinted; nothing important is see-through.
  */
 
 html:has(.da-site),
 body:has(.da-site) {
-  background: #080808;
+  background: #0b0a11;
 }
 
 .da-site {
-  --s-page: #080808;
-  --s-bg: #0f0f0f;
-  --s-surface: #121212;
-  --s-surface-2: #171717;
-  --s-line: rgba(255, 255, 255, 0.07);
-  --s-line-strong: rgba(255, 255, 255, 0.12);
+  --s-page: #0b0a11;
+  --s-bg: #0e0c15;
+  --s-surface: #15131f;
+  --s-surface-2: #1c1828;
+  --s-line: rgba(154, 136, 252, 0.14);
+  --s-line-strong: rgba(154, 136, 252, 0.24);
   --s-violet: #5a23fc;
   --s-violet-rgb: 90, 35, 252;
   --s-brand: #9a88fc;
   --s-lilac: #b59aff;
-  --s-muted: #999999;
+  --s-lavender: #c3b6fe;
+  --s-muted: #aaa4c4;
   --s-good: #52d6a4;
   --s-warn: #f0b45c;
   --s-bad: #f87171;
@@ -49,14 +51,14 @@ body:has(.da-site) {
 
 /* Headline fill: white that cools into lilac, as on the current site. */
 .da-gradient-text {
-  background: linear-gradient(180deg, #ffffff 0%, #ffffff 42%, #c9bcff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 40%, #c3b6fe 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .da-gradient-text-soft {
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.72) 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #ffffff 35%, #d9d0ff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -65,8 +67,8 @@ body:has(.da-site) {
 /* Faint grid that fades out toward the edges. */
 .da-grid {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(154, 136, 252, 0.075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(154, 136, 252, 0.075) 1px, transparent 1px);
   background-size: 64px 64px;
   background-position: center top;
   -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 25%, transparent 80%);
@@ -75,8 +77,8 @@ body:has(.da-site) {
 
 .da-glow-hero {
   background:
-    radial-gradient(42% 52% at 50% 62%, rgba(var(--s-violet-rgb), 0.55) 0%, rgba(var(--s-violet-rgb), 0.12) 45%, transparent 75%),
-    radial-gradient(28% 30% at 50% 30%, rgba(154, 136, 252, 0.18) 0%, transparent 70%);
+    radial-gradient(42% 52% at 50% 62%, rgba(var(--s-violet-rgb), 0.5) 0%, rgba(var(--s-violet-rgb), 0.1) 45%, transparent 75%),
+    radial-gradient(55% 40% at 50% 28%, rgba(154, 136, 252, 0.26) 0%, rgba(195, 182, 254, 0.06) 50%, transparent 75%);
 }
 
 /* Two soft light cones from the top of the hero. */
@@ -121,29 +123,46 @@ body:has(.da-site) {
 }
 
 .da-btn-ghost {
-  background: rgba(255, 255, 255, 0.03);
-  box-shadow: inset 0 0 0 1px var(--s-line-strong);
+  background: #16131f;
+  box-shadow:
+    inset 0 0 0 1px rgba(154, 136, 252, 0.32),
+    0 10px 30px -18px rgba(154, 136, 252, 0.7);
   transition: background 200ms ease, box-shadow 200ms ease;
 }
 .da-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  background: #1e1a2c;
+  box-shadow:
+    inset 0 0 0 1px rgba(195, 182, 254, 0.55),
+    0 12px 34px -16px rgba(154, 136, 252, 0.85);
 }
 
 /* Panels */
 .da-panel {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.012));
+  background: linear-gradient(180deg, #17141f 0%, #14121c 100%);
   box-shadow:
-    inset 0 0 0 1px var(--s-line),
+    inset 0 1px 0 rgba(195, 182, 254, 0.08),
+    inset 0 0 0 1px rgba(154, 136, 252, 0.16),
+    0 0 72px -34px rgba(154, 136, 252, 0.55),
     0 30px 60px -40px rgba(0, 0, 0, 0.9);
 }
 .da-panel-violet {
   background:
-    radial-gradient(120% 80% at 50% 0%, rgba(var(--s-violet-rgb), 0.16), transparent 60%),
-    linear-gradient(180deg, rgba(15, 15, 15, 0.98) 63%, #1a1630 100%);
+    radial-gradient(120% 70% at 50% 0%, rgba(154, 136, 252, 0.2), transparent 62%),
+    linear-gradient(180deg, #16131f 0%, #15121f 60%, #1c1733 100%);
   box-shadow:
-    inset 0 0 0 1px rgba(154, 136, 252, 0.16),
-    0 40px 90px -50px rgba(var(--s-violet-rgb), 0.8);
+    inset 0 1px 0 rgba(195, 182, 254, 0.12),
+    inset 0 0 0 1px rgba(154, 136, 252, 0.24),
+    0 0 72px -28px rgba(154, 136, 252, 0.8);
+}
+
+/* Solid surface for forms: no transparency over the page. */
+.da-form-card {
+  background: #15131f;
+  box-shadow:
+    inset 0 1px 0 rgba(195, 182, 254, 0.1),
+    inset 0 0 0 1px rgba(154, 136, 252, 0.26),
+    0 0 90px -40px rgba(154, 136, 252, 0.7),
+    0 40px 80px -50px rgba(0, 0, 0, 0.95);
 }
 
 .da-hairline-top {
@@ -178,7 +197,7 @@ body:has(.da-site) {
 }
 
 .da-shimmer-text {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.55) 0%, #ffffff 45%, rgba(255, 255, 255, 0.55) 90%);
+  background: linear-gradient(90deg, rgba(195, 182, 254, 0.75) 0%, #ffffff 45%, rgba(195, 182, 254, 0.75) 90%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -187,7 +206,7 @@ body:has(.da-site) {
 }
 
 .da-skeleton {
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(90deg, rgba(154, 136, 252, 0.1) 0%, rgba(195, 182, 254, 0.22) 50%, rgba(154, 136, 252, 0.1) 100%);
   background-size: 200% 100%;
   animation: da-shimmer 2.4s linear infinite;
 }

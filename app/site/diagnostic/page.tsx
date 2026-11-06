@@ -27,15 +27,15 @@ export default function DiagnosticPage() {
           <h1 className="da-display da-gradient-text mt-5 text-[2.2rem] leading-[1.05] font-semibold text-balance sm:text-5xl">
             Request Your Sales Operations Diagnostic
           </h1>
-          <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+          <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
             <p className="text-white/85">Tell us about your business and the challenges affecting your sales process.</p>
             <p>We’ll review your information to understand where improvements may be needed and determine the appropriate next step.</p>
           </div>
           <ol className="mt-8 space-y-3">
             {STEPS.map((step, index) => (
-              <li key={step.title} className="flex gap-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+              <li key={step.title} className="flex gap-4 rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-4">
                 <span
-                  className={`da-mono flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] ${index === 0 ? 'bg-[#5a23fc] text-white' : 'bg-white/[0.06] text-white/55'}`}
+                  className={`da-mono flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] ${index === 0 ? 'bg-[#5a23fc] text-white' : 'bg-[#251f36] text-white/55'}`}
                 >
                   {index + 1}
                 </span>

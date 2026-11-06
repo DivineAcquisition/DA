@@ -42,12 +42,12 @@ function Hero() {
         <div className="da-grid absolute inset-0" />
         <div className="da-glow-hero absolute inset-x-0 top-0 h-[1100px]" />
         <div className="da-spotlight absolute inset-x-0 top-0 h-[700px]" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#080808]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#0b0a11]" />
       </div>
 
       <div className={`${shell} relative`}>
         <BlurFade offset={10} blur="6px" duration={0.7} className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <p className="da-mono inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] px-4 py-1.5 text-[10px] tracking-[0.16em] text-white/70 uppercase backdrop-blur sm:text-[11px]">
+          <p className="da-mono inline-flex items-center gap-2.5 rounded-full border border-[#9a88fc]/20 bg-[#1c1828] px-4 py-1.5 text-[10px] tracking-[0.16em] text-white/70 uppercase backdrop-blur sm:text-[11px]">
             <span className="size-1.5 rounded-full bg-[#b59aff] shadow-[0_0_10px_2px_rgba(181,154,255,0.8)]" />
             {HERO.eyebrow}
           </p>
@@ -55,7 +55,7 @@ function Hero() {
             {HERO.headline}
           </h1>
           <p className="mt-7 max-w-2xl text-lg leading-relaxed text-white/85 sm:text-xl">{HERO.lead}</p>
-          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">{HERO.body}</p>
+          <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">{HERO.body}</p>
           <div className="mt-9 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
             <ButtonLink href={DIAGNOSTIC_PATH}>{HERO.primaryCta}</ButtonLink>
             <ButtonLink href="#services" variant="ghost">
@@ -74,14 +74,14 @@ function Hero() {
 
 function ToolStrip() {
   return (
-    <section aria-label="Platforms we build with" className="relative border-y border-white/[0.06] bg-[#0b0b0c] py-8">
+    <section aria-label="Platforms we build with" className="relative border-y border-[#9a88fc]/15 bg-[#0e0c15] py-8">
       <p className="da-mono mb-5 text-center text-[10px] tracking-[0.2em] text-white/40 uppercase">
         Systems designed around the platforms service businesses already run on
       </p>
       <div className="relative [mask-image:linear-gradient(90deg,transparent,#000_12%,#000_88%,transparent)]">
         <Marquee pauseOnHover repeat={3} className="[--duration:55s] [--gap:2.75rem]">
           {TOOL_STRIP.map((tool) => (
-            <span key={tool.id} className="flex items-center gap-3 rounded-full border border-white/[0.06] bg-white/[0.02] py-1.5 pr-4 pl-1.5 transition-colors duration-300 hover:border-white/15 hover:bg-white/[0.05]">
+            <span key={tool.id} className="flex items-center gap-3 rounded-full border border-[#9a88fc]/15 bg-[#16131f] py-1.5 pr-4 pl-1.5 transition-colors duration-300 hover:border-[#9a88fc]/30 hover:bg-[#211c30]">
               <ToolLogo tool={tool} size={18} className="rounded-full" />
               <span className="text-sm font-medium whitespace-nowrap text-white/75">{tool.name}</span>
             </span>
@@ -110,14 +110,14 @@ function Problem() {
               </li>
             ))}
           </ol>
-          <div className="space-y-4 border-l border-white/10 pl-5 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+          <div className="space-y-4 border-l border-[#9a88fc]/20 pl-5 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
             <p className="text-white/85">{PROBLEM.handoff}</p>
             <p className="text-white">{PROBLEM.risk}</p>
             <p>{PROBLEM.symptoms}</p>
             <p>{PROBLEM.notMore}</p>
             <p className="text-white/85">{PROBLEM.rebuild}</p>
           </div>
-          <p className="da-display text-lg font-medium text-[#c9bcff]">{PROBLEM.close}</p>
+          <p className="da-display text-lg font-medium text-[#c3b6fe]">{PROBLEM.close}</p>
         </div>
         <HandoffTrace />
       </div>
@@ -145,23 +145,23 @@ function Services() {
           <h2 className="da-display da-gradient-text-soft mt-5 text-[2rem] leading-[1.06] font-semibold text-balance sm:text-5xl lg:text-[3.4rem]">
             {SALES_OPS.name}
           </h2>
-          <p className="da-display mt-4 text-xl font-medium text-[#c9bcff] sm:text-2xl">{SALES_OPS.positioning}</p>
+          <p className="da-display mt-4 text-xl font-medium text-[#c3b6fe] sm:text-2xl">{SALES_OPS.positioning}</p>
         </div>
-        <p className="text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">{SALES_OPS.positioningBody}</p>
+        <p className="text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">{SALES_OPS.positioningBody}</p>
       </div>
 
       <article id="sales-operations" className="mt-14 scroll-mt-28 rounded-[24px]">
         <MagicCard
-          className="rounded-[24px] border border-white/[0.07] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01))]"
+          className="rounded-[24px] border border-[#9a88fc]/15 bg-[#15131f] shadow-[0_0_72px_-28px_rgba(154,136,252,0.55)]"
           contentClassName="grid gap-10 p-6 sm:p-8 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:p-10"
-          gradientColor="rgba(90, 35, 252, 0.14)"
-          gradientFrom="#5a23fc"
-          gradientTo="#b59aff"
+          gradientColor="rgba(154, 136, 252, 0.16)"
+          gradientFrom="#9a88fc"
+          gradientTo="#c3b6fe"
         >
-          <BorderBeam duration={12} size={160} colorFrom="#5a23fc" colorTo="#b59aff" borderWidth={1} />
+          <BorderBeam duration={12} size={160} colorFrom="#9a88fc" colorTo="#c3b6fe" borderWidth={1} />
           <div>
             <h3 className="da-display text-2xl leading-tight font-semibold tracking-tight text-white sm:text-[2rem]">{SALES_OPS.headline}</h3>
-            <div className="mt-5 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+            <div className="mt-5 space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
               {SALES_OPS.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -180,11 +180,11 @@ function Services() {
         {SALES_OPS.builds.map((build, index) => (
           <li key={build.name} className="rounded-2xl">
             <MagicCard
-              className="h-full rounded-2xl border border-white/[0.07] bg-white/[0.02]"
+              className="h-full rounded-2xl border border-[#9a88fc]/15 bg-[#16131f]"
               contentClassName="flex h-full flex-col p-5"
-              gradientColor="rgba(90, 35, 252, 0.12)"
-              gradientFrom="#5a23fc"
-              gradientTo="#b59aff"
+              gradientColor="rgba(154, 136, 252, 0.14)"
+              gradientFrom="#9a88fc"
+              gradientTo="#c3b6fe"
             >
               <div className="flex items-center justify-between">
                 <span className="da-icon-tile flex size-10 items-center justify-center rounded-xl">{BUILD_ICONS[index]}</span>
@@ -206,7 +206,7 @@ function Services() {
           <article id={market.id} key={market.id} className="da-panel flex scroll-mt-28 flex-col rounded-2xl p-6 sm:p-7">
             <p className="da-mono text-[10px] tracking-[0.16em] text-[#9a88fc] uppercase">{market.label}</p>
             <h3 className="da-display mt-3 text-xl leading-snug font-semibold tracking-tight text-white sm:text-2xl">{market.headline}</h3>
-            <div className="mt-3 space-y-2.5 text-[15px] leading-relaxed text-[#a3a3a3]">
+            <div className="mt-3 space-y-2.5 text-[15px] leading-relaxed text-[#aaa4c4]">
               {market.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -261,7 +261,7 @@ function Approach() {
     <Section id={APPROACH.id}>
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
         <SectionHeading index={APPROACH.index} eyebrow={APPROACH.eyebrow} headline={APPROACH.headline} />
-        <div className="space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+        <div className="space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
           <p className="text-white/90">{APPROACH.lead}</p>
           <p>{APPROACH.body}</p>
         </div>
@@ -287,7 +287,7 @@ function EngagementFile({ number }: { number: number }) {
     <div className="da-panel relative overflow-hidden rounded-2xl p-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="da-mono text-[10px] tracking-[0.18em] whitespace-nowrap text-white/40 uppercase">File {String(number).padStart(3, '0')}</span>
-        <span className="da-mono rounded-full border border-[#9a88fc]/30 px-2 py-0.5 text-[9px] tracking-[0.14em] whitespace-nowrap text-[#c9bcff] uppercase">
+        <span className="da-mono rounded-full border border-[#9a88fc]/30 px-2 py-0.5 text-[9px] tracking-[0.14em] whitespace-nowrap text-[#c3b6fe] uppercase">
           Pending verification
         </span>
       </div>
@@ -309,7 +309,7 @@ function Work() {
     <Section id={WORK.id}>
       <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
         <SectionHeading index={WORK.index} eyebrow={WORK.eyebrow} headline={WORK.headline} />
-        <div className="space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+        <div className="space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
           <p className="text-white/90">{WORK.lead}</p>
           <p>{WORK.body}</p>
         </div>
@@ -390,7 +390,7 @@ function About() {
 
           <div>
             <SectionHeading index={ABOUT.index} eyebrow={ABOUT.eyebrow} headline={ABOUT.headline} />
-            <div className="mt-6 max-w-xl space-y-4 text-base leading-relaxed text-[#a3a3a3] sm:text-[17px]">
+            <div className="mt-6 max-w-xl space-y-4 text-base leading-relaxed text-[#aaa4c4] sm:text-[17px]">
               <p className="text-white/90">{ABOUT.lead}</p>
               {ABOUT.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
@@ -404,7 +404,7 @@ function About() {
               <h3 className="da-display text-xl leading-snug font-semibold tracking-tight text-white sm:text-2xl">{statement.headline}</h3>
               <ul className="mt-4 space-y-1.5">
                 {statement.lines.map((line) => (
-                  <li key={line} className="da-display text-base font-medium text-[#c9bcff] sm:text-lg">
+                  <li key={line} className="da-display text-base font-medium text-[#c3b6fe] sm:text-lg">
                     {line}
                   </li>
                 ))}
@@ -427,17 +427,17 @@ function About() {
               {ABOUT.principles.map((principle) => (
                 <li key={principle.name} className="rounded-2xl">
                   <MagicCard
-                    className="h-full rounded-2xl border border-white/[0.07] bg-white/[0.02]"
+                    className="h-full rounded-2xl border border-[#9a88fc]/15 bg-[#16131f]"
                     contentClassName="p-6"
-                    gradientColor="rgba(90, 35, 252, 0.14)"
-                    gradientFrom="#5a23fc"
-                    gradientTo="#b59aff"
+                    gradientColor="rgba(154, 136, 252, 0.16)"
+                    gradientFrom="#9a88fc"
+                    gradientTo="#c3b6fe"
                   >
                     <div className="flex items-baseline justify-between">
                       <h3 className="da-display text-xl font-semibold tracking-tight text-white">{principle.name}</h3>
                       <span className="font-serif text-2xl text-[#9a88fc]/70 italic">{principle.numeral}</span>
                     </div>
-                    <p className="mt-3 text-[14px] leading-relaxed text-[#a3a3a3]">{principle.body}</p>
+                    <p className="mt-3 text-[14px] leading-relaxed text-[#aaa4c4]">{principle.body}</p>
                   </MagicCard>
                 </li>
               ))}
@@ -480,7 +480,7 @@ function Founder() {
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-            <div className="mt-10 flex flex-wrap items-center justify-between gap-6 border-t border-white/10 pt-6">
+            <div className="mt-10 flex flex-wrap items-center justify-between gap-6 border-t border-[#9a88fc]/20 pt-6">
               <div className="flex items-center gap-4">
                 <span className="flex size-12 items-center justify-center rounded-full bg-black/50 ring-1 ring-[#9a88fc]/40">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -499,7 +499,7 @@ function Founder() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${FOUNDER.name} on ${social.label}`}
-                      className="flex size-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-white/65 transition-colors hover:border-[#9a88fc]/50 hover:bg-[#5a23fc]/15 hover:text-white"
+                      className="flex size-10 items-center justify-center rounded-full border border-[#9a88fc]/20 bg-[#16131f] text-white/65 transition-colors hover:border-[#9a88fc]/50 hover:bg-[#5a23fc]/15 hover:text-white"
                     >
                       <SocialIcon id={social.id} />
                     </a>
@@ -539,13 +539,13 @@ function Vistrial() {
             <div className="mt-6 flex items-center gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/site/brand/vistrial-icon.png" alt="" width={56} height={56} className="size-14 rounded-2xl shadow-[0_0_40px_-8px_rgba(90,35,252,0.9)] ring-1 ring-white/10" />
-              <span className="da-mono rounded-full border border-[#9a88fc]/35 bg-[#5a23fc]/15 px-3 py-1 text-[10px] tracking-[0.16em] text-[#c9bcff] uppercase">
+              <span className="da-mono rounded-full border border-[#9a88fc]/35 bg-[#5a23fc]/15 px-3 py-1 text-[10px] tracking-[0.16em] text-[#c3b6fe] uppercase">
                 In development
               </span>
             </div>
             <h2 className="da-display da-gradient-text mt-6 text-[2.4rem] leading-[1.04] font-semibold sm:text-6xl">{VISTRIAL.headline}</h2>
-            <p className="da-display mt-3 text-xl font-medium text-[#c9bcff] sm:text-2xl">{VISTRIAL.tagline}</p>
-            <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+            <p className="da-display mt-3 text-xl font-medium text-[#c3b6fe] sm:text-2xl">{VISTRIAL.tagline}</p>
+            <div className="mt-6 space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
               {VISTRIAL.body.map((paragraph, index) => (
                 <p key={paragraph} className={index === 0 ? 'text-white/90' : undefined}>
                   {paragraph}
@@ -554,7 +554,7 @@ function Vistrial() {
             </div>
             <ul className="mt-7 grid grid-cols-2 gap-2">
               {VISTRIAL.pillars.map((pillar, index) => (
-                <li key={pillar} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-2.5 text-sm text-white/85">
+                <li key={pillar} className="flex items-center gap-3 rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-2.5 text-sm text-white/85">
                   <span className="da-icon-tile flex size-8 shrink-0 items-center justify-center rounded-lg">{PILLAR_ICONS[index]}</span>
                   {pillar}
                 </li>
@@ -609,7 +609,7 @@ function FinalCta() {
             {FINAL.eyebrow}
           </Eyebrow>
           <h2 className="da-display da-gradient-text mt-5 text-[2.5rem] leading-[1.04] font-semibold text-balance sm:text-6xl lg:text-7xl">{FINAL.headline}</h2>
-          <div className="mt-7 space-y-3 text-[15px] leading-relaxed text-[#a3a3a3] sm:text-lg">
+          <div className="mt-7 space-y-3 text-[15px] leading-relaxed text-[#aaa4c4] sm:text-lg">
             {FINAL.body.map((paragraph, index) => (
               <p key={paragraph} className={index === 0 ? 'text-white/90' : undefined}>
                 {paragraph}
@@ -628,7 +628,7 @@ function FinalCta() {
 function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative border-t border-white/[0.06] bg-[#060606]">
+    <footer className="relative border-t border-[#9a88fc]/15 bg-[#09080e]">
       <div className={`${shell} py-16`}>
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2fr]">
           <div>
@@ -683,7 +683,7 @@ function SiteFooter() {
             </div>
           </div>
         </div>
-        <div className="mt-14 flex flex-col gap-3 border-t border-white/[0.06] pt-6 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-14 flex flex-col gap-3 border-t border-[#9a88fc]/15 pt-6 text-xs text-white/35 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {year} {SITE.legalName} All rights reserved.
           </p>

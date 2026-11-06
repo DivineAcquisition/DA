@@ -19,10 +19,9 @@ import {
 
 import {
   CheckboxField,
-  ChoiceGroup,
+  Dropdown,
   focusField,
   FormSection,
-  MultiChoice,
   SubmitButton,
   TextField,
   type Errors,
@@ -151,7 +150,7 @@ export function DiagnosticForm() {
         <h2 className="da-display mt-4 text-2xl font-semibold text-white">Your request has been received.</h2>
         <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-white/65">
           We’ll review your information and reply by email with the appropriate next step. If anything is time-sensitive, write to{' '}
-          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#c9bcff] underline underline-offset-4">
+          <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#c3b6fe] underline underline-offset-4">
             {CONTACT_EMAIL}
           </a>
           .
@@ -161,7 +160,7 @@ export function DiagnosticForm() {
   }
 
   return (
-    <form noValidate onSubmit={onSubmit} className="da-panel relative space-y-8 rounded-2xl p-5 sm:p-8">
+    <form noValidate onSubmit={onSubmit} className="da-form-card relative space-y-8 rounded-2xl p-5 sm:p-8">
 
       <FormSection step="A" title="Contact & business information">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -197,7 +196,7 @@ export function DiagnosticForm() {
             </div>
           </div>
         </div>
-        <ChoiceGroup id="position" label="Your position" options={POSITIONS} value={values.position} onChange={(v) => set('position', v)} error={errors.position} />
+        <Dropdown id="position" label="Your position" options={POSITIONS} value={values.position} onChange={(v) => set('position', v)} error={errors.position} />
         <TextField
           id="phone"
           label="Phone number"
@@ -212,7 +211,7 @@ export function DiagnosticForm() {
       </FormSection>
 
       <FormSection step="B" title="Business qualification">
-        <ChoiceGroup
+        <Dropdown
           id="businessType"
           label="Which best describes your business?"
           options={BUSINESS_TYPES}
@@ -220,7 +219,7 @@ export function DiagnosticForm() {
           onChange={(v) => set('businessType', v)}
           error={errors.businessType}
         />
-        <ChoiceGroup
+        <Dropdown
           id="dealValue"
           label="What is the approximate value of your typical project or customer engagement?"
           options={DEAL_VALUES}
@@ -228,16 +227,16 @@ export function DiagnosticForm() {
           onChange={(v) => set('dealValue', v)}
           error={errors.dealValue}
         />
-        <ChoiceGroup
+        <Dropdown
           id="monthlyOpportunities"
           label="How many new sales opportunities does your business typically receive per month?"
           options={MONTHLY_OPPORTUNITIES}
           value={values.monthlyOpportunities}
           onChange={(v) => set('monthlyOpportunities', v)}
           error={errors.monthlyOpportunities}
-          columns={3}
         />
-        <MultiChoice
+        <Dropdown
+          multiple
           id="constraints"
           label="What is currently limiting your sales process?"
           options={CONSTRAINTS}
@@ -245,7 +244,7 @@ export function DiagnosticForm() {
           onChange={(v) => set('constraints', v)}
           error={errors.constraints}
         />
-        <ChoiceGroup
+        <Dropdown
           id="crm"
           label="What CRM or sales management system do you currently use?"
           options={CRMS}
@@ -253,7 +252,7 @@ export function DiagnosticForm() {
           onChange={(v) => set('crm', v)}
           error={errors.crm}
         />
-        <ChoiceGroup
+        <Dropdown
           id="timeline"
           label="When would you ideally like to improve your sales operation?"
           options={TIMELINES}
@@ -263,10 +262,10 @@ export function DiagnosticForm() {
         />
       </FormSection>
 
-      <section className="space-y-4 border-t border-white/[0.07] pt-8">
+      <section className="space-y-4 border-t border-[#9a88fc]/15 pt-8">
         <CheckboxField id="privacyConsent" checked={values.privacyConsent} onChange={(v) => set('privacyConsent', v)} error={errors.privacyConsent}>
           I acknowledge that Divine Acquisition may use the information provided to review and respond to my inquiry in accordance with its{' '}
-          <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="text-[#c9bcff] underline underline-offset-4">
+          <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="text-[#c3b6fe] underline underline-offset-4">
             Privacy Policy
           </a>
           .

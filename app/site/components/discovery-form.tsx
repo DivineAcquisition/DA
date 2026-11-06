@@ -16,10 +16,9 @@ import {
 import { DIAGNOSTIC_SESSION_KEY } from './diagnostic-form';
 import {
   CheckboxField,
-  ChoiceGroup,
+  Dropdown,
   focusField,
   FormSection,
-  MultiChoice,
   SubmitButton,
   TextArea,
   TextField,
@@ -152,7 +151,7 @@ export function DiscoveryForm({ inquiryId }: { inquiryId: string | null }) {
   }
 
   return (
-    <form noValidate onSubmit={onSubmit} className="da-panel relative space-y-8 rounded-2xl p-5 sm:p-8">
+    <form noValidate onSubmit={onSubmit} className="da-form-card relative space-y-8 rounded-2xl p-5 sm:p-8">
 
       <FormSection step="00" title="Your details">
         <p className="-mt-2 text-[13px] text-white/45">So we can match your answers to your diagnostic.</p>
@@ -160,7 +159,7 @@ export function DiscoveryForm({ inquiryId }: { inquiryId: string | null }) {
           <TextField id="email" label="Work email" type="email" inputMode="email" value={str('email')} onChange={(v) => set('email', v)} error={errors.email} autoComplete="email" />
           <TextField id="company" label="Company name" value={str('company')} onChange={(v) => set('company', v)} error={errors.company} autoComplete="organization" />
         </div>
-        <ChoiceGroup
+        <Dropdown
           id="businessType"
           label="Which best describes your business?"
           options={BUSINESS_TYPES}
@@ -181,19 +180,19 @@ export function DiscoveryForm({ inquiryId }: { inquiryId: string | null }) {
           onChange={(v) => set('averageDealValue', v)}
           error={errors.averageDealValue}
         />
-        <ChoiceGroup
+        <Dropdown
           id="salesCycle"
           label="What is your typical sales cycle?"
           options={SALES_CYCLES}
           value={str('salesCycle')}
           onChange={(v) => set('salesCycle', v)}
           error={errors.salesCycle}
-          columns={3}
         />
       </FormSection>
 
       <FormSection step="02" title="Sales operations">
-        <MultiChoice
+        <Dropdown
+          multiple
           id="sources"
           label="Where do most new opportunities originate?"
           options={SOURCES}

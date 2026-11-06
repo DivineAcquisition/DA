@@ -76,7 +76,7 @@ function LogoStack({ tools }: { tools: Tool[] }) {
   return (
     <span className="flex -space-x-1.5">
       {tools.map((tool) => (
-        <ToolLogo key={tool.id} tool={tool} size={14} className="ring-2 ring-[#101012]" />
+        <ToolLogo key={tool.id} tool={tool} size={14} className="ring-2 ring-[#14121d]" />
       ))}
     </span>
   );
@@ -99,10 +99,10 @@ function NodeCard({
     <li
       data-node={kind}
       className={cn(
-        'relative flex items-center gap-3 rounded-xl border bg-[#101012] px-3 py-2.5 transition-all duration-500',
+        'relative flex items-center gap-3 rounded-xl border bg-[#14121d] px-3 py-2.5 transition-all duration-500',
         active
           ? 'border-[#9a88fc]/60 shadow-[0_0_0_3px_rgba(90,35,252,0.16),0_0_40px_-12px_rgba(90,35,252,0.9)]'
-          : 'border-white/[0.07]',
+          : 'border-[#9a88fc]/15',
         kind === 'source' ? 'lg:flex-row-reverse lg:text-right' : '',
       )}
     >
@@ -134,7 +134,7 @@ function Hub({ status, step }: { status: string; step: number }) {
       <p className="da-mono relative mt-4 text-[10px] tracking-[0.2em] text-[#b59aff] uppercase">Systems layer</p>
       <p className="da-display relative mt-1 text-lg font-semibold tracking-tight text-white">Divine Acquisition</p>
 
-      <div className="relative mt-4 w-full rounded-xl border border-white/[0.06] bg-black/40 px-3 py-2.5 text-left">
+      <div className="relative mt-4 w-full rounded-xl border border-[#9a88fc]/15 bg-black/40 px-3 py-2.5 text-left">
         <div className="flex items-center justify-between">
           <span className="da-mono flex items-center gap-1.5 text-[10px] tracking-[0.14em] text-white/45 uppercase">
             <Activity className="size-3 text-[#52d6a4]" aria-hidden /> Event
@@ -149,7 +149,7 @@ function Hub({ status, step }: { status: string; step: number }) {
       </div>
 
       <div className="relative mt-4 grid w-full grid-cols-2 gap-2 text-left">
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+        <div className="rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-2.5">
           <p className="da-mono text-[9px] tracking-[0.16em] text-white/40 uppercase">AI assist</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {SYSTEM_AI.map((tool) => (
@@ -157,7 +157,7 @@ function Hub({ status, step }: { status: string; step: number }) {
             ))}
           </div>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+        <div className="rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-2.5">
           <p className="da-mono text-[9px] tracking-[0.16em] text-white/40 uppercase">Automation</p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {SYSTEM_AUTOMATION.map((tool) => (
@@ -197,7 +197,7 @@ export function SystemMap() {
         </span>
       </div>
 
-      <div className="relative rounded-[16px] border border-white/[0.06] bg-[#0a0a0b]/90 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+      <div className="relative rounded-[16px] border border-[#9a88fc]/15 bg-[#0f0d16]/90 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div aria-hidden className="da-grid pointer-events-none absolute inset-0 opacity-60" />
         <div ref={mapRef} className="relative grid items-center gap-6 lg:grid-cols-[1fr_auto_1fr] lg:gap-x-20">
           <svg aria-hidden className="pointer-events-none absolute inset-0 hidden h-full w-full overflow-visible lg:block">

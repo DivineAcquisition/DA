@@ -37,7 +37,7 @@ export default async function BookDiagnosticPage({ searchParams }: Props) {
         <h1 className="da-display da-gradient-text mt-6 text-[2.2rem] leading-[1.05] font-semibold text-balance sm:text-5xl">
           Choose a Time for Your Diagnostic
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-[#a3a3a3] sm:text-base">
+        <p className="mx-auto mt-5 max-w-2xl text-[15px] leading-relaxed text-[#aaa4c4] sm:text-base">
           {ref
             ? 'Pick a time that works for you. Your booking is confirmed once the calendar shows the confirmation.'
             : 'If you haven’t told us about your business yet, start with the short request form so we can prepare.'}
@@ -52,7 +52,7 @@ export default async function BookDiagnosticPage({ searchParams }: Props) {
       {calendar ? (
         <div className="relative mx-auto mt-10 max-w-4xl">
           <div aria-hidden className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] bg-[#5a23fc]/30 blur-3xl" />
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black p-1.5 sm:p-2">
+          <div className="relative overflow-hidden rounded-3xl border border-[#9a88fc]/20 bg-black p-1.5 sm:p-2">
             <iframe
               id={ACQ_CALENDAR_IFRAME_ID}
               src={calendar}
@@ -66,7 +66,7 @@ export default async function BookDiagnosticPage({ searchParams }: Props) {
         <div role="status" className="da-panel-violet mx-auto mt-10 max-w-2xl rounded-2xl p-8 text-center">
           <p className="text-[15px] leading-relaxed text-white/75">
             Online booking isn’t available right now. We’ll reply by email to arrange a time. You can also write to{' '}
-            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#c9bcff] underline underline-offset-4">
+            <a href={`mailto:${CONTACT_EMAIL}`} className="text-[#c3b6fe] underline underline-offset-4">
               {CONTACT_EMAIL}
             </a>
             .

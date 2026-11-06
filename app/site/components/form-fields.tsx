@@ -1,14 +1,15 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { AlertCircle, Check } from 'lucide-react';
+import { Select } from '@base-ui/react/select';
+import { AlertCircle, Check, ChevronDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
 export type Errors = Record<string, string | undefined>;
 
 const control =
-  'w-full rounded-xl border bg-white/[0.03] px-4 text-[15px] text-white placeholder:text-white/30 outline-none transition-colors focus:border-[#9a88fc]/70 focus:bg-white/[0.05] focus:ring-2 focus:ring-[#5a23fc]/35';
+  'w-full rounded-xl border bg-[#0f0d17] px-4 text-[15px] text-white placeholder:text-[#aaa4c4]/50 outline-none transition-colors hover:border-[#9a88fc]/45 focus:border-[#c3b6fe]/80 focus:bg-[#120f1c] focus:ring-2 focus:ring-[#9a88fc]/30';
 
 function FieldShell({
   id,
@@ -84,7 +85,7 @@ export function TextField({
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
-        className={cn(control, 'h-12 disabled:opacity-40', error ? 'border-[#f87171]/60' : 'border-white/10')}
+        className={cn(control, 'h-12 disabled:opacity-40', error ? 'border-[#f87171]/60' : 'border-[#9a88fc]/20')}
       />
     </FieldShell>
   );
@@ -119,153 +120,113 @@ export function TextArea({
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(event) => onChange(event.target.value)}
-        className={cn(control, 'min-h-[110px] resize-y py-3 leading-relaxed', error ? 'border-[#f87171]/60' : 'border-white/10')}
+        className={cn(control, 'min-h-[110px] resize-y py-3 leading-relaxed', error ? 'border-[#f87171]/60' : 'border-[#9a88fc]/20')}
       />
     </FieldShell>
   );
 }
 
-/** Single choice shown as selectable chips (a radio group). */
-export function ChoiceGroup({
-  id,
-  label,
-  options,
-  value,
-  onChange,
-  error,
-  hint,
-  columns = 2,
-}: {
+/**
+ * A dropdown built on Base UI Select. Single choice by default; with
+ * `multiple`, it stays open so several options can be ticked, and the trigger
+ * shows what is selected.
+ */
+type DropdownProps = {
   id: string;
   label: string;
   options: readonly string[];
-  value: string;
-  onChange: (value: string) => void;
   error?: string;
   hint?: ReactNode;
-  columns?: 1 | 2 | 3;
-}) {
-  return (
-    <fieldset data-field={id} aria-describedby={error ? `${id}-error` : undefined}>
-      <legend className="text-sm font-medium text-white/90">{label}</legend>
-      {hint ? <p className="mt-1 text-[13px] leading-snug text-white/45">{hint}</p> : null}
-      <div className={cn('mt-2.5 grid gap-2', columns === 2 && 'sm:grid-cols-2', columns === 3 && 'sm:grid-cols-3')}>
-        {options.map((option, index) => {
-          const checked = value === option;
-          return (
-            <label
-              key={option}
-              className={cn(
-                'flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#9a88fc]',
-                checked
-                  ? 'border-[#9a88fc]/60 bg-[#5a23fc]/15 text-white'
-                  : error
-                    ? 'border-[#f87171]/40 bg-white/[0.02] text-white/75 hover:border-white/20'
-                    : 'border-white/10 bg-white/[0.02] text-white/75 hover:border-white/20',
-              )}
-            >
-              <input
-                type="radio"
-                id={index === 0 ? id : undefined}
-                name={id}
-                value={option}
-                checked={checked}
-                onChange={() => onChange(option)}
-                className="sr-only"
-              />
-              <span
-                aria-hidden
-                className={cn(
-                  'flex size-4 shrink-0 items-center justify-center rounded-full border',
-                  checked ? 'border-[#b59aff] bg-[#5a23fc]' : 'border-white/25',
-                )}
-              >
-                {checked ? <span className="size-1.5 rounded-full bg-white" /> : null}
-              </span>
-              {option}
-            </label>
-          );
-        })}
-      </div>
-      {error ? (
-        <p id={`${id}-error`} className="mt-2 flex items-start gap-1.5 text-[13px] text-[#fca5a5]">
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-          {error}
-        </p>
-      ) : null}
-    </fieldset>
-  );
-}
+  placeholder?: string;
+} & (
+  | { multiple?: false; value: string; onChange: (value: string) => void }
+  | { multiple: true; value: string[]; onChange: (value: string[]) => void }
+);
 
-/** Several choices shown as chips (a checkbox group). */
-export function MultiChoice({
-  id,
-  label,
-  options,
-  value,
-  onChange,
-  error,
-  hint,
-}: {
-  id: string;
-  label: string;
-  options: readonly string[];
-  value: string[];
-  onChange: (value: string[]) => void;
-  error?: string;
-  hint?: ReactNode;
-}) {
-  const toggle = (option: string) =>
-    onChange(value.includes(option) ? value.filter((item) => item !== option) : [...value, option]);
+export function Dropdown(props: DropdownProps) {
+  const { id, label, options, error, hint } = props;
+  const multiple = props.multiple === true;
+  const placeholder = props.placeholder ?? (multiple ? 'Select all that apply' : 'Select one');
+  const empty = multiple ? (props.value as string[]).length === 0 : !props.value;
+
+  const summary = (value: unknown) => {
+    if (!multiple) return value as string;
+    const list = value as string[];
+    if (list.length <= 2) return list.join(', ');
+    return `${list.slice(0, 2).join(', ')} +${list.length - 2} more`;
+  };
+
   return (
-    <fieldset data-field={id} aria-describedby={error ? `${id}-error` : undefined}>
-      <legend className="text-sm font-medium text-white/90">{label}</legend>
-      <p className="mt-1 text-[13px] leading-snug text-white/45">{hint ?? 'Select all that apply.'}</p>
-      <div className="mt-2.5 flex flex-wrap gap-2">
-        {options.map((option, index) => {
-          const checked = value.includes(option);
-          return (
-            <label
-              key={option}
-              className={cn(
-                'flex cursor-pointer items-center gap-2 rounded-full border px-3.5 py-2 text-sm transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-[#9a88fc]',
-                checked
-                  ? 'border-[#9a88fc]/60 bg-[#5a23fc]/15 text-white'
-                  : error
-                    ? 'border-[#f87171]/40 text-white/75 hover:border-white/20'
-                    : 'border-white/10 text-white/75 hover:border-white/20',
-              )}
+    <div data-field={id}>
+      <Select.Root
+        id={id}
+        name={id}
+        items={options.map((option) => ({ value: option, label: option }))}
+        multiple={multiple}
+        value={multiple ? (props.value as string[]) : props.value || null}
+        onValueChange={(next) => {
+          if (props.multiple === true) props.onChange(Array.isArray(next) ? (next as string[]) : []);
+          else props.onChange(typeof next === 'string' ? next : '');
+        }}
+      >
+        <Select.Label className="text-sm font-medium text-white/90">{label}</Select.Label>
+        {hint ? <p className="mt-1 text-[13px] leading-snug text-white/45">{hint}</p> : null}
+        {multiple ? <p className="mt-1 text-[13px] leading-snug text-white/45">Select all that apply.</p> : null}
+        <Select.Trigger
+          data-focus-target
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
+          className={cn(
+            control,
+            'mt-2 flex h-12 cursor-pointer items-center justify-between gap-3 text-left data-[popup-open]:border-[#c3b6fe]/80 data-[popup-open]:ring-2 data-[popup-open]:ring-[#9a88fc]/30',
+            error ? 'border-[#f87171]/60' : 'border-[#9a88fc]/25',
+          )}
+        >
+          <Select.Value className={cn('min-w-0 truncate', empty && 'text-[#aaa4c4]/60')} placeholder={placeholder}>
+            {(value: unknown) => (empty ? placeholder : summary(value))}
+          </Select.Value>
+          <Select.Icon className="shrink-0 text-[#c3b6fe] transition-transform duration-200 [[data-popup-open]_&]:rotate-180">
+            <ChevronDown className="size-4" aria-hidden />
+          </Select.Icon>
+        </Select.Trigger>
+        <Select.Portal>
+          <Select.Positioner sideOffset={6} alignItemWithTrigger={false} className="z-[60] outline-none">
+            <Select.Popup
+              className="max-h-[min(360px,var(--available-height))] min-w-[var(--anchor-width)] origin-[var(--transform-origin)] overflow-y-auto rounded-xl border border-[#9a88fc]/30 bg-[#16131f] p-1.5 text-white shadow-[0_24px_60px_-20px_rgba(0,0,0,0.9),0_0_50px_-24px_rgba(154,136,252,0.7)] outline-none transition-[scale,opacity] duration-150 data-[ending-style]:scale-[0.98] data-[ending-style]:opacity-0 data-[starting-style]:scale-[0.98] data-[starting-style]:opacity-0"
             >
-              <input
-                type="checkbox"
-                id={index === 0 ? id : undefined}
-                name={id}
-                value={option}
-                checked={checked}
-                onChange={() => toggle(option)}
-                className="sr-only"
-              />
-              <span
-                aria-hidden
-                className={cn(
-                  'flex size-4 shrink-0 items-center justify-center rounded-[5px] border',
-                  checked ? 'border-[#b59aff] bg-[#5a23fc]' : 'border-white/25',
-                )}
-              >
-                {checked ? <Check className="size-3 text-white" /> : null}
-              </span>
-              {option}
-            </label>
-          );
-        })}
-      </div>
+              <Select.List>
+                {options.map((option) => (
+                  <Select.Item
+                    key={option}
+                    value={option}
+                    className="grid cursor-pointer grid-cols-[1.25rem_1fr] items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm text-white/80 outline-none select-none data-[highlighted]:bg-[#5a23fc]/25 data-[highlighted]:text-white data-[selected]:text-white"
+                  >
+                    {multiple ? (
+                      <span className="col-start-1 flex size-4 items-center justify-center rounded-[5px] border border-[#9a88fc]/50 [[data-selected]_&]:border-[#c3b6fe] [[data-selected]_&]:bg-[#5a23fc]">
+                        <Select.ItemIndicator>
+                          <Check className="size-3 text-white" aria-hidden />
+                        </Select.ItemIndicator>
+                      </span>
+                    ) : (
+                      <Select.ItemIndicator className="col-start-1">
+                        <Check className="size-4 text-[#c3b6fe]" aria-hidden />
+                      </Select.ItemIndicator>
+                    )}
+                    <Select.ItemText className="col-start-2">{option}</Select.ItemText>
+                  </Select.Item>
+                ))}
+              </Select.List>
+            </Select.Popup>
+          </Select.Positioner>
+        </Select.Portal>
+      </Select.Root>
       {error ? (
         <p id={`${id}-error`} className="mt-2 flex items-start gap-1.5 text-[13px] text-[#fca5a5]">
           <AlertCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           {error}
         </p>
       ) : null}
-    </fieldset>
+    </div>
   );
 }
 
@@ -301,7 +262,7 @@ export function CheckboxField({
           aria-hidden
           className={cn(
             'mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#9a88fc]',
-            checked ? 'border-[#b59aff] bg-[#5a23fc]' : error ? 'border-[#f87171]/70' : 'border-white/25',
+            checked ? 'border-[#b59aff] bg-[#5a23fc]' : error ? 'border-[#f87171]/70' : 'border-[#9a88fc]/40',
           )}
         >
           {checked ? <Check className="size-3 text-white" /> : null}
@@ -320,7 +281,7 @@ export function CheckboxField({
 
 export function FormSection({ step, title, children }: { step: string; title: string; children: ReactNode }) {
   return (
-    <section className="space-y-6 border-t border-white/[0.07] pt-8 first:border-t-0 first:pt-0">
+    <section className="space-y-6 border-t border-[#9a88fc]/15 pt-8 first:border-t-0 first:pt-0">
       <p className="da-mono flex items-center gap-2 text-[11px] tracking-[0.18em] text-white/55 uppercase">
         <span className="text-[#9a88fc]">{step}</span>
         {title}
@@ -336,7 +297,7 @@ export function focusField(field: string | undefined) {
   const root = document.querySelector<HTMLElement>(`[data-field="${field}"]`);
   if (!root) return;
   root.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  const target = root.querySelector<HTMLElement>('input, textarea, select');
+  const target = root.querySelector<HTMLElement>('[data-focus-target], input:not([type="hidden"]):not([aria-hidden="true"]), textarea');
   window.setTimeout(() => target?.focus({ preventScroll: true }), 250);
 }
 
