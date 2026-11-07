@@ -6,6 +6,7 @@ import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
 import { aboutContent, getRole, type RoleDetail } from '../../data/roles';
 import ApplicationForm from '../components/ApplicationForm';
+import { ApplicantPath, HiringNow } from '../components/agentic';
 import { sectionLabel } from '../../components/ui';
 import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
 import { Panel } from '@/components/ui/panel';
@@ -52,7 +53,7 @@ function CrossBullet() {
 function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string; slug: string }) {
   return (
     <section id="apply" className="scroll-mt-24">
-      <Panel className="relative overflow-hidden rounded-3xl p-0">
+      <Panel className="frame-glow relative overflow-hidden rounded-3xl p-0">
         <BorderBeam size={80} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
         <div className="relative flex items-center gap-3 border-b border-white/[0.07] bg-white/[0.02] px-5 py-4 sm:px-7">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-sm font-bold text-ink-950">
@@ -162,6 +163,7 @@ export default function RolePage() {
                 <AnimatedShinyText className={`${sectionLabel} mx-0 max-w-none dark:text-brand-300`}>
                   {role.departmentLabel}
                 </AnimatedShinyText>
+                <HiringNow className="ml-1" />
               </div>
 
               <h1 className="animate-rise delay-1 mt-5 text-[2.25rem] font-semibold leading-[1.05] sm:text-5xl md:text-6xl">
@@ -263,6 +265,8 @@ export default function RolePage() {
                 </div>
               </ShinePanel>
             </section>
+
+            <ApplicantPath roleSlug={role.slug} compact className="mb-8" />
 
             <ApplyPanel detail={detail} title={role.title} slug={role.slug} />
           </div>

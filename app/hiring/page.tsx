@@ -30,6 +30,7 @@ import {
   hiringBtnSecondary,
   hiringBtnSm,
 } from './components/visual';
+import { HiringFlow, HiringNow } from './components/agentic';
 
 const filterLabel = 'mb-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-500';
 
@@ -100,6 +101,7 @@ function FeaturedRoleCard({ role }: { role: Role }) {
               <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-300">
                 {role.subtitle}
               </span>
+              <HiringNow />
             </div>
 
             <h3 className="mt-4 text-xl font-semibold text-white transition-colors group-hover:text-brand-200 sm:text-2xl">
@@ -145,6 +147,7 @@ function RoleCard({ role }: { role: Role }) {
               <span className="rounded-full border border-brand-500/25 bg-brand-500/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-brand-300">
                 {role.subtitle}
               </span>
+              <HiringNow />
             </div>
 
             <p className="mb-3.5 text-sm leading-relaxed text-neutral-400">{role.summary}</p>
@@ -330,8 +333,11 @@ export default function HiringPage() {
           </div>
         </section>
 
+        {/* How hiring works: the Vistrial agent flow */}
+        <HiringFlow />
+
         {/* Positions */}
-        <main id="positions" className="scroll-mt-24 px-5 pb-20 sm:px-6">
+        <main id="positions" className="scroll-mt-24 px-5 pb-20 pt-4 sm:px-6">
           <div className="mx-auto max-w-6xl">
             <div className="mb-8 flex flex-col gap-2 border-t border-white/[0.07] pt-10 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
               <div>

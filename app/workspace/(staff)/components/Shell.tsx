@@ -43,7 +43,7 @@ import {
 } from '@/lib/workspace/adminNav';
 import { interDisplay } from './fonts';
 import { LiveDot } from './agentic';
-import '../../agentic.css';
+import '@/components/agentic/agentic.css';
 
 const COLLAPSE_KEY = 'da-admin-sidebar-collapsed';
 const COLLAPSE_EVENT = 'da-admin-sidebar-toggle';

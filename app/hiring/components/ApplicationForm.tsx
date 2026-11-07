@@ -4,6 +4,8 @@ import { useState, useTransition } from 'react';
 import type { ActionResult } from '@/lib/ad/rpc';
 import { submitApplicationAction } from '@/lib/careers/actions';
 import { hiringBtn, hiringBtnMd } from './visual';
+import { SubmittingLine } from './agentic';
+import { LiveDot } from '@/components/agentic/agentic';
 
 /**
  * The careers application. It submits to submit_role_application, so every
@@ -21,17 +23,32 @@ export default function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: stri
   // after logging the form to the browser console and throwing it away.
   if (result?.ok) {
     return (
-      <div className="px-6 py-16 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-full bg-brand-500/15 text-brand-300 ring-1 ring-brand-500/30">
-          <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="live-enter px-6 py-14 text-center">
+        <div className="agent-glow relative mx-auto mb-6 flex size-16 items-center justify-center rounded-full border border-brand-400/40 bg-ink-950 shadow-[0_0_0_4px_rgba(154,136,252,0.12)]">
+          <svg className="h-7 w-7 text-brand-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
           </svg>
+          <span aria-hidden className="live-pulse absolute -right-0.5 -top-0.5 size-3.5 rounded-full border-2 border-ink-950 bg-emerald-400" />
         </div>
         <h3 className="text-xl font-semibold text-white">Application submitted</h3>
         <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-400">
           Thank you for applying for the {jobTitle} position. We&apos;ll review your application and get
           back to you within 5–7 business days.
         </p>
+        <ol className="mx-auto mt-7 grid max-w-sm gap-2 text-left text-sm">
+          <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-ink-950 px-3 py-2">
+            <LiveDot tone="clear" />
+            <span className="text-white">Received and on record</span>
+          </li>
+          <li className="flex items-center gap-2.5 rounded-lg border border-brand-400/30 bg-brand-500/[0.06] px-3 py-2">
+            <LiveDot tone="working" />
+            <span className="live-shimmer-text text-white">Waiting in the hiring inbox</span>
+          </li>
+          <li className="flex items-center gap-2.5 rounded-lg border border-white/[0.08] bg-ink-950 px-3 py-2">
+            <LiveDot tone="idle" />
+            <span className="text-neutral-400">Next: read by a person</span>
+          </li>
+        </ol>
       </div>
     );
   }
@@ -159,7 +176,7 @@ export default function ApplicationForm({ roleSlug, jobTitle }: { roleSlug: stri
       )}
 
       <button type="submit" disabled={pending} className={`${hiringBtn} ${hiringBtnMd} w-full`}>
-        {pending ? 'Submitting…' : 'Submit application'}
+        {pending ? <SubmittingLine>Sending your application</SubmittingLine> : 'Submit application'}
       </button>
 
       <p className="text-center text-xs text-neutral-600">
