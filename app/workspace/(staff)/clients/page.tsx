@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ENGAGEMENT_STATUSES, STATUS_LABEL, listClientFiles, type EngagementStatus } from '@/lib/clients/desk';
+import { ENGAGEMENT_STATUSES, STATUS_LABEL, countOpenProspects, listClientFiles, type EngagementStatus } from '@/lib/clients/desk';
+import { LifecycleFlow } from '../components/agentic';
 import { DeskHeader, Empty, primary, when } from '../components/desk';
 import { EngagementPill } from './bits';
 
@@ -9,7 +10,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function ClientsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
   const { status } = await searchParams;
-  const all = await listClientFiles();
+  const [all, prospects] = await Promise.all([listClientFiles(), countOpenProspects()]);
+  const by = (value: EngagementStatus) => all.filter((row) => row.status === value).length;
+  const seatless = all.filter((row) => row.status === 'active' && row.live === 0).length;
   const filter = (ENGAGEMENT_STATUSES as readonly string[]).includes(status ?? '') ? (status as EngagementStatus) : null;
   const rows = filter ? all.filter((row) => row.status === filter) : all.filter((row) => row.status !== 'ended');
 
@@ -24,6 +27,23 @@ export default async function ClientsPage({ searchParams }: { searchParams: Prom
           </Link>
         }
       />
+      <div className="mb-5">
+        <LifecycleFlow
+          label="Prospect to live"
+          stages={[
+            { key: 'prospects', label: 'Prospects', count: prospects, hint: 'Open leads', href: '/workspace/clients/prospects', kind: 'person' },
+            { key: 'audit', label: 'Audit', count: by('audit'), hint: 'Baseline before install', href: '/workspace/clients?status=audit', kind: 'person' },
+            { key: 'installing', label: 'Installing', count: by('installing'), hint: 'Baseline locked', href: '/workspace/clients?status=installing', kind: 'auto' },
+            { key: 'active', label: 'Live', count: by('active'), hint: seatless ? `${seatless} without a seat` : 'Active engagements', href: '/workspace/clients?status=active', kind: 'auto' },
+          ]}
+          statuses={[
+            prospects ? `${prospects} open prospect${prospects === 1 ? '' : 's'} in the pipeline` : null,
+            by('audit') ? `${by('audit')} in audit, capturing the baseline` : null,
+            seatless ? `${seatless} live client${seatless === 1 ? '' : 's'} with no operator placed` : null,
+            by('active') ? `${by('active')} live engagement${by('active') === 1 ? '' : 's'}` : null,
+          ].filter((line): line is string => Boolean(line)).concat(all.length ? [] : ['No case files yet. Establish one from a prospect.'])}
+        />
+      </div>
       <nav aria-label="Status" className="mb-4 flex flex-wrap gap-1">
         <Chip href="/workspace/clients" active={!filter}>
           Open

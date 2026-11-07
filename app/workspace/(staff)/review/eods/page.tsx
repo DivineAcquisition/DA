@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ReviewFlow from '../ReviewFlow';
 import { EOD_LABEL, type EodStatus } from '@/lib/sales-workspace/team';
 import { loadEods, loadOperators } from '@/lib/sales-workspace/team-data';
 import { EodPill, When } from '@/app/workspace/(staff)/team/workspace/components/Bits';
@@ -36,6 +37,7 @@ export default async function EodsPage({
   }
   return (
     <div className="space-y-4">
+      <ReviewFlow />
       <div>
         <h1 className="text-2xl font-semibold text-white">EODs</h1>
         <p className="mt-1 text-sm text-neutral-400">

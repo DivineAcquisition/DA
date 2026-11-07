@@ -1,0 +1,190 @@
+/*
+ * Agentic motion for the staff admin, ported from the Vistrial product
+ * (src/app/globals.css: "Live agent motion"). Quiet by design: things that are
+ * working breathe, new items fade in, changed rows get a short highlight, and a
+ * short light travels along the beams between lifecycle stages.
+ *
+ * Reduced motion and calm mode (html[data-calm="true"]) hold every animation on
+ * its final frame. The text labels carry the state either way.
+ */
+
+@keyframes da-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.68;
+  }
+}
+
+@keyframes da-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes da-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes live-highlight {
+  from {
+    background-color: color-mix(in srgb, #9a88fc 14%, transparent);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes live-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes beam-travel {
+  from {
+    stroke-dashoffset: 110;
+  }
+  to {
+    stroke-dashoffset: -10;
+  }
+}
+
+@keyframes live-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.live-pulse {
+  animation: da-breathe 2.4s ease-in-out infinite;
+}
+
+/* A dot that sends out a soft ring: something here needs a person. */
+.live-ring {
+  position: relative;
+}
+.live-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: live-ring 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.live-enter {
+  animation: da-fade 0.4s ease both;
+}
+
+.app-enter {
+  animation: da-enter 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.live-highlight {
+  animation: live-highlight 2.6s ease-out both;
+}
+
+.live-shimmer-text {
+  background-image: linear-gradient(
+    90deg,
+    currentColor 0%,
+    currentColor 40%,
+    color-mix(in srgb, currentColor 45%, transparent) 50%,
+    currentColor 60%,
+    currentColor 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: live-shimmer 2.8s linear infinite;
+}
+
+/* A short light travelling along an SVG beam. Paths set pathLength="100". */
+.beam-dash {
+  stroke-dasharray: 10 110;
+  stroke-dashoffset: 110;
+  animation: beam-travel 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* The glow under an agent node and a live frame, from the Vistrial landing page. */
+.agent-glow {
+  box-shadow: 0 0 60px -24px rgba(154, 136, 252, 0.9);
+}
+.frame-glow {
+  box-shadow: 0 0 72px -28px rgba(154, 136, 252, 0.8);
+}
+html[data-product='workspace']:not(.dark) .agent-glow {
+  box-shadow: 0 0 48px -22px rgba(102, 80, 216, 0.55);
+}
+html[data-product='workspace']:not(.dark) .frame-glow {
+  box-shadow: 0 0 56px -30px rgba(102, 80, 216, 0.5);
+}
+
+html[data-calm='true'] .beam-dash {
+  animation: none !important;
+  opacity: 0;
+}
+
+html[data-calm='true'] .live-pulse,
+html[data-calm='true'] .live-ring::after,
+html[data-calm='true'] .live-enter,
+html[data-calm='true'] .app-enter,
+html[data-calm='true'] .live-highlight,
+html[data-calm='true'] .live-shimmer-text {
+  animation: none !important;
+}
+
+html[data-calm='true'] .live-ring::after {
+  display: none;
+}
+
+html[data-calm='true'] .live-shimmer-text {
+  -webkit-text-fill-color: currentColor;
+  background-image: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam-dash {
+    animation: none;
+    opacity: 0;
+  }
+
+  .live-pulse,
+  .live-enter,
+  .app-enter,
+  .live-highlight {
+    animation: none;
+  }
+
+  .live-ring::after {
+    display: none;
+  }
+
+  .live-shimmer-text {
+    -webkit-text-fill-color: currentColor;
+    background-image: none;
+    animation: none;
+  }
+}

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { LiveDot } from './agentic';
 
 /** Shared pieces for the four desks, so a queue and a case file read the same everywhere. */
 
@@ -71,18 +72,30 @@ export function Problem({ children }: { children: ReactNode }) {
   return <p className="panel rounded-2xl px-5 py-4 text-sm text-flag-critical">{children}</p>;
 }
 
-/** The single next step, at the top of a case file. */
+/**
+ * The single next step, at the top of a case file. Drawn as the Vistrial
+ * agent node: a glowing card, a ringing dot, and the step in a light sweep.
+ */
 export function NextStep({ label, href }: { label: string; href: string | null }) {
-  return (
-    <div className="flex flex-wrap items-center gap-3 rounded-xl border border-brand-500/25 bg-brand-500/[0.07] px-4 py-3">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">Next</span>
-      <span className="text-sm text-white">{label}</span>
-      {href ? (
-        <Link href={href} className="ml-auto text-sm font-medium text-brand-200 hover:text-white">
-          Go
-        </Link>
-      ) : null}
-    </div>
+  const body = (
+    <>
+      <span className="relative flex size-9 shrink-0 items-center justify-center rounded-full border border-brand-400/40 bg-ink-950 shadow-[0_0_0_4px_rgba(154,136,252,0.12)]">
+        <LiveDot tone={href ? 'waiting' : 'clear'} className="size-2.5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-300">Next</span>
+        <span className={`block text-sm text-white ${href ? 'live-shimmer-text' : ''}`}>{label}</span>
+      </span>
+      {href ? <span className="shrink-0 text-sm font-medium text-brand-200">Go</span> : null}
+    </>
+  );
+  const className = 'agent-glow app-enter flex items-center gap-3 rounded-xl border border-brand-400/40 bg-brand-500/[0.06] px-4 py-3';
+  return href ? (
+    <Link href={href} className={`${className} transition-colors hover:border-brand-400/70`}>
+      {body}
+    </Link>
+  ) : (
+    <div className={className}>{body}</div>
   );
 }
 

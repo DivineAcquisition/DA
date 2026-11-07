@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import ReviewFlow from '../ReviewFlow';
 import { controlRpc, readable } from '@/lib/ad/rpc';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 
@@ -32,6 +33,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   if (error) return <p className="text-sm text-[#FFB020]">{readable(error)}</p>;
   return (
     <div className="space-y-4">
+      <ReviewFlow />
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-white">Client reports</h1>

@@ -5,8 +5,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
 import {
-  ChevronDown,
   ChevronRight,
+  FolderClosed,
+  FolderOpen,
   ChevronsUpDown,
   CornerDownLeft,
   LogOut,
@@ -22,7 +23,6 @@ import { SectionTabs } from '@/app/workspace/components/SectionTabs';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { StatusPill } from '@/app/workspace/components/VistrialChrome';
 import { BorderBeam } from '@/components/ui/border-beam';
-import { Collapsible, CollapsiblePanel, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Kbd } from '@/components/ui/kbd';
 import { Menu, MenuGroup, MenuGroupLabel, MenuItem, MenuLinkItem, MenuPopup, MenuSeparator, MenuTrigger } from '@/components/ui/menu';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -42,6 +42,8 @@ import {
   type NavTone,
 } from '@/lib/workspace/adminNav';
 import { interDisplay } from './fonts';
+import { LiveDot } from './agentic';
+import '../../agentic.css';
 
 const COLLAPSE_KEY = 'da-admin-sidebar-collapsed';
 const COLLAPSE_EVENT = 'da-admin-sidebar-toggle';
@@ -107,104 +109,6 @@ function ActiveGlow({ layoutId }: { layoutId: string }) {
       className="absolute inset-0 -z-10 rounded-xl border border-[#9A88FC]/40 bg-[linear-gradient(180deg,rgba(154,136,252,0.28),rgba(154,136,252,0.08))] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_12px_28px_-16px_rgba(106,0,255,0.85)]"
       aria-hidden
     />
-  );
-}
-
-function ExpandedItem({
-  section,
-  item,
-  active,
-  open,
-  onOpenChange,
-  onNavigate,
-  glowId,
-  marked = false,
-}: {
-  section: NavSection;
-  item: NavItem;
-  active: ActiveMatch | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onNavigate: NavigateHandler;
-  glowId: string;
-  marked?: boolean;
-}) {
-  const containsActive = marked || active?.item === item;
-  const isCurrent = containsActive && !active?.child;
-  const children = item.children ?? [];
-
-  const row = (
-    <div className="group/row relative isolate flex items-center">
-      {isCurrent ? <ActiveGlow layoutId={glowId} /> : null}
-      <Link
-        href={item.href}
-        prefetch
-        onClick={() => onNavigate(item.href)}
-        aria-current={isCurrent ? 'page' : undefined}
-        className={cn(
-          'flex min-w-0 flex-1 items-center gap-2.5 rounded-xl px-2 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-          containsActive ? 'text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-neutral-100',
-        )}
-      >
-        <IconTile icon={item.icon} tone={section.tone} active={containsActive} />
-        <span className="truncate">{item.label}</span>
-        {item.badge ? (
-          <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{item.badge}</span>
-        ) : null}
-      </Link>
-      {children.length ? (
-        <CollapsibleTrigger
-          aria-label={`${open ? 'Hide' : 'Show'} ${item.label} pages`}
-          className="mr-1 flex size-6 shrink-0 items-center justify-center rounded-md text-neutral-500 outline-none transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:ring-2 focus-visible:ring-brand-400/60"
-        >
-          <ChevronDown className={cn('size-3.5 transition-transform duration-200', open ? 'rotate-0' : '-rotate-90')} strokeWidth={2} aria-hidden />
-        </CollapsibleTrigger>
-      ) : null}
-    </div>
-  );
-
-  if (!children.length) return <li>{row}</li>;
-
-  return (
-    <li>
-      <Collapsible open={open} onOpenChange={onOpenChange}>
-        {row}
-        <CollapsiblePanel>
-          <ul className="relative ml-[19px] mt-0.5 space-y-px border-l border-white/[0.07] pb-1 pl-2.5">
-            {children.map((child) => {
-              const current = active?.child === child;
-              const Glyph = child.icon;
-              return (
-                <li key={child.href} className="relative isolate">
-                  {current ? (
-                    <>
-                      <span className="absolute -left-[11.5px] top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-[#6A00FF]" aria-hidden />
-                      <ActiveGlow layoutId={glowId} />
-                    </>
-                  ) : null}
-                  <Link
-                    href={child.href}
-                    prefetch
-                    onClick={() => onNavigate(child.href)}
-                    aria-current={current ? 'page' : undefined}
-                    className={cn(
-                      'flex items-center gap-2 rounded-lg px-2 py-1.5 text-[13px] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60',
-                      current ? 'font-medium text-white' : 'text-neutral-500 hover:bg-white/[0.04] hover:text-neutral-200',
-                    )}
-                  >
-                    <Glyph className={cn('size-3.5 shrink-0', current ? 'text-brand-200' : 'opacity-70')} strokeWidth={1.9} aria-hidden />
-                    <span className="truncate">{child.label}</span>
-                    {child.badge ? (
-                      <span className="ml-auto rounded-full bg-[#6A00FF] px-1.5 text-[10px] font-bold text-white tabular-nums">{child.badge}</span>
-                    ) : null}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </CollapsiblePanel>
-      </Collapsible>
-    </li>
   );
 }
 
@@ -290,6 +194,235 @@ function CollapsedItem({
         </MenuPopup>
       </Menu>
     </li>
+  );
+}
+
+const FOLDER_STORE = 'da.admin.folders.v1';
+const DESK_IDS = new Set(['operators', 'clients', 'placements', 'review']);
+
+function readFolders(): Set<string> | null {
+  try {
+    const raw = window.localStorage.getItem(FOLDER_STORE);
+    return raw ? new Set(JSON.parse(raw) as string[]) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeFolders(open: Set<string>) {
+  try {
+    window.localStorage.setItem(FOLDER_STORE, JSON.stringify([...open]));
+  } catch {
+    /* blocked storage: folders still work, they are just not remembered */
+  }
+}
+
+function sectionCount(section: NavSection) {
+  return section.items.reduce((sum, item) => sum + (item.badge ?? 0), 0);
+}
+
+function Count({ value }: { value: number }) {
+  if (!value) return null;
+  return <span className="ml-auto shrink-0 rounded-full bg-brand-500/15 px-1.5 text-[11px] leading-5 tabular-nums text-brand-200">{value}</span>;
+}
+
+const folderRow =
+  'flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-sm outline-none transition-colors focus-visible:ring-2 focus-visible:ring-brand-400/60';
+
+/**
+ * The workspace as folders, after the Vistrial app: each desk is a folder
+ * holding its queues, with a live count and a state dot. A ringing dot means
+ * something there waits on a person. System is one folder, closed by default.
+ * Opened folders are remembered in this browser only.
+ */
+function FolderTree({ nav, active, onNavigate }: { nav: NavSection[]; active: ActiveMatch | null; onNavigate: NavigateHandler }) {
+  // The server has no storage, so both renders start from the default and the
+  // saved folders are restored after mount.
+  const [open, setOpen] = useState<Set<string>>(() => new Set(['operators', 'review']));
+  useEffect(() => {
+    const saved = readFolders();
+    if (!saved) return;
+    const timer = window.setTimeout(() => setOpen(saved), 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+  const toggle = (id: string) =>
+    setOpen((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      writeFolders(next);
+      return next;
+    });
+
+  const desks = nav.filter((section) => DESK_IDS.has(section.id));
+  const rest = nav.filter((section) => !DESK_IDS.has(section.id));
+
+  const branch = (section: NavSection) => {
+    const here = active?.section.id === section.id;
+    const isOpen = open.has(section.id) || here;
+    const count = sectionCount(section);
+    const href = railRows(section)[0]?.href ?? section.items[0]?.href ?? '/workspace';
+    const desk = DESK_IDS.has(section.id);
+    return (
+      <li key={section.id} role="treeitem" aria-expanded={isOpen} aria-selected={here && !active?.child && active?.item.href === href}>
+        <div className={cn('group/row flex min-w-0 items-center rounded-lg', here && 'bg-white/[0.05]')}>
+          <button
+            type="button"
+            aria-label={isOpen ? `Close ${section.heading}` : `Open ${section.heading}`}
+            onClick={() => toggle(section.id)}
+            className="flex size-6 shrink-0 items-center justify-center rounded-md text-neutral-500 hover:text-white"
+          >
+            <ChevronRight aria-hidden className={cn('size-3.5 transition-transform', isOpen && 'rotate-90')} />
+          </button>
+          <Link
+            href={href}
+            prefetch
+            onClick={() => onNavigate(href)}
+            className={cn(folderRow, 'flex-1 pl-1', here ? 'font-medium text-white' : 'text-neutral-300 hover:bg-white/[0.04] hover:text-white')}
+          >
+            {isOpen ? <FolderOpen aria-hidden className={cn('size-4 shrink-0', here ? 'text-brand-300' : 'text-neutral-500')} /> : <FolderClosed aria-hidden className="size-4 shrink-0 text-neutral-500" />}
+            <span className="truncate">{section.heading}</span>
+            <span className="ml-auto flex shrink-0 items-center gap-1.5">
+              <Count value={count} />
+              {desk ? <LiveDot tone={count > 0 ? 'waiting' : 'clear'} label={count > 0 ? `${count} waiting on a person` : 'Clear'} /> : null}
+            </span>
+          </Link>
+        </div>
+        {isOpen ? (
+          <ul role="group" className="ml-[11px] mt-0.5 grid gap-0.5 border-l border-white/[0.07] pl-2">
+            {section.items.map((item) => {
+              const current = active?.item === item;
+              const Glyph = item.icon;
+              return (
+                <li key={item.href} role="treeitem" aria-selected={current}>
+                  <Link
+                    href={item.href}
+                    prefetch
+                    onClick={() => onNavigate(item.href)}
+                    aria-current={current ? 'page' : undefined}
+                    className={cn(folderRow, 'text-[13px]', current ? 'bg-white/[0.07] font-medium text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white')}
+                  >
+                    <Glyph aria-hidden className={cn('size-3.5 shrink-0', current ? 'text-brand-300' : 'opacity-70')} strokeWidth={1.9} />
+                    <span className="truncate">{item.label}</span>
+                    {item.badge ? <Count value={item.badge} /> : null}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+      </li>
+    );
+  };
+
+  return (
+    <div className="grid gap-5">
+      {desks.length ? (
+        <div className="grid gap-1.5">
+          <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Desks</p>
+          <ul role="tree" aria-label="Desks" className="grid gap-0.5">
+            {desks.map(branch)}
+          </ul>
+        </div>
+      ) : null}
+      {rest.length ? (
+        <div className={cn('grid gap-1.5', desks.length && 'border-t border-white/[0.06] pt-4')}>
+          <p className="px-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">Workspace</p>
+          <ul role="tree" aria-label="Workspace" className="grid gap-0.5">
+            {rest.map(branch)}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+type Waiting = { key: string; label: string; desk: string; count: number; href: string };
+
+function waitingOn(nav: NavSection[]): Waiting[] {
+  return nav
+    .flatMap((section) =>
+      section.items.filter((item) => item.badge).map((item) => ({ key: `${section.id}-${item.href}`, label: item.label, desk: section.heading, count: item.badge ?? 0, href: item.href })),
+    )
+    .sort((a, b) => b.count - a.count);
+}
+
+const FLOW_STEPS = [
+  { label: 'Application', href: '/workspace/operators/applicants' },
+  { label: 'Ready', href: '/workspace/operators/ready' },
+  { label: 'Case file', href: '/workspace/clients' },
+  { label: 'Placement', href: '/workspace/placements' },
+  { label: 'EOD and report', href: '/workspace/review/eods' },
+];
+
+/** The Live rail, after the Vistrial app: what is waiting on a person right now. */
+function LiveAside({ nav, onNavigate }: { nav: NavSection[]; onNavigate: NavigateHandler }) {
+  const waiting = waitingOn(nav);
+  const desks = nav.some((section) => DESK_IDS.has(section.id));
+  return (
+    <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-72 shrink-0 overflow-y-auto border-l border-border px-4 py-6 xl:block">
+      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
+        <LiveDot tone={waiting.length ? 'working' : 'clear'} />
+        Live
+      </p>
+      {waiting.length === 0 ? (
+        <p className="mt-3 text-sm text-neutral-400">Nothing is waiting on you.</p>
+      ) : (
+        <ul className="mt-3 grid gap-1.5">
+          {waiting.map((row, index) => (
+            <li key={row.key} className="live-enter" style={{ animationDelay: `${index * 50}ms` }}>
+              <Link href={row.href} prefetch onClick={() => onNavigate(row.href)} className="flex items-center gap-2.5 rounded-lg border border-white/[0.07] px-3 py-2 text-sm transition-colors hover:border-brand-400/40">
+                <LiveDot tone="waiting" />
+                <span className="min-w-0 flex-1">
+                  <span className={cn('block truncate text-white', index === 0 && 'live-shimmer-text')}>{row.label}</span>
+                  <span className="block text-[11px] text-neutral-500">{row.desk}</span>
+                </span>
+                <span className="tabular-nums text-brand-200">{row.count}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+      {desks ? (
+        <div className="mt-8">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How work moves</p>
+          <ol className="relative mt-3 grid gap-3 pl-4">
+            <span aria-hidden className="absolute bottom-2 left-[3px] top-2 w-px bg-gradient-to-b from-brand-400/60 via-brand-400/20 to-transparent" />
+            {FLOW_STEPS.map((step) => (
+              <li key={step.label} className="relative">
+                <span aria-hidden className="absolute -left-4 top-1.5 size-[7px] rounded-full border border-brand-400/60 bg-ink-950" />
+                <Link href={step.href} prefetch onClick={() => onNavigate(step.href)} className="text-sm text-neutral-300 hover:text-white">
+                  {step.label}
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
+    </aside>
+  );
+}
+
+/** The crew strip under the header, after the Vistrial app: each desk and its state. */
+function CrewStrip({ nav, onNavigate }: { nav: NavSection[]; onNavigate: NavigateHandler }) {
+  const desks = nav.filter((section) => DESK_IDS.has(section.id));
+  if (!desks.length) return null;
+  return (
+    <div aria-label="Desks" className="flex h-10 items-center gap-4 overflow-x-auto border-b border-border px-4 text-xs sm:px-6">
+      {desks.map((section) => {
+        const count = sectionCount(section);
+        const href = railRows(section)[0]?.href ?? '/workspace';
+        return (
+          <Link key={section.id} href={href} prefetch onClick={() => onNavigate(href)} className="inline-flex shrink-0 items-center gap-2 text-neutral-400 hover:text-white">
+            <span className="text-white">{section.heading}</span>
+            <span className={cn('inline-flex items-center gap-1.5 rounded-md border px-1.5 py-0.5', count ? 'border-brand-400/30 bg-brand-500/10 text-brand-200' : 'border-white/[0.08] text-neutral-500')}>
+              <LiveDot tone={count ? 'waiting' : 'clear'} className="size-1.5" />
+              {count ? `${count} waiting` : 'Clear'}
+            </span>
+          </Link>
+        );
+      })}
+    </div>
   );
 }
 
@@ -555,20 +688,13 @@ function SidebarContent({
           {searching && !collapsed ? (
             <SearchResults query={query} nav={nav} active={active} onNavigate={navigate} />
           ) : (
-            <div className={collapsed ? 'space-y-3' : 'space-y-5'}>
-              {nav.map((section) => (
-                <div key={section.id}>
-                  {collapsed ? (
+            collapsed ? (
+              <div className="space-y-3">
+                {nav.map((section) => (
+                  <div key={section.id}>
                     <div className="mx-auto mb-2 h-px w-7 bg-white/[0.07]" aria-hidden />
-                  ) : section.rail === 'tabs' ? null : (
-                    <p className="mb-1.5 flex items-center gap-2 px-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300">
-                      {section.heading}
-                    </p>
-                  )}
-                  <ul className={collapsed ? 'flex flex-col items-center gap-1' : 'space-y-0.5'}>
-                    {railRows(section).map((item) => {
-                      const marked = section.rail === 'tabs' && active?.section.id === section.id;
-                      return collapsed ? (
+                    <ul className="flex flex-col items-center gap-1">
+                      {railRows(section).map((item) => (
                         <CollapsedItem
                           key={item.href}
                           section={section}
@@ -576,26 +702,16 @@ function SidebarContent({
                           active={active}
                           onNavigate={navigate}
                           glowId={glowId}
-                          marked={marked}
+                          marked={section.rail === 'tabs' && active?.section.id === section.id}
                         />
-                      ) : (
-                        <ExpandedItem
-                          key={item.href}
-                          section={section}
-                          item={item}
-                          active={active}
-                          open={false}
-                          onOpenChange={() => {}}
-                          onNavigate={navigate}
-                          glowId={glowId}
-                          marked={marked}
-                        />
-                      );
-                    })}
-                  </ul>
-                </div>
-              ))}
-            </div>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <FolderTree nav={nav} active={active} onNavigate={navigate} />
+            )
           )}
         </nav>
       </ScrollArea>
@@ -750,7 +866,9 @@ export default function Shell({
         ) : null}
 
         <div className={cn('relative z-10 flex min-w-0 flex-1 flex-col transition-[padding] duration-200 ease-linear', collapsed ? 'lg:pl-[72px]' : 'lg:pl-[272px]')}>
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur-xl sm:px-6">
+          <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-xl">
+            <CrewStrip nav={nav} onNavigate={handleNavigate} />
+            <div className="flex h-16 items-center gap-3 px-4 sm:px-6">
             <button
               type="button"
               onClick={() => setDrawerOpenOn(pathname)}
@@ -774,34 +892,36 @@ export default function Shell({
               {navigating ? <span className="ml-1 size-1.5 animate-pulse rounded-full bg-brand-300" aria-label="Loading" /> : null}
             </nav>
 
-            <div className="ml-auto flex items-center gap-2">
-              <StatusPill>Admin</StatusPill>
+            <button
+              type="button"
+              onClick={() => {
+                if (window.matchMedia('(min-width: 1024px)').matches) {
+                  if (collapsed) writeCollapsed(false);
+                  requestAnimationFrame(() => document.getElementById(SEARCH_ID)?.focus());
+                } else {
+                  setDrawerOpenOn(pathname);
+                  requestAnimationFrame(() => document.getElementById(`${SEARCH_ID}-drawer`)?.focus());
+                }
+              }}
+              className="ml-auto hidden h-10 w-full max-w-md items-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.03] pl-3 pr-1.5 text-left text-sm text-neutral-500 transition-colors hover:border-brand-400/40 hover:text-neutral-300 md:flex"
+            >
+              <Search className="size-4 shrink-0" strokeWidth={1.9} aria-hidden />
+              <span className="flex-1 truncate">Jump to a desk, queue, or tool</span>
+              <Kbd className="bg-white/[0.07] text-neutral-400">⌘K</Kbd>
+            </button>
+            <div className="ml-auto flex items-center gap-2 md:ml-0">
+              <StatusPill>{label}</StatusPill>
               <ThemeToggle />
-              <button
-                type="button"
-                onClick={() => {
-                  if (window.matchMedia('(min-width: 1024px)').matches) {
-                    if (collapsed) writeCollapsed(false);
-                    requestAnimationFrame(() => document.getElementById(SEARCH_ID)?.focus());
-                  } else {
-                    setDrawerOpenOn(pathname);
-                    requestAnimationFrame(() => document.getElementById(`${SEARCH_ID}-drawer`)?.focus());
-                  }
-                }}
-                className="hidden h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.04] pl-3 pr-1.5 text-xs text-muted-foreground transition-colors hover:border-white/[0.14] hover:bg-white/[0.07] hover:text-card-foreground md:flex"
-              >
-                <Search className="size-3.5" strokeWidth={1.9} aria-hidden />
-                Jump to
-                <Kbd className="bg-white/[0.07] text-neutral-400">⌘K</Kbd>
-              </button>
               <div className="lg:hidden">
                 <UserMenu email={email} label={label} variant="header" onSignOut={signOut} />
               </div>
             </div>
+            </div>
           </header>
 
-          <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10">
-            <div className="mx-auto w-full min-w-0 max-w-[1400px]">
+          <div className="flex min-w-0 flex-1">
+          <main id="workspace-main" className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10">
+            <div className="app-enter mx-auto w-full min-w-0 max-w-[1400px]" key={pathname}>
               <SectionTabs active={active} />
               {children}
               <footer className="mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-4 text-xs text-muted-foreground">
@@ -812,6 +932,8 @@ export default function Shell({
               </footer>
             </div>
           </main>
+          <LiveAside nav={nav} onNavigate={handleNavigate} />
+          </div>
         </div>
       </div>
     </TooltipProvider>

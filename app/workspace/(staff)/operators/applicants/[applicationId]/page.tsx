@@ -7,8 +7,9 @@ import { advanceApplicantAction, declineApplicantAction, markReviewingAction } f
 import { getApplicant } from '@/lib/operators/desk';
 import { createClient } from '@/lib/supabase/server';
 import DeskForm from '../../../components/DeskForm';
-import { DeskHeader, Fact, Pill, Section, area, danger, field, primary, secondary, when } from '../../../components/desk';
+import { DeskHeader, Fact, Pill, Section, area, danger, field, secondary, when } from '../../../components/desk';
 import ApplicationAnswers from '../../ApplicationAnswers';
+import { HoldToSubmit } from '../../../components/agentic';
 
 export const metadata: Metadata = { title: 'Applicant' };
 export const dynamic = 'force-dynamic';
@@ -90,9 +91,9 @@ export default async function ApplicantPage({ params }: { params: Promise<{ appl
                 Note for the file
                 <textarea name="note" className={area} placeholder="Optional" />
               </label>
-              <button type="submit" className={primary}>
-                Advance and send the invite
-              </button>
+              <HoldToSubmit holding="Keep holding to advance" hint="Hold to advance. It opens the operator file and emails the invite.">
+                Hold to advance
+              </HoldToSubmit>
             </DeskForm>
           </Section>
           <Section title="Decline" hint="The note stays on the application.">

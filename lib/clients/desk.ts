@@ -3,6 +3,7 @@ import 'server-only';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 import type { UntypedClient } from '@/lib/workspace/db';
 import type { CaseFile } from '@/lib/da/queries';
+import { OPEN_STAGES } from '@/lib/workspace/pipeline';
 
 /**
  * Reads for the Clients desk. One client is one client_case_file with
@@ -176,4 +177,12 @@ export async function getProspectForAccount(leadId: string) {
     monthly_ad_spend: number | string | null;
     payload: Record<string, unknown> | null;
   } | null) ?? null;
+}
+
+/** Open leads: the Prospects queue on the Clients desk. */
+export async function countOpenProspects(): Promise<number> {
+  const db = await adminClient();
+  if (!db) return 0;
+  const { count } = await db.from('da_leads').select('id', { count: 'exact', head: true }).in('stage', [...OPEN_STAGES]);
+  return count ?? 0;
 }

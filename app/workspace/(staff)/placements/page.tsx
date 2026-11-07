@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { workspaceClient } from '@/lib/workspace/db';
+import { LifecycleFlow } from '../components/agentic';
 import PlacementBoard from '@/app/workspace/(staff)/sales-ops/components/PlacementBoard';
 import { salesOpsRole } from '@/lib/workspace/sales-ops-queries';
 import { PageHeader } from '@/app/workspace/(staff)/components/ui';
@@ -12,6 +14,9 @@ export default async function PlacementsPage({
 }) {
   const role = await salesOpsRole();
   const { q = '', status = '' } = await searchParams;
+  const db = await workspaceClient();
+  const { data: rows } = db ? await db.from('placement').select('status').neq('status', 'ended') : { data: [] };
+  const count = (value: string) => ((rows ?? []) as { status: string }[]).filter((row) => row.status === value).length;
   return (
     <>
       <PageHeader
@@ -30,6 +35,23 @@ export default async function PlacementsPage({
           ) : null
         }
       />
+      <div className="mb-5">
+        <LifecycleFlow
+          label="Wizard to live seat"
+          stages={[
+            { key: 'draft', label: 'Draft', count: count('draft'), hint: 'In the wizard', href: '/workspace/placements?status=draft', kind: 'person' },
+            { key: 'scheduled', label: 'Scheduled', count: count('scheduled'), hint: 'Starts at the shift', href: '/workspace/placements?status=scheduled', kind: 'auto' },
+            { key: 'active', label: 'Live', count: count('active'), hint: 'EODs and reports flowing', href: '/workspace/placements?status=active', kind: 'auto' },
+            { key: 'paused', label: 'Paused', count: count('paused'), hint: 'Resume or end', href: '/workspace/placements?status=paused', kind: 'person' },
+          ]}
+          statuses={[
+            count('draft') ? `${count('draft')} draft${count('draft') === 1 ? '' : 's'} waiting to finish the wizard` : null,
+            count('scheduled') ? `${count('scheduled')} scheduled to go live` : null,
+            count('active') ? `${count('active')} live seat${count('active') === 1 ? '' : 's'} reporting` : null,
+            count('paused') ? `${count('paused')} paused` : null,
+          ].filter((line): line is string => Boolean(line)).concat((rows ?? []).length ? [] : ['No open placements. Start one from a Ready operator.'])}
+        />
+      </div>
       <form className="mb-4 flex flex-wrap gap-2" action="/workspace/placements">
         <input
           name="q"
