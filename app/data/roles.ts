@@ -248,7 +248,7 @@ export const roles: Role[] = [
         'Book the right calls with high-quality prospects. Less volume, more fit — belief shaping beats hard selling.',
       type: 'Full-time',
       compensation: 'Competitive + Upside',
-      apply: { kind: 'airtable', src: 'https://airtable.com/embed/appI4kbEVdi5THUbs/pag2MVTVHyntieliL/form' },
+      apply: { kind: 'form' },
       sections: [
         {
           title: 'Responsibilities',

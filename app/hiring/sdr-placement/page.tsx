@@ -11,6 +11,7 @@ import { Panel } from '@/components/ui/panel';
 import { ShineBorder } from '@/components/ui/shine-border';
 import SiteHeader from '../../components/SiteHeader';
 import SiteFooter from '../../components/SiteFooter';
+import ApplicationForm from '../components/ApplicationForm';
 import { SDR_MONTHLY_BASE } from '../../data/roles';
 import { sectionLabel } from '../../components/ui';
 import {
@@ -26,7 +27,6 @@ import {
   hiringBtnSm,
 } from '../components/visual';
 
-const APPLY_URL = 'https://airtable.com/appI4kbEVdi5THUbs/pagQySxRueaPdgW4n/form';
 const WISTIA_MEDIA_ID = 'lrplfrikyd';
 const [baseMin, baseMax] = (SDR_MONTHLY_BASE.match(/\d+/g) ?? ['400', '600']).map(Number);
 
@@ -100,7 +100,7 @@ function ApplyLink({
   children?: string;
 }) {
   return (
-    <a href={APPLY_URL} target="_blank" rel="noopener noreferrer" className={className}>
+    <a href="#apply" className={className}>
       {children}
       <ArrowIcon className="h-4 w-4" />
     </a>
@@ -317,6 +317,20 @@ export default function SdrPlacementPage() {
                 </div>
               </div>
             </ShinePanel>
+          </div>
+        </section>
+
+        {/* The application. It lands in the admin's Applicants inbox, the same
+            one every Sales Operator posting uses. */}
+        <section id="apply" className="scroll-mt-24 px-5 pb-20 sm:px-6">
+          <div className="mx-auto max-w-3xl">
+            <Panel className="overflow-hidden rounded-3xl p-0">
+              <div className="border-b border-white/[0.07] bg-white/[0.02] px-5 py-4 sm:px-7">
+                <h2 className="text-base font-semibold text-white sm:text-lg">Apply for the SDR Placement Role</h2>
+                <p className="text-xs text-neutral-500">Complete the form below to submit your application</p>
+              </div>
+              <ApplicationForm roleSlug="sdr-placement" jobTitle="SDR Placement Role" />
+            </Panel>
           </div>
         </section>
 
