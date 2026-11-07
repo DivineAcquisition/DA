@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 import { appHosts, appUrl, isTeamAppPath, sessionRules, type AppKey } from './lib/apps';
 import { hostRole, loadOperatorWorkspaceDomain, servingHosts } from './lib/operator-workspace/domain';
+import { legacyAdminRedirect, normalizePath } from './lib/workspace/legacyRoutes';
 import { REVENUE_LEAK_NOINDEX } from './lib/acq/revenue-leak-content';
 
 /**
@@ -435,9 +436,20 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // The admin app's home is the operations overview.
+  // The admin app's home is the Operators desk.
   if (!local && WORKSPACE_HOSTS.includes(host) && pathname === '/') {
-    return NextResponse.redirect(new URL('/workspace/operations', request.url), 307);
+    return NextResponse.redirect(new URL('/workspace/operators', request.url), 307);
+  }
+
+  // Old admin addresses land on the desk that owns the object now. The admin
+  // host also answers bare paths, so they are read in their /workspace form.
+  if (!isServicePath && (local || WORKSPACE_HOSTS.includes(host))) {
+    const legacy = legacyAdminRedirect(local ? pathname : normalizePath(pathname));
+    if (legacy) {
+      const next = new URL(legacy, request.url);
+      request.nextUrl.searchParams.forEach((value, key) => next.searchParams.set(key, value));
+      return NextResponse.redirect(next, 307);
+    }
   }
 
   // Strict host isolation: on a dedicated host, other surfaces are not reachable.

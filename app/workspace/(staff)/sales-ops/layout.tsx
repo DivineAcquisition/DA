@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { salesOpsRole } from '@/lib/workspace/sales-ops-queries';
 import { EmptyState } from '../components/ui';
-import SalesOpsTabs from './components/SalesOpsTabs';
 
 export const metadata: Metadata = { title: 'Workspace setup' };
 
@@ -19,7 +18,6 @@ export default async function SalesOpsLayout({ children }: { children: React.Rea
   }
   return (
     <div className="animate-rise">
-      {role === 'admin' ? <SalesOpsTabs role={role} /> : null}
       {children}
     </div>
   );

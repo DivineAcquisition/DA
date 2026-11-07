@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server';
 import { PageHeader } from '../../components/ui';
 
 export default async function TemplatesPage() {
-  if ((await salesOpsRole()) !== 'admin') redirect('/workspace/sales-ops/placements');
+  if ((await salesOpsRole()) !== 'admin') redirect('/workspace/placements');
   const supabase = await createClient();
   const { data, error } = await controlRpc<Parameters<typeof TemplateEditor>[0]['templates']>(supabase, 'so_template_list');
   return (

@@ -219,7 +219,7 @@ async function upsertVaRecord(
   if (links.signedOn) recordFields['Agreement Signed Date'] = links.signedOn;
   const adminBase = appUrl('admin');
   if (links.onboardingUrl) recordFields['Onboarding PDF'] = links.onboardingUrl;
-  else if (adminBase) recordFields['Onboarding PDF'] = `${adminBase}/workspace/onboarding`;
+  else if (adminBase) recordFields['Onboarding PDF'] = `${adminBase}/workspace/operators/onboarding`;
   if (links.agreementUrl) recordFields['Signed agreement'] = links.agreementUrl;
   if (links.folderUrl) recordFields['Drive folder'] = links.folderUrl;
 

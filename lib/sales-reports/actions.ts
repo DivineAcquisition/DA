@@ -17,7 +17,7 @@ async function run(fn: string, args: Record<string, unknown>, ok: string): Promi
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, fn, args);
   if (error) return { ok: false, error: readable(error) };
-  revalidatePath('/workspace/team/workspace/reports');
+  revalidatePath('/workspace/review/reports');
   revalidatePath('/workspace/sales-ops');
   return { ok: true, message: ok };
 }

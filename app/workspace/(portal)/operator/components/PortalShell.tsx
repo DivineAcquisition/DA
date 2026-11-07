@@ -269,7 +269,7 @@ function ViewAsBanner({ context, onPanel }: { context: PortalContext; onPanel: (
   const [exiting, startExit] = useTransition();
 
   const returnTo =
-    viewer.actor_role === 'manager' ? '/workspace/team' : `/workspace/admin/operators/${context.operator.id}`;
+    viewer.actor_role === 'manager' ? '/workspace/team' : `/workspace/operators/${context.operator.id}`;
   const left = viewer.expires_at ? Date.parse(viewer.expires_at) - now : 0;
 
   useEffect(() => {

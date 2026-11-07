@@ -97,7 +97,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/workspace/admin/operators/${placement.operatorId}`,
+      href: `/workspace/operators/${placement.operatorId}`,
       rank: EXCEPTION_RANK['response-below-standard'],
     });
   }
@@ -120,7 +120,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/workspace/admin/clients/${placement.clientId}`,
+      href: `/workspace/clients/${placement.clientId}`,
       rank: EXCEPTION_RANK['missed-eod'],
     });
   }
@@ -172,7 +172,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/workspace/admin/operators/${placement.operatorId}`,
+      href: `/workspace/operators/${placement.operatorId}`,
       rank: EXCEPTION_RANK['quota-at-risk'],
     });
   }
@@ -190,7 +190,7 @@ export function buildExceptionQueue(input: ExceptionInput): Exception[] {
       operatorId: placement.operatorId,
       clientId: placement.clientId,
       placementId: placement.id,
-      href: `/workspace/admin/clients/${placement.clientId}`,
+      href: `/workspace/clients/${placement.clientId}`,
       rank: EXCEPTION_RANK['placement-expiring'],
     });
   }

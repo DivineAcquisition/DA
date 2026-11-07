@@ -4,16 +4,23 @@ const BLOCKED_PREFIXES = [
   '/workspace/team/settings',
   '/workspace/team/workspace/integrity',
   '/workspace/team/workspace/reports/deliveries',
+  // Applicants are DA Admin's: advancing one is a hire.
+  '/workspace/operators/applicants',
+];
+
+/** The desks a manager works, plus their team tools. */
+const ALLOWED_PREFIXES = [
+  '/workspace/operators',
+  '/workspace/placements',
+  '/workspace/review',
+  '/workspace/operations',
+  '/workspace/inbox',
+  '/workspace/team',
 ];
 
 export function managerPathAllowed(pathname: string): boolean {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-  if (BLOCKED_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) return false;
-  if (path.startsWith('/workspace/sales-ops') && !path.startsWith('/workspace/sales-ops/placements')) return false;
-  return (
-    path.startsWith('/workspace/operations') ||
-    path.startsWith('/workspace/inbox') ||
-    path.startsWith('/workspace/team') ||
-    path.startsWith('/workspace/sales-ops/placements')
-  );
+  const under = (prefix: string) => path === prefix || path.startsWith(`${prefix}/`);
+  if (BLOCKED_PREFIXES.some(under)) return false;
+  return ALLOWED_PREFIXES.some(under);
 }

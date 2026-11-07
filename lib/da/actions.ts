@@ -2,8 +2,6 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { engagementPath } from '@/lib/da/paths';
 import { createCaseFileFolders, driveConfigured } from '@/lib/drive/client';
 import { controlRpc } from '@/lib/ad/rpc';
 import { createClient } from '@/lib/supabase/server';
@@ -30,21 +28,23 @@ function readable(error: { message: string } | null): string {
 function revalidateCase(slug: string) {
   revalidatePath(`/da/${slug}`);
   revalidatePath(`/workspace/growth/${slug}`);
+  // The client case file shows the same records on its tabs.
+  revalidatePath('/workspace/clients', 'layout');
 }
 
-async function path(slug: string, section = '') {
-  const headerStore = await headers();
-  const referer = headerStore.get('referer') ?? '';
-  const pathname = headerStore.get('x-pathname') ?? '';
-  const onWorkspace = pathname.startsWith('/workspace') || referer.includes('/workspace/growth');
-  return engagementPath(onWorkspace ? 'workspace' : 'da', slug, section);
-}
 
 // ---------------------------------------------------------------------------
 // Case files
 // ---------------------------------------------------------------------------
 
-export async function createCaseFileAction(formData: FormData): Promise<ActionResult> {
+/**
+ * Create the client case file: the record for the whole engagement. Name,
+ * vertical, industry template, and main contact; the template decides the
+ * shift questions and seeds the qualified-booking definition.
+ */
+export async function createCaseFileRecord(
+  formData: FormData,
+): Promise<{ ok: true; id: string; slug: string } | { ok: false; error: string }> {
   const supabase = await createClient();
 
   // p_industry_key decides the EOD shape for every operator on this client. It
@@ -103,7 +103,14 @@ export async function createCaseFileAction(formData: FormData): Promise<ActionRe
 
   revalidatePath('/da');
   revalidatePath('/workspace/growth');
-  redirect(await path(caseFile.slug));
+  revalidatePath('/workspace/clients');
+  return { ok: true, id: caseFile.id, slug: caseFile.slug };
+}
+
+export async function createCaseFileAction(formData: FormData): Promise<ActionResult> {
+  const created = await createCaseFileRecord(formData);
+  if (!created.ok) return created;
+  redirect(`/workspace/clients/${created.id}`);
 }
 
 // ---------------------------------------------------------------------------

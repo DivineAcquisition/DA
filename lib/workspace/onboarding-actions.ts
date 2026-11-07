@@ -69,7 +69,7 @@ export async function startSalesOperatorOnboardingAction(formData: FormData): Pr
     try {
       await sendOnboardingEmail({ to: recipient.email, recipientName: recipient.full_name, url });
     } catch (error) {
-      revalidatePath('/workspace/onboarding');
+      revalidatePath('/workspace/operators/onboarding');
       return {
         ok: false,
         error: error instanceof Error ? `Onboarding is ready, but the email failed: ${error.message} Link: ${url}` : `Email failed. Link: ${url}`,
@@ -77,7 +77,7 @@ export async function startSalesOperatorOnboardingAction(formData: FormData): Pr
     }
   }
 
-  revalidatePath('/workspace/onboarding');
+  revalidatePath('/workspace/operators/onboarding');
   revalidatePath(`/workspace/recipients/${recipientId}`);
   return {
     ok: true,

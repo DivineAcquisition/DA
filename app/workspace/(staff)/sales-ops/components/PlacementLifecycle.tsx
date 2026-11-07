@@ -112,7 +112,7 @@ export default function PlacementLifecycle({
             run(
               () => swapPlacementAction(placementId, { reason: data.get('reason'), last_day: data.get('last_day') }),
               (result) => {
-                if (result.wizardId) router.push(`/workspace/sales-ops/placements/new?draft=${result.wizardId}`);
+                if (result.wizardId) router.push(`/workspace/placements/new?draft=${result.wizardId}`);
               },
             );
           }}

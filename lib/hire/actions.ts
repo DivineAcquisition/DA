@@ -16,7 +16,7 @@ import {
 } from './mail';
 
 function refresh() {
-  revalidatePath('/workspace/team/workspace/operators');
+  revalidatePath('/workspace/operators');
   revalidatePath('/workspace/operator/workspace');
 }
 

@@ -121,7 +121,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   if (error) return { ok: false, error: 'Invalid email or password' };
 
   const session = await getSessionContext();
-  if (session?.isAdmin) redirect('/workspace/overview');
+  if (session?.isAdmin) redirect('/workspace/operators');
   if (session?.role === 'operator') {
     await supabase.auth.signOut();
     const team = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');

@@ -9,10 +9,6 @@ import { passwordPageKind } from '@/lib/auth/password';
 import { adminMfaState } from '@/lib/auth/mfa';
 import { hubSignOutAction } from '@/lib/vistrial/authActions';
 import NotConfigured from '@/app/da/components/NotConfigured';
-import UnifiedAdminChrome from '@/app/workspace/(staff)/components/UnifiedAdminChrome';
-import { loadOpsData } from '@/lib/vistrial/load';
-import { OpsProvider } from '@/lib/vistrial/store';
-import type { Actor } from '@/lib/vistrial/types';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { ManagerShell, OperatorGate } from './components/Gates';
 import { loadNavCounts } from '@/lib/workspace/nav-counts';
@@ -95,7 +91,7 @@ export default async function VistrialLayout({ children }: { children: React.Rea
 
   // Managers oversee the operators in their scope from the team page.
   if (session.role === 'manager') {
-    if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
+    if (!managerPathAllowed(pathname)) redirect('/workspace/placements');
     const counts = await loadNavCounts();
     return (
       <ThemeFrame>
@@ -110,15 +106,7 @@ export default async function VistrialLayout({ children }: { children: React.Rea
     return <HubSignIn app={app ?? 'team'} wrongAudience={session.email} />;
   }
 
-  const actor: Actor = { role: 'admin', id: session.userId, name: session.fullName ?? session.email };
-
-  const data = await loadOpsData();
-
-  return (
-    <ThemeFrame>
-      <OpsProvider data={data} actor={actor}>
-        <UnifiedAdminChrome email={session.email}>{children}</UnifiedAdminChrome>
-      </OpsProvider>
-    </ThemeFrame>
-  );
+  // Every staff screen lives under the one staff layout. This group keeps the
+  // operator portal and the sign-in pages only.
+  redirect('/workspace/operators');
 }

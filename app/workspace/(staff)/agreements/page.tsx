@@ -41,7 +41,7 @@ export default async function AgreementsPage({
         actions={
           <>
             <Link
-              href="/workspace/onboarding"
+              href="/workspace/operators/onboarding"
               className="inline-flex h-9 items-center rounded-lg border border-white/10 px-3 text-sm text-white hover:bg-white/[0.04]"
             >
               Onboarding

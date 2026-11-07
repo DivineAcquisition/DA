@@ -41,7 +41,7 @@ export default function PlacementForm({
         readOnly={locked}
         action={async (fd) => {
           const r = await savePlacementAction(fd);
-          if (r.ok && !p && r.id) router.push(`/workspace/sales-ops/placements/${r.id}`);
+          if (r.ok && !p && r.id) router.push(`/workspace/placements/${r.id}`);
           else if (r.ok) router.refresh();
           return r;
         }}

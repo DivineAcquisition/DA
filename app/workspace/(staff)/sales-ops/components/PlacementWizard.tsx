@@ -65,13 +65,26 @@ type Bundle = {
   copy_from: Array<{ id: string; label: string }>;
 };
 
-export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
+/** Who the wizard was opened from: a Ready operator or a client case file. */
+export type WizardPrefill = { operator_id?: string; case_file_id?: string };
+
+export default function PlacementWizard({ bundle, prefill }: { bundle: Bundle; prefill?: WizardPrefill }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [step, setStep] = useState(bundle.wizard?.step ?? 1);
+  // Opened from a client file with no operator yet, step 1 is still the
+  // operator; opened from a Ready operator, step 2 picks the client.
+  const [step, setStep] = useState(bundle.wizard?.step ?? (prefill?.operator_id && !prefill?.case_file_id ? 2 : 1));
   const [wizardId, setWizardId] = useState(bundle.wizard?.id ?? null);
   const [placementId, setPlacementId] = useState(bundle.wizard?.placement_id ?? null);
-  const [payload, setPayload] = useState<WizardPayload>(normalizePayload(bundle.wizard?.payload ?? EMPTY_PAYLOAD));
+  const [payload, setPayload] = useState<WizardPayload>(() =>
+    bundle.wizard?.payload
+      ? normalizePayload(bundle.wizard.payload)
+      : {
+          ...normalizePayload(EMPTY_PAYLOAD),
+          ...(prefill?.operator_id && bundle.operators.some((item) => item.id === prefill.operator_id) ? { operator_id: prefill.operator_id } : {}),
+          ...(prefill?.case_file_id && bundle.clients.some((item) => item.id === prefill.case_file_id) ? { case_file_id: prefill.case_file_id } : {}),
+        },
+  );
   const [checklist, setChecklist] = useState<CheckItem[]>(bundle.checklist ?? []);
   const [showOthers, setShowOthers] = useState(Boolean(bundle.wizard?.payload && !operatorsReady(bundle, normalizePayload(bundle.wizard.payload).operator_id)));
   const [error, setError] = useState<string | null>(null);
@@ -212,7 +225,7 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
             </div>
           ) : (
             <p className="text-sm text-neutral-300">
-              No client record yet? <Link className="underline" href="/workspace/admin/clients">Create the case file</Link>, then come back to this draft.
+              No client record yet? <Link className="underline" href="/workspace/clients">Create the case file</Link>, then come back to this draft.
             </p>
           )}
           <Field label="Assigned manager">
@@ -825,7 +838,7 @@ export default function PlacementWizard({ bundle }: { bundle: Bundle }) {
         setChecklist((saved.checklist as CheckItem[]) ?? checklist);
         return;
       }
-      router.push(`/workspace/sales-ops/placements/${result.placement_id}`);
+      router.push(`/workspace/placements/${result.placement_id}`);
     });
   }
 }

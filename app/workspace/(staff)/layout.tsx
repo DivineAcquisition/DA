@@ -65,7 +65,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!session.isAdmin) {
     if (session.role === 'manager' && !holdAccess) {
-      if (!managerPathAllowed(pathname)) redirect('/workspace/team/board');
+      if (!managerPathAllowed(pathname)) redirect('/workspace/placements');
       const counts = await loadNavCounts();
       return (
         <ThemeFrame>
@@ -99,7 +99,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     );
   }
 
-  if (isLogin) redirect('/workspace/overview');
+  if (isLogin) redirect('/workspace/operators');
 
   // A placement queues the packet. Filing it needs Drive, Airtable, and the
   // PDF builder, so it runs here the next time an admin opens the workspace.

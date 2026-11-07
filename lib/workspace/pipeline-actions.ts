@@ -13,8 +13,8 @@ function field(formData: FormData, name: string): string {
 }
 
 function revalidateLead(id: string) {
-  revalidatePath('/workspace/pipeline');
-  revalidatePath(`/workspace/pipeline/${id}`);
+  revalidatePath('/workspace/clients/prospects');
+  revalidatePath(`/workspace/clients/prospects/${id}`);
 }
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -172,7 +172,7 @@ export async function addMarketAction(formData: FormData): Promise<ActionResult>
     return { ok: false, error: error.message };
   }
 
-  revalidatePath('/workspace/pipeline');
+  revalidatePath('/workspace/clients/prospects');
   return { ok: true, message: `${label} added.` };
 }
 
@@ -191,6 +191,6 @@ export async function setMarketActiveAction(formData: FormData): Promise<ActionR
   const { error } = await supabase.from('da_markets').update({ active }).eq('slug', slug);
   if (error) return { ok: false, error: error.message };
 
-  revalidatePath('/workspace/pipeline');
+  revalidatePath('/workspace/clients/prospects');
   return { ok: true, message: active ? 'Market shown.' : 'Market hidden.' };
 }

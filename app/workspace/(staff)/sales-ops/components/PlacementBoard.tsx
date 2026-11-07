@@ -41,8 +41,8 @@ export default async function PlacementBoard({ query = '', status = '' }: { quer
     <DataTable headers={['Operator', 'Client', 'Manager', 'Start', 'Status', 'Checklist', 'GHL']}>
       {rows.map((row) => {
         const href = row.placement_id
-          ? `/workspace/sales-ops/placements/${row.placement_id}`
-          : `/workspace/sales-ops/placements/new?draft=${row.wizard_id}`;
+          ? `/workspace/placements/${row.placement_id}`
+          : `/workspace/placements/new?draft=${row.wizard_id}`;
         return (
           <tr key={row.placement_id ?? row.wizard_id}>
             <td className="px-4 py-3">
@@ -50,7 +50,7 @@ export default async function PlacementBoard({ query = '', status = '' }: { quer
                 {row.operator ?? 'Operator not chosen'}
               </Link>
               {row.display_status === 'draft' && row.wizard_id ? (
-                <Link href={`/workspace/sales-ops/placements/new?draft=${row.wizard_id}`} className="mt-1 block text-xs text-neutral-400 underline">
+                <Link href={`/workspace/placements/new?draft=${row.wizard_id}`} className="mt-1 block text-xs text-neutral-400 underline">
                   Continue draft
                 </Link>
               ) : null}

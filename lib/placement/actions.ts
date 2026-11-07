@@ -9,8 +9,8 @@ import { placementLetter } from '@/lib/placement/mail';
 import { createClient } from '@/lib/supabase/server';
 
 function revalidate() {
-  revalidatePath('/workspace/sales-ops/placements');
-  revalidatePath('/workspace/team/workspace/placements');
+  revalidatePath('/workspace/placements');
+  revalidatePath('/workspace/placements');
   revalidatePath('/workspace/operator/client');
 }
 
@@ -166,7 +166,7 @@ export async function reviewLaunchAction(placementId: string, decision: string, 
   const { error } = await rpc('so_launch_review', { p_placement: placementId, p_decision: decision, p_note: note });
   if (error) return { ok: false, error: readable(error) };
   revalidate();
-  revalidatePath('/workspace/team/workspace/launches');
+  revalidatePath('/workspace/placements/launches');
   return { ok: true, message: 'Review saved. Nothing was sent to the operator or the client.' };
 }
 

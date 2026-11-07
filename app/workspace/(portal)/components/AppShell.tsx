@@ -19,8 +19,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     ? [
         { href: '/workspace/operations', label: 'Overview' },
         { href: '/workspace/admin', label: 'Today', badge: gateway.exceptions().length },
-        { href: '/workspace/admin/clients', label: 'Case files' },
-        { href: '/workspace/admin/operators', label: 'Operators' },
+        { href: '/workspace/clients', label: 'Case files' },
+        { href: '/workspace/operators', label: 'Operators' },
         { href: '/workspace/admin/bookings', label: 'Booking review', badge: gateway.reviewQueue().length },
         {
           href: '/workspace/admin/escalations',

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   extensionAllowed,
   formComplete,
+  hireQueue,
+  nextHireAction,
   nextHireStage,
   readinessComplete,
   reminderDue,
@@ -103,5 +105,48 @@ describe('onboarding form', () => {
     const flagged = { ...draft, headset: 'no' };
     expect(stepErrors(4, flagged, true)).toEqual([]);
     expect(setupFlags(flagged)).toEqual(['headset']);
+  });
+});
+
+describe('nextHireAction', () => {
+  const all = (state: 'met' | 'missing' | 'waived' | 'flagged') =>
+    (['account', 'onboarding', 'agreement', 'payout', 'academy', 'setup', 'manager'] as const).map((key) => ({ key, state }));
+
+  it('waits on the invite until they sign in', () => {
+    const action = nextHireAction({ operatorId: 'op', stage: 'invited', signedIn: false, readiness: all('missing') });
+    expect(action.href).toBe('/workspace/operators/op#account');
+  });
+
+  it('puts a flag ahead of a missing item', () => {
+    const readiness = all('met');
+    readiness[1] = { key: 'onboarding', state: 'missing' };
+    readiness[5] = { key: 'setup', state: 'flagged' };
+    const action = nextHireAction({ operatorId: 'op', stage: 'onboarding', signedIn: true, readiness });
+    expect(action.label).toContain('equipment setup');
+    expect(action.href).toBe('/workspace/operators/op#readiness');
+  });
+
+  it('names the first missing item and where to fix it', () => {
+    const readiness = all('met');
+    readiness[2] = { key: 'agreement', state: 'missing' };
+    expect(nextHireAction({ operatorId: 'op', stage: 'onboarding', signedIn: true, readiness }).href).toBe('/workspace/operators/op#agreement');
+  });
+
+  it('opens the wizard from Ready and the seat once placed', () => {
+    expect(nextHireAction({ operatorId: 'op', stage: 'ready', signedIn: true, readiness: all('met') }).href).toBe(
+      '/workspace/placements/new?operator=op',
+    );
+    expect(nextHireAction({ operatorId: 'op', stage: 'placed', signedIn: true, readiness: all('met'), placementId: 'p1' }).href).toBe(
+      '/workspace/placements/p1',
+    );
+  });
+});
+
+describe('hireQueue', () => {
+  it('groups invited with onboarding and keeps placed off the queues', () => {
+    expect(hireQueue('invited')).toBe('onboarding');
+    expect(hireQueue('onboarding')).toBe('onboarding');
+    expect(hireQueue('ready')).toBe('ready');
+    expect(hireQueue('placed')).toBeNull();
   });
 });

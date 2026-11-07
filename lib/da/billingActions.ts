@@ -245,6 +245,7 @@ export async function inviteClientAction(caseFileId: string, formData: FormData)
   const invite = data as unknown as Database['public']['Tables']['client_invite']['Row'];
 
   revalidatePath('/da');
+  revalidatePath('/workspace/clients', 'layout');
   return {
     ok: true,
     message: `Invite created, expiring ${invite.expires_at.slice(0, 10)}. Send them /acct/invite/${invite.token}`,

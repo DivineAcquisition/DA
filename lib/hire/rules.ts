@@ -213,3 +213,59 @@ export function zoneHours(zone: string, timeZone: string): string {
     return '';
   }
 }
+
+export const READINESS_LABEL: Record<ReadinessItem['key'], string> = {
+  account: 'Account active and signed in',
+  onboarding: 'Onboarding form',
+  agreement: 'Agreement signed',
+  payout: 'Payout details',
+  academy: 'Academy Level 1 or an active override',
+  setup: 'Equipment setup',
+  manager: 'Manager assigned',
+};
+
+export type NextAction = {
+  label: string;
+  /** Where the action happens: a section of the file or another desk. */
+  href: string | null;
+};
+
+/**
+ * The one thing that moves this operator forward. Stage comes from
+ * nextHireStage; this only says what is in the way.
+ */
+export function nextHireAction(input: {
+  operatorId: string;
+  stage: HireStage;
+  signedIn: boolean;
+  readiness: Pick<ReadinessItem, 'key' | 'state'>[];
+  placementId?: string | null;
+}): NextAction {
+  const file = (section: string) => `/workspace/operators/${input.operatorId}#${section}`;
+  switch (input.stage) {
+    case 'offboarded':
+      return { label: 'Finish the off-boarding checklist', href: file('exit') };
+    case 'paused':
+      return { label: 'Resume or end the placement', href: input.placementId ? `/workspace/placements/${input.placementId}` : null };
+    case 'placed':
+      return { label: 'Open the live seat', href: input.placementId ? `/workspace/placements/${input.placementId}` : null };
+    case 'ready':
+      return { label: 'Place on a client', href: `/workspace/placements/new?operator=${input.operatorId}` };
+    default:
+      break;
+  }
+  if (!input.signedIn) return { label: 'Waiting on the invite. Resend it if it expired.', href: file('account') };
+  const flagged = input.readiness.find((item) => item.state === 'flagged');
+  if (flagged) return { label: `Clear the flag on ${READINESS_LABEL[flagged.key].toLowerCase()}`, href: file('readiness') };
+  const missing = input.readiness.find((item) => item.state === 'missing');
+  if (!missing) return { label: 'Readiness is met. The stage moves to Ready on the next refresh.', href: file('readiness') };
+  const where: Partial<Record<ReadinessItem['key'], string>> = { onboarding: 'onboarding', agreement: 'agreement', account: 'account' };
+  return { label: `Missing: ${READINESS_LABEL[missing.key].toLowerCase()}`, href: file(where[missing.key] ?? 'readiness') };
+}
+
+/** Which desk queue a stage sits in. Placed and later live on the file and the placement. */
+export function hireQueue(stage: HireStage): 'onboarding' | 'ready' | null {
+  if (stage === 'invited' || stage === 'onboarding') return 'onboarding';
+  if (stage === 'ready') return 'ready';
+  return null;
+}

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 
 const SECTIONS = [
-  ['', 'Overview'],
+  ['', 'Case file'],
   ['/scope', 'Scope'],
   ['/baseline', 'Baseline'],
   ['/decisions', 'Decisions'],
