@@ -28,7 +28,7 @@ function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string
   return (
     <GlowFrame className="!p-0">
       <div className="flex items-center gap-3 border-b border-c-line px-5 py-4 sm:px-7">
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-c-ink text-sm font-semibold text-white">2</span>
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-[#c3b6fe] to-[#7e67f2] text-sm font-semibold text-[color:#0b0a11]">2</span>
         <div className="min-w-0">
           <h2 className="truncate text-base font-medium tracking-tight text-c-ink sm:text-lg">Apply for {title}</h2>
           <p className="text-xs text-c-muted">Complete the form below to submit your application</p>
@@ -38,7 +38,7 @@ function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string
       {detail.apply.kind === 'airtable' ? (
         <div>
           <div className="bg-c-soft p-3 sm:p-4">
-            <iframe title={`Application form for ${title}`} className="h-[720px] w-full rounded-xl border border-c-line bg-white sm:h-[860px]" src={detail.apply.src} />
+            <iframe title={`Application form for ${title}`} className="h-[720px] w-full rounded-xl border border-c-line bg-c-card sm:h-[860px]" src={detail.apply.src} />
           </div>
           <p className="border-t border-c-line px-5 py-4 text-center text-xs text-c-muted sm:px-7">
             Form not loading?{' '}
@@ -98,7 +98,7 @@ export default function RolePage() {
 
       {/* Hero */}
       <section className={cn(gutter, 'relative pb-14 pt-12 sm:pb-20 sm:pt-16')}>
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_60%_at_30%_0%,rgba(154,136,252,0.14),transparent_70%)]" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_60%_at_30%_0%,rgba(154,136,252,0.24),transparent_70%)]" />
         <div className={cn(shell, 'relative')}>
           <Link href="/hiring#positions" className="inline-flex items-center gap-1.5 text-sm font-medium text-c-muted hover:text-c-ink">
             <ArrowLeft className="size-4" aria-hidden />
@@ -121,7 +121,7 @@ export default function RolePage() {
           </div>
           <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-c-line bg-c-line md:grid-cols-4">
             {facts.map((item) => (
-              <div key={item.label} className="bg-white px-5 py-4">
+              <div key={item.label} className="bg-c-card px-5 py-4">
                 <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-c-muted">{item.label}</dt>
                 <dd className={cn('mt-1.5 text-sm font-medium', item.accent ? 'text-c-violet' : 'text-c-ink')}>{item.value}</dd>
               </div>
@@ -144,7 +144,7 @@ export default function RolePage() {
                 <p className={cn(eyebrow, 'mb-3')}>Tech stack</p>
                 <div className="flex flex-wrap gap-2">
                   {detail.techStack.map((tech) => (
-                    <span key={tech} className="rounded-lg border border-[#d9d1fe] bg-[#f5f3ff] px-3 py-1.5 text-[13px] font-medium text-c-violet">
+                    <span key={tech} className="rounded-lg border border-c-tint-line bg-c-tint px-3 py-1.5 text-[13px] font-medium text-c-violet">
                       {tech}
                     </span>
                   ))}
@@ -163,12 +163,12 @@ export default function RolePage() {
                         <span
                           className={cn(
                             'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border',
-                            exclusion ? 'border-c-line bg-c-soft text-c-muted' : 'border-[#d9d1fe] bg-[#f5f3ff] text-[#7e67f2]',
+                            exclusion ? 'border-c-line bg-c-soft text-c-muted' : 'border-c-tint-line bg-c-tint text-[#7e67f2]',
                           )}
                         >
                           {exclusion ? <X className="size-3" aria-hidden /> : <Check className="size-3" aria-hidden />}
                         </span>
-                        <span className={cn('text-[15px] leading-relaxed', exclusion ? 'text-c-muted' : 'text-c-ink')}>{item}</span>
+                        <span className={cn('text-[length:15px] leading-relaxed', exclusion ? 'text-c-muted' : 'text-c-ink')}>{item}</span>
                       </li>
                     ))}
                   </ul>

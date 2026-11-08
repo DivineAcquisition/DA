@@ -2,13 +2,18 @@
 @import "./workspace/theme.css";
 
 @theme {
-  /* Careers site (light, Vistrial marketing system). Prefixed so they never
-     collide with the dark product tokens. */
-  --color-c-ink: #0b0a11;
-  --color-c-muted: #5f5b70;
-  --color-c-line: rgba(11, 10, 17, 0.08);
-  --color-c-soft: #f6f6f9;
-  --color-c-violet: #5140a9;
+  /* Careers site: the dark lavender palette of the company homepage
+     (app/site/site.css), on the Vistrial layout. Prefixed so they never
+     collide with the product tokens. */
+  --color-c-ink: #ffffff;
+  --color-c-muted: #aaa4c4;
+  --color-c-line: rgba(154, 136, 252, 0.14);
+  --color-c-soft: #15131f;
+  --color-c-violet: #c3b6fe;
+  --color-c-page: #0b0a11;
+  --color-c-card: #110f19;
+  --color-c-tint: rgba(154, 136, 252, 0.1);
+  --color-c-tint-line: rgba(154, 136, 252, 0.3);
   --font-careers: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;

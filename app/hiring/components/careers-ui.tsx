@@ -12,11 +12,11 @@ import '@/components/agentic/agentic.css';
 import '../careers.css';
 
 /*
- * The careers site on the Vistrial marketing system (src/lib/marketing/ui.ts,
- * site-header.tsx, saas-frame.tsx, landing.tsx): a white page, Inter Display,
+ * The careers site: the Vistrial marketing layout (src/lib/marketing/ui.ts,
+ * site-header.tsx, saas-frame.tsx, landing.tsx) in the dark lavender palette of
+ * the company homepage: Inter Display,
  * a pill nav, lavender gradient buttons, hairline panels with a soft lift, and
- * glow frames with a travelling beam. Colours are explicit because the root
- * layout keeps the rest of the product dark.
+ * glow frames with a travelling beam, and the full DivineAcquisition logo.
  */
 
 export const gutter = 'px-5 sm:px-6 lg:px-8';
@@ -28,28 +28,28 @@ export const heroTitle =
   'font-careers text-[2.25rem] font-medium leading-[1.08] tracking-[-0.03em] text-c-ink sm:text-5xl md:text-[3.25rem] md:leading-[1.05]';
 export const sectionTitle =
   'font-careers max-w-3xl text-[1.75rem] font-medium leading-tight tracking-[-0.03em] text-c-ink sm:text-4xl sm:leading-[1.12]';
-export const subhead = 'text-[15px] leading-relaxed text-c-muted sm:text-lg';
-export const lead = 'max-w-2xl text-[15px] leading-relaxed text-c-muted sm:text-base';
-export const body = 'text-sm leading-relaxed text-c-muted sm:text-[15px]';
+export const subhead = 'text-[length:15px] leading-relaxed text-c-muted sm:text-lg';
+export const lead = 'max-w-2xl text-[length:15px] leading-relaxed text-c-muted sm:text-base';
+export const body = 'text-sm leading-relaxed text-c-muted sm:text-[length:15px]';
 export const eyebrow = 'text-[11px] font-semibold uppercase tracking-[0.14em] text-c-violet';
 
 /** Solid surfaces: a hairline and a soft lift keep them off the white page. */
-export const panel = 'rounded-xl border border-c-line bg-white shadow-[0_16px_40px_-28px_rgba(11,10,17,0.28)]';
+export const panel = 'rounded-xl border border-c-line bg-c-card shadow-[0_16px_40px_-24px_rgba(0,0,0,0.7)]';
 export const inset = 'rounded-lg border border-c-line bg-c-soft';
 
 const btn =
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] border text-[15px] font-medium tracking-tight transition-[background-image,box-shadow,transform] outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60';
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[8px] border text-[length:15px] font-medium tracking-tight transition-[background-image,box-shadow,transform] outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-60';
 /** Vistrial's gradient button: lavender, dark label, purple lift. */
 export const btnPrimary = cn(
   btn,
-  'h-12 px-5 border-[#5140a9]/35 bg-gradient-to-b from-[#c3b6fe] via-[#9a88fc] to-[#7e67f2] text-c-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_10px_28px_-12px_rgba(154,136,252,0.88)] hover:from-[#d9d1fe] hover:via-[#ae9dfd] hover:to-[#9a88fc] active:translate-y-px',
+  'h-12 px-5 border-[#5140a9]/35 bg-gradient-to-b from-[#c3b6fe] via-[#9a88fc] to-[#7e67f2] text-[color:#0b0a11] shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_10px_28px_-12px_rgba(154,136,252,0.88)] hover:from-[#d9d1fe] hover:via-[#ae9dfd] hover:to-[#9a88fc] active:translate-y-px',
 );
-export const btnSecondary = cn(btn, 'h-12 px-5 border-c-line bg-white text-c-ink hover:bg-c-soft');
+export const btnSecondary = cn(btn, 'h-12 px-5 border-c-line bg-c-card text-c-ink hover:bg-c-soft');
 export const btnSm = '!h-10 !px-4 !text-sm';
 
 /** The page: white, Inter Display, with the brand tokens the kit reads. */
 export function CareersShell({ children }: { children: ReactNode }) {
-  return <div className={cn('careers min-h-screen bg-white text-c-ink antialiased', interDisplay.variable)}>{children}</div>;
+  return <div className={cn('careers min-h-screen bg-c-page text-c-ink antialiased', interDisplay.variable)}>{children}</div>;
 }
 
 const NAV = [
@@ -63,19 +63,19 @@ const NAV = [
 export function CareersHeader({ action }: { action?: { href: string; label: string } }) {
   const cta = action ?? { href: '/hiring#positions', label: 'See open roles' };
   return (
-    <header className={cn('sticky top-0 z-50 border-b border-c-line bg-white/95 backdrop-blur', gutter)}>
+    <header className={cn('sticky top-0 z-50 border-b border-c-line bg-c-page/90 backdrop-blur', gutter)}>
       <div className={cn(shell, 'flex h-[4.5rem] items-center justify-between gap-4')}>
         <Link href="/hiring" aria-label="Divine Acquisition careers" className="flex shrink-0 items-center gap-2.5 rounded-md">
-          <span className="flex size-10 items-center justify-center rounded-[10px] bg-c-ink">
-            <Logo markOnly tone="current" className="h-6 w-auto text-white" />
+          <Logo className="h-[22px] w-auto sm:h-[26px]" />
+          <span className="hidden rounded-md border border-c-tint-line bg-c-tint px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-c-violet sm:block">
+            Careers
           </span>
-          <span className="hidden text-sm font-semibold tracking-tight text-c-ink sm:block">Careers</span>
         </Link>
         <nav aria-label="Careers" className="hidden lg:block">
           <ul className="flex items-center gap-1 rounded-[10px] border border-c-line bg-c-soft/60 p-1">
             {NAV.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="rounded-md px-3 py-1.5 text-sm font-medium text-c-muted transition-colors hover:bg-white hover:text-c-ink">
+                <Link href={item.href} className="rounded-md px-3 py-1.5 text-sm font-medium text-c-muted transition-colors hover:bg-c-tint hover:text-c-ink">
                   {item.label}
                 </Link>
               </li>
@@ -90,7 +90,7 @@ export function CareersHeader({ action }: { action?: { href: string; label: stri
             <span className="sr-only">Open menu</span>
             <Menu className="size-4" aria-hidden />
           </summary>
-          <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-c-line bg-white p-3 shadow-xl">
+          <div className="absolute right-0 z-50 mt-2 w-64 rounded-lg border border-c-line bg-c-card p-3 shadow-xl">
             <Link href={cta.href} className={cn(btnPrimary, btnSm, 'w-full')}>
               {cta.label}
             </Link>
@@ -140,9 +140,7 @@ export function CareersFooter() {
     <footer className={cn('border-t border-c-line bg-c-soft', gutter)}>
       <div className={cn(shell, 'grid gap-10 py-14 md:grid-cols-[1.4fr_repeat(3,1fr)]')}>
         <div>
-          <span className="flex size-10 items-center justify-center rounded-[10px] bg-c-ink">
-            <Logo markOnly tone="current" className="h-6 w-auto text-white" />
-          </span>
+          <Logo className="h-[24px] w-auto" />
           <p className="mt-5 max-w-xs text-sm text-c-ink">Acquisition, retention, and growth infrastructure for service businesses.</p>
           <Link href="/hiring#positions" className={cn(btnPrimary, btnSm, 'mt-6')}>
             See open roles
@@ -204,8 +202,8 @@ export function GlowFrame({ children, className, glow = true, beamDelay = 0 }: {
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-xl border border-c-line bg-white p-5 sm:p-6',
-        glow ? 'shadow-[0_0_72px_-28px_rgba(154,136,252,0.8)]' : 'shadow-[0_24px_50px_-28px_rgba(11,10,17,0.35)]',
+        'relative overflow-hidden rounded-xl border border-c-line bg-c-card p-5 sm:p-6',
+        glow ? 'shadow-[0_0_72px_-28px_rgba(154,136,252,0.8)]' : 'shadow-[0_24px_50px_-28px_rgba(0,0,0,0.85)]',
         className,
       )}
     >
@@ -227,8 +225,8 @@ export function FrameDots({ label }: { label?: string }) {
   return (
     <div className="mb-4 flex items-center justify-between">
       <span className="flex gap-1.5" aria-hidden>
-        <span className="size-2 rounded-full bg-black/10" />
-        <span className="size-2 rounded-full bg-black/10" />
+        <span className="size-2 rounded-full bg-white/15" />
+        <span className="size-2 rounded-full bg-white/15" />
         <span className="size-2 rounded-full bg-[#7e67f2]" />
       </span>
       {label ? <span className="rounded-full border border-c-line bg-c-soft px-2 py-0.5 text-[11px] text-c-muted">{label}</span> : null}
@@ -259,7 +257,7 @@ export function FaqList({ items }: { items: Faq[] }) {
                   <ChevronDown aria-hidden className={cn('size-4 shrink-0 text-c-muted transition-transform', isOpen && 'rotate-180')} />
                 </button>
               </h3>
-              {isOpen ? <p className="live-enter pb-5 text-[15px] leading-relaxed text-c-muted">{item.a}</p> : null}
+              {isOpen ? <p className="live-enter pb-5 text-[length:15px] leading-relaxed text-c-muted">{item.a}</p> : null}
             </li>
           );
         })}
@@ -271,10 +269,10 @@ export function FaqList({ items }: { items: Faq[] }) {
 /** A status badge in the Vistrial step cards: done, running, or queued. */
 export function StepBadge({ state }: { state: 'done' | 'running' | 'queued' | 'you' }) {
   const look = {
-    done: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    running: 'border-[#d9d1fe] bg-[#f5f3ff] text-[#5140a9]',
-    queued: 'border-c-line bg-white text-c-muted',
-    you: 'border-[#d9d1fe] bg-[#f5f3ff] text-[#5140a9]',
+    done: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300',
+    running: 'border-c-tint-line bg-c-tint text-[#5140a9]',
+    queued: 'border-c-line bg-c-card text-c-muted',
+    you: 'border-c-tint-line bg-c-tint text-[#5140a9]',
   }[state];
   const label = { done: 'Done', running: 'In progress', queued: 'Next', you: 'Start here' }[state];
   return (

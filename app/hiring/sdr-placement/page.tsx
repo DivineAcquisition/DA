@@ -87,7 +87,7 @@ export default function SdrPlacementPage() {
 
       {/* Hero */}
       <section className={cn(gutter, 'relative pb-16 pt-14 sm:pb-24 sm:pt-20')}>
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(55%_55%_at_50%_0%,rgba(154,136,252,0.16),transparent_70%)]" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(55%_55%_at_50%_0%,rgba(154,136,252,0.26),transparent_70%)]" />
         <div className={cn(shell, 'relative')}>
           <div className="mx-auto max-w-3xl text-center">
             <div className="flex items-center justify-center gap-3">
@@ -97,7 +97,7 @@ export default function SdrPlacementPage() {
             <h1 className={cn(heroTitle, 'mt-4')}>
               We&apos;re hiring operators.
               <br />
-              <span className="bg-gradient-to-b from-[#7e67f2] to-[#5140a9] bg-clip-text text-transparent">Not virtual assistants.</span>
+              <span className="bg-gradient-to-b from-[#d9d1fe] to-[#9a88fc] bg-clip-text text-transparent">Not virtual assistants.</span>
             </h1>
             <p className={cn(subhead, 'mx-auto mt-6 max-w-2xl')}>
               We train you, certify you, and place you inside a real business where one job is yours: nobody who reaches out ever gets ignored.{' '}
@@ -117,8 +117,8 @@ export default function SdrPlacementPage() {
           <GlowFrame className="mx-auto mt-12 max-w-4xl !p-2 sm:!p-2.5">
             <div className="mb-2 flex items-center justify-between px-2 pt-1">
               <span className="flex gap-1.5" aria-hidden>
-                <span className="size-2 rounded-full bg-black/10" />
-                <span className="size-2 rounded-full bg-black/10" />
+                <span className="size-2 rounded-full bg-white/15" />
+                <span className="size-2 rounded-full bg-white/15" />
                 <span className="size-2 rounded-full bg-[#7e67f2]" />
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-c-line bg-c-soft px-2 py-0.5 text-[11px] text-c-muted">
@@ -133,7 +133,7 @@ export default function SdrPlacementPage() {
 
           <ul className="mx-auto mt-8 flex max-w-4xl flex-wrap items-center justify-center gap-2">
             {facts.map((fact) => (
-              <li key={fact} className="inline-flex items-center gap-2 rounded-full border border-c-line bg-white px-3 py-1.5 text-[13px] font-medium text-c-ink">
+              <li key={fact} className="inline-flex items-center gap-2 rounded-full border border-c-line bg-c-card px-3 py-1.5 text-[13px] font-medium text-c-ink">
                 <span aria-hidden className="size-1.5 rounded-full bg-[#7e67f2]" />
                 {fact}
               </li>
@@ -198,7 +198,7 @@ export default function SdrPlacementPage() {
           <p className={cn(lead, 'mx-auto mt-4 text-center')}>If that sounds like the standard you want to be held to, start your application.</p>
           <GlowFrame className="mt-10 !p-0">
             <div className="flex items-center gap-3 border-b border-c-line px-5 py-4 sm:px-7">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-c-ink text-sm font-semibold text-white">2</span>
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-[#c3b6fe] to-[#7e67f2] text-sm font-semibold text-[color:#0b0a11]">2</span>
               <div>
                 <h3 className="text-base font-medium tracking-tight text-c-ink sm:text-lg">Apply for the SDR Placement Role</h3>
                 <p className="text-xs text-c-muted">Complete the form below to submit your application</p>

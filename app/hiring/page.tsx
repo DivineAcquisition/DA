@@ -77,7 +77,7 @@ function LevelMeter({ level }: { level: number }) {
     <span className="flex items-center gap-2" title={`${levelLabels[level]} level`}>
       <span className="flex items-end gap-[3px]" aria-hidden>
         {[1, 2, 3, 4].map((step) => (
-          <span key={step} style={{ height: `${5 + step * 2.5}px` }} className={cn('w-[3px] rounded-full', step <= level ? 'bg-[#7e67f2]' : 'bg-black/10')} />
+          <span key={step} style={{ height: `${5 + step * 2.5}px` }} className={cn('w-[3px] rounded-full', step <= level ? 'bg-[#7e67f2]' : 'bg-white/15')} />
         ))}
       </span>
       <span className="text-xs text-c-muted">{levelLabels[level]}</span>
@@ -91,7 +91,7 @@ function FeaturedRoleCard({ role }: { role: Role }) {
       <GlowFrame className="!p-0 transition-transform group-hover:-translate-y-0.5">
         <div className="p-6 sm:p-7">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-c-ink px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#9a88fc] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-[color:#0b0a11]">
               <Play className="size-3 fill-current" aria-hidden />
               Watch first
             </span>
@@ -99,14 +99,14 @@ function FeaturedRoleCard({ role }: { role: Role }) {
             <HiringNow />
           </div>
           <h3 className="mt-4 text-xl font-medium tracking-tight text-c-ink sm:text-2xl">{role.title}</h3>
-          <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-c-muted">{role.summary}</p>
+          <p className="mt-2 max-w-2xl text-[length:15px] leading-relaxed text-c-muted">{role.summary}</p>
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-c-muted">
             {role.detail?.compensationHeadline ? (
               <span className="font-semibold text-c-violet">{role.detail.compensationHeadline}/mo base + commission</span>
             ) : null}
             {role.tags.map((tag) => (
               <span key={tag} className="flex items-center gap-1.5">
-                <span className="size-1 rounded-full bg-black/20" />
+                <span className="size-1 rounded-full bg-white/25" />
                 {tag}
               </span>
             ))}
@@ -124,19 +124,19 @@ function FeaturedRoleCard({ role }: { role: Role }) {
 function RoleCard({ role }: { role: Role }) {
   return (
     <Link href={roleHref(role)} className="group block">
-      <article className={cn(panel, 'p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-[#c3b6fe] sm:p-6')}>
+      <article className={cn(panel, 'p-5 transition-[border-color,box-shadow,transform] group-hover:-translate-y-0.5 group-hover:border-[#9a88fc]/60 sm:p-6')}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex flex-wrap items-center gap-2.5">
               <h3 className="text-base font-medium tracking-tight text-c-ink sm:text-[17px]">{role.title}</h3>
-              <span className="rounded-full border border-[#d9d1fe] bg-[#f5f3ff] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-c-violet">{role.subtitle}</span>
+              <span className="rounded-full border border-c-tint-line bg-c-tint px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-c-violet">{role.subtitle}</span>
               <HiringNow />
             </div>
             <p className="mb-3.5 text-sm leading-relaxed text-c-muted">{role.summary}</p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-c-muted">
               {role.tags.map((tag, index) => (
                 <span key={tag} className="flex items-center gap-1.5">
-                  {index === 0 ? <MapPin className="size-3.5" aria-hidden /> : <span className="size-1 rounded-full bg-black/20" />}
+                  {index === 0 ? <MapPin className="size-3.5" aria-hidden /> : <span className="size-1 rounded-full bg-white/25" />}
                   {tag}
                 </span>
               ))}
@@ -144,7 +144,7 @@ function RoleCard({ role }: { role: Role }) {
           </div>
           <div className="flex shrink-0 items-center justify-between gap-5 sm:justify-end">
             <LevelMeter level={role.level} />
-            <span className="flex size-9 items-center justify-center rounded-full border border-c-line bg-white text-c-muted transition-colors group-hover:border-[#7e67f2] group-hover:bg-[#9a88fc] group-hover:text-c-ink">
+            <span className="flex size-9 items-center justify-center rounded-full border border-c-line bg-c-card text-c-muted transition-colors group-hover:border-[#7e67f2] group-hover:bg-[#9a88fc] group-hover:text-[color:#0b0a11]">
               <ArrowRight className="size-4" aria-hidden />
             </span>
           </div>
@@ -190,7 +190,7 @@ export default function HiringPage() {
 
       {/* Hero */}
       <section className={cn(gutter, 'relative pb-16 pt-14 sm:pb-24 sm:pt-20')}>
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_60%_at_70%_0%,rgba(154,136,252,0.16),transparent_70%)]" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(60%_60%_at_70%_0%,rgba(154,136,252,0.26),transparent_70%)]" />
         <div className={cn(shell, 'relative grid items-start gap-10 lg:grid-cols-[1.1fr_0.9fr]')}>
           <div className="pt-4">
             <p className={cn(eyebrow, 'mb-4')}>Divine Acquisition careers</p>
@@ -244,7 +244,7 @@ export default function HiringPage() {
                   onClick={() => setSelectedDept(dept.id)}
                   className={cn(
                     'flex flex-1 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                    active ? 'bg-white text-c-ink shadow-[0_1px_2px_rgba(11,10,17,0.08)]' : 'text-c-muted hover:text-c-ink',
+                    active ? 'bg-c-card text-c-ink shadow-[0_1px_2px_rgba(0,0,0,0.5)]' : 'text-c-muted hover:text-c-ink',
                   )}
                 >
                   {dept.name}
@@ -266,10 +266,10 @@ export default function HiringPage() {
                     onClick={() => toggleLocation(location.id)}
                     className={cn(
                       'inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition-colors',
-                      on ? 'border-[#c3b6fe] bg-[#f5f3ff] text-c-ink' : 'border-c-line bg-white text-c-muted hover:text-c-ink',
+                      on ? 'border-c-tint-line bg-c-tint text-c-ink' : 'border-c-line bg-c-card text-c-muted hover:text-c-ink',
                     )}
                   >
-                    <span aria-hidden className={cn('size-1.5 rounded-full', on ? 'bg-[#7e67f2]' : 'bg-black/20')} />
+                    <span aria-hidden className={cn('size-1.5 rounded-full', on ? 'bg-[#7e67f2]' : 'bg-white/25')} />
                     {location.name}
                   </button>
                 );
@@ -280,7 +280,7 @@ export default function HiringPage() {
               <select
                 value={sortBy}
                 onChange={(event) => setSortBy(event.target.value)}
-                className="h-9 rounded-lg border border-c-line bg-white px-3 text-sm text-c-ink outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]/50"
+                className="h-9 rounded-lg border border-c-line bg-c-card px-3 text-sm text-c-ink outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]/50"
               >
                 <option value="level-high">Seniority: high to low</option>
                 <option value="level-low">Seniority: low to high</option>
@@ -324,7 +324,7 @@ export default function HiringPage() {
       <Section headline="What we hold ourselves to." lead="Three values, and the numbers behind the team today.">
         <div className="grid gap-4 md:grid-cols-3">
           {values.map((value, index) => (
-            <MagicCard key={value.name} gradientColor="#f5f3ff" gradientFrom="#c3b6fe" gradientTo="#9a88fc" className={cn(panel, 'p-6')}>
+            <MagicCard key={value.name} gradientColor="rgba(154,136,252,0.14)" gradientFrom="#c3b6fe" gradientTo="#9a88fc" className={cn(panel, 'p-6')}>
               <span className="text-sm tabular-nums text-c-violet">{String(index + 1).padStart(2, '0')}</span>
               <p className="mt-3 text-xl font-medium tracking-tight text-c-ink">{value.name}</p>
               <p className="mt-2 text-sm leading-relaxed text-c-muted">{value.detail}</p>
@@ -338,7 +338,7 @@ export default function HiringPage() {
             { label: 'Departments', value: <NumberTicker value={departmentCount} className="tracking-normal text-c-ink" /> },
             { label: 'Core time zone', value: 'EST' },
           ].map((stat) => (
-            <div key={stat.label} className="bg-white px-5 py-6">
+            <div key={stat.label} className="bg-c-card px-5 py-6">
               <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-c-muted">{stat.label}</dt>
               <dd className="mt-2 text-3xl font-medium tabular-nums tracking-tight text-c-ink">{stat.value}</dd>
             </div>

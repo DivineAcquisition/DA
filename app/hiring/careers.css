@@ -1,9 +1,9 @@
-/* The careers site is white, like the Vistrial public site. The root layout
-   keeps the product dark, so the page and overscroll are set here. */
+/* The careers site: the Vistrial layout in the homepage's dark lavender
+   palette (app/site/site.css). */
 html:has(.careers),
 body:has(.careers) {
-  background: #ffffff;
-  color-scheme: light;
+  background: #0b0a11;
+  color-scheme: dark;
 }
 
 .careers {
@@ -12,5 +12,13 @@ body:has(.careers) {
 }
 
 .careers ::selection {
-  background: rgba(154, 136, 252, 0.35);
+  background: rgba(90, 35, 252, 0.55);
+  color: #fff;
+}
+
+/* globals.css sets an unlayered `a { color: inherit }`, which outranks every
+   layered Tailwind colour class on a link. Inside careers, hand link colour
+   back to the utilities on each link. */
+.careers a {
+  color: revert-layer;
 }
