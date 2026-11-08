@@ -1,0 +1,16 @@
+/* The careers site is white, like the Vistrial public site. The root layout
+   keeps the product dark, so the page and overscroll are set here. */
+html:has(.careers),
+body:has(.careers) {
+  background: #ffffff;
+  color-scheme: light;
+}
+
+.careers {
+  font-family: var(--font-careers);
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+.careers ::selection {
+  background: rgba(154, 136, 252, 0.35);
+}

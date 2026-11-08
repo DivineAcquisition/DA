@@ -2,6 +2,15 @@
 @import "./workspace/theme.css";
 
 @theme {
+  /* Careers site (light, Vistrial marketing system). Prefixed so they never
+     collide with the dark product tokens. */
+  --color-c-ink: #0b0a11;
+  --color-c-muted: #5f5b70;
+  --color-c-line: rgba(11, 10, 17, 0.08);
+  --color-c-soft: #f6f6f9;
+  --color-c-violet: #5140a9;
+  --font-careers: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
   /* Brand — #9A88FC is the prime colour (brand-500). */

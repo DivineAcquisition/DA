@@ -90,7 +90,8 @@ export function useBeamPaths(containerRef: RefObject<HTMLElement | null>, pairs:
   return paths;
 }
 
-export function Beams({ paths, id }: { paths: BeamPath[]; id: string }) {
+/** `track` is the resting line under the light; pass a dark hairline on a white page. */
+export function Beams({ paths, id, track = 'var(--panel-border, rgba(255,255,255,0.08))' }: { paths: BeamPath[]; id: string; track?: string }) {
   return (
     <svg aria-hidden className="pointer-events-none absolute inset-0 hidden h-full w-full overflow-visible lg:block">
       <defs>
@@ -102,7 +103,7 @@ export function Beams({ paths, id }: { paths: BeamPath[]; id: string }) {
       </defs>
       {paths.map((path, index) => (
         <g key={index}>
-          <path d={path.d} fill="none" stroke="var(--panel-border, rgba(255,255,255,0.08))" strokeWidth="1.5" />
+          <path d={path.d} fill="none" stroke={track} strokeWidth="1.5" />
           <path
             d={path.d}
             pathLength={100}

@@ -3,33 +3,32 @@
 import type { ComponentType, CSSProperties } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
-import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
-import { BorderBeam } from '@/components/ui/border-beam';
-import { Marquee } from '@/components/ui/marquee';
-import { NumberTicker } from '@/components/ui/number-ticker';
-import { Panel } from '@/components/ui/panel';
-import { ShineBorder } from '@/components/ui/shine-border';
-import SiteHeader from '../../components/SiteHeader';
-import SiteFooter from '../../components/SiteFooter';
-import ApplicationForm from '../components/ApplicationForm';
-import { ApplicantPath, BeamRow } from '../components/agentic';
+import { ArrowRight, BadgeCheck, GraduationCap, Play, Store } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { SDR_MONTHLY_BASE } from '../../data/roles';
-import { sectionLabel } from '../../components/ui';
+import ApplicationForm from '../components/ApplicationForm';
+import { ApplicantPath, BeamRow, HiringNow } from '../components/agentic';
 import {
-  HiringHeroBackdrop,
-  HiringStatusPill,
-  ShinePanel,
-  SurfaceCard,
-  hiringBtn,
-  hiringBtnFull,
-  hiringBtnLg,
-  hiringBtnMd,
-  hiringBtnSecondary,
-  hiringBtnSm,
-} from '../components/visual';
+  CareersFooter,
+  CareersHeader,
+  CareersShell,
+  FaqList,
+  GlowFrame,
+  Section,
+  btnPrimary,
+  btnSecondary,
+  eyebrow,
+  gutter,
+  heroTitle,
+  lead,
+  panel,
+  sectionTitle,
+  shell,
+  subhead,
+  type Faq,
+} from '../components/careers-ui';
 
 const WISTIA_MEDIA_ID = 'lrplfrikyd';
-const [baseMin, baseMax] = (SDR_MONTHLY_BASE.match(/\d+/g) ?? ['400', '600']).map(Number);
 
 const facts = ['Remote', 'Full-time', 'Training provided', 'Paid twice a month'];
 
@@ -37,308 +36,185 @@ const steps = [
   {
     label: 'We train you',
     body: 'You learn the craft before you ever touch a live conversation — how to respond, qualify, and move someone to a booked appointment.',
+    icon: GraduationCap,
   },
   {
     label: 'We certify you',
     body: "You don't get placed until you can prove the standard. Certification is how we know you are ready for a real pipeline.",
+    icon: BadgeCheck,
   },
   {
     label: 'We place you',
     body: 'You go inside a real business with one job that is yours: nobody who reaches out ever gets ignored.',
+    icon: Store,
   },
 ];
 
-const offer = [
-  { kind: 'base' as const, label: 'Monthly base' },
-  { kind: 'text' as const, value: 'Commission', label: 'On every appointment you book' },
-  { kind: 'text' as const, value: '2× / month', label: 'Payout schedule' },
+const faqs: Faq[] = [
+  {
+    q: 'Do I need sales experience?',
+    a: 'No. You are trained before you touch a live conversation, and certified before you are placed inside a business.',
+  },
+  {
+    q: 'How am I paid?',
+    a: `${SDR_MONTHLY_BASE.replace('–', ' to ')} a month base, plus commission on every appointment you book. Payouts go out twice a month.`,
+  },
+  {
+    q: 'Is it remote?',
+    a: 'Yes. The role is remote and full-time.',
+  },
+  {
+    q: 'What happens after I apply?',
+    a: 'A person reads your application. If we move you forward, you get an email to set up your account and your operator file opens. Onboarding and training come before any placement.',
+  },
 ];
 
 // `wistia-player` is a custom element registered by Wistia's player script.
-// Typing it locally keeps the JSX honest without a global namespace augmentation.
 const WistiaPlayer = 'wistia-player' as unknown as ComponentType<{
   'media-id': string;
   aspect?: string;
   style?: CSSProperties;
 }>;
 
-function ArrowIcon({ className = 'h-4 w-4' }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" />
-    </svg>
-  );
-}
-
-function PlayIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-      <path d="M8 5.14v14l11-7-11-7Z" />
-    </svg>
-  );
-}
-
-function FactsChips({ className = '' }: { className?: string }) {
-  return (
-    <ul className={`flex flex-wrap items-center justify-center gap-2 ${className}`}>
-      {facts.map((fact) => (
-        <li
-          key={fact}
-          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[13px] font-medium text-neutral-300"
-        >
-          {fact}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-function ApplyLink({
-  className = '',
-  children = 'Apply now',
-}: {
-  className?: string;
-  children?: string;
-}) {
-  return (
-    <a href="#apply" className={className}>
-      {children}
-      <ArrowIcon className="h-4 w-4" />
-    </a>
-  );
-}
-
-function SectionEyebrow({ children }: { children: string }) {
-  return (
-    <p className={sectionLabel}>
-      <AnimatedShinyText className="mx-0 max-w-none text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-300 dark:text-brand-300">
-        {children}
-      </AnimatedShinyText>
-    </p>
-  );
-}
-
 export default function SdrPlacementPage() {
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
+    <CareersShell>
       <Script src="https://fast.wistia.com/player.js" strategy="afterInteractive" />
-      <Script
-        src={`https://fast.wistia.com/embed/${WISTIA_MEDIA_ID}.js`}
-        strategy="afterInteractive"
-        type="module"
-      />
+      <Script src={`https://fast.wistia.com/embed/${WISTIA_MEDIA_ID}.js`} strategy="afterInteractive" type="module" />
       <style>{`wistia-player[media-id='${WISTIA_MEDIA_ID}']:not(:defined) { background: center / contain no-repeat url('https://fast.wistia.com/embed/medias/${WISTIA_MEDIA_ID}/swatch'); display: block; filter: blur(5px); padding-top:56.25%; }`}</style>
 
-      <div className="relative z-10">
-        <SiteHeader
-          action={
-            <>
-              <span className="hidden sm:contents">
-                <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnSm}`}>
-                  All roles
-                </Link>
-              </span>
-              <ApplyLink className={`${hiringBtn} ${hiringBtnSm}`} />
-            </>
-          }
-        />
+      <CareersHeader action={{ href: '#apply', label: 'Apply now' }} />
 
-        {/* VSL hero */}
-        <section className="relative overflow-hidden px-5 pb-16 pt-14 sm:px-6 sm:pb-20 sm:pt-20">
-          <HiringHeroBackdrop />
-          <div className="relative z-10">
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="animate-rise">
-                <HiringStatusPill>SDR Placement Role</HiringStatusPill>
-              </div>
-
-              <h1 className="animate-rise delay-1 mt-6 text-[2.1rem] font-semibold leading-[1.06] sm:text-5xl md:text-[3.4rem]">
-                We&apos;re Hiring Operators.
-                <br />
-                <em className="hiring-headline-accent">Not Virtual Assistants.</em>
-              </h1>
-
-              <p className="animate-rise delay-2 mx-auto mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-[17px]">
-                We train you, certify you, and place you inside a real business where one job is yours:
-                nobody who reaches out ever gets ignored. $400 to $600 a month base, plus commission on
-                every appointment you book.
-              </p>
+      {/* Hero */}
+      <section className={cn(gutter, 'relative pb-16 pt-14 sm:pb-24 sm:pt-20')}>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[560px] bg-[radial-gradient(55%_55%_at_50%_0%,rgba(154,136,252,0.16),transparent_70%)]" />
+        <div className={cn(shell, 'relative')}>
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="flex items-center justify-center gap-3">
+              <p className={eyebrow}>SDR Placement Role</p>
+              <HiringNow />
             </div>
-
-            <div className="animate-rise delay-3 relative mx-auto mt-10 max-w-4xl sm:mt-12">
-              <div
-                aria-hidden
-                className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] opacity-70 blur-2xl"
-                style={{
-                  background:
-                    'radial-gradient(ellipse at center, rgba(154,136,252,0.4) 0%, transparent 70%)',
-                }}
-              />
-              <Panel className="relative overflow-hidden rounded-3xl p-1.5 sm:p-2">
-                <ShineBorder shineColor={['#9A88FC', '#C3B6FE']} borderWidth={1} duration={12} />
-                <BorderBeam size={90} duration={8} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
-                <BorderBeam
-                  size={90}
-                  duration={8}
-                  delay={4}
-                  reverse
-                  colorFrom="#C3B6FE"
-                  colorTo="#9A88FC"
-                  borderWidth={1}
-                />
-                <div className="overflow-hidden rounded-[1.25rem] bg-black">
-                  <WistiaPlayer media-id={WISTIA_MEDIA_ID} aspect="1.7777777777777777" />
-                </div>
-              </Panel>
-            </div>
-
-            <div className="animate-rise delay-4 mx-auto mt-10 flex max-w-4xl flex-col items-center">
-              <ApplyLink
-                className={`${hiringBtn} ${hiringBtnLg} ${hiringBtnFull} uppercase tracking-[0.06em]`}
-              />
-              <FactsChips className="mt-5" />
+            <h1 className={cn(heroTitle, 'mt-4')}>
+              We&apos;re hiring operators.
+              <br />
+              <span className="bg-gradient-to-b from-[#7e67f2] to-[#5140a9] bg-clip-text text-transparent">Not virtual assistants.</span>
+            </h1>
+            <p className={cn(subhead, 'mx-auto mt-6 max-w-2xl')}>
+              We train you, certify you, and place you inside a real business where one job is yours: nobody who reaches out ever gets ignored.{' '}
+              {SDR_MONTHLY_BASE.replace('–', ' to ')} a month base, plus commission on every appointment you book.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <a href="#apply" className={btnPrimary}>
+                Apply now
+                <ArrowRight className="size-4" aria-hidden />
+              </a>
+              <a href="#how" className={btnSecondary}>
+                How placement works
+              </a>
             </div>
           </div>
-        </section>
 
-        <div className="relative overflow-hidden border-y border-white/[0.07]">
-          <Marquee pauseOnHover className="[--duration:28s]">
+          <GlowFrame className="mx-auto mt-12 max-w-4xl !p-2 sm:!p-2.5">
+            <div className="mb-2 flex items-center justify-between px-2 pt-1">
+              <span className="flex gap-1.5" aria-hidden>
+                <span className="size-2 rounded-full bg-black/10" />
+                <span className="size-2 rounded-full bg-black/10" />
+                <span className="size-2 rounded-full bg-[#7e67f2]" />
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-c-line bg-c-soft px-2 py-0.5 text-[11px] text-c-muted">
+                <Play className="size-3 fill-[#7e67f2] text-[#7e67f2]" aria-hidden />
+                The walkthrough
+              </span>
+            </div>
+            <div className="overflow-hidden rounded-lg bg-black">
+              <WistiaPlayer media-id={WISTIA_MEDIA_ID} aspect="1.7777777777777777" />
+            </div>
+          </GlowFrame>
+
+          <ul className="mx-auto mt-8 flex max-w-4xl flex-wrap items-center justify-center gap-2">
             {facts.map((fact) => (
-              <span
-                key={fact}
-                className="mx-5 inline-flex items-center gap-2 text-[13px] font-medium tracking-wide text-neutral-400"
-              >
-                <PlayIcon className="h-3 w-3 text-brand-400" />
+              <li key={fact} className="inline-flex items-center gap-2 rounded-full border border-c-line bg-white px-3 py-1.5 text-[13px] font-medium text-c-ink">
+                <span aria-hidden className="size-1.5 rounded-full bg-[#7e67f2]" />
                 {fact}
-              </span>
+              </li>
             ))}
-          </Marquee>
+          </ul>
         </div>
+      </section>
 
-        {/* How placement works */}
-        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-14 sm:px-6 sm:py-16">
-          <div className="mx-auto max-w-4xl">
-            <div className="max-w-2xl">
-              <SectionEyebrow>How placement works</SectionEyebrow>
-              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
-                Trained, certified, then placed — in that order.
-              </h2>
-            </div>
-
-            <BeamRow count={steps.length} id="sdr-steps" className="mt-9">
-              <ol className="grid gap-4 md:grid-cols-3">
-                {steps.map((step, index) => (
-                  <li key={step.label} data-step={index}>
-                    <SurfaceCard hover as="div" cardClassName="rounded-2xl p-6">
-                      <span className="relative z-[1] flex h-10 w-10 items-center justify-center rounded-xl border border-brand-500/30 bg-brand-500/12 text-sm font-bold tabular-nums text-brand-200">
-                        {index + 1}
-                      </span>
-                      <h3 className="mt-4 text-base font-semibold text-white">{step.label}</h3>
-                      <p className="mt-2 text-sm leading-relaxed text-neutral-400">{step.body}</p>
-                    </SurfaceCard>
-                  </li>
-                ))}
-              </ol>
-            </BeamRow>
-          </div>
-        </section>
-
-        {/* Compensation */}
-        <section className="hairline-glow relative border-t border-white/[0.06] px-5 py-14 sm:px-6 sm:py-16">
-          <div className="mx-auto max-w-4xl">
-            <div className="max-w-2xl">
-              <SectionEyebrow>What you earn</SectionEyebrow>
-              <h2 className="mt-3 text-2xl font-semibold sm:text-3xl">
-                A base you can count on, plus upside you control.
-              </h2>
-            </div>
-
-            <div className="mt-9 grid gap-3 sm:grid-cols-3">
-              {offer.map((item) => (
-                <SurfaceCard key={item.label} hover cardClassName="rounded-2xl px-6 py-7">
-                  {item.kind === 'base' ? (
-                    <p className="text-2xl font-semibold text-brand-300 sm:text-[26px]">
-                      $
-                      <NumberTicker
-                        value={baseMin}
-                        className="text-2xl font-semibold tracking-normal text-brand-300 sm:text-[26px]"
-                      />
-                      –
-                      $
-                      <NumberTicker
-                        value={baseMax}
-                        className="text-2xl font-semibold tracking-normal text-brand-300 sm:text-[26px]"
-                      />
-                    </p>
-                  ) : (
-                    <p className="text-2xl font-semibold text-brand-300 sm:text-[26px]">{item.value}</p>
-                  )}
-                  <p className="mt-2 text-sm text-neutral-400">{item.label}</p>
-                </SurfaceCard>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Closing CTA */}
-        <section className="px-5 pb-20 pt-6 sm:px-6">
-          <div className="mx-auto max-w-4xl">
-            <ShinePanel className="rounded-3xl px-6 py-12 text-center sm:px-10 sm:py-16">
-              <BorderBeam size={100} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
-              <div
-                aria-hidden
-                className="absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2"
-                style={{
-                  background:
-                    'radial-gradient(ellipse at center, rgba(154,136,252,0.32) 0%, transparent 70%)',
-                }}
-              />
-              <div className="relative">
-                <div className="flex justify-center">
-                  <HiringStatusPill>Start your application</HiringStatusPill>
+      {/* How placement works: the three cards joined by beams */}
+      <Section id="how" eyebrow="How placement works" headline="Trained, certified, then placed — in that order.">
+        <BeamRow count={steps.length} id="sdr-steps">
+          <ol className="grid gap-4 md:grid-cols-3 md:gap-12">
+            {steps.map((step, index) => (
+              <li key={step.label} data-step={index} className={cn(panel, 'p-6')}>
+                <div className="flex items-center justify-between">
+                  <span className="flex size-11 items-center justify-center rounded-lg border border-c-line bg-c-soft">
+                    <step.icon className="size-5 text-[#7e67f2]" aria-hidden />
+                  </span>
+                  <span className="rounded-full border border-c-line px-1.5 text-[11px] tabular-nums text-c-muted">{String(index + 1).padStart(2, '0')}</span>
                 </div>
-                <h2 className="mt-5 text-2xl font-semibold sm:text-[34px]">
-                  One job is yours: nobody gets ignored.
-                </h2>
-                <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-neutral-400">
-                  If that sounds like the standard you want to be held to, start your application.
-                </p>
-                <div className="mt-8 flex flex-col items-center gap-4">
-                  <ApplyLink
-                    className={`${hiringBtn} ${hiringBtnLg} ${hiringBtnFull} uppercase tracking-[0.06em]`}
-                  />
-                  <FactsChips />
-                  <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnMd} mt-2`}>
-                    See all open roles
-                  </Link>
-                </div>
+                <h3 className="mt-5 text-lg font-medium tracking-tight text-c-ink">{step.label}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-c-muted">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </BeamRow>
+      </Section>
+
+      {/* What you earn */}
+      <Section eyebrow="What you earn" headline="A base you can count on, plus upside you control.">
+        <div className="grid gap-4 sm:grid-cols-3">
+          <GlowFrame className="!p-6">
+            {/* Static on purpose: a pay figure should never count up through other numbers. */}
+            <p className="text-3xl font-medium tracking-tight text-c-violet">{SDR_MONTHLY_BASE}</p>
+            <p className="mt-2 text-sm text-c-muted">Monthly base</p>
+          </GlowFrame>
+          <div className={cn(panel, 'p-6')}>
+            <p className="text-3xl font-medium tracking-tight text-c-ink">Commission</p>
+            <p className="mt-2 text-sm text-c-muted">On every appointment you book</p>
+          </div>
+          <div className={cn(panel, 'p-6')}>
+            <p className="text-3xl font-medium tracking-tight text-c-ink">2× / month</p>
+            <p className="mt-2 text-sm text-c-muted">Payout schedule</p>
+          </div>
+        </div>
+      </Section>
+
+      {/* After you apply */}
+      <Section id="after" eyebrow="After you apply" headline="What happens next." lead="A person reads every application, and nothing reaches a client until you are trained and certified.">
+        <ApplicantPath roleSlug="sdr-placement" />
+      </Section>
+
+      <Section id="faq" headline="Questions about the role">
+        <FaqList items={faqs} />
+      </Section>
+
+      {/* The application. It lands in the admin's Applicants inbox, the same
+          one every Sales Operator posting uses. */}
+      <section id="apply" className={cn(gutter, 'scroll-mt-24 border-t border-c-line py-20 sm:py-28')}>
+        <div className="mx-auto max-w-3xl">
+          <h2 className={cn(sectionTitle, 'mx-auto text-center')}>One job is yours: nobody gets ignored.</h2>
+          <p className={cn(lead, 'mx-auto mt-4 text-center')}>If that sounds like the standard you want to be held to, start your application.</p>
+          <GlowFrame className="mt-10 !p-0">
+            <div className="flex items-center gap-3 border-b border-c-line px-5 py-4 sm:px-7">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-c-ink text-sm font-semibold text-white">2</span>
+              <div>
+                <h3 className="text-base font-medium tracking-tight text-c-ink sm:text-lg">Apply for the SDR Placement Role</h3>
+                <p className="text-xs text-c-muted">Complete the form below to submit your application</p>
               </div>
-            </ShinePanel>
+            </div>
+            <ApplicationForm roleSlug="sdr-placement" jobTitle="SDR Placement Role" />
+          </GlowFrame>
+          <div className="mt-6 text-center">
+            <Link href="/hiring#positions" className="text-sm font-medium text-c-muted underline-offset-4 hover:text-c-ink hover:underline">
+              See all open roles
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* The application. It lands in the admin's Applicants inbox, the same
-            one every Sales Operator posting uses. */}
-        <section className="px-5 pb-10 sm:px-6">
-          <div className="mx-auto max-w-5xl">
-            <ApplicantPath roleSlug="sdr-placement" />
-          </div>
-        </section>
-
-        <section id="apply" className="scroll-mt-24 px-5 pb-20 sm:px-6">
-          <div className="mx-auto max-w-3xl">
-            <Panel className="frame-glow overflow-hidden rounded-3xl p-0">
-              <div className="border-b border-white/[0.07] bg-white/[0.02] px-5 py-4 sm:px-7">
-                <h2 className="text-base font-semibold text-white sm:text-lg">Apply for the SDR Placement Role</h2>
-                <p className="text-xs text-neutral-500">Complete the form below to submit your application</p>
-              </div>
-              <ApplicationForm roleSlug="sdr-placement" jobTitle="SDR Placement Role" />
-            </Panel>
-          </div>
-        </section>
-
-        <SiteFooter />
-      </div>
-    </div>
+      <CareersFooter />
+    </CareersShell>
   );
 }

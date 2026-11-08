@@ -2,104 +2,62 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import SiteHeader from '../../components/SiteHeader';
-import SiteFooter from '../../components/SiteFooter';
+import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { aboutContent, getRole, type RoleDetail } from '../../data/roles';
 import ApplicationForm from '../components/ApplicationForm';
 import { ApplicantPath, HiringNow } from '../components/agentic';
-import { sectionLabel } from '../../components/ui';
-import { AnimatedShinyText } from '@/components/ui/animated-shiny-text';
-import { Panel } from '@/components/ui/panel';
-import { BorderBeam } from '@/components/ui/border-beam';
 import {
-  HiringHeroBackdrop,
-  ShinePanel,
-  SurfaceCard,
-  hiringBtn,
-  hiringBtnMd,
-  hiringBtnSecondary,
-  hiringBtnSm,
-} from '../components/visual';
-
-function SectionHeading({ label }: { label: string }) {
-  return (
-    <div className="mb-5 flex items-center gap-3">
-      <span className="h-px w-6 bg-gradient-to-r from-brand-500 to-transparent" />
-      <h2 className={sectionLabel}>{label}</h2>
-    </div>
-  );
-}
-
-function CheckBullet() {
-  return (
-    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-brand-500/25 bg-brand-500/10 text-brand-300">
-      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="m5 13 4 4L19 7" />
-      </svg>
-    </span>
-  );
-}
-
-function CrossBullet() {
-  return (
-    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/[0.04] text-neutral-500">
-      <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-      </svg>
-    </span>
-  );
-}
+  CareersFooter,
+  CareersHeader,
+  CareersShell,
+  GlowFrame,
+  btnPrimary,
+  btnSecondary,
+  btnSm,
+  eyebrow,
+  gutter,
+  heroTitle,
+  panel,
+  sectionTitle,
+  shell,
+  subhead,
+} from '../components/careers-ui';
 
 function ApplyPanel({ detail, title, slug }: { detail: RoleDetail; title: string; slug: string }) {
   return (
-    <section id="apply" className="scroll-mt-24">
-      <Panel className="frame-glow relative overflow-hidden rounded-3xl p-0">
-        <BorderBeam size={80} duration={10} colorFrom="#9A88FC" colorTo="#C3B6FE" borderWidth={1} />
-        <div className="relative flex items-center gap-3 border-b border-white/[0.07] bg-white/[0.02] px-5 py-4 sm:px-7">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-sm font-bold text-ink-950">
-            2
-          </span>
-          <div className="min-w-0">
-            <h2 className="truncate text-base font-semibold text-white sm:text-lg">Apply for {title}</h2>
-            <p className="text-xs text-neutral-500">Complete the form below to submit your application</p>
-          </div>
+    <GlowFrame className="!p-0">
+      <div className="flex items-center gap-3 border-b border-c-line px-5 py-4 sm:px-7">
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-c-ink text-sm font-semibold text-white">2</span>
+        <div className="min-w-0">
+          <h2 className="truncate text-base font-medium tracking-tight text-c-ink sm:text-lg">Apply for {title}</h2>
+          <p className="text-xs text-c-muted">Complete the form below to submit your application</p>
         </div>
+      </div>
 
-        {detail.apply.kind === 'airtable' ? (
-          <div>
-            {/* Airtable renders its form on a white page, so it is framed as a
-                deliberate light sheet rather than fighting the dark surface. */}
-            <div className="bg-white/[0.04] p-3 sm:p-4">
-              <iframe
-                title={`Application form for ${title}`}
-                className="h-[720px] w-full rounded-2xl border-0 bg-white sm:h-[860px]"
-                src={detail.apply.src}
-              />
-            </div>
-            <p className="border-t border-white/[0.06] px-5 py-4 text-center text-xs text-neutral-500 sm:px-7">
-              Form not loading?{' '}
-              <a
-                href={detail.apply.src.replace('/embed/', '/')}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-brand-300 underline decoration-brand-500/40 underline-offset-2 hover:text-brand-200"
-              >
-                Open it in a new tab
-              </a>
-              .
-            </p>
+      {detail.apply.kind === 'airtable' ? (
+        <div>
+          <div className="bg-c-soft p-3 sm:p-4">
+            <iframe title={`Application form for ${title}`} className="h-[720px] w-full rounded-xl border border-c-line bg-white sm:h-[860px]" src={detail.apply.src} />
           </div>
-        ) : detail.apply.kind === 'external' ? (
-          <div className="px-6 py-12 text-center">
-            <a href={detail.apply.href} target="_blank" rel="noopener noreferrer" className={`${hiringBtn} ${hiringBtnMd}`}>
-              Open application form
+          <p className="border-t border-c-line px-5 py-4 text-center text-xs text-c-muted sm:px-7">
+            Form not loading?{' '}
+            <a href={detail.apply.src.replace('/embed/', '/')} target="_blank" rel="noopener noreferrer" className="font-medium text-c-violet underline underline-offset-2">
+              Open it in a new tab
             </a>
-          </div>
-        ) : (
-          <ApplicationForm roleSlug={slug} jobTitle={title} />
-        )}
-      </Panel>
-    </section>
+            .
+          </p>
+        </div>
+      ) : detail.apply.kind === 'external' ? (
+        <div className="px-6 py-12 text-center">
+          <a href={detail.apply.href} target="_blank" rel="noopener noreferrer" className={btnPrimary}>
+            Open application form
+          </a>
+        </div>
+      ) : (
+        <ApplicationForm roleSlug={slug} jobTitle={title} />
+      )}
+    </GlowFrame>
   );
 }
 
@@ -111,21 +69,23 @@ export default function RolePage() {
 
   if (!role || !detail) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-ink-950 px-6 text-white">
-        <div className="relative z-10 text-center">
-          <h1 className="text-2xl font-semibold">Position not found</h1>
-          <p className="mt-2 text-sm text-neutral-500">
-            This role may have been filled or moved.
-          </p>
-          <Link href="/hiring" className={`${hiringBtn} ${hiringBtnMd} mt-7`}>
-            Back to all positions
-          </Link>
+      <CareersShell>
+        <CareersHeader />
+        <div className={cn(gutter, 'flex min-h-[60vh] items-center justify-center')}>
+          <div className="text-center">
+            <h1 className="text-2xl font-medium tracking-tight text-c-ink">Position not found</h1>
+            <p className="mt-2 text-sm text-c-muted">This role may have been filled or moved.</p>
+            <Link href="/hiring" className={cn(btnPrimary, 'mt-7')}>
+              Back to all positions
+            </Link>
+          </div>
         </div>
-      </div>
+        <CareersFooter />
+      </CareersShell>
     );
   }
 
-  const meta = [
+  const facts = [
     { label: 'Department', value: role.departmentLabel },
     { label: 'Location', value: role.tags[0] },
     { label: 'Type', value: detail.type },
@@ -133,147 +93,138 @@ export default function RolePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-ink-950 text-white antialiased">
-      <div className="relative z-10">
-        <SiteHeader
-          action={
-            <>
-              <Link href="/hiring" className={`${hiringBtnSecondary} ${hiringBtnSm}`}>
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m0 0 5.5-5.5M5 12l5.5 5.5" />
-                </svg>
-                <span className="hidden sm:inline">All roles</span>
-                <span className="sm:hidden">Back</span>
-              </Link>
-              <a href="#apply" className={`${hiringBtn} ${hiringBtnSm}`}>
-                Apply
-              </a>
-            </>
-          }
-        />
+    <CareersShell>
+      <CareersHeader action={{ href: '#apply', label: 'Apply for this role' }} />
 
-        <main className="px-5 pb-20 pt-14 sm:px-6 sm:pt-20">
-          <div className="mx-auto max-w-3xl">
-            {/* Hero */}
-            <section className="relative mb-14 overflow-hidden">
-              <HiringHeroBackdrop />
-              <div className="relative z-10">
-              <div className="animate-rise flex items-center gap-3">
-                <span className="h-px w-6 bg-gradient-to-r from-brand-500 to-transparent" />
-                <AnimatedShinyText className={`${sectionLabel} mx-0 max-w-none dark:text-brand-300`}>
-                  {role.departmentLabel}
-                </AnimatedShinyText>
-                <HiringNow className="ml-1" />
+      {/* Hero */}
+      <section className={cn(gutter, 'relative pb-14 pt-12 sm:pb-20 sm:pt-16')}>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[460px] bg-[radial-gradient(60%_60%_at_30%_0%,rgba(154,136,252,0.14),transparent_70%)]" />
+        <div className={cn(shell, 'relative')}>
+          <Link href="/hiring#positions" className="inline-flex items-center gap-1.5 text-sm font-medium text-c-muted hover:text-c-ink">
+            <ArrowLeft className="size-4" aria-hidden />
+            All roles
+          </Link>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <p className={eyebrow}>{role.departmentLabel}</p>
+            <HiringNow />
+          </div>
+          <h1 className={cn(heroTitle, 'mt-3 max-w-3xl')}>{role.title}</h1>
+          <p className={cn(subhead, 'mt-5 max-w-2xl')}>{role.description}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="#apply" className={btnPrimary}>
+              Apply for this role
+              <ArrowRight className="size-4" aria-hidden />
+            </a>
+            <a href="#after" className={btnSecondary}>
+              What happens after you apply
+            </a>
+          </div>
+          <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-c-line bg-c-line md:grid-cols-4">
+            {facts.map((item) => (
+              <div key={item.label} className="bg-white px-5 py-4">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.14em] text-c-muted">{item.label}</dt>
+                <dd className={cn('mt-1.5 text-sm font-medium', item.accent ? 'text-c-violet' : 'text-c-ink')}>{item.value}</dd>
               </div>
+            ))}
+          </dl>
+        </div>
+      </section>
 
-              <h1 className="animate-rise delay-1 mt-5 text-[2.25rem] font-semibold leading-[1.05] sm:text-5xl md:text-6xl">
-                {role.title}
-              </h1>
+      {/* Details beside a sticky summary */}
+      <section className={cn(gutter, 'border-t border-c-line py-16 sm:py-20')}>
+        <div className={cn(shell, 'grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14')}>
+          <div className="min-w-0 space-y-12">
+            <div>
+              <p className={cn(eyebrow, 'mb-3')}>The mission</p>
+              <p className="text-lg leading-relaxed tracking-tight text-c-ink sm:text-xl">{detail.mission}</p>
+            </div>
 
-              <p className="animate-rise delay-2 mt-6 max-w-2xl text-base leading-relaxed text-neutral-400 sm:text-lg">
-                {role.description}
-              </p>
-
-              <dl className="animate-rise delay-3 mt-9 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.05] md:grid-cols-4">
-                {meta.map((item) => (
-                  <div key={item.label} className="bg-ink-950/85 px-4 py-4">
-                    <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
-                      {item.label}
-                    </dt>
-                    <dd
-                      className={`mt-1.5 text-sm font-medium ${item.accent ? 'text-brand-300' : 'text-white'}`}
-                    >
-                      {item.value}
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
-              <div className="animate-rise delay-4 mt-7">
-                <a href="#apply" className={`${hiringBtn} ${hiringBtnMd}`}>
-                  Apply for this role
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m0 0-5.5-5.5M19 12l-5.5 5.5" />
-                  </svg>
-                </a>
+            {detail.techStack ? (
+              <div>
+                <p className={cn(eyebrow, 'mb-3')}>Tech stack</p>
+                <div className="flex flex-wrap gap-2">
+                  {detail.techStack.map((tech) => (
+                    <span key={tech} className="rounded-lg border border-[#d9d1fe] bg-[#f5f3ff] px-3 py-1.5 text-[13px] font-medium text-c-violet">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
-              </div>
-            </section>
+            ) : null}
 
-            {/* Mission */}
-            <section className="mb-14">
-              <SectionHeading label="The mission" />
-              <SurfaceCard cardClassName="rounded-2xl p-6">
-                <p className="text-base leading-relaxed text-neutral-300">{detail.mission}</p>
-              </SurfaceCard>
-            </section>
-
-            {/* Tech stack */}
-            {detail.techStack && (
-              <section className="mb-14">
-                <SectionHeading label="Tech stack" />
-                <SurfaceCard cardClassName="rounded-2xl p-4 sm:p-5">
-                  <div className="flex flex-wrap gap-2">
-                    {detail.techStack.map((tech) => (
-                      <span
-                        key={tech}
-                        className="rounded-lg border border-brand-500/20 bg-brand-500/[0.08] px-3 py-1.5 text-[13px] font-medium text-brand-200"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </SurfaceCard>
-              </section>
-            )}
-
-            {/* Detail sections */}
             {detail.sections.map((section) => {
-              const isExclusion = section.title.includes('NOT');
+              const exclusion = section.title.includes('NOT');
               return (
-                <section key={section.title} className="mb-14">
-                  <SectionHeading label={section.title} />
-                  <ul className="space-y-3">
+                <div key={section.title}>
+                  <h2 className="mb-4 text-xl font-medium tracking-tight text-c-ink">{section.title}</h2>
+                  <ul className={cn(panel, 'divide-y divide-c-line')}>
                     {section.items.map((item) => (
-                      <li key={item} className="flex items-start gap-3.5">
-                        {isExclusion ? <CrossBullet /> : <CheckBullet />}
+                      <li key={item} className="flex items-start gap-3.5 px-5 py-3.5">
                         <span
-                          className={`text-[15px] leading-relaxed ${isExclusion ? 'text-neutral-500' : 'text-neutral-300'}`}
+                          className={cn(
+                            'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border',
+                            exclusion ? 'border-c-line bg-c-soft text-c-muted' : 'border-[#d9d1fe] bg-[#f5f3ff] text-[#7e67f2]',
+                          )}
                         >
-                          {item}
+                          {exclusion ? <X className="size-3" aria-hidden /> : <Check className="size-3" aria-hidden />}
                         </span>
+                        <span className={cn('text-[15px] leading-relaxed', exclusion ? 'text-c-muted' : 'text-c-ink')}>{item}</span>
                       </li>
                     ))}
                   </ul>
-                </section>
+                </div>
               );
             })}
 
-            {/* About */}
-            <section className="mb-14">
-              <ShinePanel className="rounded-3xl p-6 sm:p-8">
-                <div
-                  aria-hidden
-                  className="absolute -right-20 -top-20 h-56 w-56 rounded-full"
-                  style={{ background: 'radial-gradient(circle, rgba(154,136,252,0.18) 0%, transparent 70%)' }}
-                />
-                <div className="relative">
-                  <SectionHeading label="About Divine Acquisition" />
-                  <p className="whitespace-pre-line text-sm leading-relaxed text-neutral-400">
-                    {aboutContent}
-                  </p>
-                </div>
-              </ShinePanel>
-            </section>
-
-            <ApplicantPath roleSlug={role.slug} compact className="mb-8" />
-
-            <ApplyPanel detail={detail} title={role.title} slug={role.slug} />
+            <div className="rounded-xl border border-c-line bg-c-soft p-6 sm:p-7">
+              <p className={cn(eyebrow, 'mb-3')}>About Divine Acquisition</p>
+              <p className="whitespace-pre-line text-sm leading-relaxed text-c-muted">{aboutContent}</p>
+            </div>
           </div>
-        </main>
 
-        <SiteFooter />
-      </div>
-    </div>
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <GlowFrame>
+              <p className={eyebrow}>{role.subtitle}</p>
+              <p className="mt-1 text-xl font-medium tracking-tight text-c-ink">{role.title}</p>
+              <dl className="mt-5 grid gap-3 text-sm">
+                {facts.map((item) => (
+                  <div key={item.label} className="flex items-start justify-between gap-4 border-t border-c-line pt-3">
+                    <dt className="text-c-muted">{item.label}</dt>
+                    <dd className={cn('text-right font-medium', item.accent ? 'text-c-violet' : 'text-c-ink')}>{item.value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <a href="#apply" className={cn(btnPrimary, 'mt-6 w-full')}>
+                Apply now
+              </a>
+              <p className="mt-3 text-center text-xs text-c-muted">A person reads every application.</p>
+            </GlowFrame>
+          </aside>
+        </div>
+      </section>
+
+      {/* After you apply */}
+      <section id="after" className={cn(gutter, 'scroll-mt-24 border-t border-c-line py-16 sm:py-20')}>
+        <div className={shell}>
+          <p className={cn(eyebrow, 'mb-3')}>After you apply</p>
+          <h2 className={sectionTitle}>What happens next.</h2>
+          <ApplicantPath roleSlug={role.slug} className="mt-10" />
+        </div>
+      </section>
+
+      {/* Apply */}
+      <section id="apply" className={cn(gutter, 'scroll-mt-24 border-t border-c-line py-16 sm:py-20')}>
+        <div className="mx-auto max-w-3xl">
+          <ApplyPanel detail={detail} title={role.title} slug={role.slug} />
+          <div className="mt-6 text-center">
+            <Link href="/hiring#positions" className={cn(btnSecondary, btnSm)}>
+              See all open roles
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <CareersFooter />
+    </CareersShell>
   );
 }
