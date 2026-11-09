@@ -15,6 +15,7 @@ export type EodMailPayload = {
   needs_help?: boolean;
   was_late?: boolean;
   to?: string[] | string;
+  cc?: string[] | string;
   link_path?: string;
   review_path?: string;
   operator_id?: string;
@@ -25,6 +26,7 @@ export type EodMailPayload = {
 export type EodLetter = {
   purpose: EmailPurpose;
   to: string[];
+  cc: string[];
   subject: string;
   html: string;
   text: string;
@@ -61,6 +63,7 @@ function prettyDay(iso: string): string {
 function letter(input: {
   purpose: EmailPurpose;
   to: string[];
+  cc?: string[] | string;
   subject: string;
   title: string;
   paragraphs: string[];
@@ -72,6 +75,7 @@ function letter(input: {
   return {
     purpose: input.purpose,
     to: input.to,
+    cc: emails(input.cc),
     subject: input.subject,
     html: renderEmailHtml({
       subject: input.subject,
@@ -107,6 +111,7 @@ export function eodLetter(kind: string, payload: EodMailPayload, env: Record<str
   const day = prettyDay(text(payload.work_date));
   const zone = text(payload.time_zone);
   const to = emails(payload.to);
+  const cc = emails(payload.cc).filter((email) => !to.includes(email));
 
   if (kind === 'operator.eod_reminder') {
     const path = text(payload.link_path).startsWith('/') ? text(payload.link_path) : '';
@@ -114,10 +119,11 @@ export function eodLetter(kind: string, payload: EodMailPayload, env: Record<str
     return letter({
       purpose: 'team',
       to,
-      subject: `Your end of day for ${client}`,
+      cc,
+      subject: `Your end of day for ${client}${day ? ` on ${day}` : ''}`,
       title: 'Your end of day is coming up',
       paragraphs: [
-        `${name}, your shift with ${client} ends at ${clock(text(payload.shift_label), zone)}.`,
+        `${name}, your shift with ${client}${day ? ` on ${day}` : ''} ends at ${clock(text(payload.shift_label), zone)}.`,
         `Your end of day is due at ${clock(text(payload.due_label), zone)}. This link opens the report. No sign-in.`,
       ],
       href,
@@ -132,6 +138,7 @@ export function eodLetter(kind: string, payload: EodMailPayload, env: Record<str
     return letter({
       purpose: 'team',
       to,
+      cc,
       subject: `${name} submitted the end of day for ${client}`,
       title: `${name} submitted ${day || 'the end of day'}`,
       paragraphs: [`${name} submitted the end of day for ${client}${day ? ` on ${day}` : ''}.`, ...reportLines(payload)],
@@ -144,6 +151,7 @@ export function eodLetter(kind: string, payload: EodMailPayload, env: Record<str
   return letter({
     purpose: 'client',
     to,
+    cc,
     subject: `${name} submitted the end of day for ${client}`,
     title: `${name} submitted the end of day`,
     paragraphs: [`${name} submitted the end of day for ${client}${day ? ` on ${day}` : ''}.`, ...reportLines(payload)],

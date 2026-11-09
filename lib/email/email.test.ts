@@ -130,6 +130,20 @@ describe('sendAppEmail', () => {
     expect(store.rows.get(first.logId ?? '')?.cc).toEqual(['malik@divineacquisition.io']);
   });
 
+  it('turns dots in a template name into a tag Resend will accept', async () => {
+    const store = memoryStore();
+    let tag = '';
+    const transport: EmailTransport = async (message) => {
+      tag = message.tags.find((item) => item.name === 'template')?.value ?? '';
+      return { id: 'em_tag' };
+    };
+    await sendAppEmail(
+      { ...base, template: 'operator.eod_reminder', idempotencyKey: 'eod/tag' },
+      { env, store, transport, pace: false, sleep: async () => {} },
+    );
+    expect(tag).toBe('operator_eod_reminder');
+  });
+
   it('retries a rate limit and stops on a rejected address', async () => {
     const store = memoryStore();
     let n = 0;

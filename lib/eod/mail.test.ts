@@ -24,12 +24,13 @@ describe('end of day letters', () => {
   it('sends Matthew the private link thirty minutes before the shift ends', () => {
     const mail = eodLetter(
       'operator.eod_reminder',
-      { ...report, to: ['matthew@divineacquisition.io'], link_path: '/eod/abc123' },
+      { ...report, to: ['matthew@divineacquisition.io'], cc: ['malik@divineacquisition.io', 'matthew@divineacquisition.io'], link_path: '/eod/abc123' },
       env,
     );
     expect(mail.purpose).toBe('team');
     expect(mail.to).toEqual(['matthew@divineacquisition.io']);
-    expect(mail.subject).toBe('Your end of day for Bay Area Cleaning Pros');
+    expect(mail.cc).toEqual(['malik@divineacquisition.io']);
+    expect(mail.subject).toBe('Your end of day for Bay Area Cleaning Pros on Friday, November 6');
     expect(mail.html).toContain('https://team.divineacquisition.io/eod/abc123');
     expect(mail.html).toContain('1:00 PM Central');
     expect(mail.html).toContain('1:30 PM Central');

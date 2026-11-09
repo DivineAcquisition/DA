@@ -58,6 +58,7 @@ async function sendRow(db: UntypedClient, row: MailRow): Promise<boolean> {
   const result: SendAppEmailResult = await sendAppEmail({
     purpose: letter.purpose,
     to: letter.to,
+    cc: letter.cc,
     subject: letter.subject,
     html: letter.html,
     text: letter.text,

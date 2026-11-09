@@ -424,7 +424,7 @@ export async function sendAppEmail(input: SendAppEmailInput, deps: SendDeps = {}
       attachments,
       tags: [
         { name: 'purpose', value: input.purpose },
-        { name: 'template', value: input.template.slice(0, 40).replace(/[^\w.-]/g, '_') || 'email' },
+        { name: 'template', value: input.template.slice(0, 40).replace(/[^A-Za-z0-9_-]/g, '_') || 'email' },
       ],
     });
     if (sent.id) {
