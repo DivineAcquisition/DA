@@ -15,7 +15,7 @@ export default function LoginForm() {
     <TeamAuthDesk
       eyebrow="Admin"
       title="Administrator sign in"
-      subtitle="Sign in to the admin workspace. Academy reviewers open the hold queue from here."
+      subtitle="Sign in to the admin workspace."
     >
       <form
         className="space-y-3.5"

@@ -8,8 +8,9 @@ import { btnSecondary } from '@/app/components/ui';
 import SignOutButton from '@/app/components/auth/SignOutButton';
 import { ThemeToggle } from '@/app/workspace/components/ThemeControls';
 import { StatusPill } from '@/app/workspace/components/VistrialChrome';
-import { buildNav, findActive, railRows, type NavCounts } from '@/lib/workspace/adminNav';
+import { STAFF_HOME, buildNav, findActive, railRows, type NavCounts } from '@/lib/workspace/adminNav';
 import { SectionTabs } from '@/app/workspace/components/SectionTabs';
+import { interDisplay } from '@/app/workspace/(staff)/components/fonts';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 
 /**
@@ -73,14 +74,14 @@ export function ManagerShell({
   const nav = buildNav({ showAcademy: false, showHolds: false, holdsOnly: false, role: 'manager', counts });
   const active = findActive(nav, pathname);
   useEffect(() => {
-    if (!allowed) router.replace('/workspace/team/board');
+    if (!allowed) router.replace(STAFF_HOME);
   }, [allowed, router]);
   if (!allowed) return null;
 
   const links = nav.flatMap((group) => railRows(group));
 
   return (
-    <div className="relative min-h-screen bg-ink-950 text-white antialiased lg:flex">
+    <div className={`da-admin-type relative min-h-screen bg-ink-950 text-white antialiased lg:flex ${interDisplay.variable}`}>
       <aside className={`admin-rail relative z-10 hidden shrink-0 flex-col lg:flex ${collapsed ? 'w-[72px]' : 'w-60'}`}>
         <div className={`flex h-14 items-center gap-2 border-b border-white/[0.06] ${collapsed ? 'justify-center px-2' : 'px-4'}`}>
           <Logo markOnly tone="current" className="h-5 w-auto text-[color:var(--strong)]" />

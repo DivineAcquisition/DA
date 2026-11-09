@@ -7,6 +7,7 @@ import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 import { loadNavCounts } from '@/lib/workspace/nav-counts';
 import { ManagerShell } from '@/app/workspace/(portal)/components/Gates';
 import { filePendingOperatorPackets } from '@/lib/workspace/placement-packet';
+import { interDisplay } from './components/fonts';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
 import './workspace.css';
@@ -44,7 +45,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!supabaseConfigured) {
     return (
-      <div className="da-workspace">
+      <div className={`da-workspace da-admin-type ${interDisplay.variable}`}>
         <NotConfigured />
       </div>
     );
@@ -55,7 +56,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (!session) {
     if (!isLogin) redirect('/workspace/login');
     return (
-      <div className="da-workspace">
+      <div className={`da-workspace da-admin-type ${interDisplay.variable}`}>
         <LoginForm />
       </div>
     );
@@ -77,7 +78,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     }
     if (!isLogin) redirect('/workspace/login');
     return (
-      <div className="da-workspace">
+      <div className={`da-workspace da-admin-type ${interDisplay.variable}`}>
         <LoginForm />
       </div>
     );
@@ -94,7 +95,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   return (
     <ThemeFrame>
       <RequireAdminMfa email={session.email}>
-        <div className="da-workspace">
+        <div className={`da-workspace da-admin-type ${interDisplay.variable}`}>
           <Shell email={session.email} counts={counts}>
             {children}
           </Shell>
