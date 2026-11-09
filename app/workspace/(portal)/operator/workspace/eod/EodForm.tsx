@@ -2,11 +2,22 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ComponentType, type ReactNode } from 'react';
+import {
+  AlertTriangle,
+  BarChart3,
+  CheckCircle2,
+  Circle,
+  Clock3,
+  ListChecks,
+  Loader2,
+  MessageSquareText,
+  Trophy,
+} from 'lucide-react';
 import { formatDate, formatTime } from '@/lib/portal/time';
 import { logActivityAction, logEodLinkAction, saveEodAction, saveEodLinkAction, submitEodAction, submitEodLinkAction, type EodBody } from '@/lib/sales-workspace/actions';
 import { formatMetric } from '@/lib/sales-workspace/dashboard';
-import { brand } from '../WorkspaceFrame';
+import './eod.css';
 
 const NO_BLOCKERS = 'No blockers today.';
 
@@ -50,9 +61,10 @@ export type EodFormData = {
   excused: boolean;
 };
 
+type SaveState = { kind: 'idle' } | { kind: 'saving' } | { kind: 'saved'; at: string } | { kind: 'error'; message: string };
+
 function lines(items: { text?: string }[] | null | undefined): string[] {
-  const next = [0, 1, 2, 3, 4].map((i) => items?.[i]?.text ?? '');
-  return next;
+  return [0, 1, 2, 3, 4].map((i) => items?.[i]?.text ?? '');
 }
 
 function hoursTotal(start: string, end: string, breakMinutes: string): string | null {
@@ -65,6 +77,14 @@ function hoursTotal(start: string, end: string, breakMinutes: string): string | 
   if (minutes < 0) minutes = 0;
   if (minutes > 1440) minutes = 1440;
   return `${Math.round((minutes / 60) * 100) / 100} h`;
+}
+
+function statusPill(status: string, wasLate: boolean): { label: string; tone: 'good' | 'warn' | 'bad' | 'quiet' | undefined } {
+  if (status === 'submitted') return wasLate ? { label: 'Submitted late', tone: 'warn' } : { label: 'Submitted', tone: 'good' };
+  if (status === 'missed') return { label: 'Missed', tone: 'bad' };
+  if (status === 'draft') return { label: 'Draft', tone: undefined };
+  if (status === 'excused') return { label: 'Excused', tone: 'quiet' };
+  return { label: 'Not started', tone: 'quiet' };
 }
 
 export default function EodForm({ data, token }: { data: EodFormData; token?: string }) {
@@ -80,11 +100,12 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
   const [breakMinutes, setBreakMinutes] = useState(data.break_minutes == null ? '' : String(data.break_minutes));
   const [metrics, setMetrics] = useState(data.metrics);
   const [outcomes, setOutcomes] = useState(data.outcomes);
-  const [savedAt, setSavedAt] = useState(data.updated_at);
+  const [save, setSave] = useState<SaveState>(data.updated_at && data.status !== 'not_started' ? { kind: 'saved', at: data.updated_at } : { kind: 'idle' });
   const [status, setStatus] = useState(data.status);
   const [step, setStep] = useState<'edit' | 'review' | 'done'>('edit');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [busyKey, setBusyKey] = useState<string | null>(null);
   const [wasLate, setWasLate] = useState(data.was_late);
   const dirty = useRef(false);
   const canWrite = data.editable && !data.view_as && !data.excused;
@@ -111,22 +132,25 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
     bodyRef.current = body;
   }, [body]);
 
+  // Autosave the draft 700 ms after the last keystroke, and say whether it worked.
   useEffect(() => {
     if (!canWrite || step === 'done') return;
     if (!dirty.current) return;
     const timer = window.setTimeout(async () => {
-      const result = token
-        ? await saveEodLinkAction(token, bodyRef.current)
-        : await saveEodAction(data.work_date, bodyRef.current);
+      setSave({ kind: 'saving' });
+      const result = token ? await saveEodLinkAction(token, bodyRef.current) : await saveEodAction(data.work_date, bodyRef.current);
       if (result.ok) {
-        setSavedAt(result.updated_at ?? new Date().toISOString());
+        setSave({ kind: 'saved', at: result.updated_at ?? new Date().toISOString() });
         setStatus(result.status);
         dirty.current = false;
+      } else {
+        setSave({ kind: 'error', message: result.error });
       }
     }, 700);
     return () => window.clearTimeout(timer);
   }, [body, canWrite, data.work_date, step, token]);
 
+  // Leaving the page sends whatever is unsaved.
   useEffect(() => {
     if (!canWrite) return;
     function leave() {
@@ -148,13 +172,21 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
     setError(null);
   }
 
+  const winsOk = wins.trim().length >= data.min_chars;
+  const blockerText = noBlockers ? NO_BLOCKERS : blockers.trim();
+  const blockersOk = blockerText === NO_BLOCKERS || blockerText.length >= data.min_chars;
+  const planOk = plan.some((line) => line.trim());
+  const checklist = [
+    { label: 'Wins', ok: winsOk, hint: `${Math.min(wins.trim().length, data.min_chars)}/${data.min_chars} characters` },
+    { label: 'Blockers', ok: blockersOk, hint: noBlockers ? 'None today' : `${Math.min(blockers.trim().length, data.min_chars)}/${data.min_chars} characters` },
+    { label: 'Tomorrow’s plan', ok: planOk, hint: `${plan.filter((line) => line.trim()).length} of 5` },
+  ];
+  const doneCount = checklist.filter((item) => item.ok).length;
+
   function problems(): string | null {
-    if (wins.trim().length < data.min_chars) return `Wins needs at least ${data.min_chars} characters.`;
-    const blockerText = noBlockers ? NO_BLOCKERS : blockers.trim();
-    if (blockerText !== NO_BLOCKERS && blockerText.length < data.min_chars) {
-      return `Blockers needs at least ${data.min_chars} characters, or tick No blockers today.`;
-    }
-    if (!plan.some((line) => line.trim())) return 'Add at least one priority for the next working day.';
+    if (!winsOk) return `Wins needs at least ${data.min_chars} characters.`;
+    if (!blockersOk) return `Blockers needs at least ${data.min_chars} characters, or tick No blockers today.`;
+    if (!planOk) return 'Add at least one priority for the next working day.';
     return null;
   }
 
@@ -185,66 +217,61 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
     setStep('done');
   }
 
-  async function adjust(kind: 'metric' | 'outcome', key: string, outcomeId: string | null, delta: number) {
+  /** Change a number by a step, or set it to a typed value. */
+  async function record(kind: 'metric' | 'outcome', key: string, outcomeId: string | null, amount: number, mode: 'delta' | 'set') {
     if (!canWrite) return;
-    setPending(true);
     const metricKey = kind === 'metric' ? key : 'positive_outcomes';
+    const id = outcomeId ?? key;
+    setBusyKey(id);
     const result = token
-      ? await logEodLinkAction(token, metricKey, outcomeId, delta, 'delta')
-      : await logActivityAction(metricKey, outcomeId, delta, 'delta', data.work_date);
-    setPending(false);
+      ? await logEodLinkAction(token, metricKey, outcomeId, amount, mode)
+      : await logActivityAction(metricKey, outcomeId, amount, mode, data.work_date);
+    setBusyKey(null);
     if (!result.ok) {
       setError(result.error);
       return;
     }
-    if (kind === 'metric') {
-      setMetrics((rows) => rows.map((row) => (row.key === key ? { ...row, value: Math.max(0, (row.value ?? 0) + delta) } : row)));
-    } else {
-      setOutcomes((rows) => rows.map((row) => (row.id === outcomeId ? { ...row, value: Math.max(0, row.value + delta) } : row)));
-    }
+    const next = (current: number | null) => (mode === 'set' ? Math.max(0, amount) : Math.max(0, (current ?? 0) + amount));
+    if (kind === 'metric') setMetrics((rows) => rows.map((row) => (row.key === key ? { ...row, value: next(row.value) } : row)));
+    else setOutcomes((rows) => rows.map((row) => (row.id === outcomeId ? { ...row, value: next(row.value) } : row)));
+    setSave({ kind: 'saved', at: new Date().toISOString() });
   }
+
+  const pill = statusPill(status, wasLate);
+  const dayLabel = formatDate(data.work_date, true);
 
   if (data.excused || status === 'excused') {
     return (
-      <section className={brand.panel}>
-        <p className={brand.eyebrow}>End of day · {formatDate(data.work_date, true)}</p>
-        <h1 className={`${brand.heading} mt-2 text-2xl`}>Excused</h1>
-        <p className="mt-3 text-sm text-neutral-300">No EOD is due. Reminders and escalation are off for this day.</p>
-        {token ? (
-          <p className="mt-6 text-sm text-neutral-400">You can close this page.</p>
-        ) : (
-          <Link href="/workspace/operator/workspace" className={`${brand.primaryButton} mt-6`}>
-            Back to the dashboard
-          </Link>
-        )}
-      </section>
+      <div className="da-eod">
+        <Card glow>
+          <p className="eod-label">End of day · {dayLabel}</p>
+          <h1 className="eod-title mt-2 text-2xl">Excused</h1>
+          <p className="mt-3 text-[15px] text-[var(--eod-muted)]">No EOD is due. Reminders and escalation are off for this day.</p>
+          <Exit token={token} />
+        </Card>
+      </div>
     );
   }
 
   if (step === 'done') {
+    const title = alreadySubmitted ? 'Saved.' : wasLate || status === 'missed' ? 'Submitted late.' : 'Submitted.';
+    const line = alreadySubmitted
+      ? 'The edit is in the history.'
+      : status === 'missed'
+        ? 'This report stays marked missed, and your manager has it.'
+        : wasLate
+          ? 'This report is marked late, and your manager has it.'
+          : 'This report is on time, and your manager has it.';
     return (
-      <section className={brand.panel}>
-        <p className={brand.eyebrow}>End of day · {formatDate(data.work_date, true)}</p>
-        <h1 className={`${brand.heading} mt-2 text-2xl`}>
-          {alreadySubmitted ? 'Saved.' : wasLate || status === 'missed' ? 'Submitted late.' : 'Submitted.'}
-        </h1>
-        <p className="mt-3 text-sm text-neutral-300">
-          {alreadySubmitted
-            ? 'The edit is in the history.'
-            : status === 'missed'
-              ? 'This report stays marked missed. Your manager has it.'
-              : wasLate
-                ? 'This report is marked late. Your manager has it.'
-                : 'This report is on time. Your manager has it.'}
-        </p>
-        {token ? (
-          <p className="mt-6 text-sm text-neutral-400">You can close this page.</p>
-        ) : (
-          <button type="button" className={`${brand.primaryButton} mt-6`} onClick={() => router.push('/workspace/operator/workspace')}>
-            Back to the dashboard
-          </button>
-        )}
-      </section>
+      <div className="da-eod">
+        <Card glow>
+          <CheckCircle2 className="size-9 text-[var(--eod-good)]" aria-hidden />
+          <p className="eod-label mt-4">End of day · {dayLabel}</p>
+          <h1 className="eod-title mt-2 text-[26px]">{title}</h1>
+          <p className="mt-3 text-[15px] text-[var(--eod-muted)]">{line}</p>
+          <Exit token={token} onDashboard={() => router.push('/workspace/operator/workspace')} />
+        </Card>
+      </div>
     );
   }
 
@@ -253,105 +280,99 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
 
   return (
     <form
-      className="space-y-4"
+      className="da-eod space-y-4"
       onSubmit={(event) => {
         event.preventDefault();
         if (step === 'review') void submit();
         else {
           const problem = problems();
           if (problem) setError(problem);
-          else setStep('review');
+          else {
+            setStep('review');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
         }
       }}
     >
-      <header>
-        <p className={brand.eyebrow}>End of day · {formatDate(data.work_date, true)}</p>
-        <h1 className={`${brand.heading} mt-2 text-2xl`}>{step === 'review' ? 'Check it once.' : 'Today’s report'}</h1>
-        <p className="mt-2 text-sm text-neutral-400">
-          Due {formatTime(data.deadline_at, data.time_zone)}.
-          {savedAt && status !== 'not_started' ? ` Draft saved ${formatTime(savedAt, data.time_zone)}.` : ''}
-          {data.edited_after_submit ? ' Edited after submission.' : ''}
-        </p>
-        {data.view_as ? <p className="mt-2 text-sm text-neutral-300">View-as is read-only. Exit to let the operator do this.</p> : null}
-        {locked && !data.view_as ? <p className="mt-2 text-sm text-neutral-300">This EOD is locked. Numbers and text are read-only.</p> : null}
-      </header>
+      <Card glow>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="eod-label">End of day · {dayLabel}</p>
+            <h1 className="eod-title mt-2 text-[26px] leading-tight">{step === 'review' ? 'Check it once.' : 'Today’s report'}</h1>
+          </div>
+          <span className="eod-pill" data-tone={pill.tone}>
+            {pill.label}
+          </span>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[13px] text-[var(--eod-muted)]">
+          <span className="inline-flex items-center gap-1.5">
+            <Clock3 className="size-3.5 text-[var(--eod-lavender-soft)]" aria-hidden />
+            Due {formatTime(data.deadline_at, data.time_zone)}
+          </span>
+          <SaveIndicator state={save} zone={data.time_zone} />
+          {data.edited_after_submit ? <span>Edited after submission</span> : null}
+        </div>
+        {canWrite && step === 'edit' ? (
+          <div className="mt-5">
+            <div className="mb-2 flex items-center justify-between text-[12px] text-[var(--eod-dim)]">
+              <span>Ready to submit</span>
+              <span>
+                {doneCount} of {checklist.length}
+              </span>
+            </div>
+            <div className="eod-progress">
+              <span style={{ width: `${(doneCount / checklist.length) * 100}%` }} />
+            </div>
+            <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+              {checklist.map((item) => (
+                <li key={item.label} className="flex items-center gap-2 text-[13px]">
+                  {item.ok ? (
+                    <CheckCircle2 className="size-4 shrink-0 text-[var(--eod-good)]" aria-hidden />
+                  ) : (
+                    <Circle className="size-4 shrink-0 text-[var(--eod-dim)]" aria-hidden />
+                  )}
+                  <span className={item.ok ? 'text-white' : 'text-[var(--eod-muted)]'}>{item.label}</span>
+                  <span className="ml-auto text-[12px] text-[var(--eod-dim)] sm:ml-1">{item.hint}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+        {data.view_as ? <p className="mt-3 text-[13px] text-[var(--eod-muted)]">View-as is read-only. Exit to let the operator do this.</p> : null}
+        {locked && !data.view_as ? <p className="mt-3 text-[13px] text-[var(--eod-muted)]">This EOD is locked. Numbers and text are read-only.</p> : null}
+      </Card>
 
-      {error ? <p className="rounded-2xl border border-[#FFB020]/40 bg-[#FFB020]/10 px-4 py-3 text-sm text-[#FFB020]">{error}</p> : null}
+      {error ? (
+        <p role="alert" className="flex items-start gap-2 rounded-xl border border-[#f0b45c]/40 bg-[#f0b45c]/10 px-4 py-3 text-sm text-[#f6cf95]">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
+          {error}
+        </p>
+      ) : null}
 
       {step === 'review' ? (
         <Review data={data} body={body} metrics={metrics} outcomes={outcomes} total={total} />
       ) : (
         <div className="flex flex-col gap-4">
-          <section className={brand.panel} style={token ? { order: 2 } : undefined}>
-            <h2 className={`${brand.heading} text-lg`}>Today’s numbers</h2>
-            <p className="mt-1 text-sm text-neutral-400">Tap plus or minus. It saves on today’s log.</p>
-            <div className="mt-4 space-y-5">
-              {groupMetrics(metrics).map((group) => (
-                <div key={group.group}>
-                  <h3 className={brand.eyebrow}>{group.group}</h3>
-                  <ul className="mt-2 space-y-2">
-                    {group.rows.map((row) => (
-                      <li key={row.key} className="rounded-2xl border border-white/[0.06] px-3 py-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="text-sm font-semibold text-white">{row.label}</p>
-                          <p className="text-sm text-neutral-300">
-                            {ghlLabel(row.display, row.unit, row.value)}
-                            {row.target != null ? <span className="text-neutral-500"> / {formatMetric(row.unit, row.target)}</span> : null}
-                          </p>
-                        </div>
-                        {row.editable ? (
-                          <div className="mt-3 flex items-center gap-2">
-                            <Step label={`Decrease ${row.label}`} disabled={pending || (row.value ?? 0) <= 0} onClick={() => adjust('metric', row.key, null, -1)} />
-                            <Step label={`Increase ${row.label}`} disabled={pending} onClick={() => adjust('metric', row.key, null, 1)} sign="+" />
-                          </div>
-                        ) : (
-                          <p className="mt-2 text-xs text-neutral-500">{row.display === 'pending_sync' || row.display === 'sync_delayed' ? 'From GHL. You cannot edit this.' : 'Read only.'}</p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-              {outcomes.length > 0 ? (
-                <div>
-                  <h3 className={brand.eyebrow}>Positive outcomes</h3>
-                  <ul className="mt-2 space-y-2">
-                    {outcomes.map((outcome) => (
-                      <li key={outcome.id} className="rounded-2xl border border-white/[0.06] px-3 py-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="text-sm font-semibold text-white">{outcome.name}</p>
-                          <p className="text-sm text-neutral-300">{outcome.value}</p>
-                        </div>
-                        {canWrite ? (
-                          <div className="mt-3 flex items-center gap-2">
-                            <Step label={`Decrease ${outcome.name}`} disabled={pending || outcome.value <= 0} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, -1)} />
-                            <Step label={`Increase ${outcome.name}`} disabled={pending} onClick={() => adjust('outcome', 'positive_outcomes', outcome.id, 1)} sign="+" />
-                          </div>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-          </section>
-
-          <div className="flex flex-col gap-4" style={token ? { order: 1 } : undefined}>
           {data.yesterday_plan.some((item) => item.text?.trim()) ? (
-            <section className={brand.panel}>
-              <h2 className={`${brand.heading} text-lg`}>Yesterday’s plan</h2>
-              <ul className="mt-3 space-y-2 text-sm text-neutral-300">
-                {data.yesterday_plan.filter((item) => item.text?.trim()).map((item, index) => (
-                  <li key={`${item.text}-${index}`}>
-                    {item.done_at ? 'Done' : 'Open'} · {item.text}
-                  </li>
-                ))}
+            <Card title="Yesterday’s plan" icon={ListChecks}>
+              <ul className="space-y-2">
+                {data.yesterday_plan
+                  .filter((item) => item.text?.trim())
+                  .map((item, index) => (
+                    <li key={`${item.text}-${index}`} className="flex items-start gap-2.5 text-[15px] text-[var(--eod-muted)]">
+                      {item.done_at ? (
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[var(--eod-good)]" aria-hidden />
+                      ) : (
+                        <Circle className="mt-0.5 size-4 shrink-0 text-[var(--eod-dim)]" aria-hidden />
+                      )}
+                      <span className={item.done_at ? 'text-white' : undefined}>{item.text}</span>
+                    </li>
+                  ))}
               </ul>
-            </section>
+            </Card>
           ) : null}
 
-          <section className={brand.panel}>
-            <h2 className={`${brand.heading} text-lg`}>Wins</h2>
+          <Card title="Wins" icon={Trophy} hint="What went well today. Be specific: who, what, and the result.">
             <textarea
               value={wins}
               disabled={locked}
@@ -360,18 +381,17 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
                 setWins(event.target.value);
               }}
               rows={4}
-              required
-              className={fieldClass}
-              placeholder="What went well today."
+              className="eod-field"
+              placeholder="Booked a walkthrough with the Hendersons for Thursday after a callback."
             />
-          </section>
+            <Counter value={wins.trim().length} min={data.min_chars} />
+          </Card>
 
-          <section className={brand.panel}>
-            <h2 className={`${brand.heading} text-lg`}>Blockers</h2>
-            <label className="mt-3 flex items-center gap-3 text-sm text-neutral-200">
+          <Card title="Blockers" icon={AlertTriangle} hint="What got in the way, and what you need to remove it.">
+            <label className="flex cursor-pointer items-center gap-3 text-[15px] text-white">
               <input
                 type="checkbox"
-                className="h-5 w-5"
+                className="eod-check"
                 checked={noBlockers}
                 disabled={locked}
                 onChange={(event) => {
@@ -383,21 +403,26 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
               />
               No blockers today
             </label>
-            <textarea
-              value={noBlockers ? NO_BLOCKERS : blockers}
-              disabled={locked || noBlockers}
-              onChange={(event) => {
-                touch();
-                setBlockers(event.target.value);
-              }}
-              rows={4}
-              className={`${fieldClass} mt-3`}
-              placeholder="What got in the way, and what you need to remove it."
-            />
-            <label className="mt-4 flex items-center gap-3 text-sm text-neutral-200">
+            {noBlockers ? null : (
+              <>
+                <textarea
+                  value={blockers}
+                  disabled={locked}
+                  onChange={(event) => {
+                    touch();
+                    setBlockers(event.target.value);
+                  }}
+                  rows={4}
+                  className="eod-field mt-3"
+                  placeholder="Three leads had no phone number in GHL, so I could only email them."
+                />
+                <Counter value={blockers.trim().length} min={data.min_chars} />
+              </>
+            )}
+            <label className="mt-4 flex cursor-pointer items-center gap-3 text-[15px] text-white">
               <input
                 type="checkbox"
-                className="h-5 w-5"
+                className="eod-check"
                 checked={needsHelp}
                 disabled={locked}
                 onChange={(event) => {
@@ -405,78 +430,285 @@ export default function EodForm({ data, token }: { data: EodFormData; token?: st
                   setNeedsHelp(event.target.checked);
                 }}
               />
-              Needs manager help
+              I need help from my manager
             </label>
-          </section>
+          </Card>
 
-          <section className={brand.panel}>
-            <h2 className={`${brand.heading} text-lg`}>Tomorrow’s plan</h2>
-            <p className="mt-1 text-sm text-neutral-400">Up to five priorities. At least one.</p>
-            <div className="mt-3 space-y-2">
+          <Card title="Tomorrow’s plan" icon={ListChecks} hint="Up to five priorities for the next working day. At least one.">
+            <ol className="space-y-2">
               {plan.map((line, index) => (
-                <input
-                  key={index}
-                  value={line}
-                  disabled={locked}
-                  onChange={(event) => {
-                    touch();
-                    setPlan((current) => current.map((item, i) => (i === index ? event.target.value : item)));
-                  }}
-                  className={fieldClass}
-                  placeholder={`Priority ${index + 1}`}
-                />
+                <li key={index} className="flex items-center gap-3">
+                  <span className="w-5 shrink-0 text-right text-[13px] tabular-nums text-[var(--eod-dim)]">{index + 1}</span>
+                  <input
+                    value={line}
+                    disabled={locked}
+                    onChange={(event) => {
+                      touch();
+                      setPlan((current) => current.map((item, i) => (i === index ? event.target.value : item)));
+                    }}
+                    className="eod-field"
+                    placeholder={index === 0 ? 'Call back the four leads from today’s ads' : `Priority ${index + 1}`}
+                  />
+                </li>
               ))}
+            </ol>
+          </Card>
+
+          <Card title="Today’s numbers" icon={BarChart3} hint="Type a number or use the buttons. Each change saves on its own.">
+            <div className="space-y-6">
+              {groupMetrics(metrics).map((group) => (
+                <div key={group.group}>
+                  <p className="eod-label">{group.group}</p>
+                  <ul className="mt-2 divide-y divide-[rgba(154,136,252,0.1)] rounded-xl border border-[var(--eod-line)] bg-[var(--eod-field)]">
+                    {group.rows.map((row) => (
+                      <MetricRow
+                        key={row.key}
+                        label={row.label}
+                        value={row.value}
+                        target={row.target}
+                        unit={row.unit}
+                        display={row.display}
+                        editable={row.editable && canWrite}
+                        busy={busyKey === row.key}
+                        onStep={(delta) => record('metric', row.key, null, delta, 'delta')}
+                        onSet={(value) => record('metric', row.key, null, value, 'set')}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              {outcomes.length > 0 ? (
+                <div>
+                  <p className="eod-label">Positive outcomes</p>
+                  <ul className="mt-2 divide-y divide-[rgba(154,136,252,0.1)] rounded-xl border border-[var(--eod-line)] bg-[var(--eod-field)]">
+                    {outcomes.map((outcome) => (
+                      <MetricRow
+                        key={outcome.id}
+                        label={outcome.name}
+                        value={outcome.value}
+                        target={null}
+                        unit="count"
+                        display="number"
+                        editable={canWrite}
+                        busy={busyKey === outcome.id}
+                        onStep={(delta) => record('outcome', 'positive_outcomes', outcome.id, delta, 'delta')}
+                        onSet={(value) => record('outcome', 'positive_outcomes', outcome.id, value, 'set')}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
-          </section>
+          </Card>
 
           {data.hours_enabled ? (
-            <section className={brand.panel}>
-              <h2 className={`${brand.heading} text-lg`}>Hours worked</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                <label className="text-sm text-neutral-300">
+            <Card title="Hours worked" icon={Clock3}>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <label className="text-[13px] text-[var(--eod-muted)]">
                   Start
-                  <input type="time" value={hoursStart.slice(0, 5)} disabled={locked} onChange={(event) => { touch(); setHoursStart(event.target.value); }} className={`${fieldClass} mt-1`} />
+                  <input type="time" value={hoursStart.slice(0, 5)} disabled={locked} onChange={(event) => { touch(); setHoursStart(event.target.value); }} className="eod-field mt-1.5" />
                 </label>
-                <label className="text-sm text-neutral-300">
+                <label className="text-[13px] text-[var(--eod-muted)]">
                   End
-                  <input type="time" value={hoursEnd.slice(0, 5)} disabled={locked} onChange={(event) => { touch(); setHoursEnd(event.target.value); }} className={`${fieldClass} mt-1`} />
+                  <input type="time" value={hoursEnd.slice(0, 5)} disabled={locked} onChange={(event) => { touch(); setHoursEnd(event.target.value); }} className="eod-field mt-1.5" />
                 </label>
-                <label className="text-sm text-neutral-300">
+                <label className="text-[13px] text-[var(--eod-muted)]">
                   Break minutes
-                  <input inputMode="numeric" value={breakMinutes} disabled={locked} onChange={(event) => { touch(); setBreakMinutes(event.target.value.replace(/[^\d]/g, '')); }} className={`${fieldClass} mt-1`} />
+                  <input inputMode="numeric" value={breakMinutes} disabled={locked} onChange={(event) => { touch(); setBreakMinutes(event.target.value.replace(/[^\d]/g, '')); }} className="eod-field mt-1.5" />
                 </label>
               </div>
-              {total ? <p className="mt-3 text-sm text-white">Total {total}</p> : null}
-            </section>
+              {total ? <p className="mt-3 text-[15px] text-white">Total {total}</p> : null}
+            </Card>
           ) : null}
 
           {data.note_enabled ? (
-            <section className={brand.panel}>
-              <h2 className={`${brand.heading} text-lg`}>Note to manager</h2>
-              <textarea value={note} disabled={locked} onChange={(event) => { touch(); setNote(event.target.value); }} rows={3} className={`${fieldClass} mt-3`} />
-            </section>
+            <Card title="Note to manager" icon={MessageSquareText}>
+              <textarea value={note} disabled={locked} onChange={(event) => { touch(); setNote(event.target.value); }} rows={3} className="eod-field" />
+            </Card>
           ) : null}
-          </div>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-3">
-        {step === 'review' ? (
-          <button type="button" className={brand.ghostButton} onClick={() => setStep('edit')}>
-            Back
-          </button>
-        ) : token ? null : (
-          <Link href="/workspace/operator/workspace" className={brand.ghostButton}>
-            Dashboard
-          </Link>
-        )}
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div>
+          {step === 'review' ? (
+            <button type="button" className="eod-secondary" onClick={() => setStep('edit')}>
+              Back to edit
+            </button>
+          ) : token ? null : (
+            <Link href="/workspace/operator/workspace" className="eod-secondary">
+              Dashboard
+            </Link>
+          )}
+        </div>
         {canWrite ? (
-          <button type="submit" disabled={pending} className={brand.primaryButton}>
-            {step === 'review' ? (pending ? 'Saving' : alreadySubmitted ? 'Save edit' : 'Submit EOD') : 'Review'}
+          <button type="submit" disabled={pending} className="eod-primary">
+            {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
+            {step === 'review' ? (pending ? 'Submitting' : alreadySubmitted ? 'Save edit' : 'Submit EOD') : 'Review'}
           </button>
         ) : null}
       </div>
     </form>
+  );
+}
+
+function Card({
+  title,
+  hint,
+  icon: Icon,
+  glow,
+  children,
+}: {
+  title?: string;
+  hint?: string;
+  icon?: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  glow?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <section className={`eod-card ${glow ? 'eod-card-glow' : ''} p-5 sm:p-6`}>
+      {title ? (
+        <div className="mb-4">
+          <h2 className="eod-title flex items-center gap-2 text-[16px]">
+            {Icon ? <Icon className="size-4 text-[var(--eod-lavender-soft)]" aria-hidden /> : null}
+            {title}
+          </h2>
+          {hint ? <p className="mt-1 text-[13px] text-[var(--eod-dim)]">{hint}</p> : null}
+        </div>
+      ) : null}
+      {children}
+    </section>
+  );
+}
+
+function Counter({ value, min }: { value: number; min: number }) {
+  const ok = value >= min;
+  return (
+    <p className={`mt-1.5 text-right text-[12px] tabular-nums ${ok ? 'text-[var(--eod-good)]' : 'text-[var(--eod-dim)]'}`}>
+      {ok ? `${value} characters` : `${value}/${min} characters`}
+    </p>
+  );
+}
+
+function SaveIndicator({ state, zone }: { state: SaveState; zone: string }) {
+  if (state.kind === 'saving')
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <Loader2 className="size-3.5 animate-spin text-[var(--eod-lavender-soft)]" aria-hidden />
+        Saving…
+      </span>
+    );
+  if (state.kind === 'saved')
+    return (
+      <span className="inline-flex items-center gap-1.5">
+        <CheckCircle2 className="size-3.5 text-[var(--eod-good)]" aria-hidden />
+        Saved {formatTime(state.at, zone)}
+      </span>
+    );
+  if (state.kind === 'error')
+    return (
+      <span role="status" className="inline-flex items-center gap-1.5 text-[var(--eod-warn)]">
+        <AlertTriangle className="size-3.5" aria-hidden />
+        Not saved: {state.message} Keep this page open and try again.
+      </span>
+    );
+  return <span>Your draft saves as you type.</span>;
+}
+
+function MetricRow({
+  label,
+  value,
+  target,
+  unit,
+  display,
+  editable,
+  busy,
+  onStep,
+  onSet,
+}: {
+  label: string;
+  value: number | null;
+  target: number | null;
+  unit: string;
+  display: EodFormMetric['display'];
+  editable: boolean;
+  busy: boolean;
+  onStep: (delta: number) => void;
+  onSet: (value: number) => void;
+}) {
+  const [draft, setDraft] = useState<string | null>(null);
+  const shown = draft ?? (value == null ? '' : String(value));
+
+  function commit() {
+    if (draft == null) return;
+    const next = Number(draft);
+    setDraft(null);
+    if (draft.trim() === '' || !Number.isFinite(next) || next < 0 || next === value) return;
+    onSet(Math.round(next));
+  }
+
+  return (
+    <li className="flex flex-wrap items-center justify-between gap-3 px-3.5 py-3">
+      <div className="min-w-0">
+        <p className="text-[15px] text-white">{label}</p>
+        <p className="text-[12px] text-[var(--eod-dim)]">
+          {editable
+            ? target != null
+              ? `Target ${formatMetric(unit, target)}`
+              : 'You enter this'
+            : display === 'pending_sync' || display === 'sync_delayed'
+              ? 'Comes from GHL'
+              : 'Read only'}
+        </p>
+      </div>
+      {editable ? (
+        <div className="flex items-center gap-2">
+          <button type="button" aria-label={`Decrease ${label}`} disabled={busy || (value ?? 0) <= 0} onClick={() => onStep(-1)} className="eod-step">
+            −
+          </button>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={0}
+            aria-label={label}
+            value={shown}
+            disabled={busy}
+            onChange={(event) => setDraft(event.target.value.replace(/[^\d]/g, ''))}
+            onBlur={commit}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+                (event.target as HTMLInputElement).blur();
+              }
+            }}
+            className="eod-field eod-num"
+          />
+          <button type="button" aria-label={`Increase ${label}`} disabled={busy} onClick={() => onStep(1)} className="eod-step">
+            +
+          </button>
+        </div>
+      ) : (
+        <p className="text-[15px] tabular-nums text-white">
+          {ghlLabel(display, unit, value)}
+          {target != null ? <span className="text-[var(--eod-dim)]"> / {formatMetric(unit, target)}</span> : null}
+        </p>
+      )}
+    </li>
+  );
+}
+
+function Exit({ token, onDashboard }: { token?: string; onDashboard?: () => void }) {
+  if (token) return <p className="mt-6 text-[13px] text-[var(--eod-dim)]">You can close this page.</p>;
+  if (onDashboard)
+    return (
+      <button type="button" className="eod-primary mt-6" onClick={onDashboard}>
+        Back to the dashboard
+      </button>
+    );
+  return (
+    <Link href="/workspace/operator/workspace" className="eod-primary mt-6">
+      Back to the dashboard
+    </Link>
   );
 }
 
@@ -493,55 +725,62 @@ function Review({
   outcomes: EodFormData['outcomes'];
   total: string | null;
 }) {
+  const filled = metrics.filter((row) => row.value != null && row.value > 0);
   return (
     <div className="space-y-4">
-      <section className={brand.panel}>
-        <h2 className={`${brand.heading} text-lg`}>Today’s numbers</h2>
-        <ul className="mt-3 space-y-1 text-sm text-neutral-300">
-          {metrics.map((row) => (
-            <li key={row.key}>
-              {row.label}: {ghlLabel(row.display, row.unit, row.value)}
-              {row.target != null ? ` / ${formatMetric(row.unit, row.target)}` : ''}
-            </li>
-          ))}
-          {outcomes.map((outcome) => (
-            <li key={outcome.id}>
-              {outcome.name}: {outcome.value}
-            </li>
-          ))}
-        </ul>
-      </section>
-      <Narrative title="Wins" body={body.wins} />
-      <Narrative title="Blockers" body={body.blockers} extra={body.needs_help ? 'Needs manager help.' : null} />
-      <section className={brand.panel}>
-        <h2 className={`${brand.heading} text-lg`}>Tomorrow’s plan</h2>
-        <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-neutral-300">
-          {body.plan_items.filter((item) => item.text.trim()).map((item) => (
-            <li key={item.text}>{item.text}</li>
-          ))}
+      <Narrative title="Wins" icon={Trophy} body={body.wins} />
+      <Narrative title="Blockers" icon={AlertTriangle} body={body.blockers} extra={body.needs_help ? 'You asked for manager help.' : null} />
+      <Card title="Tomorrow’s plan" icon={ListChecks}>
+        <ol className="list-decimal space-y-1.5 pl-5 text-[15px] text-[var(--eod-muted)]">
+          {body.plan_items
+            .filter((item) => item.text.trim())
+            .map((item) => (
+              <li key={item.text}>{item.text}</li>
+            ))}
         </ol>
-      </section>
-      {data.hours_enabled ? <Narrative title="Hours worked" body={total ?? 'Not set'} /> : null}
-      {data.note_enabled && body.note_to_manager ? <Narrative title="Note to manager" body={body.note_to_manager} /> : null}
+      </Card>
+      <Card title="Today’s numbers" icon={BarChart3}>
+        {filled.length === 0 && outcomes.every((outcome) => outcome.value === 0) ? (
+          <p className="text-[15px] text-[var(--eod-muted)]">No numbers entered today.</p>
+        ) : (
+          <dl className="grid gap-2 sm:grid-cols-2">
+            {metrics.map((row) => (
+              <div key={row.key} className="flex items-center justify-between rounded-lg border border-[var(--eod-line)] bg-[var(--eod-field)] px-3 py-2">
+                <dt className="text-[13px] text-[var(--eod-muted)]">{row.label}</dt>
+                <dd className="text-[15px] tabular-nums text-white">{ghlLabel(row.display, row.unit, row.value)}</dd>
+              </div>
+            ))}
+            {outcomes.map((outcome) => (
+              <div key={outcome.id} className="flex items-center justify-between rounded-lg border border-[var(--eod-line)] bg-[var(--eod-field)] px-3 py-2">
+                <dt className="text-[13px] text-[var(--eod-muted)]">{outcome.name}</dt>
+                <dd className="text-[15px] tabular-nums text-white">{outcome.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+      </Card>
+      {data.hours_enabled ? <Narrative title="Hours worked" icon={Clock3} body={total ?? 'Not set'} /> : null}
+      {data.note_enabled && body.note_to_manager ? <Narrative title="Note to manager" icon={MessageSquareText} body={body.note_to_manager} /> : null}
     </div>
   );
 }
 
-function Narrative({ title, body, extra }: { title: string; body: string; extra?: string | null }) {
+function Narrative({
+  title,
+  icon,
+  body,
+  extra,
+}: {
+  title: string;
+  icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+  body: string;
+  extra?: string | null;
+}) {
   return (
-    <section className={brand.panel}>
-      <h2 className={`${brand.heading} text-lg`}>{title}</h2>
-      <p className="mt-2 whitespace-pre-wrap text-sm text-neutral-300">{body.trim() || 'Nothing written.'}</p>
-      {extra ? <p className="mt-2 text-sm text-[#FFB020]">{extra}</p> : null}
-    </section>
-  );
-}
-
-function Step({ label, disabled, onClick, sign = '−' }: { label: string; disabled: boolean; onClick: () => void; sign?: string }) {
-  return (
-    <button type="button" aria-label={label} disabled={disabled} onClick={onClick} className={`${brand.ghostButton} h-12 w-12 px-0 text-lg`}>
-      {sign}
-    </button>
+    <Card title={title} icon={icon}>
+      <p className="whitespace-pre-wrap text-[15px] text-[var(--eod-muted)]">{body.trim() || 'Nothing written.'}</p>
+      {extra ? <p className="mt-2 text-[14px] text-[var(--eod-warn)]">{extra}</p> : null}
+    </Card>
   );
 }
 
@@ -560,6 +799,3 @@ function groupMetrics(rows: EodFormMetric[]): { group: string; rows: EodFormMetr
   }
   return groups;
 }
-
-const fieldClass =
-  'w-full touch-manipulation rounded-xl border border-white/10 bg-white/[0.03] px-3 py-3 text-base text-white outline-none focus:border-[#937DFF] disabled:opacity-60';

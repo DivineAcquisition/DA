@@ -72,9 +72,12 @@ async function sendRow(db: UntypedClient, row: MailRow): Promise<boolean> {
     },
     payload: { kind: row.kind, workDate: payload.work_date ?? null },
   });
-  const finished = DONE.has(result.status);
-  await db.rpc('so_eod_mail_finish', { p_id: row.id, p_ok: finished });
-  return finished;
+  // Once the email log has the letter, the email service owns retries (backoff
+  // and a cap, via the email-retry cron). Handing it back to this queue on a
+  // failure would resend it, and alert about it, every minute.
+  const handedOff = DONE.has(result.status) || Boolean(result.logId);
+  await db.rpc('so_eod_mail_finish', { p_id: row.id, p_ok: handedOff });
+  return DONE.has(result.status);
 }
 
 function textId(value: unknown): string | null {
