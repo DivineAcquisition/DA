@@ -83,16 +83,15 @@
   list-style: decimal;
 }
 
-/* Admin shell: Inter Display (the opsz 32 cut) for chrome and headings, text cut for body copy. */
+/* Admin workspace: Inter Display, the Vistrial face, for chrome, titles, and body. */
+.da-admin-type,
 .da-admin-shell {
-  font-family: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-optical-sizing: auto;
+  font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
   font-feature-settings: 'cv11', 'ss01', 'ss03';
 }
 
 .da-admin-shell .da-display,
 .da-admin-shell main :is(h1, h2) {
-  font-variation-settings: 'opsz' 32;
   letter-spacing: -0.012em;
 }
 
