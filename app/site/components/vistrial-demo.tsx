@@ -111,7 +111,7 @@ function HoldToApprove() {
       onContextMenu={(event) => event.preventDefault()}
       className="relative inline-flex h-9 w-full touch-none items-center justify-center gap-2 overflow-hidden rounded-lg border border-[#9a88fc]/50 bg-black/40 text-[12px] font-medium text-white outline-none select-none focus-visible:ring-2 focus-visible:ring-[#9a88fc] sm:w-auto sm:px-4"
     >
-      <span aria-hidden className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#9a88fc]/60 to-[#9a88fc]/50" style={{ width: `${progress * 100}%` }} />
+      <span aria-hidden className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#5a23fc]/60 to-[#9a88fc]/50" style={{ width: `${progress * 100}%` }} />
       <span className="relative inline-flex items-center gap-2">
         {progress > 0 ? <Loader2 className="size-3.5 animate-spin" aria-hidden /> : <Hand className="size-3.5" aria-hidden />}
         {progress > 0 ? 'Keep holding…' : 'Hold to approve'}
@@ -128,8 +128,8 @@ export function VistrialDemo() {
 
   return (
     <div ref={ref} className="relative">
-      <div aria-hidden className="absolute -inset-8 rounded-[40px] bg-[#9a88fc]/25 blur-3xl" />
-      <div className="relative overflow-hidden rounded-2xl border border-[#9a88fc]/25 bg-[#12101a] shadow-[0_40px_100px_-40px_rgba(154,136,252,0.9)]">
+      <div aria-hidden className="absolute -inset-8 rounded-[40px] bg-[#5a23fc]/25 blur-3xl" />
+      <div className="relative overflow-hidden rounded-2xl border border-[#9a88fc]/25 bg-[#12101a] shadow-[0_40px_100px_-40px_rgba(90,35,252,0.9)]">
         {/* Browser chrome */}
         <div className="flex items-center gap-3 border-b border-[#9a88fc]/15 bg-[#15131f] px-4 py-2.5">
           <div className="flex gap-1.5" aria-hidden>
@@ -176,7 +176,7 @@ export function VistrialDemo() {
               </span>
             </div>
             <div className="mt-2.5 h-1 overflow-hidden rounded-full bg-[#251f36]">
-              <div className="h-full rounded-full bg-gradient-to-r from-[#9a88fc] to-[#b59aff] transition-[width] duration-700" style={{ width: `${pct}%` }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-[#5a23fc] to-[#b59aff] transition-[width] duration-700" style={{ width: `${pct}%` }} />
             </div>
             <ul className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
               {SOURCES.map((source, index) => (
@@ -217,7 +217,7 @@ export function VistrialDemo() {
           </ul>
 
           {/* Deliverable */}
-          <div className="mt-3 flex flex-col gap-3 rounded-xl border border-[#9a88fc]/25 bg-[#9a88fc]/[0.07] p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-3 flex flex-col gap-3 rounded-xl border border-[#9a88fc]/25 bg-[#5a23fc]/[0.07] p-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-black/40 ring-1 ring-white/10">
                 <FileText className="size-4 text-[#b59aff]" aria-hidden />

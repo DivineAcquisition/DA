@@ -199,12 +199,12 @@ export function Dropdown(props: DropdownProps) {
                   <Select.Item
                     key={option}
                     value={option}
-                    className="grid cursor-pointer grid-cols-[1.25rem_1fr] items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm text-white/80 outline-none select-none data-[highlighted]:bg-[#9a88fc]/25 data-[highlighted]:text-white data-[selected]:text-white"
+                    className="grid cursor-pointer grid-cols-[1.25rem_1fr] items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm text-white/80 outline-none select-none data-[highlighted]:bg-[#5a23fc]/25 data-[highlighted]:text-white data-[selected]:text-white"
                   >
                     {multiple ? (
-                      <span className="col-start-1 flex size-4 items-center justify-center rounded-[5px] border border-[#9a88fc]/50 [[data-selected]_&]:border-[#c3b6fe] [[data-selected]_&]:bg-[#9a88fc]">
+                      <span className="col-start-1 flex size-4 items-center justify-center rounded-[5px] border border-[#9a88fc]/50 [[data-selected]_&]:border-[#c3b6fe] [[data-selected]_&]:bg-[#5a23fc]">
                         <Select.ItemIndicator>
-                          <Check className="size-3 text-[#0b0a11]" aria-hidden />
+                          <Check className="size-3 text-white" aria-hidden />
                         </Select.ItemIndicator>
                       </span>
                     ) : (
@@ -262,10 +262,10 @@ export function CheckboxField({
           aria-hidden
           className={cn(
             'mt-0.5 flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[#9a88fc]',
-            checked ? 'border-[#b59aff] bg-[#9a88fc]' : error ? 'border-[#f87171]/70' : 'border-[#9a88fc]/40',
+            checked ? 'border-[#b59aff] bg-[#5a23fc]' : error ? 'border-[#f87171]/70' : 'border-[#9a88fc]/40',
           )}
         >
-          {checked ? <Check className="size-3 text-[#0b0a11]" /> : null}
+          {checked ? <Check className="size-3 text-white" /> : null}
         </span>
         <span className={cn('leading-relaxed text-white/70', small ? 'text-[13px]' : 'text-sm')}>{children}</span>
       </label>

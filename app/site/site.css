@@ -1,7 +1,7 @@
 /*
- * Divine Acquisition company site. Dark, in the same scheme as the careers
- * site: Vistrial's lavender (#C3B6FE, #9A88FC, #7E67F2) for buttons, glows,
- * accents, and borders, with near-black labels on lavender fills.
+ * Divine Acquisition company site. Dark, with two purples: the deep violet of
+ * divineacquisition.io (#5A23FC) for buttons and strong glows, and Vistrial's
+ * lavender (#9A88FC, #C3B6FE) for accents, borders, and soft card glows.
  * Surfaces are solid and lavender-tinted; nothing important is see-through.
  */
 
@@ -17,8 +17,8 @@ body:has(.da-site) {
   --s-surface-2: #1c1828;
   --s-line: rgba(154, 136, 252, 0.14);
   --s-line-strong: rgba(154, 136, 252, 0.24);
-  --s-violet: #9a88fc;
-  --s-violet-rgb: 154, 136, 252;
+  --s-violet: #5a23fc;
+  --s-violet-rgb: 90, 35, 252;
   --s-brand: #9a88fc;
   --s-lilac: #b59aff;
   --s-lavender: #c3b6fe;
@@ -91,21 +91,20 @@ body:has(.da-site) {
   mask-image: linear-gradient(180deg, #000 0%, #000 35%, transparent 95%);
 }
 
-/* Primary button: the careers / Vistrial lavender gradient, near-black label. */
+/* Primary button: the violet gradient from the current site. */
 .da-btn-primary {
   position: relative;
-  background: linear-gradient(180deg, #c3b6fe 0%, #9a88fc 48%, #7e67f2 100%);
-  color: #0b0a11;
+  background: linear-gradient(180deg, #7446ff 0%, #5a23fc 55%, #4b16e3 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.4),
-    0 0 0 1px rgba(81, 64, 169, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 0 1px rgba(var(--s-violet-rgb), 0.9),
     0 10px 34px -10px rgba(var(--s-violet-rgb), 0.9);
   transition: transform 160ms ease, box-shadow 200ms ease, filter 200ms ease;
 }
 .da-btn-primary:hover {
   filter: brightness(1.08);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 0 1px rgba(var(--s-violet-rgb), 1),
     0 14px 44px -10px rgba(var(--s-violet-rgb), 1);
 }
@@ -179,11 +178,11 @@ body:has(.da-site) {
 
 /* Icon tile: violet glass with a lit top edge. */
 .da-icon-tile {
-  background: linear-gradient(180deg, rgba(154, 136, 252, 0.24) 0%, rgba(154, 136, 252, 0.1) 100%);
+  background: linear-gradient(180deg, rgba(154, 136, 252, 0.24) 0%, rgba(90, 35, 252, 0.1) 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     inset 0 0 0 1px rgba(154, 136, 252, 0.28),
-    0 8px 22px -12px rgba(154, 136, 252, 0.9);
+    0 8px 22px -12px rgba(90, 35, 252, 0.9);
   color: #d9d0ff;
 }
 
@@ -276,6 +275,26 @@ body:has(.da-site) {
     opacity: 1;
     transform: none;
   }
+}
+
+/* Hero banner: a 1px gradient edge in the original purple, a soft violet
+   glow, and a slow sheen across the badge. */
+.da-banner {
+  background: linear-gradient(110deg, rgba(90, 35, 252, 0.95) 0%, rgba(181, 154, 255, 0.85) 45%, rgba(90, 35, 252, 0.95) 100%);
+  box-shadow:
+    0 0 0 1px rgba(90, 35, 252, 0.25),
+    0 10px 40px -12px rgba(90, 35, 252, 0.85),
+    0 0 80px -30px rgba(116, 70, 255, 0.9);
+}
+.da-banner::after {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.14) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: da-sheen 5.5s ease-in-out infinite;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

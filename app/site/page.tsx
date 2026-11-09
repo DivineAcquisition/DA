@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Logo from '@/app/components/Logo';
 import { ArrowRight, Bot, Check, FileCheck2, FileSearch, Gauge, Inbox, RefreshCcw, Send, ShieldCheck } from 'lucide-react';
 
 import { BlurFade } from '@/components/ui/blur-fade';
@@ -47,9 +48,15 @@ function Hero() {
 
       <div className={`${shell} relative`}>
         <BlurFade offset={10} blur="6px" duration={0.7} className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          <p className="da-mono inline-flex items-center gap-2.5 rounded-full border border-[#9a88fc]/20 bg-[#1c1828] px-4 py-1.5 text-[10px] tracking-[0.16em] text-white/70 uppercase backdrop-blur sm:text-[11px]">
-            <span className="size-1.5 rounded-full bg-[#b59aff] shadow-[0_0_10px_2px_rgba(181,154,255,0.8)]" />
-            {HERO.eyebrow}
+          {/* The banner: a gradient-edged badge in the original purple, with the
+              trident mark and a slow sheen. */}
+          <p className="da-banner relative inline-flex items-center rounded-full p-px">
+            <span className="relative inline-flex items-center gap-3 rounded-full bg-[#110d1d] py-1.5 pr-5 pl-1.5">
+              <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-b from-[#7446ff] to-[#4b16e3] shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_0_18px_-2px_rgba(90,35,252,0.9)]">
+                <Logo markOnly tone="current" className="h-4 w-auto text-white" />
+              </span>
+              <span className="da-display text-[13px] font-semibold tracking-[0.01em] text-white sm:text-sm">{HERO.eyebrow}</span>
+            </span>
           </p>
           <h1 className="da-display da-gradient-text mt-7 text-[2.5rem] leading-[1.03] font-semibold text-balance sm:text-6xl lg:text-[4.6rem]">
             {HERO.headline}
@@ -235,7 +242,7 @@ function Services() {
         <ul className="grid gap-x-6 gap-y-2.5 sm:grid-cols-2">
           {SALES_OPS.scope.map((item) => (
             <li key={item} className="flex items-start gap-2.5 text-sm text-white/85">
-              <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded bg-[#9a88fc]/25">
+              <span className="mt-0.5 flex size-4 shrink-0 items-center justify-center rounded bg-[#5a23fc]/25">
                 <Check className="size-2.5 text-[#d9d0ff]" aria-hidden />
               </span>
               {item}
@@ -364,7 +371,7 @@ function About() {
   const { image, central, statement } = ABOUT;
   return (
     <section id={ABOUT.id} className="relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
-      <div aria-hidden className="pointer-events-none absolute top-1/4 left-[-10%] h-[520px] w-[520px] rounded-full bg-[#9a88fc]/15 blur-[120px]" />
+      <div aria-hidden className="pointer-events-none absolute top-1/4 left-[-10%] h-[520px] w-[520px] rounded-full bg-[#5a23fc]/15 blur-[120px]" />
       <BlurFade inView inViewMargin="-80px" offset={14} blur="4px" duration={0.6} className={shell}>
         <div className="grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <figure className="relative mx-auto w-full max-w-[420px] lg:sticky lg:top-28">
@@ -516,7 +523,7 @@ function Founder() {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`${FOUNDER.name} on ${social.label}`}
-                      className="flex size-10 items-center justify-center rounded-full border border-[#9a88fc]/20 bg-[#16131f] text-white/65 transition-colors hover:border-[#9a88fc]/50 hover:bg-[#9a88fc]/15 hover:text-white"
+                      className="flex size-10 items-center justify-center rounded-full border border-[#9a88fc]/20 bg-[#16131f] text-white/65 transition-colors hover:border-[#9a88fc]/50 hover:bg-[#5a23fc]/15 hover:text-white"
                     >
                       <SocialIcon id={social.id} />
                     </a>
@@ -547,7 +554,7 @@ function Vistrial() {
     <section id={VISTRIAL.id} className="relative scroll-mt-28 overflow-hidden py-24 sm:py-32">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="da-grid absolute inset-0 opacity-70" />
-        <div className="absolute top-1/3 right-[-5%] h-[600px] w-[600px] rounded-full bg-[#9a88fc]/20 blur-[140px]" />
+        <div className="absolute top-1/3 right-[-5%] h-[600px] w-[600px] rounded-full bg-[#5a23fc]/20 blur-[140px]" />
       </div>
       <BlurFade inView inViewMargin="-80px" offset={14} blur="4px" duration={0.6} className={`${shell} relative`}>
         <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
@@ -555,8 +562,8 @@ function Vistrial() {
             <Eyebrow index={VISTRIAL.index}>{VISTRIAL.eyebrow}</Eyebrow>
             <div className="mt-6 flex items-center gap-4">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/site/brand/vistrial-icon.png" alt="" width={56} height={56} className="size-14 rounded-2xl shadow-[0_0_40px_-8px_rgba(154,136,252,0.9)] ring-1 ring-white/10" />
-              <span className="da-mono rounded-full border border-[#9a88fc]/35 bg-[#9a88fc]/15 px-3 py-1 text-[10px] tracking-[0.16em] text-[#c3b6fe] uppercase">
+              <img src="/site/brand/vistrial-icon.png" alt="" width={56} height={56} className="size-14 rounded-2xl shadow-[0_0_40px_-8px_rgba(90,35,252,0.9)] ring-1 ring-white/10" />
+              <span className="da-mono rounded-full border border-[#9a88fc]/35 bg-[#5a23fc]/15 px-3 py-1 text-[10px] tracking-[0.16em] text-[#c3b6fe] uppercase">
                 In development
               </span>
             </div>
@@ -615,7 +622,7 @@ function FinalCta() {
     <section id={FINAL.id} className="relative scroll-mt-28 overflow-hidden pt-16 pb-28 sm:pb-36">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="da-grid absolute inset-0" />
-        <div className="absolute inset-x-0 bottom-0 h-[620px] bg-[radial-gradient(46%_60%_at_50%_100%,rgba(154,136,252,0.6)_0%,rgba(154,136,252,0.12)_45%,transparent_75%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-[620px] bg-[radial-gradient(46%_60%_at_50%_100%,rgba(90,35,252,0.6)_0%,rgba(90,35,252,0.12)_45%,transparent_75%)]" />
         <div className="absolute top-0 left-1/2 h-px w-[60%] -translate-x-1/2 bg-gradient-to-r from-transparent via-[#b59aff]/60 to-transparent" />
       </div>
       <BlurFade inView inViewMargin="-80px" offset={14} blur="4px" duration={0.6} className={`${shell} relative`}>

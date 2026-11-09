@@ -20,7 +20,7 @@ export async function FormShell({ children }: { children: ReactNode }) {
     <div className="relative min-h-screen overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="da-grid absolute inset-x-0 top-0 h-[900px]" />
-        <div className="absolute inset-x-0 top-0 h-[700px] bg-[radial-gradient(45%_55%_at_50%_0%,rgba(154,136,252,0.35)_0%,rgba(154,136,252,0.08)_50%,transparent_80%)]" />
+        <div className="absolute inset-x-0 top-0 h-[700px] bg-[radial-gradient(45%_55%_at_50%_0%,rgba(90,35,252,0.35)_0%,rgba(90,35,252,0.08)_50%,transparent_80%)]" />
       </div>
       <header className="relative">
         <div className={`${shell} flex h-20 items-center justify-between`}>

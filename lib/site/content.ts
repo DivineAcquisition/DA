@@ -114,7 +114,7 @@ export const NAV: NavGroup[] = [
 /* ------------------------------------------------------------------------ */
 
 export const HERO = {
-  eyebrow: 'Management Consulting · Systems Implementation · Technology',
+  eyebrow: 'Full Sales Operations Partner',
   headline: 'Build the Systems Behind Better Sales and Lasting Client Relationships.',
   lead: 'Divine Acquisition helps established service businesses strengthen their sales operations and client experience.',
   body: 'We examine what isn’t working, design the right processes, and implement the systems that help your team operate with greater clarity, consistency, and accountability.',

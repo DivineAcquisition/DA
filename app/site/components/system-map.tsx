@@ -101,7 +101,7 @@ function NodeCard({
       className={cn(
         'relative flex items-center gap-3 rounded-xl border bg-[#14121d] px-3 py-2.5 transition-all duration-500',
         active
-          ? 'border-[#9a88fc]/60 shadow-[0_0_0_3px_rgba(154,136,252,0.16),0_0_40px_-12px_rgba(154,136,252,0.9)]'
+          ? 'border-[#9a88fc]/60 shadow-[0_0_0_3px_rgba(90,35,252,0.16),0_0_40px_-12px_rgba(90,35,252,0.9)]'
           : 'border-[#9a88fc]/15',
         kind === 'source' ? 'lg:flex-row-reverse lg:text-right' : '',
       )}
@@ -119,14 +119,14 @@ function Hub({ status, step }: { status: string; step: number }) {
   return (
     <div
       data-node="hub"
-      className="relative mx-auto flex w-full max-w-[300px] flex-col items-center rounded-2xl border border-[#9a88fc]/35 bg-[#0d0c14] px-5 pt-6 pb-5 text-center shadow-[0_0_80px_-20px_rgba(154,136,252,0.85)] lg:w-[300px]"
+      className="relative mx-auto flex w-full max-w-[300px] flex-col items-center rounded-2xl border border-[#9a88fc]/35 bg-[#0d0c14] px-5 pt-6 pb-5 text-center shadow-[0_0_80px_-20px_rgba(90,35,252,0.85)] lg:w-[300px]"
     >
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-[#9a88fc]/25 to-transparent" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-2xl bg-gradient-to-b from-[#5a23fc]/25 to-transparent" />
       <div className="relative flex size-[88px] items-center justify-center">
         <span aria-hidden className="da-orbit absolute inset-0 rounded-full border border-dashed border-[#9a88fc]/35" />
         <span aria-hidden className="da-orbit-reverse absolute inset-[9px] rounded-full border border-[#9a88fc]/20" />
         <span aria-hidden className="absolute top-0 left-1/2 size-1.5 -translate-x-1/2 rounded-full bg-[#b59aff] shadow-[0_0_10px_2px_rgba(181,154,255,0.8)]" />
-        <span className="relative flex size-14 items-center justify-center rounded-full bg-[#141220] shadow-[0_0_0_1px_rgba(154,136,252,0.35),0_0_30px_-4px_rgba(154,136,252,0.9)]">
+        <span className="relative flex size-14 items-center justify-center rounded-full bg-[#141220] shadow-[0_0_0_1px_rgba(154,136,252,0.35),0_0_30px_-4px_rgba(90,35,252,0.9)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/site/brand/da-crest.png" alt="" width={382} height={512} className="h-8 w-auto" />
         </span>
@@ -205,7 +205,7 @@ export function SystemMap() {
               <linearGradient id="da-beam-in" x1="0" x2="1" y1="0" y2="0">
                 <stop offset="0%" stopColor="#b59aff" stopOpacity="0" />
                 <stop offset="60%" stopColor="#b59aff" />
-                <stop offset="100%" stopColor="#9a88fc" />
+                <stop offset="100%" stopColor="#5a23fc" />
               </linearGradient>
             </defs>
             {beams.map((beam) => {
