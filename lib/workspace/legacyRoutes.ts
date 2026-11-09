@@ -17,52 +17,63 @@ export function normalizePath(pathname: string): string {
   return `/workspace${path}`;
 }
 
-/** /workspace/growth/<x> and /da/<x> screens that are not a case file. */
-const GROWTH_TOOLS = new Set(['billing', 'payouts', 'margin', 'messages', 'ingestion', 'pay-impact', 'new', 'auth', 'forgot-password', 'reset-password']);
+const id = '([^/]+)';
 
 type Rule = { from: RegExp; to: (match: RegExpExecArray) => string };
 
-const id = '([^/]+)';
-
 const RULES: Rule[] = [
-  // Home
-  { from: /^\/workspace$/, to: () => '/workspace/operators' },
+  // Home is the live seat.
+  { from: /^\/workspace$/, to: () => '/workspace/placements' },
 
-  // Operators: hire, onboarding, and the three older rosters
-  { from: /^\/workspace\/onboarding$/, to: () => '/workspace/operators/onboarding' },
-  { from: /^\/workspace\/team\/workspace\/operators\/new$/, to: () => '/workspace/operators/applicants' },
+  // Operator queues that are no longer a desk.
+  { from: /^\/workspace\/onboarding$/, to: () => '/workspace/operators' },
+  { from: /^\/workspace\/operators\/(?:applicants|onboarding|ready)(?:\/.*)?$/, to: () => '/workspace/operators' },
+  { from: /^\/workspace\/team\/workspace\/operators\/new$/, to: () => '/workspace/operators' },
   { from: /^\/workspace\/(?:team\/workspace|admin|ops)\/operators$/, to: () => '/workspace/operators' },
   { from: new RegExp(`^/workspace/(?:team/workspace|admin|ops)/operators/${id}$`), to: (m) => `/workspace/operators/${m[1]}` },
+  { from: new RegExp(`^/workspace/team/operator/${id}$`), to: (m) => `/workspace/operators/${m[1]}` },
 
-  // Clients: the pipeline, VA client admin, and the Growth home
-  { from: /^\/workspace\/pipeline$/, to: () => '/workspace/clients/prospects' },
-  { from: new RegExp(`^/workspace/pipeline/${id}$`), to: (m) => `/workspace/clients/prospects/${m[1]}` },
+  // Client file. Prospects, growth, and the old admin client screens land here.
+  { from: /^\/workspace\/clients\/prospects(?:\/.*)?$/, to: () => '/workspace/clients' },
+  { from: /^\/workspace\/pipeline(?:\/.*)?$/, to: () => '/workspace/clients' },
   { from: /^\/workspace\/(?:admin|ops)(?:\/clients)?$/, to: () => '/workspace/clients' },
   { from: new RegExp(`^/workspace/(?:admin|ops)/clients/${id}$`), to: (m) => `/workspace/clients/${m[1]}` },
+  { from: /^\/workspace\/admin\/(?:escalations|bookings|notifications)$/, to: () => '/workspace/clients' },
   { from: /^\/(?:workspace\/growth|da)$/, to: () => '/workspace/clients' },
-  { from: /^\/(?:workspace\/growth|da)\/new$/, to: () => '/workspace/clients/new' },
+  { from: /^\/(?:workspace\/growth|da)\/(?:new|billing|payouts|margin|messages|ingestion|pay-impact)(?:\/.*)?$/, to: () => '/workspace/clients' },
   {
-    from: new RegExp(`^/(?:workspace/growth|da)/${id}$`),
-    to: (m) => (GROWTH_TOOLS.has(m[1]) ? '' : `/workspace/clients/${m[1]}?tab=growth`),
+    from: /^\/(?:workspace\/growth|da)\/(?!auth(?:\/|$)|forgot-password(?:\/|$)|reset-password(?:\/|$))([^/]+)(?:\/.*)?$/,
+    to: (m) => `/workspace/clients/${m[1]}`,
   },
 
-  // Placements
+  // The live seat. Launches and the old placement URLs land on the list.
+  { from: /^\/workspace\/placements\/launches(?:\/.*)?$/, to: () => '/workspace/placements' },
   { from: /^\/workspace\/(?:sales-ops|team\/workspace)\/placements$/, to: () => '/workspace/placements' },
   { from: /^\/workspace\/(?:sales-ops|team\/workspace)\/placements\/new$/, to: () => '/workspace/placements/new' },
   { from: new RegExp(`^/workspace/sales-ops/placements/${id}$`), to: (m) => `/workspace/placements/${m[1]}` },
-  { from: /^\/workspace\/team\/workspace\/launches$/, to: () => '/workspace/placements/launches' },
+  { from: /^\/workspace\/team\/workspace\/launches$/, to: () => '/workspace/placements' },
 
-  // Review
+  // Review.
   { from: /^\/workspace\/(?:sales-ops|team\/workspace)\/eods$/, to: () => '/workspace/review/eods' },
   { from: new RegExp(`^/workspace/(?:sales-ops|team/workspace)/eods/${id}$`), to: (m) => `/workspace/review/eods/${m[1]}` },
   { from: /^\/workspace\/team\/workspace\/reports$/, to: () => '/workspace/review/reports' },
-  {
-    from: new RegExp(`^/workspace/team/workspace/reports/${id}$`),
-    to: (m) => (m[1] === 'deliveries' ? '' : `/workspace/review/reports/${m[1]}`),
-  },
+  { from: /^\/workspace\/team\/workspace\/reports\/deliveries(?:\/.*)?$/, to: () => '/workspace/review/reports' },
+  { from: new RegExp(`^/workspace/team/workspace/reports/${id}$`), to: (m) => `/workspace/review/reports/${m[1]}` },
 
-  // System screens that moved with the one staff layout
-  { from: /^\/workspace\/ops\/(payroll|escalations|bookings|notifications)$/, to: (m) => `/workspace/admin/${m[1]}` },
+  // Account: the operator record, invites, and the one GoHighLevel screen.
+  { from: /^\/workspace\/academy(?:\/.*)?$/, to: () => '/workspace/operators' },
+  { from: /^\/workspace\/admin\/view-as(?:\/.*)?$/, to: () => '/workspace/operators' },
+  { from: /^\/workspace\/admin\/payroll$/, to: () => '/workspace/clients' },
+  { from: /^\/workspace\/team\/ghl\/(?!client(?:\/|$)).+$/, to: () => '/workspace/team/ghl' },
+  { from: /^\/workspace\/control\/(?!invites$).+$/, to: () => '/workspace/control/invites' },
+  { from: /^\/workspace\/control$/, to: () => '/workspace/control/invites' },
+  { from: /^\/workspace\/team(?:\/(?:board|queues|matching|scorecard|settings|workspace)(?:\/.*)?)?$/, to: () => '/workspace/operators' },
+
+  // Everything else that used to sit in System.
+  {
+    from: /^\/workspace\/(?:calls|hs|practices|accounts|overview|bookings|booking-messages|calendar-links|acq-applications|agreements|recipients|templates|mapping|settings|sales-ops|inbox|operations)(?:\/.*)?$/,
+    to: () => '/workspace/placements',
+  },
 ];
 
 /**

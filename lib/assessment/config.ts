@@ -14,15 +14,14 @@ export const RESEND_CC = (
   .map((email) => email.trim())
   .filter(Boolean);
 
-/** Talent acquisition subaccount location (Assessment Interview calendar). */
-export const GHL_LOCATION_ID =
-  process.env.GHL_LOCATION_ID?.trim() || 'pNbNaLXpftikGN2jOFKG';
-/** Assessment Interview calendar used by the talent booking widget. */
-export const GHL_CALENDAR_ID =
-  process.env.GHL_CALENDAR_ID?.trim() || '3rTT9rZW2jG4lhZBae3D';
+/** Talent acquisition subaccount location. Empty until GHL_LOCATION_ID is set. */
+export const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID?.trim() || '';
+/** Assessment Interview calendar. Empty until GHL_CALENDAR_ID is set. */
+export const GHL_CALENDAR_ID = process.env.GHL_CALENDAR_ID?.trim() || '';
 
-export const BOOKING_WIDGET_SRC =
-  'https://link.msgsndr.divineacquisition.io/widget/booking/3rTT9rZW2jG4lhZBae3D';
+export const BOOKING_WIDGET_SRC = GHL_CALENDAR_ID
+  ? `https://link.msgsndr.divineacquisition.io/widget/booking/${GHL_CALENDAR_ID}`
+  : '';
 
 export const BOOKING_EMBED_SCRIPT =
   'https://link.msgsndr.divineacquisition.io/js/form_embed.js';

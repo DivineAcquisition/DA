@@ -121,7 +121,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
   if (error) return { ok: false, error: 'Invalid email or password' };
 
   const session = await getSessionContext();
-  if (session?.isAdmin) redirect('/workspace/operators');
+  if (session?.isAdmin || session?.role === 'manager') redirect('/workspace/placements');
   if (session?.role === 'operator') {
     await supabase.auth.signOut();
     const team = (await loadOperatorWorkspaceDomain()).origin || appUrl('team');
@@ -133,7 +133,7 @@ export async function signInAction(formData: FormData): Promise<ActionResult> {
       controlRpc<boolean>(gate, 'academy_can_review'),
       controlRpc<boolean>(gate, 'academy_can_manage'),
     ]);
-    if (review.data === true || manage.data === true) redirect('/workspace/academy/holds');
+    if (review.data === true || manage.data === true) redirect('/workspace/placements');
   }
   await supabase.auth.signOut();
   return { ok: false, error: 'Invalid email or password' };

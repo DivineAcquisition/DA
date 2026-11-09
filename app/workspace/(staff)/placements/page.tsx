@@ -21,12 +21,12 @@ export default async function PlacementsPage({
     <>
       <PageHeader
         title="Placements"
-        description="The live seats: draft, scheduled, active, paused, and ended. A new one starts from a Ready operator or from a client case file."
+        description="The live seats: draft, scheduled, active, paused, and ended."
         actions={
           role ? (
             <>
-              <Link href="/workspace/operators/ready" className="inline-flex h-9 items-center rounded-lg border border-white/15 px-3.5 text-sm text-white hover:border-white/30">
-                From a Ready operator
+              <Link href="/workspace/operators" className="inline-flex h-9 items-center rounded-lg border border-white/15 px-3.5 text-sm text-white hover:border-white/30">
+                From an operator
               </Link>
               <Link href="/workspace/clients" className="inline-flex h-9 items-center rounded-lg border border-white/15 px-3.5 text-sm text-white hover:border-white/30">
                 From a client

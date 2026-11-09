@@ -35,6 +35,7 @@ import {
   findActive,
   railRows,
   searchNav,
+  STAFF_HOME,
   type ActiveMatch,
   type NavCounts,
   type NavIcon,
@@ -775,7 +776,7 @@ export default function Shell({
     () => buildNav({ showAcademy, showHolds, holdsOnly, role, counts }),
     [showAcademy, showHolds, holdsOnly, role, counts],
   );
-  const home = holdsOnly ? '/workspace/academy/holds' : role === 'manager' ? '/workspace/placements' : '/workspace/operators';
+  const home = STAFF_HOME;
   const label = holdsOnly ? 'Review' : role === 'manager' ? 'Manager' : 'Admin';
 
   const navigating = pending !== null && pending.from === pathname;

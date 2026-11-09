@@ -5,14 +5,7 @@ import { usePathname } from 'next/navigation';
 import type { Health } from '@/lib/ghl/types';
 import { inputClass, labelClass } from '@/app/workspace/(portal)/components/ui';
 
-const ITEMS = [
-  { href: '/workspace/team/ghl', label: 'Connections', exact: true },
-  { href: '/workspace/team/ghl/access', label: 'Access' },
-  { href: '/workspace/team/ghl/activity', label: 'Activity health' },
-  { href: '/workspace/team/ghl/unattributed', label: 'Unattributed' },
-  { href: '/workspace/team/ghl/routing', label: 'Routing log' },
-  { href: '/workspace/team/ghl/standard', label: 'Standard' },
-];
+const ITEMS = [{ href: '/workspace/team/ghl', label: 'Connections', exact: true }];
 
 export function GhlNav() {
   const pathname = usePathname();

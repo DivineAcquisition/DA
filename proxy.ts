@@ -438,7 +438,7 @@ export async function proxy(request: NextRequest) {
 
   // The admin app's home is the Operators desk.
   if (!local && WORKSPACE_HOSTS.includes(host) && pathname === '/') {
-    return NextResponse.redirect(new URL('/workspace/operators', request.url), 307);
+    return NextResponse.redirect(new URL('/workspace/placements', request.url), 307);
   }
 
   // Old admin addresses land on the desk that owns the object now. The admin

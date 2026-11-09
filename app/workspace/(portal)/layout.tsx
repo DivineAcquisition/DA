@@ -108,5 +108,5 @@ export default async function VistrialLayout({ children }: { children: React.Rea
 
   // Every staff screen lives under the one staff layout. This group keeps the
   // operator portal and the sign-in pages only.
-  redirect('/workspace/operators');
+  redirect('/workspace/placements');
 }

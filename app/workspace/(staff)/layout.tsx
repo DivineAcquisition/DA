@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
-import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
+import { STAFF_HOME } from '@/lib/workspace/adminNav';
 import { getSessionContext, supabaseConfigured } from '@/lib/supabase/server';
 import { managerPathAllowed } from '@/lib/workspace/manager-paths';
 import { loadNavCounts } from '@/lib/workspace/nav-counts';
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: 'Admin | Divine Acquisition',
     template: '%s | Divine Acquisition Admin',
   },
-  description: 'VA performance, accounts, and calendar links.',
+  description: 'The live seat, the client file, and the weekly report.',
   robots: { index: false, follow: false, nocache: true },
 };
 
@@ -51,8 +51,6 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   }
 
   const session = await getSessionContext();
-  const holdAccess = session ? await academyHoldSession() : null;
-  const holdRoute = pathname.startsWith('/workspace/academy/holds');
 
   if (!session) {
     if (!isLogin) redirect('/workspace/login');
@@ -64,8 +62,8 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   }
 
   if (!session.isAdmin) {
-    if (session.role === 'manager' && !holdAccess) {
-      if (!managerPathAllowed(pathname)) redirect('/workspace/placements');
+    if (session.role === 'manager') {
+      if (!managerPathAllowed(pathname)) redirect(STAFF_HOME);
       const counts = await loadNavCounts();
       return (
         <ThemeFrame>
@@ -73,20 +71,6 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
             <ManagerShell name={session.fullName ?? session.email} counts={counts}>
               {children}
             </ManagerShell>
-          </RequireAdminMfa>
-        </ThemeFrame>
-      );
-    }
-    if (holdAccess) {
-      if (isLogin || !holdRoute) redirect('/workspace/academy/holds');
-      return (
-        <ThemeFrame>
-          <RequireAdminMfa email={session.email}>
-            <div className="da-workspace">
-              <Shell email={session.email} holdsOnly counts={await loadNavCounts()}>
-                {children}
-              </Shell>
-            </div>
           </RequireAdminMfa>
         </ThemeFrame>
       );
@@ -99,28 +83,19 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
     );
   }
 
-  if (isLogin) redirect('/workspace/operators');
+  if (isLogin) redirect(STAFF_HOME);
 
   // A placement queues the packet. Filing it needs Drive, Airtable, and the
   // PDF builder, so it runs here the next time an admin opens the workspace.
   await filePendingOperatorPackets().catch(() => ({ filed: 0, failed: 0 }));
 
-  const [academy, counts] = await Promise.all([academyAdminSession(), loadNavCounts()]);
-  const studentPreview = pathname.includes('/workspace/academy/preview/');
-
-  if (studentPreview) {
-    return (
-      <ThemeFrame>
-        <RequireAdminMfa email={session.email}>{children}</RequireAdminMfa>
-      </ThemeFrame>
-    );
-  }
+  const counts = await loadNavCounts();
 
   return (
     <ThemeFrame>
       <RequireAdminMfa email={session.email}>
         <div className="da-workspace">
-          <Shell email={session.email} showAcademy={Boolean(academy)} showHolds={Boolean(holdAccess)} counts={counts}>
+          <Shell email={session.email} counts={counts}>
             {children}
           </Shell>
         </div>

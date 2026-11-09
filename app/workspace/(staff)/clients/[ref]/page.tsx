@@ -54,7 +54,7 @@ function nextClientStep(file: ClientFile, seats: number, hasBaseline: boolean): 
   const tab = (name: string) => `/workspace/clients/${file.id}?tab=${name}`;
   if (file.status === 'ended') return { label: 'Engagement ended. The file stays as the record.', href: null };
   if (file.status === 'paused') return { label: 'Paused. Set the status back to Active when it resumes.', href: tab('relationship') };
-  if (!hasBaseline) return { label: 'Capture the baseline during the audit', href: `/workspace/growth/${file.slug}/baseline` };
+  if (!hasBaseline) return { label: 'Capture the baseline on this file', href: tab('growth') };
   if (file.status === 'audit') return { label: 'Begin the install. It locks the baseline.', href: tab('growth') };
   if (seats === 0) return { label: 'Place a Sales Operator on this client', href: `/workspace/placements/new?client=${file.id}` };
   return { label: 'Review delivery: EODs and client reports', href: tab('delivery') };

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
+import { STAFF_HOME } from '@/lib/workspace/adminNav';
 
 export default function WorkspaceIndexPage() {
-  redirect('/workspace/operators');
+  redirect(STAFF_HOME);
 }

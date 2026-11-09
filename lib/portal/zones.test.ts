@@ -53,18 +53,19 @@ describe('stage navigation', () => {
     expect(zoneOf('pay')).toBe('growth');
   });
 
-  it('gives a sales operator today, EODs, work, tasks, pay, and training', () => {
+  it('gives a sales operator today and EODs', () => {
     const sales = { ...ctx('training'), sales_operator: true };
-    expect(zonesFor(sales).map((z) => z.label)).toEqual(['Today', 'EODs', 'Work', 'Tasks', 'Performance', 'Training']);
-    expect(menuFor(sales).map((z) => z.key)).toEqual(['profile', 'agreements', 'availability', 'inbox']);
-    expect(tabAllowed('training', 'reports', false, true)).toBe(false);
-    expect(tabAllowed('training', 'bookings', false, true)).toBe(true);
-    expect(tabAllowed('training', 'client', false, true)).toBe(true);
-    expect(tabAllowed('placed', 'pay', true, true)).toBe(true);
-    expect(tabAllowed('placed', 'standards', true, true)).toBe(false);
+    expect(zonesFor(sales).map((z) => z.label)).toEqual(['Today', 'EODs']);
+    expect(menuFor(sales).map((z) => z.key)).toEqual(['profile', 'inbox']);
+    expect(tabAllowed('training', 'reports', false, true)).toBe(true);
+    expect(tabAllowed('training', 'bookings', false, true)).toBe(false);
+    expect(tabAllowed('training', 'client', false, true)).toBe(false);
+    expect(tabAllowed('placed', 'pay', true, true)).toBe(false);
+    expect(tabAllowed('placed', 'tasks', true, true)).toBe(false);
+    expect(tabAllowed('placed', 'profile', true, true)).toBe(true);
     expect(zoneOf('reports', true)).toBe('eod');
-    expect(zoneOf('bookings', true)).toBe('work');
-    expect(zoneOf('pay', true)).toBe('performance');
+    expect(zoneOf('today', true)).toBe('today');
+    expect(zoneOf('bookings', true)).toBeNull();
     expect(zoneOf('playbook', false, 'placed')).toBe('training');
     expect(zoneOf('standards', false, 'training')).toBe('standards');
   });

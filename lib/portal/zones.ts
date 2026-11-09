@@ -1,4 +1,3 @@
-import { appUrl } from '@/lib/apps';
 import { navSlots } from '@/lib/workspace/nav-slots';
 import type { PortalContext, Stage } from './types';
 
@@ -69,19 +68,13 @@ export const SALES_PERFORMANCE_TABS: NavItem[] = [
     : []),
 ];
 
-/** Sales operators. End of day is the sales EOD, not the VA attendance page. */
+/** Sales operators. The shift is Today and the EOD. Work, pay, and training are not this loop. */
 const SALES_NAV: NavItem[] = [
   { key: 'today', label: 'Today', short: 'Today', href: `${BASE}/workspace` },
   { key: 'eod', label: 'EODs', short: 'EODs', href: `${BASE}/workspace/eod` },
-  { key: 'work', label: 'Work', short: 'Work', href: `${BASE}/bookings` },
-  { key: 'tasks', label: 'Tasks', short: 'Tasks', href: `${BASE}/tasks` },
-  { key: 'performance', label: 'Performance', short: 'Performance', href: `${BASE}/pay` },
-  { key: 'training', label: 'Training', short: 'Training', href: appUrl('training') },
 ];
 
-const SALES_TABS: TabKey[] = [
-  'today', 'bookings', 'client', 'profile', 'inbox', 'notice', 'tasks', 'pay', 'agreements', 'availability',
-];
+const SALES_TABS: TabKey[] = ['today', 'reports', 'profile', 'inbox', 'notice'];
 
 const MENU: Record<'profile' | 'tasks' | 'inbox' | 'agreements' | 'availability', NavItem> = {
   profile: { key: 'profile', label: 'Profile', short: 'Profile', href: `${BASE}/profile` },
@@ -123,9 +116,7 @@ export function zonesFor(context: Pick<PortalContext, 'stage' | 'has_history' | 
 
 /** Phone bottom bar. The rest of the zones stay in the menu. */
 export function phoneBarFor(context: Pick<PortalContext, 'stage' | 'has_history' | 'has_pay' | 'sales_operator'>): NavItem[] {
-  if (context.sales_operator) {
-    return SALES_NAV.filter((item) => item.key === 'today' || item.key === 'eod' || item.key === 'tasks' || item.key === 'performance');
-  }
+  if (context.sales_operator) return SALES_NAV;
   if (context.stage === 'placed') {
     return [PLACED.today, PLACED.record, PLACED.tasks, PLACED.pay];
   }
@@ -134,7 +125,7 @@ export function phoneBarFor(context: Pick<PortalContext, 'stage' | 'has_history'
 
 /** The menu at the top of every screen. */
 export function menuFor(context: Pick<PortalContext, 'stage' | 'sales_operator'>): NavItem[] {
-  if (context.sales_operator) return [MENU.profile, MENU.agreements, MENU.availability, MENU.inbox];
+  if (context.sales_operator) return [MENU.profile, MENU.inbox];
   switch (context.stage) {
     case 'placed':
       return [MENU.profile, MENU.agreements, MENU.availability, MENU.inbox, PLACED.commitments];
@@ -154,9 +145,6 @@ export function zoneOf(tab: TabKey, salesOperator = false, stage?: Stage): strin
   if (salesOperator) {
     if (tab === 'today') return 'today';
     if (tab === 'reports') return 'eod';
-    if (tab === 'bookings' || tab === 'client') return 'work';
-    if (tab === 'tasks') return 'tasks';
-    if (tab === 'pay') return 'performance';
     return null;
   }
   if (stage === 'placed') {

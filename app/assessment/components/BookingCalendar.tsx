@@ -4,6 +4,13 @@ import Script from 'next/script';
 import { BOOKING_EMBED_SCRIPT, BOOKING_WIDGET_SRC } from '@/lib/assessment/config';
 
 export default function BookingCalendar({ thankYouHref }: { thankYouHref?: string }) {
+  if (!BOOKING_WIDGET_SRC) {
+    return (
+      <div className="panel rounded-3xl p-6 text-sm text-neutral-300">
+        The booking calendar is not configured.
+      </div>
+    );
+  }
   // GHL may ignore unknown query params; the thank-you page also recovers the
   // token from sessionStorage set by PersistAssessmentToken.
   const src = thankYouHref
