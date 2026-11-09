@@ -92,7 +92,7 @@ const OPS_PREFIX = '/vistrial';
 const HIRING_PREFIX = '/hiring';
 const SITE_PREFIX = '/site';
 /** Homepage pages served at the root of the site host, e.g. /diagnostic -> /site/diagnostic. */
-const SITE_PAGES = ['/diagnostic', '/discovery'];
+const SITE_PAGES = ['/diagnostic', '/discovery', '/sales-operations', '/philosophy', '/founder'];
 const isSitePage = (pathname: string) =>
   SITE_PAGES.some((page) => pathname === page || pathname.startsWith(`${page}/`));
 const ASSESSMENT_PREFIX = '/assessment';

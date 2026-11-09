@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
@@ -237,10 +239,10 @@ export function SiteNav() {
               : 'border border-transparent',
           )}
         >
-          <a href="#top" aria-label="Divine Acquisition home" className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]">
+          <Link href="/" aria-label="Divine Acquisition home" className="flex shrink-0 items-center rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#9a88fc]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/site/brand/da-wordmark.png" alt="Divine Acquisition" width={900} height={138} className="h-[22px] w-auto sm:h-6" />
-          </a>
+          </Link>
 
           <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
             {NAV.map((group) => (

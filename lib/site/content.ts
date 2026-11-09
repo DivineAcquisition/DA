@@ -16,6 +16,10 @@ export const SITE = {
 
 /** The Sales Operations Diagnostic request form: the site's primary conversion. */
 export const DIAGNOSTIC_PATH = '/diagnostic';
+/** Dedicated pages for the sections the homepage condenses. */
+export const SALES_OPS_PATH = '/sales-operations';
+export const PHILOSOPHY_PATH = '/philosophy';
+export const FOUNDER_PATH = '/founder';
 /** Booking step after the request. */
 export const DIAGNOSTIC_BOOK_PATH = '/diagnostic/book';
 /** Pre-discovery questionnaire, sent after a diagnostic is booked. */
@@ -23,7 +27,6 @@ export const DISCOVERY_PATH = '/discovery';
 /** Current privacy policy for Divine Acquisition forms. */
 export const PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
 export const CONTACT_EMAIL = 'malik@divineacquisition.io';
-export const VISTRIAL_URL = 'https://vistrial.io';
 export const CAREERS_URL = 'https://hiring.divineacquisition.io';
 
 export const SOCIALS = [
@@ -48,7 +51,7 @@ export type NavLink = {
   badge?: string;
 };
 
-export type NavGroup = { id: 'services' | 'products' | 'company'; label: string; links: NavLink[] };
+export type NavGroup = { id: 'services' | 'company'; label: string; links: NavLink[] };
 
 export const NAV: NavGroup[] = [
   {
@@ -58,41 +61,20 @@ export const NAV: NavGroup[] = [
       {
         label: 'Sales Operations Build Out',
         description: 'From the first opportunity to the next sale.',
-        href: '#sales-operations',
+        href: '/sales-operations',
         icon: 'sales',
       },
       {
         label: 'B2B Service Companies & Agencies',
         description: 'Keep every opportunity moving beyond the discovery call.',
-        href: '#b2b',
+        href: '/sales-operations#b2b',
         icon: 'b2b',
       },
       {
         label: 'High-End Local Service Businesses',
         description: 'Stop letting valuable estimates go quiet.',
-        href: '#local-services',
+        href: '/sales-operations#local-services',
         icon: 'local',
-      },
-    ],
-  },
-  {
-    id: 'products',
-    label: 'Products',
-    links: [
-      {
-        label: 'Vistrial™',
-        description: 'Agentic software for market intelligence and evidence-backed opportunities.',
-        href: VISTRIAL_URL,
-        external: true,
-        icon: 'vistrial',
-        badge: 'In development',
-      },
-      {
-        label: 'More from our lab',
-        description: 'Further stages of the customer lifecycle, over time.',
-        href: '#vistrial',
-        icon: 'more',
-        muted: true,
       },
     ],
   },
@@ -100,11 +82,11 @@ export const NAV: NavGroup[] = [
     id: 'company',
     label: 'Company',
     links: [
-      { label: 'Our Approach', description: 'Diagnose, architect, implement, validate, improve.', href: '#approach', icon: 'approach' },
-      { label: 'Our Work', description: 'Practical improvements. Documented outcomes.', href: '#work', icon: 'work' },
-      { label: 'About', description: 'Understanding before intervention.', href: '#about', icon: 'philosophy' },
-      { label: 'Founder', description: 'A note from Malik Sannie.', href: '#founder', icon: 'founder' },
-      { label: 'Who We Serve', description: 'Built for companies ready to improve.', href: '#who-we-serve', icon: 'fit' },
+      { label: 'Our Approach', description: 'Diagnose, architect, implement, validate, improve.', href: '/#approach', icon: 'approach' },
+      { label: 'Our Work', description: 'Practical improvements. Documented outcomes.', href: '/#work', icon: 'work' },
+      { label: 'Philosophy', description: 'Understanding before intervention.', href: '/philosophy', icon: 'philosophy' },
+      { label: 'Founder', description: 'A note from Malik Sannie.', href: '/founder', icon: 'founder' },
+      { label: 'Who We Serve', description: 'Built for companies ready to improve.', href: '/#who-we-serve', icon: 'fit' },
     ],
   },
 ];
@@ -361,22 +343,6 @@ export const FOUNDER = {
   },
 } as const;
 
-export const VISTRIAL = {
-  id: 'vistrial',
-  index: '08',
-  eyebrow: 'Technology developed by Divine Acquisition',
-  headline: 'Meet Vistrial™',
-  tagline: 'Understanding Precedes Advantage.',
-  body: [
-    'Vistrial is our agentic software platform in development.',
-    'Its purpose is to help businesses transform relevant context, research, and operational knowledge into detailed, usable work.',
-    'We’re building the platform around specialized agents, inspectable evidence, finished deliverables, and human approval.',
-    'The first release focuses on market intelligence and evidence-backed business opportunities.',
-    'Over time, we intend to expand its capabilities across additional stages of the customer lifecycle.',
-  ],
-  pillars: ['Specialized agents', 'Inspectable evidence', 'Finished deliverables', 'Human approval'],
-  cta: 'Explore Vistrial',
-} as const;
 
 export const WHO = {
   id: 'who-we-serve',
