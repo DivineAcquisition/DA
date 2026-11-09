@@ -87,7 +87,7 @@ function Chip({ href, active, children }: { href: string; active: boolean; child
     <Link
       href={href}
       aria-current={active ? 'page' : undefined}
-      className={`rounded-lg px-3 py-1.5 text-sm ${active ? 'bg-[#6A00FF]/20 text-white' : 'text-neutral-400 hover:text-white'}`}
+      className={`rounded-lg px-3 py-1.5 text-sm ${active ? 'bg-brand-500/20 text-white' : 'text-neutral-400 hover:text-white'}`}
     >
       {children}
     </Link>

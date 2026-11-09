@@ -186,7 +186,7 @@ export default function HsRequirementsForm({
       {error && <p className="text-sm text-[#FF6A6A]">{error}</p>}
 
       {!sentAt && (
-        <Button type="button" style={{ backgroundColor: '#6A00FF', color: '#fff' }} onClick={() => setConfirmOpen(true)}>
+        <Button type="button" className="da-primary" onClick={() => setConfirmOpen(true)}>
           Mark as sent
         </Button>
       )}
@@ -200,7 +200,7 @@ export default function HsRequirementsForm({
           <Button
             type="button"
             disabled={pending}
-            style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+            className="da-primary"
             onClick={() => {
               startTransition(async () => {
                 const result = await markHsRequirementSentAction(

@@ -35,7 +35,7 @@ export default async function GrowthFileLayout({
               key={label}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`shrink-0 rounded-lg px-3 py-1.5 text-sm ${active ? 'bg-[#6A00FF]/20 text-white' : 'text-neutral-400 hover:text-white'}`}
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-sm ${active ? 'bg-brand-500/20 text-white' : 'text-neutral-400 hover:text-white'}`}
             >
               {label}
             </Link>

@@ -99,7 +99,7 @@ export default async function PipelineLeadPage({ params }: { params: Promise<{ i
                 Open the case file
               </Link>
             ) : (
-              <Link href={`/workspace/clients/new?lead=${lead.id}`} className="inline-flex h-9 items-center rounded-lg bg-[#6A00FF] px-3.5 text-sm font-medium text-white hover:bg-[#7a1aff]">
+              <Link href={`/workspace/clients/new?lead=${lead.id}`} className="inline-flex h-9 items-center rounded-lg da-primary px-3.5 text-sm font-medium text-white">
                 Establish account
               </Link>
             )}

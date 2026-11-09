@@ -85,7 +85,7 @@ export default async function FirstWeek({ placementId }: { placementId: string }
                     Weekly
                     <input name="weekly" type="number" min={0} step="0.1" className="mt-1 block h-9 w-24 rounded-lg border border-white/10 bg-transparent px-2" />
                   </label>
-                  <button className="h-9 rounded-lg bg-[#6A00FF] px-3 text-white" type="submit">
+                  <button className="h-9 rounded-lg da-primary px-3 text-white" type="submit">
                     Save target
                   </button>
                 </form>

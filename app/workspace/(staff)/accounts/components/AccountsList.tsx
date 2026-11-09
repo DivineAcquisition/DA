@@ -55,7 +55,7 @@ export default function AccountsList({
         title="Accounts"
         description="Audit, debrief, and kickoff requirements. The form set follows the niche you pick."
         actions={
-          <Button type="button" onClick={() => setOpen(true)} style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+          <Button type="button" onClick={() => setOpen(true)} className="da-primary">
             New account
           </Button>
         }
@@ -212,7 +212,7 @@ function NewAccountDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <Button
             type="submit"
             disabled={pending || !family}
-            style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+            className="da-primary"
           >
             {pending ? 'Creating…' : 'Create account'}
           </Button>

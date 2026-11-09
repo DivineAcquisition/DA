@@ -54,7 +54,7 @@ export default async function EodsPage({
               key={label}
               href={value ? `/workspace/review/eods?status=${value}` : '/workspace/review/eods?status='}
               aria-current={(status ?? '') === value ? 'page' : undefined}
-              className={`rounded-lg px-3 py-1.5 ${(status ?? '') === value ? 'bg-[#6A00FF]/20 text-white' : 'text-neutral-400 hover:text-white'}`}
+              className={`rounded-lg px-3 py-1.5 ${(status ?? '') === value ? 'bg-brand-500/20 text-white' : 'text-neutral-400 hover:text-white'}`}
             >
               {label}
             </Link>

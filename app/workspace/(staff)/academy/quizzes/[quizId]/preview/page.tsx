@@ -21,7 +21,7 @@ export default async function QuizPreviewPage({ params }: { params: Promise<{ qu
   if (!data?.questions) notFound();
   return (
     <div className="mx-auto max-w-xl space-y-4 px-4 py-8 text-white">
-      <p className="rounded-2xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm">Preview. This does not record an attempt.</p>
+      <p className="rounded-2xl border border-[#937DFF]/40 bg-brand-500/15 px-4 py-3 text-sm">Preview. This does not record an attempt.</p>
       <h1 className="text-2xl font-semibold">{data.title}</h1>
       <ol className="space-y-4">
         {data.questions.map((question, index) => (

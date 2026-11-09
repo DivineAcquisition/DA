@@ -118,7 +118,7 @@ function Detail({ detail }: { detail: Record<string, unknown> }) {
           <option value="other">Other</option>
         </select>
         <textarea name="note" required minLength={5} rows={3} className="w-full rounded-lg border border-white/10 bg-ink-950 px-3 py-2" placeholder="Required note" />
-        <button type="submit" className="rounded-lg bg-[#6A00FF] px-3 py-2 text-sm font-semibold text-white">
+        <button type="submit" className="rounded-lg da-primary px-3 py-2 text-sm font-semibold text-white">
           Save decision
         </button>
       </form>

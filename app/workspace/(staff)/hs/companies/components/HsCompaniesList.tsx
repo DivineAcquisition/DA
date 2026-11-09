@@ -49,7 +49,7 @@ export default function HsCompaniesList({ companies }: { companies: HsCompanyLis
         title="HS companies"
         description="Audit, debrief, and kickoff requirements. Newest first."
         actions={
-          <Button type="button" onClick={() => setOpen(true)} style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+          <Button type="button" onClick={() => setOpen(true)} className="da-primary">
             New company
           </Button>
         }
@@ -188,7 +188,7 @@ function NewCompanyDialog({ open, onClose }: { open: boolean; onClose: () => voi
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={pending} style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+          <Button type="submit" disabled={pending} className="da-primary">
             {pending ? 'Creating…' : 'Create company'}
           </Button>
         </div>

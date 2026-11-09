@@ -21,13 +21,13 @@ function TabRow({
             aria-current={current ? 'page' : undefined}
             className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg px-3 text-sm ${
               current
-                ? 'bg-[#6A00FF] font-medium text-white'
+                ? 'da-primary font-medium text-white'
                 : 'border border-white/10 text-neutral-300 hover:border-white/25 hover:text-white'
             }`}
           >
             {tab.label}
             {tab.badge ? (
-              <span className={`rounded-md px-1.5 text-[10px] font-bold ${current ? 'bg-white/20' : 'bg-[#6A00FF] text-white'}`}>
+              <span className={`rounded-md px-1.5 text-[10px] font-bold ${current ? 'bg-white/20' : 'da-primary text-white'}`}>
                 {tab.badge}
               </span>
             ) : null}

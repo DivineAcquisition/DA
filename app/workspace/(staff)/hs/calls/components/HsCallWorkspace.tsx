@@ -41,7 +41,8 @@ const FIT_COLOR: Record<HsFitTone, string> = {
 const ACCENT = '#937DFF';
 const SUCCESS = '#7AFF8A';
 const FLAG_FILL = '#FFD06A';
-const PRIMARY_BTN = '#6A00FF';
+// The Vistrial primary: lavender with a dark label, as across the admin.
+const PRIMARY_BTN = '#9a88fc';
 
 function headingClass(extra = '') {
   return `font-[family-name:var(--font-plus-jakarta)] tracking-tight text-white ${extra}`;
@@ -396,7 +397,7 @@ export default function HsCallWorkspace({
                         <Button
                           type="button"
                           size="sm"
-                          style={{ backgroundColor: PRIMARY_BTN, color: '#fff' }}
+                          style={{ backgroundColor: PRIMARY_BTN, color: '#0b0a11' }}
                           onClick={() => markComplete(stage.id)}
                         >
                           Mark complete
@@ -442,7 +443,7 @@ export default function HsCallWorkspace({
                 <Button
                   type="button"
                   className="mt-3 w-full"
-                  style={{ backgroundColor: PRIMARY_BTN, color: '#fff' }}
+                  style={{ backgroundColor: PRIMARY_BTN, color: '#0b0a11' }}
                   onClick={() => {
                     setError(null);
                     startTransition(async () => {
@@ -506,7 +507,7 @@ export default function HsCallWorkspace({
           </Button>
           <Button
             type="button"
-            style={{ backgroundColor: PRIMARY_BTN, color: '#fff' }}
+            style={{ backgroundColor: PRIMARY_BTN, color: '#0b0a11' }}
             onClick={() => {
               const outcome = pendingOutcome;
               if (!outcome) return;

@@ -150,7 +150,7 @@ function CollapsedItem({
             {containsActive ? <ActiveGlow layoutId={glowId} /> : null}
             <IconTile icon={item.icon} tone={section.tone} active={containsActive} size="lg" />
             {item.badge ? (
-              <span className="absolute right-1 top-1 size-2 rounded-full bg-[#6A00FF]" aria-hidden />
+              <span className="absolute right-1 top-1 size-2 rounded-full da-primary" aria-hidden />
             ) : null}
             <span className="sr-only">{item.badge ? `${item.label}, ${item.badge}` : item.label}</span>
           </TooltipTrigger>
@@ -265,7 +265,7 @@ function FolderTree({ nav, active, onNavigate }: { nav: NavSection[]; active: Ac
     const desk = DESK_IDS.has(section.id);
     return (
       <li key={section.id} role="treeitem" aria-expanded={isOpen} aria-selected={here && !active?.child && active?.item.href === href}>
-        <div className={cn('group/row flex min-w-0 items-center rounded-lg', here && 'bg-white/[0.05]')}>
+        <div className={cn('group/row flex min-w-0 items-center rounded-lg', here && 'bg-brand-500/[0.08]')}>
           <button
             type="button"
             aria-label={isOpen ? `Close ${section.heading}` : `Open ${section.heading}`}
@@ -300,9 +300,9 @@ function FolderTree({ nav, active, onNavigate }: { nav: NavSection[]; active: Ac
                     prefetch
                     onClick={() => onNavigate(item.href)}
                     aria-current={current ? 'page' : undefined}
-                    className={cn(folderRow, 'text-[13px]', current ? 'bg-white/[0.07] font-medium text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white')}
+                    className={cn(folderRow, 'text-[13px]', current ? 'bg-brand-500/15 text-brand-200' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white')}
                   >
-                    <Glyph aria-hidden className={cn('size-3.5 shrink-0', current ? 'text-brand-300' : 'opacity-70')} strokeWidth={1.9} />
+                    <Glyph aria-hidden className={cn('size-3.5 shrink-0', current ? 'text-brand-200' : 'opacity-70')} strokeWidth={1.9} />
                     <span className="truncate">{item.label}</span>
                     {item.badge ? <Count value={item.badge} /> : null}
                   </Link>
@@ -348,56 +348,76 @@ function waitingOn(nav: NavSection[]): Waiting[] {
 }
 
 const FLOW_STEPS = [
-  { label: 'Application', href: '/workspace/operators/applicants' },
-  { label: 'Ready', href: '/workspace/operators/ready' },
-  { label: 'Case file', href: '/workspace/clients' },
-  { label: 'Placement', href: '/workspace/placements' },
-  { label: 'EOD and report', href: '/workspace/review/eods' },
+  { label: 'Application', href: '/workspace/operators/applicants', hint: 'Read, then advance or decline.' },
+  { label: 'Case file', href: '/workspace/clients', hint: 'Prospect to live engagement.' },
+  { label: 'Placement', href: '/workspace/placements', hint: 'The wizard, then the live seat.' },
+  { label: 'EOD and report', href: '/workspace/review/eods', hint: 'What needs a manager.' },
 ];
 
-/** The Live rail, after the Vistrial app: what is waiting on a person right now. */
+/** The Live rail, after the Vistrial app's right column: stacked cards. */
 function LiveAside({ nav, onNavigate }: { nav: NavSection[]; onNavigate: NavigateHandler }) {
   const waiting = waitingOn(nav);
-  const desks = nav.some((section) => DESK_IDS.has(section.id));
+  const desks = nav.filter((section) => DESK_IDS.has(section.id));
   return (
-    <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-72 shrink-0 overflow-y-auto border-l border-border px-4 py-6 xl:block">
-      <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
-        <LiveDot tone={waiting.length ? 'working' : 'clear'} />
-        Live
-      </p>
-      {waiting.length === 0 ? (
-        <p className="mt-3 text-sm text-neutral-400">Nothing is waiting on you.</p>
-      ) : (
-        <ul className="mt-3 grid gap-1.5">
-          {waiting.map((row, index) => (
-            <li key={row.key} className="live-enter" style={{ animationDelay: `${index * 50}ms` }}>
-              <Link href={row.href} prefetch onClick={() => onNavigate(row.href)} className="flex items-center gap-2.5 rounded-lg border border-white/[0.07] px-3 py-2 text-sm transition-colors hover:border-brand-400/40">
-                <LiveDot tone="waiting" />
-                <span className="min-w-0 flex-1">
-                  <span className={cn('block truncate text-white', index === 0 && 'live-shimmer-text')}>{row.label}</span>
-                  <span className="block text-[11px] text-neutral-500">{row.desk}</span>
-                </span>
-                <span className="tabular-nums text-brand-200">{row.count}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      {desks ? (
-        <div className="mt-8">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">How work moves</p>
-          <ol className="relative mt-3 grid gap-3 pl-4">
-            <span aria-hidden className="absolute bottom-2 left-[3px] top-2 w-px bg-gradient-to-b from-brand-400/60 via-brand-400/20 to-transparent" />
-            {FLOW_STEPS.map((step) => (
-              <li key={step.label} className="relative">
-                <span aria-hidden className="absolute -left-4 top-1.5 size-[7px] rounded-full border border-brand-400/60 bg-ink-950" />
-                <Link href={step.href} prefetch onClick={() => onNavigate(step.href)} className="text-sm text-neutral-300 hover:text-white">
-                  {step.label}
+    <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-80 shrink-0 space-y-4 overflow-y-auto px-4 py-6 xl:block">
+      <section className="panel rounded-2xl p-4">
+        <h2 className="flex items-center gap-2 text-[15px] font-medium text-white">
+          <LiveDot tone={waiting.length ? 'working' : 'clear'} />
+          Waiting on you
+        </h2>
+        {waiting.length === 0 ? (
+          <p className="mt-3 text-sm text-neutral-400">Nothing is waiting on you.</p>
+        ) : (
+          <ul className="mt-3 grid gap-1">
+            {waiting.map((row, index) => (
+              <li key={row.key} className="live-enter" style={{ animationDelay: `${index * 50}ms` }}>
+                <Link
+                  href={row.href}
+                  prefetch
+                  onClick={() => onNavigate(row.href)}
+                  className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-white/[0.04]"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className={cn('block truncate text-white', index === 0 && 'live-shimmer-text')}>{row.label}</span>
+                    <span className="block text-[11px] text-neutral-500">{row.desk}</span>
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-500/30 bg-brand-500/12 px-2 py-0.5 text-[11px] font-medium tabular-nums text-brand-200">
+                    <span aria-hidden className="size-1.5 rounded-full bg-brand-400" />
+                    {row.count}
+                  </span>
                 </Link>
               </li>
             ))}
+          </ul>
+        )}
+      </section>
+      {desks.length ? (
+        <section className="panel rounded-2xl p-4">
+          <h2 className="text-[15px] font-medium text-white">How work moves</h2>
+          <ol className="mt-3 grid gap-3">
+            {FLOW_STEPS.map((step, index) => {
+              const desk = desks[Math.min(index, desks.length - 1)];
+              const busy = sectionCount(desk) > 0;
+              return (
+                <li key={step.label} className="flex items-start gap-2.5">
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'mt-1.5 size-2 shrink-0 rounded-full',
+                      busy ? 'bg-brand-400 live-pulse' : 'border border-white/25',
+                    )}
+                  />
+                  <span>
+                    <Link href={step.href} prefetch onClick={() => onNavigate(step.href)} className="text-sm text-white hover:text-brand-200">
+                      {step.label}
+                    </Link>
+                    <span className="block text-xs text-neutral-500">{step.hint}</span>
+                  </span>
+                </li>
+              );
+            })}
           </ol>
-        </div>
+        </section>
       ) : null}
     </aside>
   );

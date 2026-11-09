@@ -1,43 +1,88 @@
 import Link from 'next/link';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { LiveDot } from './agentic';
 
 /** Shared pieces for the four desks, so a queue and a case file read the same everywhere. */
 
 export const field =
-  'h-9 rounded-lg border border-white/10 bg-ink-950 px-2.5 text-sm text-white placeholder:text-neutral-600 focus:border-brand-400/60 focus:outline-none';
+  'h-9 rounded-lg border border-[var(--field-border,rgba(255,255,255,0.12))] bg-[var(--field-bg,#100f18)] px-2.5 text-sm text-white placeholder:text-neutral-500 transition-[border-color,box-shadow] focus:border-brand-400/60 focus:shadow-[0_0_0_3px_rgba(154,136,252,0.18)] focus:outline-none';
 export const area = `${field} h-auto min-h-[72px] py-2`;
+/** Vistrial's primary: lavender gradient, dark label (styled by .da-primary). */
 export const primary =
-  'inline-flex h-9 items-center justify-center rounded-lg bg-[#6A00FF] px-3.5 text-sm font-medium text-white hover:bg-[#7a1aff] disabled:opacity-50';
+  'da-primary inline-flex h-9 items-center justify-center gap-1.5 rounded-lg px-3.5 text-sm font-medium transition-[background-image] disabled:opacity-50';
 export const secondary =
-  'inline-flex h-9 items-center justify-center rounded-lg border border-white/15 px-3.5 text-sm text-neutral-200 hover:border-white/30 hover:text-white disabled:opacity-50';
+  'inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-white/[0.12] bg-white/[0.02] px-3.5 text-sm text-neutral-200 transition-colors hover:bg-white/[0.05] hover:text-white disabled:opacity-50';
 export const danger =
-  'inline-flex h-9 items-center justify-center rounded-lg border border-[#FFB020]/40 px-3.5 text-sm text-[#FFB020] hover:border-[#FFB020]/70 disabled:opacity-50';
+  'inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-flag-critical/40 px-3.5 text-sm text-flag-critical transition-colors hover:bg-flag-critical/10 disabled:opacity-50';
 
-export function DeskHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
+/**
+ * The page header from the Vistrial app: a small breadcrumb, a medium-weight
+ * title, a status pill or actions on the right, and a hairline underneath.
+ */
+export function DeskHeader({
+  title,
+  description,
+  actions,
+  crumb,
+}: {
+  title: string;
+  description?: string;
+  actions?: ReactNode;
+  crumb?: string;
+}) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-white/[0.07] pb-5">
       <div className="min-w-0">
-        <h1 className="text-2xl font-semibold text-white">{title}</h1>
-        {description ? <p className="mt-1 max-w-3xl text-sm text-neutral-400">{description}</p> : null}
+        {crumb ? <p className="mb-1 text-[13px] text-neutral-500">{crumb}</p> : null}
+        <h1 className="text-[22px] font-medium tracking-tight text-white">{title}</h1>
+        {description ? <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-neutral-400">{description}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
     </div>
   );
 }
 
-export function Section({ id, title, hint, children, aside }: { id?: string; title: string; hint?: string; children: ReactNode; aside?: ReactNode }) {
+/** A Vistrial card: rounded, hairline, a medium title with an optional icon. */
+export function Section({
+  id,
+  title,
+  hint,
+  children,
+  aside,
+  icon: Icon,
+}: {
+  id?: string;
+  title: string;
+  hint?: string;
+  children: ReactNode;
+  aside?: ReactNode;
+  icon?: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+}) {
   return (
     <section id={id} className="panel scroll-mt-24 rounded-2xl p-5">
-      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold text-white">{title}</h2>
-          {hint ? <p className="mt-0.5 text-sm text-neutral-500">{hint}</p> : null}
+          <h2 className="flex items-center gap-2 text-[15px] font-medium text-white">
+            {Icon ? <Icon className="size-4 text-brand-300" aria-hidden /> : null}
+            {title}
+          </h2>
+          {hint ? <p className="mt-0.5 text-[13px] text-neutral-500">{hint}</p> : null}
         </div>
         {aside}
       </div>
       {children}
     </section>
+  );
+}
+
+/** A stat tile: a quiet uppercase label over a plain number, in a bordered tile. */
+export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
+  return (
+    <div className="rounded-xl border border-white/[0.08] px-4 py-3">
+      <p className="text-[11px] uppercase tracking-[0.08em] text-neutral-500">{label}</p>
+      <p className="mt-1 text-lg tabular-nums text-white">{value}</p>
+      {hint ? <p className="text-xs text-neutral-500">{hint}</p> : null}
+    </div>
   );
 }
 
@@ -52,16 +97,30 @@ export function Fact({ label, children }: { label: string; children: ReactNode }
 
 const TONES = {
   neutral: 'border-white/10 bg-white/[0.04] text-neutral-300',
-  brand: 'border-brand-500/30 bg-brand-500/10 text-brand-200',
-  good: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-300',
-  warn: 'border-amber-400/30 bg-amber-400/10 text-amber-200',
-  bad: 'border-rose-400/30 bg-rose-400/10 text-rose-300',
+  brand: 'border-brand-500/30 bg-brand-500/12 text-brand-200',
+  good: 'border-flag-good/30 bg-flag-good/10 text-flag-good',
+  warn: 'border-flag-warning/30 bg-flag-warning/10 text-flag-warning',
+  bad: 'border-flag-critical/30 bg-flag-critical/10 text-flag-critical',
+} as const;
+
+const DOTS = {
+  neutral: 'bg-neutral-500',
+  brand: 'bg-brand-400',
+  good: 'bg-flag-good',
+  warn: 'bg-flag-warning',
+  bad: 'bg-flag-critical',
 } as const;
 
 export type Tone = keyof typeof TONES;
 
+/** Vistrial's status badge: a rounded pill with a tinted fill and a dot. */
 export function Pill({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
-  return <span className={`inline-flex items-center rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${TONES[tone]}`}>{children}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${TONES[tone]}`}>
+      <span aria-hidden className={`size-1.5 rounded-full ${DOTS[tone]}`} />
+      {children}
+    </span>
+  );
 }
 
 export function Empty({ children }: { children: ReactNode }) {

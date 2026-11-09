@@ -23,7 +23,7 @@ export default function SettingsNav() {
             href={tab.href}
             aria-current={current ? 'page' : undefined}
             className={`shrink-0 rounded-lg px-3 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[#937DFF] ${
-              current ? 'bg-[#6A00FF] text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
+              current ? 'da-primary text-white' : 'text-neutral-400 hover:bg-white/[0.04] hover:text-white'
             }`}
           >
             {tab.label}

@@ -38,7 +38,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ r
     <div className="space-y-6">
       <Link href="/workspace/review/reports" className="text-sm text-neutral-400 hover:text-white">Reports</Link>
       {flag.data?.first ? (
-        <p className="rounded-xl border border-[#937DFF]/40 bg-[#6A00FF]/15 px-4 py-3 text-sm text-white">
+        <p className="rounded-xl border border-[#937DFF]/40 bg-brand-500/15 px-4 py-3 text-sm text-white">
           First report for this client. Add a short intro about {flag.data.operator_first || 'the operator'} and what to expect next week.
         </p>
       ) : null}
@@ -71,7 +71,7 @@ export default async function ReportDetailPage({ params }: { params: Promise<{ r
             ))}
           </fieldset>
           <div className="flex flex-wrap gap-2">
-            <button name="when" value="now" className="rounded-lg bg-[#6A00FF] px-3 py-2 text-sm text-white" type="submit">Approve and send</button>
+            <button name="when" value="now" className="rounded-lg da-primary px-3 py-2 text-sm text-white" type="submit">Approve and send</button>
             <button name="when" value="later" className="rounded-lg bg-white/10 px-3 py-2 text-sm" type="submit">Schedule for the send time</button>
           </div>
         </ReportForm>

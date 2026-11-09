@@ -41,7 +41,7 @@ export default function PracticesList({ practices }: { practices: PracticeListRo
         title="Practices"
         description="Audit, debrief, and kickoff requirements. Newest first."
         actions={
-          <Button type="button" onClick={() => setOpen(true)} style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+          <Button type="button" onClick={() => setOpen(true)} className="da-primary">
             New practice
           </Button>
         }
@@ -160,7 +160,7 @@ function NewPracticeDialog({ open, onClose }: { open: boolean; onClose: () => vo
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancel
           </Button>
-          <Button type="submit" disabled={pending} style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+          <Button type="submit" disabled={pending} className="da-primary">
             {pending ? 'Creating…' : 'Create practice'}
           </Button>
         </div>

@@ -107,7 +107,7 @@ export default async function ClientFilePage({
             key={name}
             href={`/workspace/clients/${file.id}?tab=${name}`}
             aria-current={tab === name ? 'page' : undefined}
-            className={`shrink-0 rounded-lg px-3 py-1.5 text-sm ${tab === name ? 'bg-[#6A00FF] font-medium text-white' : 'border border-white/10 text-neutral-300 hover:text-white'}`}
+            className={`shrink-0 rounded-lg px-3 py-1.5 text-sm ${tab === name ? 'da-primary font-medium text-white' : 'border border-white/10 text-neutral-300 hover:text-white'}`}
           >
             {TAB_LABEL[name]}
           </Link>

@@ -343,7 +343,7 @@ export default function AuditForm({
         <Button
           type="button"
           disabled={pending}
-          style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+          className="da-primary"
           onClick={() => {
             startTransition(async () => {
               const result = await markAuditCompleteAction(practiceId, auditIdRef.current, toDraft(valuesRef.current));

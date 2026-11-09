@@ -96,7 +96,7 @@ export default function HsNewCallForm() {
         <Input name="source" />
       </Field>
       {error && <p className="text-sm text-[#FF6A6A]">{error}</p>}
-      <Button type="submit" disabled={pending} className="w-full" style={{ backgroundColor: '#6A00FF', color: '#fff' }}>
+      <Button type="submit" disabled={pending} className="da-primary w-full">
         {pending ? 'Creating…' : 'Create call'}
       </Button>
     </form>

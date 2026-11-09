@@ -1,16 +1,7 @@
-import { Plus_Jakarta_Sans } from 'next/font/google';
-
-const display = Plus_Jakarta_Sans({ subsets: ['latin'], weight: ['600', '700'], variable: '--font-team-display' });
-
 /**
- * Today, activity, integrity, and deliveries. Operators, placements, EODs,
- * and reports moved to their own desks, so this keeps the type only.
+ * Today, activity, integrity, and deliveries. Headings use the admin's Inter
+ * Display like every other desk, after the Vistrial app.
  */
 export default function TeamWorkspaceLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div className={`${display.variable} team-workspace`}>
-      <style>{`.team-workspace h1,.team-workspace h2{font-family:var(--font-team-display),var(--font-inter),sans-serif;letter-spacing:-0.02em}`}</style>
-      {children}
-    </div>
-  );
+  return <div className="team-workspace">{children}</div>;
 }

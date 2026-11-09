@@ -358,7 +358,7 @@ export default function HsDebriefForm({
       <Button
         type="button"
         disabled={pending}
-        style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+        className="da-primary"
         onClick={() => {
           startTransition(async () => {
             const ok = await persist(true)

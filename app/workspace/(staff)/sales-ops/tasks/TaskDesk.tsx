@@ -29,7 +29,7 @@ export type StaffTask = {
 };
 
 const field = 'mt-1 w-full rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-white';
-const button = 'inline-flex h-10 items-center justify-center rounded-xl bg-[#6A00FF] px-4 text-sm font-semibold text-white disabled:opacity-60';
+const button = 'inline-flex h-10 items-center justify-center rounded-xl da-primary px-4 text-sm font-semibold text-white disabled:opacity-60';
 
 export default function TaskDesk({
   basePath,

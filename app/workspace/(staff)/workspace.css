@@ -134,3 +134,40 @@
     animation: none !important;
   }
 }
+
+/* ---------- Vistrial app recipes ----------
+   The admin follows the Vistrial operator app (src/components/ui,
+   src/components/shell): one lavender primary with a dark label, medium-weight
+   titles, quiet uppercase labels, and pills with a status dot. */
+
+.da-admin-shell .da-primary {
+  border: 1px solid rgba(81, 64, 169, 0.35);
+  background-color: #9a88fc;
+  background-image: linear-gradient(180deg, #c3b6fe 0%, #9a88fc 48%, #7e67f2 100%);
+  color: #0b0a11 !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    0 10px 28px -14px rgba(154, 136, 252, 0.85);
+}
+
+.da-admin-shell .da-primary:hover {
+  background-image: linear-gradient(180deg, #d9d1fe 0%, #ae9dfd 48%, #9a88fc 100%);
+}
+
+.da-admin-shell .da-primary:disabled {
+  box-shadow: none;
+}
+
+.da-admin-shell main :is(h1, h2, h3) {
+  font-weight: 500;
+}
+
+.da-admin-shell :is(th) {
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ws-dim, #858585);
+}
+
+html[data-product='workspace']:not(.dark) .da-admin-shell :is(th) {
+  color: #6b6b76;
+}

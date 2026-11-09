@@ -154,7 +154,7 @@ export default function PlacementWizard({ bundle, prefill }: { bundle: Bundle; p
                 disabled={number > (bundle.wizard?.step ?? 1) + 1 && number > step}
                 onClick={() => setStep(number)}
                 aria-current={current ? 'step' : undefined}
-                className={`rounded-full px-3 py-1 text-xs ${current ? 'bg-[#6A00FF] text-white' : 'bg-white/5 text-neutral-300 hover:bg-white/10'}`}
+                className={`rounded-full px-3 py-1 text-xs ${current ? 'da-primary text-white' : 'bg-white/5 text-neutral-300 hover:bg-white/10'}`}
               >
                 {number}. {label}
               </button>

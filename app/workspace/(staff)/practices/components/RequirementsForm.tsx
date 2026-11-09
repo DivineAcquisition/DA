@@ -195,7 +195,7 @@ export default function RequirementsForm({
       {error && <p className="text-sm text-[#FF6A6A]">{error}</p>}
 
       {!sentAt && (
-        <Button type="button" style={{ backgroundColor: '#6A00FF', color: '#fff' }} onClick={() => setConfirmOpen(true)}>
+        <Button type="button" className="da-primary" onClick={() => setConfirmOpen(true)}>
           Mark as sent
         </Button>
       )}
@@ -209,7 +209,7 @@ export default function RequirementsForm({
           <Button
             type="button"
             disabled={pending}
-            style={{ backgroundColor: '#6A00FF', color: '#fff' }}
+            className="da-primary"
             onClick={() => {
               startTransition(async () => {
                 const result = await markRequirementSentAction(
