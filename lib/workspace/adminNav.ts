@@ -1,40 +1,33 @@
 import type { ComponentType } from 'react';
 import { navSlots } from '@/lib/workspace/nav-slots';
+// Icons follow the Vistrial operator app's vocabulary (lucide-react, as used in
+// src/components/shell): the same glyph for the same idea across both products.
 import {
-  BadgeDollarSign,
-  BookOpenCheck,
+  Activity,
+  BookOpen,
+  Bot,
+  Brain,
   Building2,
-  CalendarCheck2,
-  CalendarRange,
-  ChartNoAxesCombined,
-  ClipboardCheck,
-  ClipboardList,
-  Contact,
-  FilePenLine,
-  FileSignature,
-  Funnel,
+  CheckCircle2,
+  CircleHelp,
+  Compass,
+  FileText,
   Gauge,
-  LayoutDashboard,
-  GraduationCap,
-  HandCoins,
-  Inbox,
-  MessageSquareText,
+  LayoutGrid,
+  LayoutList,
+  Link,
+  Megaphone,
+  MessagesSquare,
   NotebookPen,
-  Percent,
-  PhoneCall,
-  ReceiptText,
+  Plug,
+  Plus,
+  Scale,
   ScrollText,
-  Settings2,
+  Send,
+  Settings,
   ShieldCheck,
   Sparkles,
-  Stethoscope,
-  Swords,
-  Target,
-  TriangleAlert,
-  Trophy,
-  UserPlus,
-  UsersRound,
-  Wallet,
+  Users,
 } from 'lucide-react';
 
 export type NavIcon = ComponentType<{ className?: string; strokeWidth?: number; 'aria-hidden'?: boolean }>;
@@ -110,10 +103,10 @@ export const STAFF_HOME = '/workspace/operators';
 
 function operatorsDesk(counts?: NavCounts, role: 'admin' | 'manager' = 'admin'): NavSection {
   const queues: NavItem[] = [
-    withBadge({ href: '/workspace/operators/applicants', label: 'Applicants', icon: Inbox }, counts?.applicants),
-    { href: '/workspace/operators/onboarding', label: 'Onboarding', icon: ClipboardList },
-    { href: '/workspace/operators/ready', label: 'Ready', icon: UserPlus },
-    { href: '/workspace/operators', label: 'All operators', icon: UsersRound },
+    withBadge({ href: '/workspace/operators/applicants', label: 'Applicants', icon: MessagesSquare }, counts?.applicants),
+    { href: '/workspace/operators/onboarding', label: 'Onboarding', icon: NotebookPen },
+    { href: '/workspace/operators/ready', label: 'Ready', icon: CheckCircle2 },
+    { href: '/workspace/operators', label: 'All operators', icon: Users },
   ];
   return {
     id: 'operators',
@@ -121,7 +114,7 @@ function operatorsDesk(counts?: NavCounts, role: 'admin' | 'manager' = 'admin'):
     tone: 'violet',
     rail: 'tabs',
     href: '/workspace/operators',
-    icon: UsersRound,
+    icon: Users,
     items: role === 'manager' ? queues.slice(1) : queues,
   };
 }
@@ -135,10 +128,10 @@ function clientsDesk(counts?: NavCounts): NavSection {
     href: '/workspace/clients',
     icon: Building2,
     items: [
-      { href: '/workspace/clients/prospects', label: 'Prospects', icon: Funnel },
+      { href: '/workspace/clients/prospects', label: 'Prospects', icon: Compass },
       { href: '/workspace/clients', label: 'Case files', icon: Building2 },
-      withBadge({ href: '/workspace/admin/escalations', label: 'Escalations', icon: TriangleAlert }, counts?.escalations),
-      { href: '/workspace/admin/bookings', label: 'Client bookings', icon: CalendarCheck2 },
+      withBadge({ href: '/workspace/admin/escalations', label: 'Escalations', icon: CircleHelp }, counts?.escalations),
+      { href: '/workspace/admin/bookings', label: 'Client bookings', icon: LayoutGrid },
     ],
   };
 }
@@ -150,10 +143,10 @@ function placementsDesk(): NavSection {
     tone: 'sky',
     rail: 'tabs',
     href: '/workspace/placements',
-    icon: Target,
+    icon: Plug,
     items: [
-      { href: '/workspace/placements', label: 'Live seats', icon: Target },
-      { href: '/workspace/placements/launches', label: 'Launches', icon: CalendarRange },
+      { href: '/workspace/placements', label: 'Live seats', icon: Plug },
+      { href: '/workspace/placements/launches', label: 'Launches', icon: Send },
     ],
   };
 }
@@ -165,10 +158,10 @@ function reviewDesk(counts?: NavCounts): NavSection {
     tone: 'emerald',
     rail: 'tabs',
     href: '/workspace/review/eods',
-    icon: ClipboardCheck,
+    icon: LayoutList,
     items: [
-      withBadge({ href: '/workspace/review/eods', label: 'EODs', icon: ClipboardCheck }, counts?.eods),
-      withBadge({ href: '/workspace/review/reports', label: 'Client reports', icon: ScrollText }, counts?.reports),
+      withBadge({ href: '/workspace/review/eods', label: 'EODs', icon: Activity }, counts?.eods),
+      withBadge({ href: '/workspace/review/reports', label: 'Client reports', icon: FileText }, counts?.reports),
     ],
   };
 }
@@ -176,31 +169,31 @@ function reviewDesk(counts?: NavCounts): NavSection {
 const TEAM_TOOLS: NavItem = {
   href: '/workspace/team/board',
   label: 'Team',
-  icon: LayoutDashboard,
+  icon: LayoutGrid,
   children: [
-    { href: '/workspace/team/board', label: 'Board', icon: LayoutDashboard },
-    { href: '/workspace/team/queues', label: 'Queues', icon: Inbox },
-    { href: '/workspace/team/matching', label: 'Availability', icon: CalendarRange },
-    { href: '/workspace/team/scorecard', label: 'Scorecard', icon: Trophy },
-    { href: '/workspace/team', label: 'Roster and View As', icon: Contact, exact: true, aliases: ['/workspace/admin/view-as'] },
+    { href: '/workspace/team/board', label: 'Board', icon: LayoutGrid },
+    { href: '/workspace/team/queues', label: 'Queues', icon: MessagesSquare },
+    { href: '/workspace/team/matching', label: 'Availability', icon: Compass },
+    { href: '/workspace/team/scorecard', label: 'Scorecard', icon: Sparkles },
+    { href: '/workspace/team', label: 'Roster and View As', icon: Users, exact: true, aliases: ['/workspace/admin/view-as'] },
     { href: '/workspace/team/workspace', label: 'Today', icon: Gauge, exact: true },
-    { href: '/workspace/team/workspace/activity', label: 'Activity', icon: ChartNoAxesCombined },
+    { href: '/workspace/team/workspace/activity', label: 'Activity', icon: Activity },
     { href: '/workspace/operations', label: 'Operations overview', icon: Gauge },
-    { href: '/workspace/inbox', label: 'Inbox', icon: Inbox },
+    { href: '/workspace/inbox', label: 'Inbox', icon: MessagesSquare },
   ],
 };
 
 const ACADEMY_ITEM: NavItem = {
   href: '/workspace/academy',
   label: 'Academy',
-  icon: GraduationCap,
+  icon: Brain,
   children: [
-    { href: '/workspace/academy/questions', label: 'Question bank', icon: BookOpenCheck },
-    { href: '/workspace/academy/quizzes', label: 'Quizzes', icon: ClipboardList },
-    { href: '/workspace/academy/simulations', label: 'Simulations', icon: Swords },
+    { href: '/workspace/academy/questions', label: 'Question bank', icon: BookOpen },
+    { href: '/workspace/academy/quizzes', label: 'Quizzes', icon: NotebookPen },
+    { href: '/workspace/academy/simulations', label: 'Simulations', icon: Bot },
     { href: '/workspace/academy/rubrics', label: 'Rubrics', icon: ScrollText },
-    { href: '/workspace/academy/offers', label: 'Offer packs', icon: BadgeDollarSign },
-    { href: '/workspace/academy/practicals', label: 'Practicals', icon: FilePenLine },
+    { href: '/workspace/academy/offers', label: 'Offer packs', icon: Megaphone },
+    { href: '/workspace/academy/practicals', label: 'Practicals', icon: FileText },
     { href: '/workspace/academy/reflections', label: 'Reflections', icon: NotebookPen },
   ],
 };
@@ -209,12 +202,12 @@ function holdsItem(count?: number): NavItem {
   return {
     href: '/workspace/academy/holds',
     label: 'Holds',
-    icon: ShieldCheck,
+    icon: Scale,
     badge: count && count > 0 ? count : undefined,
     children: [
-      { href: '/workspace/academy/holds/grading', label: 'Grading', icon: ClipboardCheck },
-      { href: '/workspace/academy/holds/practicals', label: 'Practicals', icon: FilePenLine },
-      { href: '/workspace/academy/holds/summary', label: 'Summary', icon: ChartNoAxesCombined },
+      { href: '/workspace/academy/holds/grading', label: 'Grading', icon: CheckCircle2 },
+      { href: '/workspace/academy/holds/practicals', label: 'Practicals', icon: FileText },
+      { href: '/workspace/academy/holds/summary', label: 'Summary', icon: Activity },
     ],
   };
 }
@@ -226,66 +219,66 @@ function systemSection({ showAcademy, showHolds, counts }: { showAcademy: boolea
     {
       href: '/workspace/agreements',
       label: 'Agreements',
-      icon: FileSignature,
-      children: [{ href: '/workspace/recipients', label: 'Recipients', icon: Contact }],
+      icon: ScrollText,
+      children: [{ href: '/workspace/recipients', label: 'Recipients', icon: Users }],
     },
     TEAM_TOOLS,
     {
       href: '/workspace/calls',
       label: 'Sales',
-      icon: PhoneCall,
+      icon: Megaphone,
       aliases: ['/workspace/hs/calls'],
       children: [
-        { href: '/workspace/calls', label: 'Sales calls', icon: PhoneCall, aliases: ['/workspace/hs/calls'] },
-        { href: '/workspace/overview', label: 'VA performance', icon: ChartNoAxesCombined },
-        { href: '/workspace/accounts', label: 'Accounts', icon: Stethoscope, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
-        { href: '/workspace/bookings', label: 'Prospect bookings', icon: CalendarCheck2 },
-        { href: '/workspace/booking-messages', label: 'Message problems', icon: TriangleAlert },
-        { href: '/workspace/calendar-links', label: 'Calendar links', icon: CalendarRange },
-        { href: '/workspace/acq-applications', label: 'Coaching applications', icon: FilePenLine },
+        { href: '/workspace/calls', label: 'Sales calls', icon: Megaphone, aliases: ['/workspace/hs/calls'] },
+        { href: '/workspace/overview', label: 'VA performance', icon: Activity },
+        { href: '/workspace/accounts', label: 'Accounts', icon: Building2, aliases: ['/workspace/practices', '/workspace/hs/companies'] },
+        { href: '/workspace/bookings', label: 'Prospect bookings', icon: LayoutGrid },
+        { href: '/workspace/booking-messages', label: 'Message problems', icon: CircleHelp },
+        { href: '/workspace/calendar-links', label: 'Calendar links', icon: Compass },
+        { href: '/workspace/acq-applications', label: 'Coaching applications', icon: FileText },
         { href: '/workspace/growth/ingestion', label: 'Ingestion', icon: Sparkles, aliases: ['/da/ingestion'] },
-        { href: '/workspace/growth/messages', label: 'Messages', icon: MessageSquareText, aliases: ['/da/messages'] },
+        { href: '/workspace/growth/messages', label: 'Messages', icon: MessagesSquare, aliases: ['/da/messages'] },
       ],
     },
     {
       href: '/workspace/team/ghl',
       label: 'GHL',
-      icon: PhoneCall,
+      icon: Link,
       children: [
         { href: '/workspace/team/ghl/access', label: 'Access', icon: ShieldCheck },
-        { href: '/workspace/team/ghl/activity', label: 'Activity health', icon: ChartNoAxesCombined },
-        { href: '/workspace/team/ghl/unattributed', label: 'Unattributed', icon: TriangleAlert },
-        { href: '/workspace/team/ghl/routing', label: 'Routing log', icon: Funnel },
+        { href: '/workspace/team/ghl/activity', label: 'Activity health', icon: Activity },
+        { href: '/workspace/team/ghl/unattributed', label: 'Unattributed', icon: CircleHelp },
+        { href: '/workspace/team/ghl/routing', label: 'Routing log', icon: Compass },
         { href: '/workspace/team/ghl/standard', label: 'Standard', icon: ScrollText },
       ],
     },
     {
       href: '/workspace/admin/payroll',
       label: 'Money',
-      icon: Wallet,
+      icon: Gauge,
       children: [
-        { href: '/workspace/admin/payroll', label: 'Payroll', icon: Wallet },
-        { href: '/workspace/growth/billing', label: 'Billing', icon: ReceiptText, aliases: ['/da/billing'] },
-        { href: '/workspace/growth/payouts', label: 'Payouts', icon: HandCoins, aliases: ['/da/payouts'] },
-        { href: '/workspace/growth/margin', label: 'Margin', icon: Percent, aliases: ['/da/margin'] },
-        ...(navSlots.payImpact ? [{ href: '/workspace/growth/pay-impact', label: 'Pay Impact', icon: HandCoins }] : []),
+        { href: '/workspace/admin/payroll', label: 'Payroll', icon: Gauge },
+        { href: '/workspace/growth/billing', label: 'Billing', icon: FileText, aliases: ['/da/billing'] },
+        { href: '/workspace/growth/payouts', label: 'Payouts', icon: Gauge, aliases: ['/da/payouts'] },
+        { href: '/workspace/growth/margin', label: 'Margin', icon: Gauge, aliases: ['/da/margin'] },
+        ...(navSlots.payImpact ? [{ href: '/workspace/growth/pay-impact', label: 'Pay Impact', icon: Gauge }] : []),
       ],
     },
     {
       href: '/workspace/settings',
       label: 'Settings',
-      icon: Settings2,
+      icon: Settings,
       children: [
-        { href: '/workspace/settings', label: 'Workspace settings', icon: Settings2 },
-        { href: '/workspace/sales-ops/settings', label: 'Sales settings', icon: Settings2, aliases: ['/workspace/sales-ops'] },
-        { href: '/workspace/sales-ops/metrics', label: 'Metrics', icon: ChartNoAxesCombined },
-        { href: '/workspace/sales-ops/targets', label: 'Targets', icon: Target },
-        { href: '/workspace/sales-ops/tasks', label: 'Tasks', icon: ClipboardList },
-        { href: '/workspace/sales-ops/templates', label: 'Placement templates', icon: FileSignature },
-        { href: '/workspace/team/settings', label: 'Team settings', icon: Settings2 },
-        { href: '/workspace/templates', label: 'Templates', icon: FileSignature },
+        { href: '/workspace/settings', label: 'Workspace settings', icon: Settings },
+        { href: '/workspace/sales-ops/settings', label: 'Sales settings', icon: Settings, aliases: ['/workspace/sales-ops'] },
+        { href: '/workspace/sales-ops/metrics', label: 'Metrics', icon: Activity },
+        { href: '/workspace/sales-ops/targets', label: 'Targets', icon: Plug },
+        { href: '/workspace/sales-ops/tasks', label: 'Tasks', icon: NotebookPen },
+        { href: '/workspace/sales-ops/templates', label: 'Placement templates', icon: ScrollText },
+        { href: '/workspace/team/settings', label: 'Team settings', icon: Settings },
+        { href: '/workspace/templates', label: 'Templates', icon: ScrollText },
         { href: '/workspace/mapping', label: 'Field mapping', icon: NotebookPen },
-        { href: '/workspace/admin/notifications', label: 'Notifications routing', icon: Inbox },
+        { href: '/workspace/admin/notifications', label: 'Notifications routing', icon: MessagesSquare },
         { href: '/workspace/team/workspace/integrity', label: 'Data integrity', icon: ShieldCheck },
         { href: '/workspace/team/workspace/reports/deliveries', label: 'Deliveries', icon: ScrollText },
       ],
@@ -296,15 +289,15 @@ function systemSection({ showAcademy, showHolds, counts }: { showAcademy: boolea
       icon: ShieldCheck,
       children: [
         { href: '/workspace/control', label: 'Overview', icon: ShieldCheck, exact: true },
-        { href: '/workspace/control/invites', label: 'Invites', icon: UserPlus, aliases: ['/ad/invites', '/ad/invite'] },
-        { href: '/workspace/control/alerts', label: 'Alerts', icon: TriangleAlert },
+        { href: '/workspace/control/invites', label: 'Invites', icon: Plus, aliases: ['/ad/invites', '/ad/invite'] },
+        { href: '/workspace/control/alerts', label: 'Alerts', icon: CircleHelp },
         { href: '/workspace/control/audit', label: 'Audit', icon: ScrollText },
         { href: '/workspace/control/credentials', label: 'Credentials', icon: ShieldCheck },
         { href: '/workspace/control/lockdown', label: 'Lockdown', icon: ShieldCheck },
       ],
     },
   ];
-  return { id: 'system', heading: 'System', tone: 'slate', rail: 'tabs', href: items[0].href, icon: Settings2, items };
+  return { id: 'system', heading: 'System', tone: 'slate', rail: 'tabs', href: items[0].href, icon: Settings, items };
 }
 
 export function buildNav({

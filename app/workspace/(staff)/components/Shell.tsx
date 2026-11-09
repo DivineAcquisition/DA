@@ -15,7 +15,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
-  Settings2,
+  Settings,
+  CircleHelp,
   X,
 } from 'lucide-react';
 import Logo from '@/app/components/Logo';
@@ -362,7 +363,8 @@ function LiveAside({ nav, onNavigate }: { nav: NavSection[]; onNavigate: Navigat
     <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-80 shrink-0 space-y-4 overflow-y-auto px-4 py-6 xl:block">
       <section className="panel rounded-2xl p-4">
         <h2 className="flex items-center gap-2 text-[15px] font-medium text-white">
-          <LiveDot tone={waiting.length ? 'working' : 'clear'} />
+          {/* Vistrial's "waiting for you" marker. */}
+          <CircleHelp className={cn('size-4', waiting.length ? 'text-brand-300' : 'text-neutral-500')} aria-hidden />
           Waiting on you
         </h2>
         {waiting.length === 0 ? (
@@ -554,7 +556,7 @@ function UserMenu({
         {label === 'Admin' ? (
           <>
             <MenuLinkItem render={<Link href="/workspace/settings" prefetch />}>
-              <Settings2 strokeWidth={1.9} aria-hidden />
+              <Settings strokeWidth={1.9} aria-hidden />
               Workspace settings
             </MenuLinkItem>
             <MenuSeparator />

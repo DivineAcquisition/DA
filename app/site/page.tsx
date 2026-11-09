@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import Logo from '@/app/components/Logo';
 import { ArrowRight, Bot, Check, FileCheck2, FileSearch, Gauge, Inbox, RefreshCcw, Send, ShieldCheck } from 'lucide-react';
 
 import { BlurFade } from '@/components/ui/blur-fade';
@@ -48,12 +47,13 @@ function Hero() {
 
       <div className={`${shell} relative`}>
         <BlurFade offset={10} blur="6px" duration={0.7} className="mx-auto flex max-w-4xl flex-col items-center text-center">
-          {/* The banner: a gradient-edged badge in the original purple, with the
-              trident mark and a slow sheen. */}
+          {/* The banner: a gradient-edged badge in the original purple, a glowing
+              status dot, and a slow sheen. */}
           <p className="da-banner relative inline-flex items-center rounded-full p-px">
-            <span className="relative inline-flex items-center gap-3 rounded-full bg-[#110d1d] py-1.5 pr-5 pl-1.5">
-              <span className="flex size-7 items-center justify-center rounded-full bg-gradient-to-b from-[#7446ff] to-[#4b16e3] shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_0_18px_-2px_rgba(90,35,252,0.9)]">
-                <Logo markOnly tone="current" className="h-4 w-auto text-white" />
+            <span className="relative inline-flex items-center gap-3 rounded-full bg-[#110d1d] py-2 pr-5 pl-4">
+              <span aria-hidden className="relative flex size-2.5">
+                <span className="da-pulse-dot absolute inset-0 rounded-full bg-[#7446ff]" />
+                <span className="relative size-2.5 rounded-full bg-gradient-to-b from-[#a78bff] to-[#5a23fc] shadow-[0_0_12px_2px_rgba(90,35,252,0.85)]" />
               </span>
               <span className="da-display text-[13px] font-semibold tracking-[0.01em] text-white sm:text-sm">{HERO.eyebrow}</span>
             </span>
