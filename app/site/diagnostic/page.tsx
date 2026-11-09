@@ -35,7 +35,7 @@ export default function DiagnosticPage() {
             {STEPS.map((step, index) => (
               <li key={step.title} className="flex gap-4 rounded-xl border border-[#9a88fc]/15 bg-[#16131f] p-4">
                 <span
-                  className={`da-mono flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] ${index === 0 ? 'bg-[#5a23fc] text-white' : 'bg-[#251f36] text-white/55'}`}
+                  className={`da-mono flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] ${index === 0 ? 'bg-[#9a88fc] text-[#0b0a11]' : 'bg-[#251f36] text-white/55'}`}
                 >
                   {index + 1}
                 </span>

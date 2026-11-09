@@ -56,7 +56,7 @@ function DropdownItem({ link, onNavigate }: { link: NavLink; onNavigate: () => v
         <span className="flex items-center gap-2 text-sm font-medium text-white">
           {link.label}
           {link.badge ? (
-            <span className="da-mono rounded-full bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.14em] text-[#c3b6fe] uppercase">{link.badge}</span>
+            <span className="da-mono rounded-full bg-[#9a88fc]/20 px-2 py-0.5 text-[9px] tracking-[0.14em] text-[#c3b6fe] uppercase">{link.badge}</span>
           ) : null}
           {link.external ? <ArrowUpRight className="size-3.5 text-white/40" aria-hidden /> : null}
         </span>
@@ -131,7 +131,7 @@ function Dropdown({
           >
             <div
               className={cn(
-                'da-hairline-top overflow-hidden rounded-2xl border border-[#9a88fc]/20 bg-[#13111c]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_60px_-30px_rgba(90,35,252,0.6)] backdrop-blur-xl',
+                'da-hairline-top overflow-hidden rounded-2xl border border-[#9a88fc]/20 bg-[#13111c]/95 p-2 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_0_60px_-30px_rgba(154,136,252,0.6)] backdrop-blur-xl',
                 wide ? 'grid w-[560px] grid-cols-2 gap-1' : 'w-[400px]',
               )}
             >
@@ -142,7 +142,7 @@ function Dropdown({
                 <a
                   href={DIAGNOSTIC_PATH}
                   onClick={onClose}
-                  className="mt-1 flex items-center justify-between rounded-xl bg-[#5a23fc]/15 px-4 py-3 text-sm text-[#dcd3ff] transition-colors hover:bg-[#5a23fc]/25"
+                  className="mt-1 flex items-center justify-between rounded-xl bg-[#9a88fc]/15 px-4 py-3 text-sm text-[#dcd3ff] transition-colors hover:bg-[#9a88fc]/25"
                 >
                   <span>Book your Sales Operations diagnostic</span>
                   <ArrowRight className="size-4" aria-hidden />

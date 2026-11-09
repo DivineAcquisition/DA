@@ -51,7 +51,7 @@ export default async function BookDiagnosticPage({ searchParams }: Props) {
 
       {calendar ? (
         <div className="relative mx-auto mt-10 max-w-4xl">
-          <div aria-hidden className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] bg-[#5a23fc]/30 blur-3xl" />
+          <div aria-hidden className="absolute inset-x-6 -bottom-6 top-8 rounded-[2rem] bg-[#9a88fc]/30 blur-3xl" />
           <div className="relative overflow-hidden rounded-3xl border border-[#9a88fc]/20 bg-black p-1.5 sm:p-2">
             <iframe
               id={ACQ_CALENDAR_IFRAME_ID}

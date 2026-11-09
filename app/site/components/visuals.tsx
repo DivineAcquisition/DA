@@ -46,8 +46,8 @@ const TRACE_AFTER: TraceRow[] = [
 function StateMark({ state }: { state: TraceRow['state'] }) {
   if (state === 'ok')
     return (
-      <span className="flex size-6 items-center justify-center rounded-full bg-[#5a23fc] shadow-[0_0_14px_-2px_rgba(90,35,252,0.9)]">
-        <Check className="size-3.5 text-white" aria-hidden />
+      <span className="flex size-6 items-center justify-center rounded-full bg-[#9a88fc] shadow-[0_0_14px_-2px_rgba(154,136,252,0.9)]">
+        <Check className="size-3.5 text-[#0b0a11]" aria-hidden />
       </span>
     );
   if (state === 'warn')
@@ -103,7 +103,7 @@ export function HandoffTrace() {
         <p className="da-mono text-[10px] tracking-[0.14em] text-white/30 uppercase">Illustrative</p>
       </div>
       <ol className="relative mt-4">
-        <span aria-hidden className="absolute top-4 bottom-1/2 left-[15px] w-px bg-gradient-to-b from-[#5a23fc] to-[#9a88fc]" />
+        <span aria-hidden className="absolute top-4 bottom-1/2 left-[15px] w-px bg-gradient-to-b from-[#9a88fc] to-[#9a88fc]" />
         <span
           aria-hidden
           className="absolute top-1/2 bottom-4 left-[15px] w-px"
@@ -171,7 +171,7 @@ export function PipelineBoard() {
             </p>
             <div className="space-y-1.5">
               {stage === column ? (
-                <div key={`active-${column}`} className="da-enter rounded-lg border border-[#9a88fc]/60 bg-[#5a23fc]/15 p-2 shadow-[0_0_24px_-8px_rgba(90,35,252,0.9)]">
+                <div key={`active-${column}`} className="da-enter rounded-lg border border-[#9a88fc]/60 bg-[#9a88fc]/15 p-2 shadow-[0_0_24px_-8px_rgba(154,136,252,0.9)]">
                   <p className="truncate text-[10px] font-medium text-white">Kitchen remodel</p>
                   <p className="mt-1 truncate text-[9px] text-[#c3b6fe]">{NEXT_STEP[column]}</p>
                   <div className="mt-1.5 flex items-center justify-between">
@@ -218,7 +218,7 @@ export function JourneyFlow({ stages, label }: { stages: readonly string[]; labe
             className={cn(
               'da-mono rounded-full border px-2.5 py-1 text-[10px] tracking-[0.1em] uppercase transition-all duration-500',
               index === active
-                ? 'border-[#9a88fc]/60 bg-[#5a23fc]/25 text-white shadow-[0_0_18px_-4px_rgba(90,35,252,0.9)]'
+                ? 'border-[#9a88fc]/60 bg-[#9a88fc]/25 text-white shadow-[0_0_18px_-4px_rgba(154,136,252,0.9)]'
                 : index < active
                   ? 'border-[#9a88fc]/20 bg-[#1c1828] text-white/70'
                   : 'border-[#9a88fc]/15 text-white/45',
@@ -258,7 +258,7 @@ function StepState({ state }: { state: 'done' | 'running' | 'queued' }) {
     );
   if (state === 'running')
     return (
-      <span className="da-mono inline-flex items-center gap-1 rounded-full whitespace-nowrap bg-[#5a23fc]/20 px-2 py-0.5 text-[9px] tracking-[0.12em] text-[#c3b6fe] uppercase">
+      <span className="da-mono inline-flex items-center gap-1 rounded-full whitespace-nowrap bg-[#9a88fc]/20 px-2 py-0.5 text-[9px] tracking-[0.12em] text-[#c3b6fe] uppercase">
         <Loader2 className="size-2.5 animate-spin" aria-hidden /> In progress
       </span>
     );
@@ -284,7 +284,7 @@ export function ApproachRun() {
               className={cn(
                 'flex h-full flex-col rounded-2xl border p-5 transition-all duration-700',
                 state === 'running'
-                  ? 'border-[#9a88fc]/50 bg-[#5a23fc]/[0.08] shadow-[0_0_50px_-20px_rgba(90,35,252,0.95)]'
+                  ? 'border-[#9a88fc]/50 bg-[#9a88fc]/[0.08] shadow-[0_0_50px_-20px_rgba(154,136,252,0.95)]'
                   : 'border-[#9a88fc]/15 bg-[#16131f]',
               )}
             >
@@ -350,16 +350,16 @@ export function FitCheck() {
               key={criterion}
               className={cn(
                 'flex items-start gap-3 rounded-xl border px-4 py-3.5 transition-all duration-500',
-                on ? 'border-[#9a88fc]/25 bg-[#5a23fc]/[0.07]' : 'border-[#9a88fc]/15 bg-[#16131f]',
+                on ? 'border-[#9a88fc]/25 bg-[#9a88fc]/[0.07]' : 'border-[#9a88fc]/15 bg-[#16131f]',
               )}
             >
               <span
                 className={cn(
                   'mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md transition-all duration-500',
-                  on ? 'bg-[#5a23fc] shadow-[0_0_14px_-2px_rgba(90,35,252,0.9)]' : 'ring-1 ring-white/20',
+                  on ? 'bg-[#9a88fc] shadow-[0_0_14px_-2px_rgba(154,136,252,0.9)]' : 'ring-1 ring-white/20',
                 )}
               >
-                <Check className={cn('size-3 text-white transition-opacity duration-300', on ? 'opacity-100' : 'opacity-0')} aria-hidden />
+                <Check className={cn('size-3 text-[#0b0a11] transition-opacity duration-300', on ? 'opacity-100' : 'opacity-0')} aria-hidden />
               </span>
               <span className={cn('text-[15px] leading-snug transition-colors duration-500', on ? 'text-white' : 'text-white/55')}>{criterion}</span>
             </li>
