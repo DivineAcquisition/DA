@@ -28,11 +28,12 @@ describe('normalizePath', () => {
 
 describe('the sidebar', () => {
   it('is the delivery loop, in order', () => {
-    expect(full.map((section) => section.heading)).toEqual(['Seat', 'Client', 'Review', 'Account']);
+    expect(full.map((section) => section.heading)).toEqual(['Seat', 'Client', 'Review', 'Billing', 'Account']);
     expect(full.flatMap((section) => railRows(section).map((row) => row.label))).toEqual([
       'Seat',
       'Client',
       'Review',
+      'Billing',
       'Account',
     ]);
   });
@@ -115,7 +116,7 @@ describe('findActive', () => {
     expect(manager.map((section) => section.heading)).toEqual(['Seat', 'Review', 'Account']);
     const labels = manager.flatMap((section) => section.items.map((item) => item.label));
     expect(labels).toEqual(['Seat', 'EODs', 'Client reports', 'Operators']);
-    for (const hidden of ['Client', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
+    for (const hidden of ['Client', 'Billing', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
   });
 });
 

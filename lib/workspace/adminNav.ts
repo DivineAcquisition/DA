@@ -7,6 +7,7 @@ import {
   Link,
   Plug,
   Plus,
+  Receipt,
   Users,
 } from 'lucide-react';
 
@@ -117,6 +118,17 @@ function reviewDesk(counts?: NavCounts): NavSection {
   };
 }
 
+function billingDesk(): NavSection {
+  return {
+    id: 'billing',
+    heading: 'Billing',
+    tone: 'fuchsia',
+    href: '/workspace/billing',
+    icon: Receipt,
+    items: [{ href: '/workspace/billing', label: 'Billing', icon: Receipt }],
+  };
+}
+
 function accountDesk(role: 'admin' | 'manager'): NavSection {
   const items: NavItem[] = [{ href: '/workspace/operators', label: 'Operators', icon: Users }];
   if (role === 'admin') {
@@ -148,7 +160,7 @@ export function buildNav({
 }): NavSection[] {
   const desks = [seatDesk(), reviewDesk(counts), accountDesk(role)];
   if (role === 'manager') return desks;
-  return [seatDesk(), clientDesk(), reviewDesk(counts), accountDesk('admin')];
+  return [seatDesk(), clientDesk(), reviewDesk(counts), billingDesk(), accountDesk('admin')];
 }
 
 export { normalizePath } from './legacyRoutes';
