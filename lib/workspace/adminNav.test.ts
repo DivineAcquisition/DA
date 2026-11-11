@@ -49,13 +49,12 @@ describe('the sidebar', () => {
     expect(labels('seat')).toEqual(['Seat']);
     expect(labels('clients')).toEqual(['Client']);
     expect(labels('review')).toEqual(['EODs', 'Client reports']);
-    expect(labels('account')).toEqual(['Operators', 'Invites', 'GoHighLevel']);
+    expect(labels('account')).toEqual(['Operators', 'Applicants', 'Invites', 'GoHighLevel']);
   });
 
   it('keeps the old desks out of the nav', () => {
     const hrefs = allHrefs(full);
     for (const gone of [
-      '/workspace/operators/applicants',
       '/workspace/operators/onboarding',
       '/workspace/operators/ready',
       '/workspace/clients/prospects',
@@ -85,6 +84,7 @@ describe('the sidebar', () => {
     const nav = buildNav({ counts: { home: 0, escalations: 2, eods: 3, reports: 1, applicants: 4 } });
     const rows = nav.flatMap((section) => railRows(section));
     expect(rows.find((row) => row.label === 'Review')?.badge).toBe(4);
+    expect(rows.find((row) => row.label === 'Account')?.badge).toBe(4);
     expect(rows.find((row) => row.label === 'Seat')?.badge).toBeUndefined();
     expect(rows.find((row) => row.label === 'Client')?.badge).toBeUndefined();
   });
@@ -117,7 +117,7 @@ describe('findActive', () => {
     expect(manager.map((section) => section.heading)).toEqual(['Seat', 'Review', 'Account']);
     const labels = manager.flatMap((section) => section.items.map((item) => item.label));
     expect(labels).toEqual(['Seat', 'EODs', 'Client reports', 'Operators']);
-    for (const hidden of ['Pipeline', 'Client', 'Billing', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
+    for (const hidden of ['Pipeline', 'Client', 'Billing', 'Applicants', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
   });
 });
 
@@ -137,9 +137,9 @@ describe('legacyAdminRedirect', () => {
 
   it('sends old operator addresses to the operator record', () => {
     expect(legacyAdminRedirect('/workspace/onboarding')).toBe('/workspace/operators');
-    expect(legacyAdminRedirect('/workspace/operators/applicants')).toBe('/workspace/operators');
-    expect(legacyAdminRedirect('/workspace/operators/applicants/abc')).toBe('/workspace/operators');
-    expect(legacyAdminRedirect('/workspace/operators/ready')).toBe('/workspace/operators');
+    expect(legacyAdminRedirect('/workspace/operators/applicants')).toBeNull();
+    expect(legacyAdminRedirect('/workspace/operators/applicants/abc')).toBeNull();
+    expect(legacyAdminRedirect('/workspace/operators/ready')).toBeNull();
     expect(legacyAdminRedirect('/workspace/team/workspace/operators')).toBe('/workspace/operators');
     expect(legacyAdminRedirect('/workspace/team/workspace/operators/new')).toBe('/workspace/operators');
     expect(legacyAdminRedirect('/workspace/team/workspace/operators/abc')).toBe('/workspace/operators/abc');

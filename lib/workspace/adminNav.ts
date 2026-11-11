@@ -9,6 +9,7 @@ import {
   Plug,
   Plus,
   Receipt,
+  UserPlus,
   Users,
 } from 'lucide-react';
 
@@ -72,7 +73,7 @@ export type NavCounts = {
   reports?: number;
   /** Open academy holds. No longer shown. */
   holds?: number;
-  /** Sales-operator applications. No longer shown. */
+  /** Sales-operator applications waiting for a decision. Shown on Account. */
   applicants?: number;
 };
 
@@ -141,10 +142,11 @@ function billingDesk(): NavSection {
   };
 }
 
-function accountDesk(role: 'admin' | 'manager'): NavSection {
+function accountDesk(role: 'admin' | 'manager', counts?: NavCounts): NavSection {
   const items: NavItem[] = [{ href: '/workspace/operators', label: 'Operators', icon: Users }];
   if (role === 'admin') {
     items.push(
+      withBadge({ href: '/workspace/operators/applicants', label: 'Applicants', icon: UserPlus }, counts?.applicants),
       { href: '/workspace/control/invites', label: 'Invites', icon: Plus, aliases: ['/ad/invites', '/ad/invite'] },
       { href: '/workspace/team/ghl', label: 'GoHighLevel', icon: Link },
     );
@@ -172,7 +174,7 @@ export function buildNav({
 }): NavSection[] {
   const desks = [seatDesk(), reviewDesk(counts), accountDesk(role)];
   if (role === 'manager') return desks;
-  return [seatDesk(), pipelineDesk(), clientDesk(), reviewDesk(counts), billingDesk(), accountDesk('admin')];
+  return [seatDesk(), pipelineDesk(), clientDesk(), reviewDesk(counts), billingDesk(), accountDesk('admin', counts)];
 }
 
 export { normalizePath } from './legacyRoutes';

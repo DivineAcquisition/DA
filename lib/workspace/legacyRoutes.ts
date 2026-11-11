@@ -27,7 +27,6 @@ const RULES: Rule[] = [
 
   // Operator queues that are no longer a desk.
   { from: /^\/workspace\/onboarding$/, to: () => '/workspace/operators' },
-  { from: /^\/workspace\/operators\/(?:applicants|onboarding|ready)(?:\/.*)?$/, to: () => '/workspace/operators' },
   { from: /^\/workspace\/team\/workspace\/operators\/new$/, to: () => '/workspace/operators' },
   { from: /^\/workspace\/(?:team\/workspace|admin|ops)\/operators$/, to: () => '/workspace/operators' },
   { from: new RegExp(`^/workspace/(?:team/workspace|admin|ops)/operators/${id}$`), to: (m) => `/workspace/operators/${m[1]}` },
