@@ -83,17 +83,39 @@
   list-style: decimal;
 }
 
-/* Admin shell: Inter Display (the opsz 32 cut) for chrome and headings, text cut for body copy. */
+/* Admin type: Inter Display, the same face and settings as the Vistrial
+   landing page and app (Vistrial src/lib/fonts.ts and globals.css). The
+   @font-face locks opsz to 32, so every size is the Display cut; ligatures
+   and contextual alternates on, no stylistic sets. Headings are medium
+   weight with tight tracking. */
+.da-admin-type,
 .da-admin-shell {
-  font-family: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-optical-sizing: auto;
-  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-feature-settings: 'liga' 1, 'calt' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.da-admin-shell .da-display,
-.da-admin-shell main :is(h1, h2) {
-  font-variation-settings: 'opsz' 32;
-  letter-spacing: -0.012em;
+@layer base {
+  :is(.da-admin-type, .da-admin-shell) :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.022em;
+  }
+
+  :is(.da-admin-type, .da-admin-shell) h1 {
+    letter-spacing: -0.032em;
+  }
+
+  :is(.da-admin-type, .da-admin-shell) :is(h1, h2) {
+    text-wrap: balance;
+  }
+}
+
+.da-admin-shell .da-display {
+  font-weight: 500;
+  letter-spacing: -0.022em;
 }
 
 @keyframes app-breathe {

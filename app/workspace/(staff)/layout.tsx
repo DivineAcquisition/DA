@@ -9,6 +9,7 @@ import { ManagerShell } from '@/app/workspace/(portal)/components/Gates';
 import { filePendingOperatorPackets } from '@/lib/workspace/placement-packet';
 import LoginForm from './components/LoginForm';
 import Shell from './components/Shell';
+import { interDisplay } from './components/fonts';
 import './workspace.css';
 import RequireAdminMfa from '@/app/components/RequireAdminMfa';
 import { ThemeFrame } from '@/app/workspace/components/ThemeControls';
@@ -24,9 +25,12 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic';
 
+/** Inter Display, as on the Vistrial landing page, on every admin surface. */
+const TYPE = `da-workspace da-admin-type ${interDisplay.variable}`;
+
 function NotConfigured() {
   return (
-    <div className="da-workspace flex min-h-screen items-center justify-center bg-ink-950 px-5">
+    <div className={`${TYPE} flex min-h-screen items-center justify-center bg-ink-950 px-5`}>
       <div className="panel max-w-md rounded-2xl p-8 text-center">
         <h1 className="text-xl font-semibold tracking-tight text-white">Database not configured</h1>
         <p className="mt-3 text-sm text-neutral-400">
@@ -44,7 +48,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
 
   if (!supabaseConfigured) {
     return (
-      <div className="da-workspace">
+      <div className={TYPE}>
         <NotConfigured />
       </div>
     );
@@ -55,7 +59,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   if (!session) {
     if (!isLogin) redirect('/workspace/login');
     return (
-      <div className="da-workspace">
+      <div className={TYPE}>
         <LoginForm />
       </div>
     );
@@ -68,16 +72,18 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       return (
         <ThemeFrame>
           <RequireAdminMfa email={session.email}>
-            <ManagerShell name={session.fullName ?? session.email} counts={counts}>
-              {children}
-            </ManagerShell>
+            <div className={TYPE}>
+              <ManagerShell name={session.fullName ?? session.email} counts={counts}>
+                {children}
+              </ManagerShell>
+            </div>
           </RequireAdminMfa>
         </ThemeFrame>
       );
     }
     if (!isLogin) redirect('/workspace/login');
     return (
-      <div className="da-workspace">
+      <div className={TYPE}>
         <LoginForm />
       </div>
     );
@@ -94,7 +100,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   return (
     <ThemeFrame>
       <RequireAdminMfa email={session.email}>
-        <div className="da-workspace">
+        <div className={TYPE}>
           <Shell email={session.email} counts={counts}>
             {children}
           </Shell>

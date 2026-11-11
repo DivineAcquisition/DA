@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { academyAdminSession, academyHoldSession } from '@/lib/academy/access';
 import { loadNavCounts } from '@/lib/workspace/nav-counts';
 import Shell from './Shell';
+import { interDisplay } from './fonts';
 import '../workspace.css';
 
 /** True when the request is the unified admin portal (or a local unified path). */
@@ -25,7 +26,7 @@ export default async function UnifiedAdminChrome({
 }) {
   const [academy, holds, counts] = await Promise.all([academyAdminSession(), academyHoldSession(), loadNavCounts()]);
   return (
-    <div className="da-workspace">
+    <div className={`da-workspace da-admin-type ${interDisplay.variable}`}>
       <Shell email={email} showAcademy={Boolean(academy)} showHolds={Boolean(holds)} counts={counts}>
         {children}
       </Shell>

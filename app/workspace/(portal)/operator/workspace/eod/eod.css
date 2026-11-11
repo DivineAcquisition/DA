@@ -1,5 +1,5 @@
 /*
- * End of day, in the Vistrial app's UI: Inter Display at medium weight, solid
+ * End of day, in the Vistrial app's UI: Inter Display (opsz 32, as on the Vistrial site) at medium weight, solid
  * ink cards with a lavender hairline, quiet uppercase labels, one lavender
  * primary with a dark label, and pills with a status dot. Scoped to .da-eod so
  * it never leaks into the rest of the portal.
@@ -19,16 +19,15 @@
   --eod-good: #52d6a4;
   --eod-warn: #f0b45c;
   --eod-bad: #f87171;
-  font-family: var(--font-inter-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-optical-sizing: auto;
-  font-feature-settings: 'cv11', 'ss01', 'ss03';
+  font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-feature-settings: 'liga' 1, 'calt' 1;
   color: #fff;
 }
 
 .da-eod .eod-title {
-  font-variation-settings: 'opsz' 32;
   font-weight: 500;
-  letter-spacing: -0.018em;
+  letter-spacing: -0.022em;
 }
 
 .da-eod .eod-label {
