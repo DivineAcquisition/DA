@@ -1,8 +1,9 @@
 /**
- * The two Sales Operations forms on the company site:
+ * The Sales Operations forms on the company site:
  *
  *  1. The diagnostic request (qualification). Short, required before booking.
  *  2. The pre-discovery questionnaire. Longer, sent after the call is booked.
+ *  3. The podcast 1-on-1 request. Both in one, for listeners, before booking.
  *
  * Options and validation live here so the page and the API agree on both.
  * Nothing in this file touches the network.
@@ -402,4 +403,129 @@ export function discoverySummary(answers: DiscoveryAnswers): Array<[string, stri
 
 export function summaryText(title: string, rows: Array<[string, string]>): string {
   return [title, '', ...rows.map(([label, value]) => `${label}: ${value}`)].join('\n');
+}
+
+/* ------------------------------------------------------------------------ */
+/* 3. Podcast 1-on-1 request (divineacquisition.io/biv/pod)                  */
+/* ------------------------------------------------------------------------ */
+
+/**
+ * For listeners who want a 1-on-1 call. One form that asks everything a
+ * discovery call needs: who they are, why they reached out, the business, how
+ * sales run today, and what they want changed. Then they choose a time.
+ */
+export type PodcastRequest = {
+  fullName: string;
+  email: string;
+  phone: string;
+  company: string;
+  website: string | null;
+  position: (typeof POSITIONS)[number];
+  episode: string;
+  whyNow: string;
+  businessType: BusinessType;
+  primaryServices: string;
+  dealValue: (typeof DEAL_VALUES)[number];
+  monthlyOpportunities: (typeof MONTHLY_OPPORTUNITIES)[number];
+  salesCycle: (typeof SALES_CYCLES)[number];
+  sources: Array<(typeof SOURCES)[number]>;
+  newOpportunityProcess: string;
+  qualificationOwner: string;
+  crm: (typeof CRMS)[number];
+  tools: string;
+  constraints: Array<(typeof CONSTRAINTS)[number]>;
+  biggestLoss: string;
+  successLooksLike: string;
+  timeline: (typeof TIMELINES)[number];
+  approver: string;
+  privacyConsent: true;
+  marketingConsent: boolean;
+};
+
+export function parsePodcastRequest(body: unknown): { ok: true; value: PodcastRequest } | FormError {
+  return run(body, (b, check) => {
+    const long = (field: string, label: string) => check(() => text(b, field, label, LONG));
+    // Checked in the order the form shows them, so the first error is the first field.
+    const fullName = check(() => text(b, 'fullName', 'your full name', { max: 120, required: true, min: 2 }));
+    const address = check(() => email(b, 'email'));
+    const phoneNumber = check(() => {
+      const value = phone(b, 'phone');
+      if (!value) throw new FieldError('phone', 'Enter the best number to reach you.');
+      return value;
+    });
+    const company = check(() => text(b, 'company', 'your company name', { max: 160, required: true }));
+    const website =
+      b.noWebsite === true
+        ? null
+        : check(() => {
+            const raw = text(b, 'website', 'your company website', { max: 300, required: true });
+            const normalized = normalizeWebsite(raw);
+            if (!normalized) throw new FieldError('website', 'Enter a valid website, or check “No website yet”.');
+            return normalized;
+          });
+    const value = {
+      fullName,
+      email: address,
+      phone: phoneNumber,
+      company,
+      website,
+      position: check(() => choice(b, 'position', POSITIONS, 'your position')),
+      episode: check(() => text(b, 'episode', 'the episode', { max: 200 })),
+      whyNow: long('whyNow', 'what made you want to talk'),
+      businessType: check(() => choice(b, 'businessType', BUSINESS_TYPES, 'what best describes your business')),
+      primaryServices: long('primaryServices', 'what you sell and who you sell to'),
+      dealValue: check(() => choice(b, 'dealValue', DEAL_VALUES, 'a typical engagement value')),
+      monthlyOpportunities: check(() => choice(b, 'monthlyOpportunities', MONTHLY_OPPORTUNITIES, 'your monthly opportunity volume')),
+      salesCycle: check(() => choice(b, 'salesCycle', SALES_CYCLES, 'your typical sales cycle')),
+      sources: check(() => choices(b, 'sources', SOURCES, 'where new opportunities come from', true)),
+      newOpportunityProcess: long('newOpportunityProcess', 'what happens when a new opportunity comes in'),
+      qualificationOwner: long('qualificationOwner', 'who handles sales and follow-up'),
+      crm: check(() => choice(b, 'crm', CRMS, 'your current CRM or system')),
+      tools: check(() => text(b, 'tools', 'the other tools you use', { max: 4000 })),
+      constraints: check(() => choices(b, 'constraints', CONSTRAINTS, 'at least one thing limiting your sales process', true)),
+      biggestLoss: long('biggestLoss', 'where you lose opportunities'),
+      successLooksLike: long('successLooksLike', 'what you want to be different'),
+      timeline: check(() => choice(b, 'timeline', TIMELINES, 'a timeline')),
+      approver: long('approver', 'who else is part of the decision'),
+      privacyConsent: true as const,
+      marketingConsent: b.marketingConsent === true,
+    };
+    check(() => {
+      if (b.privacyConsent !== true) {
+        throw new FieldError('privacyConsent', 'Please acknowledge how we use your information so we can respond.');
+      }
+    });
+    return value;
+  });
+}
+
+export function podcastSummary(request: PodcastRequest, inquiryId: string): Array<[string, string]> {
+  return [
+    ['Inquiry', `Podcast 1-on-1 · ${inquiryId}`],
+    ['Name', request.fullName],
+    ['Email', request.email],
+    ['Phone', request.phone],
+    ['Company', request.company],
+    ['Website', request.website ?? 'No website'],
+    ['Position', request.position],
+    ['Episode', request.episode || 'Not given'],
+    ['Why they reached out', request.whyNow],
+    ['Business', request.businessType],
+    ['What they sell, to whom', request.primaryServices],
+    ['Typical engagement value', request.dealValue],
+    ['New opportunities per month', request.monthlyOpportunities],
+    ['Sales cycle', request.salesCycle],
+    ['Opportunity sources', request.sources.join('; ')],
+    ['When a new opportunity comes in', request.newOpportunityProcess],
+    ['Who handles sales and follow-up', request.qualificationOwner],
+    ['CRM / system', request.crm],
+    ['Other tools', request.tools || 'Not given'],
+    ['What is limiting sales', request.constraints.join('; ')],
+    ['Where opportunities are lost', request.biggestLoss],
+    ['What they want to be different', request.successLooksLike],
+    ['Timeline', request.timeline],
+    ['Who else decides', request.approver],
+    ['Privacy acknowledgement', 'Yes'],
+    ['Marketing updates', request.marketingConsent ? 'Opted in' : 'Not opted in'],
+  ];
 }

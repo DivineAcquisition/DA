@@ -24,6 +24,9 @@ export const FOUNDER_PATH = '/founder';
 export const DIAGNOSTIC_BOOK_PATH = '/diagnostic/book';
 /** Pre-discovery questionnaire, sent after a diagnostic is booked. */
 export const DISCOVERY_PATH = '/discovery';
+/** The podcast link: listeners request a 1-on-1 call here, then book it. */
+export const PODCAST_PATH = '/biv/pod';
+export const PODCAST_BOOK_PATH = '/biv/pod/book';
 /** Current privacy policy for Divine Acquisition forms. */
 export const PRIVACY_URL = 'https://acq.divineacquisition.io/privacy';
 export const CONTACT_EMAIL = 'malik@divineacquisition.io';

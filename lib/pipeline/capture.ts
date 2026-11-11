@@ -2,7 +2,7 @@ import 'server-only';
 
 import { serviceRoleClient } from '@/lib/workspace/db';
 
-export type InquiryKind = 'diagnostic' | 'discovery' | 'sales_review' | 'cleaning_audit';
+export type InquiryKind = 'diagnostic' | 'discovery' | 'podcast' | 'sales_review' | 'cleaning_audit';
 
 export type InquiryCapture = {
   kind: InquiryKind;

@@ -15,9 +15,11 @@ import { SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 import {
   diagnosticSummary,
   discoverySummary,
+  podcastSummary,
   summaryText,
   type DiagnosticRequest,
   type DiscoveryAnswers,
+  type PodcastRequest,
 } from './forms';
 
 /**
@@ -30,7 +32,16 @@ import {
 export type Destinations = {
   store: (input: InquiryCapture) => Promise<string>;
   crm: (input: Parameters<typeof recordSiteContact>[0]) => Promise<string>;
-  alert: (input: { subject: string; title: string; intro: string; rows: Array<[string, string]>; replyTo: string; key: string; event: string }) => Promise<boolean>;
+  alert: (input: {
+    subject: string;
+    title: string;
+    intro: string;
+    rows: Array<[string, string]>;
+    replyTo: string;
+    key: string;
+    event: string;
+    eyebrow?: string;
+  }) => Promise<boolean>;
   logFailure: (step: string, email: string, error: unknown) => Promise<void>;
 };
 
@@ -40,7 +51,7 @@ async function sendAlert(input: Parameters<Destinations['alert']>[0]): Promise<b
   const html = renderEmailHtml({
     subject: input.subject,
     preheader: input.intro,
-    eyebrow: 'Sales Operations Diagnostic',
+    eyebrow: input.eyebrow ?? 'Sales Operations Diagnostic',
     title: input.title,
     paragraphs: [input.intro],
     details: input.rows.map(([label, value]) => ({ label, value })),
@@ -109,6 +120,55 @@ export function diagnosticCalendarUrl(): string | null {
 
 export function diagnosticBookingConfigured(): boolean {
   return Boolean(diagnosticCalendarUrl());
+}
+
+/** The podcast 1-on-1 calendar: SITE_PODCAST_CALENDAR_URL, else the diagnostic calendar. */
+export function podcastCalendarUrl(): string | null {
+  return process.env.SITE_PODCAST_CALENDAR_URL?.trim() || diagnosticCalendarUrl();
+}
+
+/** A listener's 1-on-1 request from divineacquisition.io/biv/pod. */
+export async function recordPodcastRequest(
+  request: PodcastRequest,
+  destinations: Destinations = LIVE_DESTINATIONS,
+): Promise<Recorded & { inquiryId: string }> {
+  const inquiryId = randomUUID();
+  const rows = podcastSummary(request, inquiryId);
+  const tags = [SOURCE_TAGS.podcast, TAGS.podcastCallRequest, ...(request.marketingConsent ? [TAGS.marketingOptIn] : [])];
+  const result = await deliver(
+    destinations,
+    request.email,
+    {
+      kind: 'podcast',
+      email: request.email,
+      fullName: request.fullName,
+      company: request.company,
+      phone: request.phone,
+      answers: rows,
+      inquiryId,
+    },
+    {
+      email: request.email,
+      fullName: request.fullName,
+      phone: request.phone,
+      company: request.company,
+      website: request.website,
+      source: 'podcast',
+      note: summaryText('Podcast 1-on-1 request (divineacquisition.io/biv/pod)', rows),
+      tags,
+    },
+    {
+      subject: `Podcast 1-on-1 request: ${request.fullName}, ${request.company}`,
+      title: request.fullName,
+      intro: `${request.fullName} at ${request.company} heard the podcast and asked for a 1-on-1 call.`,
+      rows,
+      replyTo: request.email,
+      key: inquiryId,
+      event: 'site.podcast-request',
+      eyebrow: 'Podcast 1-on-1',
+    },
+  );
+  return { ...result, inquiryId };
 }
 
 export async function recordDiagnosticRequest(

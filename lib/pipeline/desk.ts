@@ -47,6 +47,7 @@ export function stageTone(stage: string): Tone {
 export const INQUIRY_LABEL: Record<string, string> = {
   diagnostic: 'Diagnostic request',
   discovery: 'Pre-discovery answers',
+  podcast: 'Podcast 1-on-1 request',
   sales_review: 'Sales operations review',
   cleaning_audit: 'Cleaning audit',
 };

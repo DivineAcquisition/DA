@@ -46,6 +46,7 @@ export const SOURCE_TAGS = {
   cleaning: 'source - cleaning strategy session',
   salesOperations: 'source - sales operations review',
   salesOperationsDiagnostic: 'source - sales operations diagnostic',
+  podcast: 'source - podcast',
   talent: 'source - talent assessment',
   aiFrontOffice: 'source - ai front office',
 } as const;
@@ -71,6 +72,7 @@ export const TAGS = {
   assessmentBooked: 'talent - assessment booked',
   diagnosticInquiry: 'diagnostic - new inquiry',
   diagnosticContext: 'diagnostic - context received',
+  podcastCallRequest: 'podcast - call request',
   marketingOptIn: 'consent - marketing opt in',
 } as const;
 

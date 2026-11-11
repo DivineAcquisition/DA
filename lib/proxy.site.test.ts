@@ -36,7 +36,7 @@ describe('company homepage host', () => {
     expect(careers.headers.get('x-middleware-rewrite') ?? '').not.toContain('/site');
   });
 
-  it.each(['/diagnostic', '/diagnostic/book', '/discovery'])('serves %s on the homepage host', async (path) => {
+  it.each(['/diagnostic', '/diagnostic/book', '/discovery', '/biv/pod', '/biv/pod/book'])('serves %s on the homepage host', async (path) => {
     const proxy = await loadProxy();
     const page = await proxy(get(`https://www.divineacquisition.io${path}`));
     expect(page.status).not.toBe(404);
