@@ -122,6 +122,8 @@ export type SendDeps = {
   transport?: EmailTransport;
   store?: EmailStore;
   pace?: boolean;
+  /** Sends to try inside this request. The retry queue uses 1 so each run is one attempt. */
+  inRequestTries?: number;
   alertSuppressed?: (info: { email: string; logId: string; reason: string }) => Promise<void>;
   alertGaveUp?: (info: { logId: string; subject: string; error: string }) => Promise<void>;
 };
@@ -303,6 +305,7 @@ export async function sendAppEmail(input: SendAppEmailInput, deps: SendDeps = {}
   const store = deps.store ?? supabaseStore();
   const transport = deps.transport ?? resendTransport(env);
   const pace = deps.pace !== false;
+  const inRequestTries = Math.max(1, Math.min(deps.inRequestTries ?? IN_REQUEST_TRIES, IN_REQUEST_TRIES));
   const productionAlerts = deps.store == null;
   const alertSuppressed =
     deps.alertSuppressed ??
@@ -408,7 +411,7 @@ export async function sendAppEmail(input: SendAppEmailInput, deps: SendDeps = {}
   let lastError = 'Email failed';
   let statusCode: number | undefined;
   let tries = 0;
-  for (let attempt = 0; attempt < IN_REQUEST_TRIES; attempt += 1) {
+  for (let attempt = 0; attempt < inRequestTries; attempt += 1) {
     tries += 1;
     if (pace) await paceSend(sleep);
     if (attempt > 0) await sleep(backoffMs(attempt - 1));

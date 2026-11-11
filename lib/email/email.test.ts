@@ -166,6 +166,44 @@ describe('sendAppEmail', () => {
     expect(attempts).toBe(1);
   });
 
+  it('makes one send per queue run and schedules the next, and stops scheduling once it gives up', async () => {
+    const store = memoryStore();
+    let calls = 0;
+    const down: EmailTransport = async () => {
+      calls += 1;
+      return { error: 'busy', statusCode: 503 };
+    };
+    const at = new Date('2026-11-11T17:00:00Z');
+    const failed = await sendAppEmail(
+      { ...base, idempotencyKey: 'note/queue' },
+      { env, store, transport: down, pace: false, sleep: async () => {}, now: () => at, inRequestTries: 1, alertGaveUp: async () => {} },
+    );
+    expect(failed.status).toBe('failed');
+    expect(calls).toBe(1);
+    const row = store.rows.get(failed.logId!)!;
+    expect(row.attempt_count).toBe(1);
+    expect(row.next_attempt_at).toBe(new Date(at.getTime() + 120_000).toISOString());
+
+    const dead = memoryStore();
+    let alerts = 0;
+    const gone = await sendAppEmail(
+      { ...base, idempotencyKey: 'note/dead' },
+      {
+        env,
+        store: dead,
+        transport: async () => ({ error: 'not authorized', statusCode: 403 }),
+        pace: false,
+        sleep: async () => {},
+        alertGaveUp: async () => {
+          alerts += 1;
+        },
+      },
+    );
+    expect(gone.status).toBe('failed');
+    expect(dead.rows.get(gone.logId!)!.next_attempt_at).toBeNull();
+    expect(alerts).toBe(1);
+  });
+
   it('blocks preview recipients who are not allowlisted, and skips a suppressed address', async () => {
     const store = memoryStore();
     const transport: EmailTransport = async () => {
