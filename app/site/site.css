@@ -1,5 +1,6 @@
 /*
- * Divine Acquisition company site. Dark, with two purples: the deep violet of
+ * Divine Acquisition company site, in Vistrial's type (Inter Display, Geist
+ * Mono). Dark, with two purples: the deep violet of
  * divineacquisition.io (#5A23FC) for buttons and strong glows, and Vistrial's
  * lavender (#9A88FC, #C3B6FE) for accents, borders, and soft card glows.
  * Surfaces are solid and lavender-tinted; nothing important is see-through.
@@ -29,9 +30,14 @@ body:has(.da-site) {
 
   background: var(--s-page);
   color: #fff;
-  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: 'cv11', 'ss01';
+  /* Inter Display with Vistrial's settings: the opsz 32 cut at every size
+     (locked in the @font-face), ligatures and contextual alternates, no
+     stylistic sets. */
+  font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  font-optical-sizing: none;
+  font-feature-settings: 'liga' 1, 'calt' 1;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: clip;
 }
 
@@ -40,13 +46,15 @@ body:has(.da-site) {
   color: #fff;
 }
 
+/* Titles as on the Vistrial landing page: medium weight, tight tracking. */
 .da-display {
-  font-family: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.035em;
+  font-family: var(--font-inter-display), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.032em;
 }
 
 .da-mono {
-  font-family: var(--font-fragment), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* Headline fill: white that cools into lilac, as on the current site. */

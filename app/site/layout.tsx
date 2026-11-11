@@ -1,21 +1,15 @@
 import type { Metadata } from 'next';
-import { Fragment_Mono, Plus_Jakarta_Sans } from 'next/font/google';
+import { Geist_Mono } from 'next/font/google';
 
+import { interDisplay } from '@/app/fonts/inter-display';
 import { HERO, SITE } from '@/lib/site/content';
 
 import './site.css';
 
-const jakarta = Plus_Jakarta_Sans({
+/** Vistrial's pairing: Inter Display for everything, Geist Mono for the small labels. */
+const geistMono = Geist_Mono({
   subsets: ['latin'],
-  weight: ['500', '600', '700'],
-  variable: '--font-jakarta',
-  display: 'swap',
-});
-
-const fragmentMono = Fragment_Mono({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-fragment',
+  variable: '--font-geist-mono',
   display: 'swap',
 });
 
@@ -57,5 +51,5 @@ export const metadata: Metadata = {
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  return <div className={`${jakarta.variable} ${fragmentMono.variable} da-site min-h-screen`}>{children}</div>;
+  return <div className={`${interDisplay.variable} ${geistMono.variable} da-site min-h-screen`}>{children}</div>;
 }
