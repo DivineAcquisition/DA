@@ -28,9 +28,10 @@ describe('normalizePath', () => {
 
 describe('the sidebar', () => {
   it('is the delivery loop, in order', () => {
-    expect(full.map((section) => section.heading)).toEqual(['Seat', 'Client', 'Review', 'Billing', 'Account']);
+    expect(full.map((section) => section.heading)).toEqual(['Seat', 'Pipeline', 'Client', 'Review', 'Billing', 'Account']);
     expect(full.flatMap((section) => railRows(section).map((row) => row.label))).toEqual([
       'Seat',
+      'Pipeline',
       'Client',
       'Review',
       'Billing',
@@ -116,7 +117,7 @@ describe('findActive', () => {
     expect(manager.map((section) => section.heading)).toEqual(['Seat', 'Review', 'Account']);
     const labels = manager.flatMap((section) => section.items.map((item) => item.label));
     expect(labels).toEqual(['Seat', 'EODs', 'Client reports', 'Operators']);
-    for (const hidden of ['Client', 'Billing', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
+    for (const hidden of ['Pipeline', 'Client', 'Billing', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
   });
 });
 
@@ -146,9 +147,9 @@ describe('legacyAdminRedirect', () => {
     expect(legacyAdminRedirect('/workspace/team/operator/abc')).toBe('/workspace/operators/abc');
   });
 
-  it('sends the pipeline, prospects, and Growth to the client file', () => {
-    expect(legacyAdminRedirect('/workspace/pipeline')).toBe('/workspace/clients');
-    expect(legacyAdminRedirect('/workspace/pipeline/lead-1')).toBe('/workspace/clients');
+  it('sends prospects and Growth to the client file, and keeps the pipeline', () => {
+    expect(legacyAdminRedirect('/workspace/pipeline')).toBeNull();
+    expect(legacyAdminRedirect('/workspace/pipeline/lead-1')).toBeNull();
     expect(legacyAdminRedirect('/workspace/clients/prospects')).toBe('/workspace/clients');
     expect(legacyAdminRedirect('/workspace/admin')).toBe('/workspace/clients');
     expect(legacyAdminRedirect('/workspace/admin/clients/c1')).toBe('/workspace/clients/c1');
@@ -218,7 +219,6 @@ describe('legacyAdminRedirect', () => {
   it('lands every redirect on a page the nav knows', () => {
     const samples = [
       '/workspace/onboarding',
-      '/workspace/pipeline/x',
       '/da/lumen',
       '/workspace/team/workspace/eods/x',
       '/workspace/academy',

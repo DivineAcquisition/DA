@@ -34,8 +34,8 @@ const RULES: Rule[] = [
   { from: new RegExp(`^/workspace/team/operator/${id}$`), to: (m) => `/workspace/operators/${m[1]}` },
 
   // Client file. Prospects, growth, and the old admin client screens land here.
+  // The Pipeline is its own desk again (inquiries, bookings, discovery calls).
   { from: /^\/workspace\/clients\/prospects(?:\/.*)?$/, to: () => '/workspace/clients' },
-  { from: /^\/workspace\/pipeline(?:\/.*)?$/, to: () => '/workspace/clients' },
   { from: /^\/workspace\/(?:admin|ops)(?:\/clients)?$/, to: () => '/workspace/clients' },
   { from: new RegExp(`^/workspace/(?:admin|ops)/clients/${id}$`), to: (m) => `/workspace/clients/${m[1]}` },
   { from: /^\/workspace\/admin\/(?:escalations|bookings|notifications)$/, to: () => '/workspace/clients' },

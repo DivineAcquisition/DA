@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cleaningLeadNote, parseCleaningLead } from '@/lib/cleaning/lead';
 import { recordCleaningAuditLead } from '@/lib/go/contact';
+import { answersFromNote, captureInquiry } from '@/lib/pipeline/capture';
 import { REVENUE_FIT_TAGS, SOURCE_TAGS, SPEND_QUALIFIED_TAGS, TAGS, nicheTag } from '@/lib/ghl/tags';
 
 export const dynamic = 'force-dynamic';
@@ -30,16 +31,29 @@ export async function POST(request: Request) {
     lead.adBudget === 'Yes' ? SPEND_QUALIFIED_TAGS.yes : lead.budgetNotYet ? SPEND_QUALIFIED_TAGS.no : '',
   ].filter(Boolean);
 
-  try {
-    await recordCleaningAuditLead({
+  // Written to the workspace Pipeline and to GHL. Received if either took it.
+  const note = cleaningLeadNote(lead);
+  const [stored, crm] = await Promise.allSettled([
+    captureInquiry({
+      kind: 'cleaning_audit',
+      email: lead.email,
+      fullName: lead.firstName,
+      phone: lead.phone,
+      company: lead.company,
+      answers: answersFromNote(note),
+    }),
+    recordCleaningAuditLead({
       firstName: lead.firstName,
       email: lead.email,
       phone: lead.phone,
       company: lead.company,
-      note: cleaningLeadNote(lead),
+      note,
       tags,
-    });
-  } catch {
+    }),
+  ]);
+  if (stored.status === 'rejected') console.error('cleaning audit: pipeline', stored.reason);
+  if (crm.status === 'rejected') console.error('cleaning audit: ghl', crm.reason);
+  if (stored.status === 'rejected' && crm.status === 'rejected') {
     return NextResponse.json(
       { ok: false, error: 'We could not submit that just now. Try again in a moment.' },
       { status: 503 },

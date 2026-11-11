@@ -26,6 +26,7 @@ const request: DiagnosticRequest = parsed.value;
 function destinations(overrides: Partial<Destinations> = {}): Destinations & { failures: string[] } {
   const failures: string[] = [];
   return {
+    store: vi.fn(async () => 'lead-1'),
     crm: vi.fn(async () => 'contact-1'),
     alert: vi.fn(async () => true),
     logFailure: vi.fn(async (step: string) => {
@@ -40,7 +41,10 @@ describe('recording a diagnostic request', () => {
   it('writes the contact with the diagnostic tags and emails the team', async () => {
     const live = destinations();
     const result = await recordDiagnosticRequest(request, live);
-    expect(result).toMatchObject({ ok: true, crm: true, email: true });
+    expect(result).toMatchObject({ ok: true, stored: true, crm: true, email: true });
+    const stored = vi.mocked(live.store).mock.calls[0][0];
+    expect(stored).toMatchObject({ kind: 'diagnostic', email: 'avery@example.co', inquiryId: result.inquiryId });
+    expect(stored.answers.length).toBeGreaterThan(3);
     const crmCall = vi.mocked(live.crm).mock.calls[0][0];
     expect(crmCall.tags).toEqual(['source - sales operations diagnostic', 'diagnostic - new inquiry', 'consent - marketing opt in']);
     expect(crmCall.tags).not.toContain('consent - sms opt in');
@@ -51,17 +55,27 @@ describe('recording a diagnostic request', () => {
   it('still counts as received when only one destination takes it', async () => {
     const live = destinations({ crm: vi.fn(async () => Promise.reject(new Error('GHL down'))) });
     const result = await recordDiagnosticRequest(request, live);
-    expect(result).toMatchObject({ ok: true, crm: false, email: true });
+    expect(result).toMatchObject({ ok: true, stored: true, crm: false, email: true });
     expect(live.failures).toEqual(['site-crm']);
   });
 
-  it('reports failure when nothing recorded it', async () => {
+  it('counts as received when only the pipeline took it', async () => {
     const live = destinations({
       crm: vi.fn(async () => Promise.reject(new Error('GHL down'))),
       alert: vi.fn(async () => Promise.reject(new Error('email down'))),
     });
     const result = await recordDiagnosticRequest(request, live);
+    expect(result).toMatchObject({ ok: true, stored: true, crm: false, email: false });
+  });
+
+  it('reports failure when nothing recorded it', async () => {
+    const live = destinations({
+      store: vi.fn(async () => Promise.reject(new Error('db down'))),
+      crm: vi.fn(async () => Promise.reject(new Error('GHL down'))),
+      alert: vi.fn(async () => Promise.reject(new Error('email down'))),
+    });
+    const result = await recordDiagnosticRequest(request, live);
     expect(result.ok).toBe(false);
-    expect(live.failures).toEqual(['site-crm', 'site-alert']);
+    expect(live.failures).toEqual(['site-pipeline', 'site-crm', 'site-alert']);
   });
 });

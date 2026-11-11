@@ -9,6 +9,7 @@ import { renderEmailHtml, textFooter } from '@/lib/email/layout';
 import { idempotencyKey } from '@/lib/email/policy';
 import { sendAppEmail } from '@/lib/email/service';
 import { recordSiteContact } from '@/lib/go/contact';
+import { captureInquiry, type InquiryCapture } from '@/lib/pipeline/capture';
 import { SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 
 import {
@@ -20,13 +21,14 @@ import {
 } from './forms';
 
 /**
- * Where a site submission goes. Each submission is written to two places: the
- * GoHighLevel contact (the CRM) and an alert email to the team, which the
- * email service also logs. It counts as received when at least one of them
- * took it. If neither did, the visitor sees an error and can try again; a
+ * Where a site submission goes. Each submission is written to three places:
+ * the workspace Pipeline, the GoHighLevel contact (the CRM), and an alert
+ * email to the team, which the email service also logs. It counts as received
+ * when at least one of them took it. If neither did, the visitor sees an error and can try again; a
  * submission is never dropped while the page says it went through.
  */
 export type Destinations = {
+  store: (input: InquiryCapture) => Promise<string>;
   crm: (input: Parameters<typeof recordSiteContact>[0]) => Promise<string>;
   alert: (input: { subject: string; title: string; intro: string; rows: Array<[string, string]>; replyTo: string; key: string; event: string }) => Promise<boolean>;
   logFailure: (step: string, email: string, error: unknown) => Promise<void>;
@@ -61,25 +63,33 @@ async function sendAlert(input: Parameters<Destinations['alert']>[0]): Promise<b
 }
 
 export const LIVE_DESTINATIONS: Destinations = {
+  store: captureInquiry,
   crm: recordSiteContact,
   alert: sendAlert,
   logFailure: logPipelineFailure,
 };
 
-export type Recorded = { ok: true; crm: boolean; email: boolean } | { ok: false };
+export type Recorded = { ok: true; stored: boolean; crm: boolean; email: boolean } | { ok: false };
 
 async function deliver(
   destinations: Destinations,
   email: string,
+  storeInput: Parameters<Destinations['store']>[0],
   crmInput: Parameters<Destinations['crm']>[0],
   alertInput: Parameters<Destinations['alert']>[0],
 ): Promise<Recorded> {
-  const [crm, alert] = await Promise.allSettled([destinations.crm(crmInput), destinations.alert(alertInput)]);
+  const [store, crm, alert] = await Promise.allSettled([
+    destinations.store(storeInput),
+    destinations.crm(crmInput),
+    destinations.alert(alertInput),
+  ]);
+  if (store.status === 'rejected') await destinations.logFailure('site-pipeline', email, store.reason);
   if (crm.status === 'rejected') await destinations.logFailure('site-crm', email, crm.reason);
   if (alert.status === 'rejected') await destinations.logFailure('site-alert', email, alert.reason);
+  const stored = store.status === 'fulfilled';
   const crmOk = crm.status === 'fulfilled';
   const emailOk = alert.status === 'fulfilled';
-  return crmOk || emailOk ? { ok: true, crm: crmOk, email: emailOk } : { ok: false };
+  return stored || crmOk || emailOk ? { ok: true, stored, crm: crmOk, email: emailOk } : { ok: false };
 }
 
 /**
@@ -116,6 +126,15 @@ export async function recordDiagnosticRequest(
     destinations,
     request.email,
     {
+      kind: 'diagnostic',
+      email: request.email,
+      fullName: request.fullName,
+      company: request.company,
+      phone: request.phone || null,
+      answers: rows,
+      inquiryId,
+    },
+    {
       email: request.email,
       fullName: request.fullName,
       phone: request.phone || undefined,
@@ -146,6 +165,12 @@ export async function recordDiscovery(
   return deliver(
     destinations,
     answers.email,
+    {
+      kind: 'discovery',
+      email: answers.email,
+      company: answers.company,
+      answers: rows,
+    },
     {
       email: answers.email,
       company: answers.company,

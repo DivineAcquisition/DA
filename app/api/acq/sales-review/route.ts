@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { parseSalesReview, salesReviewNote } from '@/lib/acq/sales-review';
 import { recordSalesReviewLead } from '@/lib/go/contact';
+import { answersFromNote, captureInquiry } from '@/lib/pipeline/capture';
 import { SOURCE_TAGS, TAGS } from '@/lib/ghl/tags';
 
 export const dynamic = 'force-dynamic';
@@ -19,17 +20,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: parsed.error, field: parsed.field }, { status: 400 });
   }
 
-  try {
-    await recordSalesReviewLead({
+  // Written to the workspace Pipeline and to GHL. Received if either took it.
+  const note = salesReviewNote(parsed.lead);
+  const [stored, crm] = await Promise.allSettled([
+    captureInquiry({
+      kind: 'sales_review',
+      email: parsed.lead.email,
+      fullName: parsed.lead.firstName,
+      phone: parsed.lead.phone,
+      company: parsed.lead.company,
+      answers: answersFromNote(note),
+    }),
+    recordSalesReviewLead({
       firstName: parsed.lead.firstName,
       email: parsed.lead.email,
       phone: parsed.lead.phone,
       company: parsed.lead.company,
-      note: salesReviewNote(parsed.lead),
+      note,
       tags: [SOURCE_TAGS.salesOperations, TAGS.smsConsent],
-    });
-  } catch (error) {
-    console.error('sales operations review', error);
+    }),
+  ]);
+  if (stored.status === 'rejected') console.error('sales operations review: pipeline', stored.reason);
+  if (crm.status === 'rejected') console.error('sales operations review: ghl', crm.reason);
+  if (stored.status === 'rejected' && crm.status === 'rejected') {
     return NextResponse.json(
       { ok: false, error: 'We could not send that request. Try again in a moment.' },
       { status: 503 },

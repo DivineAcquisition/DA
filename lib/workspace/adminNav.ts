@@ -3,6 +3,7 @@ import {
   Activity,
   Building2,
   FileText,
+  Inbox,
   LayoutList,
   Link,
   Plug,
@@ -118,6 +119,17 @@ function reviewDesk(counts?: NavCounts): NavSection {
   };
 }
 
+function pipelineDesk(): NavSection {
+  return {
+    id: 'pipeline',
+    heading: 'Pipeline',
+    tone: 'sky',
+    href: '/workspace/pipeline',
+    icon: Inbox,
+    items: [{ href: '/workspace/pipeline', label: 'Pipeline', icon: Inbox }],
+  };
+}
+
 function billingDesk(): NavSection {
   return {
     id: 'billing',
@@ -160,7 +172,7 @@ export function buildNav({
 }): NavSection[] {
   const desks = [seatDesk(), reviewDesk(counts), accountDesk(role)];
   if (role === 'manager') return desks;
-  return [seatDesk(), clientDesk(), reviewDesk(counts), billingDesk(), accountDesk('admin')];
+  return [seatDesk(), pipelineDesk(), clientDesk(), reviewDesk(counts), billingDesk(), accountDesk('admin')];
 }
 
 export { normalizePath } from './legacyRoutes';
