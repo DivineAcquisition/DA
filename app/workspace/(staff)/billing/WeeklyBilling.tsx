@@ -513,11 +513,11 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
               {preview === 'client' ? (
                 <>
                   To <span className="text-white">{to.length ? to.join(', ') : 'no client email on file'}</span>
-                  {data.recipients.cc.length ? <> · CC {data.recipients.cc.join(', ')}</> : null}
+                  {' · '}CC {[...data.recipients.cc, 'you'].join(', ')}
                 </>
               ) : (
                 <>
-                  To <span className="text-white">{operatorEmail ?? 'no operator email on file'}</span> · no management fee, no client total
+                  To <span className="text-white">{operatorEmail ?? 'no operator email on file'}</span> · CC you · no management fee, no client total
                 </>
               )}
             </p>

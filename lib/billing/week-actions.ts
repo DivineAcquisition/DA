@@ -72,6 +72,21 @@ function entryFrom(data: WeekData): WeekEntry | null {
   };
 }
 
+/** The signed-in admin who sends, copied on both emails. Their real login, never an account they are viewing as. */
+async function adminCopy(): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase.auth.getUser();
+  const email = data.user?.email?.trim().toLowerCase() ?? '';
+  return email.includes('@') ? email : null;
+}
+
+function withCopy(list: string[], copy: string | null, exclude: string[]): string[] {
+  const out = new Set(list.map((email) => email.toLowerCase()));
+  if (copy) out.add(copy);
+  for (const email of exclude) out.delete(email.toLowerCase());
+  return [...out];
+}
+
 function fingerprint(value: unknown): string {
   return createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 16);
 }
@@ -100,7 +115,7 @@ export async function chargeAndSendClientAction(input: WeekChargeInput): Promise
   if (!admin) return { ok: false, error: 'The server is missing its database key (SUPABASE_SERVICE_ROLE_KEY).' };
 
   const to = data.recipients.to ?? [];
-  const cc = data.recipients.cc ?? [];
+  const cc = withCopy(data.recipients.cc ?? [], await adminCopy(), to);
   if (to.length === 0) return { ok: false, error: 'This client has no email on file. Add a contact email to the client, then send.' };
 
   const total = clientTotal(entry);
@@ -182,7 +197,7 @@ export async function chargeAndSendClientAction(input: WeekChargeInput): Promise
       email_log_id: result.logId,
     })
     .eq('id', charge.id);
-  return { ok: true, message: `${chargedText}Receipt ${result.status === 'queued' ? 'queued' : 'sent'} to ${to.join(', ')}.` };
+  return { ok: true, message: `${chargedText}Receipt ${result.status === 'queued' ? 'queued' : 'sent'} to ${to.join(', ')}${cc.length ? `, copied to ${cc.join(', ')}` : ''}.` };
 }
 
 /** Email the operator their pay: hours and pay per shift, and commission if any. Never the fee or the client total. */
@@ -195,14 +210,16 @@ export async function sendOperatorStatementAction(input: WeekChargeInput): Promi
   if (!to) return { ok: false, error: 'This operator has no email on file.' };
 
   const statement = operatorStatement(data, entry);
+  const cc = withCopy([], await adminCopy(), [to]);
   const result = await sendAppEmail({
     purpose: 'team',
     to,
+    cc,
     subject: statement.subject,
     html: statement.html,
     text: statement.text,
     template: 'operator.pay_statement',
-    idempotencyKey: idempotencyKey(['operator-pay', charge.id, fingerprint({ hours: entry.hours, pay: entry.operatorPay, commission: entry.commission, to })]),
+    idempotencyKey: idempotencyKey(['operator-pay', charge.id, fingerprint({ hours: entry.hours, pay: entry.operatorPay, commission: entry.commission, to, cc })]),
     event: 'operator.pay_statement',
     related: { placementId: data.placement!.id, relatedType: 'weekly_charge', relatedId: charge.id },
     payload: { weekStart: data.week_start, earned: operatorEarnings(entry) },
@@ -223,7 +240,7 @@ export async function sendOperatorStatementAction(input: WeekChargeInput): Promi
       .eq('id', charge.id);
   }
   revalidatePath('/workspace/billing');
-  return { ok: true, message: `Pay statement ${result.status === 'queued' ? 'queued' : 'sent'} to ${to}.` };
+  return { ok: true, message: `Pay statement ${result.status === 'queued' ? 'queued' : 'sent'} to ${to}${cc.length ? `, copied to ${cc.join(', ')}` : ''}.` };
 }
 
 function money2(value: number): string {
