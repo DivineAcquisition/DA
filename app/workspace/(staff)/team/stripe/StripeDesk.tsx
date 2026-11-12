@@ -1,25 +1,17 @@
 'use client';
 
-import { useActionState, useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { CreditCard, KeyRound, Link2, Search } from 'lucide-react';
 import type { ActionResult } from '@/lib/ad/rpc';
-import { connectStripeAction, disconnectStripeAction, findCustomersAction, linkClientAction } from '@/lib/stripe/actions';
+import { findCustomersAction, linkClientAction } from '@/lib/stripe/actions';
 import type { StripeCustomerView } from '@/lib/stripe/connection';
-import { DeskHeader, Pill, Section, danger, field, primary, secondary } from '../../components/desk';
+import { DeskHeader, Pill, Section, field, secondary } from '../../components/desk';
 
 export type StripeStatus =
-  | { connected: false }
-  | {
-      connected: true;
-      account_id: string | null;
-      account_name: string | null;
-      livemode: boolean;
-      key_kind: 'secret' | 'restricted';
-      key_last4: string;
-      connected_at: string;
-      connected_by: string | null;
-    };
+  | { state: 'missing' }
+  | { state: 'failing'; error: string }
+  | { state: 'connected'; accountName: string | null; accountId: string | null; livemode: boolean; restricted: boolean };
 
 export type ClientRow = {
   case_file_id: string;
@@ -140,24 +132,20 @@ function ClientLink({ client, connected }: { client: ClientRow; connected: boole
   );
 }
 
-export default function StripeDesk({ status, deployKey, clients }: { status: StripeStatus; deployKey: boolean; clients: ClientRow[] }) {
-  const router = useRouter();
-  const [state, action, pending] = useActionState(connectStripeAction, null);
-  const [removing, startRemove] = useTransition();
-  const [removed, setRemoved] = useState<ActionResult | null>(null);
-  const connected = status.connected || deployKey;
+export default function StripeDesk({ status, clients }: { status: StripeStatus; clients: ClientRow[] }) {
+  const connected = status.state === 'connected';
 
   return (
     <div className="space-y-5">
       <DeskHeader
         crumb="Account"
         title="Stripe"
-        description="Connect Stripe so Billing can charge a client's card on file for each week. The key is checked with Stripe, then stored encrypted; nobody can read it back."
+        description="Billing charges a client's card on file through Stripe, connected directly on the server. The key is never entered or stored in the app."
         actions={
-          status.connected ? (
+          status.state === 'connected' ? (
             <Pill tone={status.livemode ? 'good' : 'warn'}>{status.livemode ? 'Connected, live' : 'Connected, test mode'}</Pill>
-          ) : deployKey ? (
-            <Pill tone="good">Connected from the deploy</Pill>
+          ) : status.state === 'failing' ? (
+            <Pill tone="bad">Key rejected</Pill>
           ) : (
             <Pill tone="bad">Not connected</Pill>
           )
@@ -165,74 +153,36 @@ export default function StripeDesk({ status, deployKey, clients }: { status: Str
       />
 
       <Section title="Connection" icon={KeyRound}>
-        {status.connected ? (
-          <div className="mb-5 space-y-1 text-sm text-neutral-300">
+        {status.state === 'connected' ? (
+          <div className="space-y-1 text-sm text-neutral-300">
             <p>
-              <span className="text-white">{status.account_name ?? status.account_id ?? 'Stripe account'}</span>
-              {status.account_id ? <span className="text-neutral-500"> · {status.account_id}</span> : null}
+              <span className="text-white">{status.accountName ?? status.accountId ?? 'Stripe account'}</span>
+              {status.accountId ? <span className="text-neutral-500"> · {status.accountId}</span> : null}
             </p>
             <p>
-              {status.key_kind === 'restricted' ? 'Restricted key' : 'Secret key'} ending {status.key_last4} · {status.livemode ? 'live mode: real charges' : 'test mode: no real charges'}
+              {status.restricted ? 'Restricted key' : 'Secret key'} on the server · {status.livemode ? 'live mode: real charges' : 'test mode: no real charges'}
             </p>
-            <p className="text-neutral-500">
-              Connected {new Date(status.connected_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-              {status.connected_by ? ` by ${status.connected_by}` : ''}
-            </p>
+            <p className="text-neutral-500">Checked with Stripe just now. To change the key, update STRIPE_SECRET_KEY in Vercel and redeploy.</p>
           </div>
-        ) : deployKey ? (
-          <p className="mb-5 text-sm text-neutral-300">Billing is using the STRIPE_SECRET_KEY set on the deploy. Connect a key here to manage it from the workspace instead.</p>
         ) : (
-          <p className="mb-5 text-sm text-neutral-300">Billing cannot charge a card until Stripe is connected.</p>
-        )}
-
-        <form action={action} className="space-y-3">
-          <label className="block text-[13px] text-neutral-400">
-            {status.connected ? 'Replace the key' : 'Stripe key'}
-            <input
-              name="key"
-              type="password"
-              autoComplete="off"
-              spellCheck={false}
-              placeholder="rk_live_... or sk_live_..."
-              className={`${field} mt-1.5 w-full font-mono`}
-            />
-          </label>
-          <div className="flex flex-wrap items-center gap-3">
-            <button type="submit" className={primary} disabled={pending}>
-              {pending ? 'Checking with Stripe…' : status.connected ? 'Check and replace' : 'Check and connect'}
-            </button>
-            {status.connected ? (
-              <button
-                type="button"
-                className={danger}
-                disabled={removing}
-                onClick={() => {
-                  if (!window.confirm('Disconnect Stripe? Billing will not be able to charge cards until you connect it again.')) return;
-                  startRemove(async () => {
-                    setRemoved(await disconnectStripeAction());
-                    router.refresh();
-                  });
-                }}
-              >
-                Disconnect
-              </button>
-            ) : null}
-            <Result state={state ?? removed} />
+          <div className="space-y-3 text-sm text-neutral-300">
+            <p className={status.state === 'failing' ? 'text-flag-critical' : ''}>
+              {status.state === 'failing' ? status.error : 'STRIPE_SECRET_KEY is not set on the server, so Billing cannot charge a card.'}
+            </p>
+            <ol className="list-decimal space-y-1 pl-5 text-[13px] text-neutral-400">
+              <li>
+                In Stripe (Divine Acquisition), open Developers, API keys, Create restricted key. Set{' '}
+                <span className="text-white">Customers: Read</span>, <span className="text-white">Invoices: Write</span>,{' '}
+                <span className="text-white">PaymentIntents: Write</span> and <span className="text-white">Payment methods: Read</span>; everything else None.
+              </li>
+              <li>
+                In Vercel, open the <span className="text-white">da</span> project, Settings, Environment Variables. Add{' '}
+                <span className="font-mono text-white">STRIPE_SECRET_KEY</span> for Production with the key, marked Sensitive.
+              </li>
+              <li>Redeploy, then reload this page. It checks the key with Stripe and shows the account.</li>
+            </ol>
           </div>
-        </form>
-
-        <details className="mt-5 rounded-xl border border-white/[0.08] px-4 py-3 text-[13px] text-neutral-400">
-          <summary className="cursor-pointer text-neutral-200">Which key to use</summary>
-          <ol className="mt-2 list-decimal space-y-1 pl-5">
-            <li>In Stripe, open Developers, API keys, and choose Create restricted key.</li>
-            <li>
-              Set <span className="text-white">Customers: Read</span>, <span className="text-white">Invoices: Write</span>,{' '}
-              <span className="text-white">PaymentIntents: Write</span> and <span className="text-white">Payment methods: Read</span>. Leave everything
-              else at None. If a charge is refused, Stripe&apos;s message names the permission to add.
-            </li>
-            <li>Copy the key (it starts with rk_live_) and paste it above. A secret key (sk_live_) also works but can do far more.</li>
-          </ol>
-        </details>
+        )}
       </Section>
 
       <Section title="Clients" icon={CreditCard} hint="Billing charges the card on file of the Stripe customer each client is linked to.">

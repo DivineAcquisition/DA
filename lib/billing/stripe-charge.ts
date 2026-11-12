@@ -67,7 +67,7 @@ async function stripe<T>(method: 'GET' | 'POST' | 'DELETE', path: string, params
 }
 
 export async function chargeWeek(input: {
-  /** The key to charge with (Account, Stripe); defaults to STRIPE_SECRET_KEY. */
+  /** The key to charge with; defaults to STRIPE_SECRET_KEY on the server. */
   apiKey?: string;
   customerId: string;
   chargeId: string;
@@ -81,7 +81,7 @@ export async function chargeWeek(input: {
 }): Promise<ChargeResult> {
   activeKey = input.apiKey?.trim() || '';
   if (!stripeKey()) {
-    return { ok: false, invoiceId: null, status: null, error: 'Stripe is not connected. Connect it under Account, Stripe.' };
+    return { ok: false, invoiceId: null, status: null, error: 'Stripe is not connected: STRIPE_SECRET_KEY is not set on the server.' };
   }
   const lines = input.lines.filter((line) => line.amountCents > 0);
   const totalCents = lines.reduce((sum, line) => sum + line.amountCents, 0);

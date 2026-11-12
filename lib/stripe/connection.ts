@@ -1,19 +1,13 @@
 import 'server-only';
 
-import { serviceRoleClient } from '@/lib/workspace/db';
-
 const STRIPE_API = 'https://api.stripe.com/v1';
 
 /**
- * The Stripe key billing charges with: the one connected in the admin
- * workspace (Account, Stripe), else STRIPE_SECRET_KEY on the deploy.
+ * Stripe is connected directly through the deploy: STRIPE_SECRET_KEY on the
+ * server (Vercel, Settings, Environment Variables). The app never asks for the
+ * key, stores it, or sends it to a browser.
  */
-export async function resolveStripeKey(): Promise<{ key: string; source: 'workspace' | 'deploy' } | null> {
-  const db = serviceRoleClient();
-  if (db) {
-    const { data } = await db.rpc('stripe_connection_secret');
-    if (typeof data === 'string' && data.trim()) return { key: data.trim(), source: 'workspace' };
-  }
+export async function resolveStripeKey(): Promise<{ key: string; source: 'deploy' } | null> {
   const env = process.env.STRIPE_SECRET_KEY?.trim();
   return env ? { key: env, source: 'deploy' } : null;
 }
@@ -32,20 +26,20 @@ async function get<T>(key: string, path: string, params: Record<string, string> 
 }
 
 /**
- * Checks a key before it is saved: it must reach Stripe and be able to read
- * customers and invoices, which charging needs. The account name is read when
- * the key is allowed to.
+ * Checks the deploy's key: it must reach Stripe and be able to read customers
+ * and invoices, which charging needs. The account name is read when the key
+ * is allowed to.
  */
 export async function checkStripeKey(key: string): Promise<StripeCheck> {
   const trimmed = key.trim();
   if (!/^(sk|rk)_(live|test)_[A-Za-z0-9]{20,}$/.test(trimmed)) {
-    return { ok: false, error: 'Paste a Stripe secret key (sk_live_...) or restricted key (rk_live_...).' };
+    return { ok: false, error: 'STRIPE_SECRET_KEY does not look like a Stripe key (sk_live_... or rk_live_...).' };
   }
   const customers = await get<{ data: unknown[] }>(trimmed, '/customers', { limit: '1' });
   if (!customers.ok) {
     return {
       ok: false,
-      error: customers.status === 401 ? 'Stripe did not accept that key.' : `The key cannot read customers: ${customers.error}`,
+      error: customers.status === 401 ? 'Stripe did not accept STRIPE_SECRET_KEY.' : `The key cannot read customers: ${customers.error}`,
     };
   }
   const invoices = await get<{ data: unknown[] }>(trimmed, '/invoices', { limit: '1' });

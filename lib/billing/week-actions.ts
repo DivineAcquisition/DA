@@ -130,7 +130,7 @@ export async function chargeAndSendClientAction(input: WeekChargeInput): Promise
       return { ok: false, error: 'This client is not linked to a Stripe customer, so there is no card to charge.' };
     }
     const stripeKey = await resolveStripeKey();
-    if (!stripeKey) return { ok: false, error: 'Stripe is not connected. Connect it under Account, Stripe, then charge.' };
+    if (!stripeKey) return { ok: false, error: 'Stripe is not connected: STRIPE_SECRET_KEY is not set on the server. See Account, Stripe.' };
     const weekText = weekLabel(data.week_start, data.week_end);
     const operator = data.placement!.operator_name;
     const result = await chargeWeek({
