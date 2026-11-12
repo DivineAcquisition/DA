@@ -10,8 +10,13 @@ import {
 /**
  * Workspace tables are ahead of the checked-in Database types. Cast the client
  * so queries stay typed at the call site without editing the generated file.
+ * This is the one place the codebase opts out of table types; rows read
+ * through it are `UntypedRow`.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the deliberate untyped client, see above
 export type UntypedClient = SupabaseClient<any>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- a row read through UntypedClient
+export type UntypedRow = Record<string, any>;
 
 export async function workspaceClient(): Promise<UntypedClient | null> {
   if (!supabaseConfigured) return null;

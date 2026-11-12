@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { GO_DEMO_MEDIA_ID } from '@/lib/go/config';
-import { CTA_LABEL, DEMO_LABEL } from '@/lib/go/copy';
+import { CTA_LABEL, BOOKING_LAYER_LABEL } from '@/lib/go/copy';
 import { GoWistia } from './GoWistia';
 
 export function DemoLink() {
@@ -27,7 +27,7 @@ export function DemoLink() {
       <p className="go-demo">
         See our{' '}
         <button type="button" onClick={() => setOpen(true)}>
-          {DEMO_LABEL}
+          {BOOKING_LAYER_LABEL}
         </button>
         .
       </p>

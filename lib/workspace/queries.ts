@@ -1,4 +1,4 @@
-import { requireAdmin, workspaceClient } from './db';
+import { requireAdmin, workspaceClient, type UntypedRow } from './db';
 import type { OnboardingStep } from './onboarding-steps';
 import { VA_SALES_OPERATOR_ONBOARDING_KEY } from './onboarding-protocol';
 import { docusealApiKey, pingDocuSeal } from './docuseal';
@@ -173,7 +173,7 @@ export async function listAgreementsForRecipient(recipientId: string): Promise<
     .select('*, da_agreement_template(name)')
     .eq('recipient_id', recipientId)
     .order('sent_at', { ascending: false });
-  return ((data as any[] | null) ?? []).map((row) => ({
+  return ((data as UntypedRow[] | null) ?? []).map((row) => ({
     ...(row as DaAgreement),
     template_name: row.da_agreement_template?.name ?? '—',
   }));
@@ -190,7 +190,7 @@ export async function listPageTokensForRecipient(recipientId: string): Promise<
     .select('*, da_page_template(name)')
     .eq('recipient_id', recipientId)
     .order('created_at', { ascending: false });
-  return ((data as any[] | null) ?? []).map((row) => ({
+  return ((data as UntypedRow[] | null) ?? []).map((row) => ({
     ...(row as DaPageToken),
     resolved_values: (row.resolved_values ?? {}) as Record<string, string>,
     page_name: row.da_page_template?.name ?? '—',
@@ -271,7 +271,7 @@ export async function getAgreementTemplate(id: string): Promise<{
     .order('sort_order', { ascending: true });
   return {
     template: templateFromRow(data),
-    pages: ((pages as any[] | null) ?? []).map((p) => ({
+    pages: ((pages as UntypedRow[] | null) ?? []).map((p) => ({
       ...(p as DaAgreementTemplatePage),
       page_name: p.da_page_template?.name ?? '—',
     })),
@@ -395,7 +395,7 @@ export async function listAgreements(filters?: {
   if (filters?.status && filters.status !== 'all') query = query.eq('status', filters.status);
 
   const { data } = await query;
-  let rows = ((data as any[] | null) ?? []).map((row) => ({
+  let rows = ((data as UntypedRow[] | null) ?? []).map((row) => ({
     ...(row as DaAgreement),
     recipient_name: row.da_recipient?.full_name ?? '—',
     recipient_type: (row.da_recipient?.recipient_type ?? 'client') as RecipientType,
@@ -427,7 +427,7 @@ export async function listCalendarLinks(): Promise<
     .from('da_calendar_link')
     .select('*, da_recipient(full_name)')
     .order('created_at', { ascending: false });
-  return ((data as any[] | null) ?? []).map((row) => ({
+  return ((data as UntypedRow[] | null) ?? []).map((row) => ({
     ...(row as DaCalendarLink),
     recipient_name: row.da_recipient?.full_name ?? '—',
   }));
@@ -444,7 +444,7 @@ export async function listPageTokensForTemplate(pageTemplateId: string): Promise
     .select('*, da_recipient(full_name)')
     .eq('page_template_id', pageTemplateId)
     .order('created_at', { ascending: false });
-  return ((data as any[] | null) ?? []).map((row) => ({
+  return ((data as UntypedRow[] | null) ?? []).map((row) => ({
     ...(row as DaPageToken),
     resolved_values: (row.resolved_values ?? {}) as Record<string, string>,
     recipient_name: row.da_recipient?.full_name ?? '—',

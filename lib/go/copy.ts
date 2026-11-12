@@ -11,7 +11,7 @@ export const SUBHEADLINE =
   "We'll install AI-powered booking, follow-up, and retention so you stop chasing leads and start building a business that grows on autopilot.";
 
 export const CTA_LABEL = 'Book a strategy session';
-export const DEMO_LABEL = 'AI booking layer live';
+export const BOOKING_LAYER_LABEL = 'AI booking layer live';
 export const VIDEO_LABEL = 'Watch this 3-min breakdown (important)';
 
 export const LANDING_TRUST = [

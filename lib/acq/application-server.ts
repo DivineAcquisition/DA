@@ -1,11 +1,11 @@
 import { cookies } from 'next/headers';
 import { recordBookingEvent, stopApplicationRecovery } from '@/lib/booking-messages/transport';
 import { applicationNotifyTo, sendCompletedApplicationEmail } from './application-email';
-import { alertSubject, internalAlertText, runApplicationDelivery } from './application-deliver';
+import { alertSubject, runApplicationDelivery } from './application-deliver';
 import { ACQ_PUBLIC_ORIGIN } from './config';
 import { sendGhlSms } from './ghl-sms';
 import { serviceRoleClient } from '@/lib/workspace/db';
-import { touchFromTracking, type Touch } from './application-attribution';
+import { type Touch } from './application-attribution';
 import { countApplications, type ApplyDayCount, type ApplyEvent } from './application-events';
 import {
   createApplyFlow,
@@ -420,7 +420,8 @@ async function ensureInternalAlertContact(phone: string): Promise<string> {
   return contact.contactId;
 }
 
-async function searchGhlByPhone(phone: string): Promise<string | null> {
+/** Phone search is not wired to GHL yet, so a phone never matches an existing contact. */
+async function searchGhlByPhone(_phone: string): Promise<string | null> {
   return null;
 }
 

@@ -1,4 +1,5 @@
 import { controlRpc } from '@/lib/ad/rpc';
+import type { UntypedClient } from '@/lib/workspace/db';
 import type {
   AccountInvite,
   AccountRow,
@@ -54,18 +55,18 @@ export async function getAccountScope(profileId: string): Promise<{
   if (!(await isControlPlaneSession())) return { scope: null, caseFileIds: [], placementIds: [] };
   const supabase = await createClient();
 
-  const { data: scope } = await (supabase as unknown as { from: Function })
+  const { data: scope } = await (supabase as unknown as UntypedClient)
     .from('account_scope')
     .select('*')
     .eq('profile_id', profileId)
     .maybeSingle();
 
-  const { data: clients } = await (supabase as unknown as { from: Function })
+  const { data: clients } = await (supabase as unknown as UntypedClient)
     .from('account_scope_client')
     .select('case_file_id')
     .eq('profile_id', profileId);
 
-  const { data: placements } = await (supabase as unknown as { from: Function })
+  const { data: placements } = await (supabase as unknown as UntypedClient)
     .from('account_scope_placement')
     .select('placement_id')
     .eq('profile_id', profileId);
@@ -107,7 +108,7 @@ export async function openWorkFor(profileId: string): Promise<OpenWorkItem[]> {
 export async function listAuditEvents(limit = 100, profileId?: string): Promise<AuditEvent[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  let query = (supabase as unknown as { from: Function })
+  let query = (supabase as unknown as UntypedClient)
     .from('audit_event')
     .select('*')
     .order('id', { ascending: false })
@@ -128,7 +129,7 @@ export async function listAuditEvents(limit = 100, profileId?: string): Promise<
 export async function listOwnerAlerts(): Promise<OwnerAlert[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as { from: Function })
+  const { data, error } = await (supabase as unknown as UntypedClient)
     .from('owner_alert')
     .select('id, at, kind, severity, summary, subject_profile_id, acknowledged_at')
     .is('acknowledged_at', null)
@@ -144,7 +145,7 @@ export async function listOwnerAlerts(): Promise<OwnerAlert[]> {
 export async function listInvites(): Promise<AccountInvite[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as { from: Function })
+  const { data, error } = await (supabase as unknown as UntypedClient)
     .from('account_invite')
     .select(
       'id, email, full_name, role, scope_kind, scope_case_file_ids, expires_on, created_at, expires_at, accepted_at, cancelled_at, resent_count, last_sent_at',
@@ -161,7 +162,7 @@ export async function listInvites(): Promise<AccountInvite[]> {
 export async function listCredentials(): Promise<ClientCredential[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as { from: Function })
+  const { data, error } = await (supabase as unknown as UntypedClient)
     .from('client_credential')
     .select('id, case_file_id, kind, label, username, notes, stale, created_at, updated_at, last_revealed_at')
     .order('updated_at', { ascending: false })
@@ -188,7 +189,7 @@ export async function listCaseFiles(): Promise<{ id: string; name: string; slug:
 export async function listPermissions(): Promise<{ key: string; label: string; category: string }[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as { from: Function })
+  const { data, error } = await (supabase as unknown as UntypedClient)
     .from('permission')
     .select('key, label, category')
     .order('key');
@@ -201,7 +202,7 @@ export async function listAccountOverrides(
 ): Promise<{ permission_key: string; effect: string; reason: string | null; expires_at: string | null }[]> {
   if (!(await isControlPlaneSession())) return [];
   const supabase = await createClient();
-  const { data, error } = await (supabase as unknown as { from: Function })
+  const { data, error } = await (supabase as unknown as UntypedClient)
     .from('account_permission')
     .select('permission_key, effect, reason, expires_at')
     .eq('profile_id', profileId);

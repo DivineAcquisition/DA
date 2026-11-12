@@ -247,12 +247,6 @@ export function PayoutFields({
         { value: 'remitly', label: 'Remitly' },
       ];
   const [editing, setEditing] = useState(!answer?.value);
-  useEffect(() => {
-    if (answer?.value) {
-      setEditing(false);
-      setAccountNumber('');
-    }
-  }, [answer?.value, answer?.last4, answer?.answered_at]);
   const [method, setMethod] = useState(answer?.value || choices[0]?.value || 'wise');
   const [wiseEmail, setWiseEmail] = useState('');
   const [wiseName, setWiseName] = useState('');
@@ -263,6 +257,12 @@ export function PayoutFields({
   const [delivery, setDelivery] = useState('bank');
   const [bankName, setBankName] = useState('');
   const [accountNumber, setAccountNumber] = useState('');
+  useEffect(() => {
+    if (answer?.value) {
+      setEditing(false);
+      setAccountNumber('');
+    }
+  }, [answer?.value, answer?.last4, answer?.answered_at]);
   const [city, setCity] = useState('');
   const [walletProvider, setWalletProvider] = useState('');
   const [walletPhone, setWalletPhone] = useState('');

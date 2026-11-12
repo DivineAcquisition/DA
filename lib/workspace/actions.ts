@@ -13,7 +13,7 @@ import {
   fetchSignedDocumentUrl,
 } from './docuseal';
 import { forgetGhlPit } from '@/lib/ghl/pit';
-import { requireAdmin, workspaceClient } from './db';
+import { requireAdmin, workspaceClient, type UntypedRow } from './db';
 import { sendAgreementInviteEmail } from './email';
 import {
   buildProfile,
@@ -333,7 +333,7 @@ async function createPageTokensForTemplate(input: {
 
   const pageUrls: Record<string, string> = {};
 
-  for (const attachment of (attachments as any[] | null) ?? []) {
+  for (const attachment of (attachments as UntypedRow[] | null) ?? []) {
     const page = attachment.da_page_template;
     if (!page) continue;
     const token = createToken();

@@ -1,11 +1,73 @@
 import { describe, expect, it } from 'vitest';
-import { assetCounts, EMAILS, EVENTS, NEW_DISCORD_IDS, NEW_EMAIL_IDS, SAMPLE_FIELDS, SMS } from './index';
+import { assetCounts, EMAILS, EVENTS, NEW_DISCORD_IDS, NEW_EMAIL_IDS, SMS, type MergeFields } from './index';
 import { DISCORD_ALERTS } from './discord';
 import { planDelivery } from './deliver';
 import { renderDiscord, renderEmail, renderSms } from './render';
 import { certificateVerification } from './pages';
 import { isQuietHours, nextWindow } from './rules';
 import { inApp } from './inApp';
+
+/** A filled set of merge fields, to prove every template can render. */
+const SAMPLE_FIELDS: MergeFields = {
+  firstName: 'Amina',
+  fullName: 'Amina Cole',
+  managerName: 'Malik',
+  reviewerName: 'Jordan',
+  supervisorName: 'Riley',
+  senderName: 'Malik',
+  clientContactFirstName: 'Priya',
+  operatorFirstName: 'Amina',
+  adminName: 'Malik',
+  program: 'DA Operator Academy',
+  moduleNumber: 3,
+  moduleName: 'The DA Standard',
+  lessonName: 'Who DA Is',
+  quizName: 'Module 3 quiz',
+  simulationName: 'Discovery call',
+  lessonOrQuiz: 'Module 3 quiz',
+  nextStepName: 'Module 3: Lesson 2',
+  minutes: 20,
+  targetDate: 'Oct 18, 2026',
+  attemptsUsed: 5,
+  attemptsLeft: 2,
+  attemptsMax: 5,
+  number: 2,
+  numbers: [12, 3, 1, 0, 4, 2, 6, 1, 5],
+  concepts: 'pricing, discovery',
+  date: 'Oct 11, 2026',
+  time: '10:30 AM',
+  timeZone: 'ET',
+  days: 7,
+  hours: 26,
+  reviewDueDate: 'Oct 14, 2026',
+  retestDate: 'Oct 20, 2026',
+  startDate: 'Oct 21, 2026',
+  endDate: 'Nov 21, 2026',
+  renewalDate: 'Oct 11, 2027',
+  client: 'Northshore Med Spa',
+  vertical: 'Med Spa',
+  track: 'Internal closer',
+  level: 'Level 1: Certified Operator',
+  link: 'https://training.divineacquisition.io/academy',
+  adminLink: 'https://app.divineacquisition.io/workspace/academy/holds/1',
+  certificateLink: 'https://training.divineacquisition.io/academy/certificate/abc',
+  verifyLink: 'https://training.divineacquisition.io/verify/abc',
+  pulseLink: 'https://training.divineacquisition.io/pulse/abc',
+  supportEmail: 'academy@divineacquisition.io',
+  companyAddress: '7404 Executive Place, Lanham, MD 20706',
+  numberOfDays: 2,
+  rolePing: '@academy-managers',
+  holdOutcome: 'Reset',
+  pulseParty: 'Operator',
+  placementStatus: 'Ready',
+  inviteRole: 'Reviewer',
+  adminReason: 'The certification was issued on an enrollment that has since been withdrawn.',
+  previousModuleName: 'Who DA Is',
+  previousLessonName: 'The offer',
+  requirementName: 'Practical',
+  concept: 'discovery',
+  lessonLink: 'https://training.divineacquisition.io/academy/modules/3/lessons/2',
+};
 
 const waking = new Date('2026-10-12T14:00:00.000Z');
 const quiet = new Date('2026-10-11T02:00:00.000Z');

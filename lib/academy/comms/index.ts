@@ -6,7 +6,7 @@ import { SMS } from './sms';
 
 export { ACADEMY_COMMS, resolveCommsConfig } from './config';
 export type { AcademyCommsConfig } from './config';
-export { fillMerge, firstNameFrom, SAMPLE_FIELDS } from './fields';
+export { fillMerge, firstNameFrom } from './fields';
 export type { MergeFields } from './fields';
 export { automatedSignature, clientFooter, internalFooter, personalSignature, standardFooter } from './blocks';
 export { EMAILS, emailTemplate, seriesIds } from './emails';

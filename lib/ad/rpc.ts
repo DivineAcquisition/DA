@@ -11,7 +11,7 @@ export async function controlRpc<T = unknown>(
   fn: string,
   args: Record<string, unknown> = {},
 ): Promise<{ data: T | null; error: { message: string; code?: string } | null }> {
-  const { data, error } = await (supabase as unknown as { rpc: Function }).rpc(fn, args);
+  const { data, error } = await (supabase as unknown as UntypedRpc).rpc(fn, args);
   return {
     data: (data as T | null) ?? null,
     error: error
@@ -19,6 +19,10 @@ export async function controlRpc<T = unknown>(
       : null,
   };
 }
+
+type UntypedRpc = {
+  rpc: (fn: string, args: Record<string, unknown>) => PromiseLike<{ data: unknown; error: { message: string; code?: string } | null }>;
+};
 
 /** Turns `code: human sentence` Postgres raises into the sentence alone. */
 export function readable(error: { message: string } | null | undefined): string {
