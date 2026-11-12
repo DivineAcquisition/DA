@@ -546,7 +546,15 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
               </button>
             </div>
             <ul className="mt-3 space-y-1 text-[12px] text-neutral-500">
-              {!placement.stripe_linked ? <li className="text-flag-critical">This client is not linked to a Stripe customer, so the card cannot be charged.</li> : null}
+              {!placement.stripe_linked ? (
+                <li className="text-flag-critical">
+                  This client is not linked to a Stripe customer, so the card cannot be charged.{' '}
+                  <Link href="/workspace/team/stripe" className="text-brand-200 underline-offset-2 hover:underline">
+                    Link it under Account, Stripe
+                  </Link>
+                  .
+                </li>
+              ) : null}
               {charge?.sent_at ? <li>Receipt last sent {shortDate(charge.sent_at)} to {charge.sent_to.join(', ')}.</li> : null}
               {charge?.operator_sent_at ? <li>Operator pay sent {shortDate(charge.operator_sent_at)} to {charge.operator_sent_to}.</li> : null}
             </ul>

@@ -49,7 +49,7 @@ describe('the sidebar', () => {
     expect(labels('seat')).toEqual(['Seat']);
     expect(labels('clients')).toEqual(['Client']);
     expect(labels('review')).toEqual(['EODs', 'Client reports']);
-    expect(labels('account')).toEqual(['Operators', 'Applicants', 'Invites', 'GoHighLevel']);
+    expect(labels('account')).toEqual(['Operators', 'Applicants', 'Invites', 'GoHighLevel', 'Stripe']);
   });
 
   it('keeps the old desks out of the nav', () => {
@@ -117,7 +117,7 @@ describe('findActive', () => {
     expect(manager.map((section) => section.heading)).toEqual(['Seat', 'Review', 'Account']);
     const labels = manager.flatMap((section) => section.items.map((item) => item.label));
     expect(labels).toEqual(['Seat', 'EODs', 'Client reports', 'Operators']);
-    for (const hidden of ['Pipeline', 'Client', 'Billing', 'Applicants', 'Invites', 'GoHighLevel']) expect(labels).not.toContain(hidden);
+    for (const hidden of ['Pipeline', 'Client', 'Billing', 'Applicants', 'Invites', 'GoHighLevel', 'Stripe']) expect(labels).not.toContain(hidden);
   });
 });
 

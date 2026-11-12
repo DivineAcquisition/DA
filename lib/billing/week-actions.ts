@@ -7,6 +7,7 @@ import { idempotencyKey } from '@/lib/email/policy';
 import { sendAppEmail } from '@/lib/email/service';
 import { createClient } from '@/lib/supabase/server';
 import { serviceRoleClient } from '@/lib/workspace/db';
+import { resolveStripeKey } from '@/lib/stripe/connection';
 import { chargeWeek } from './stripe-charge';
 import { clientTotal, operatorEarnings, operatorStatement, round2, weekLabel, weeklyReceipt, type WeekData, type WeekEntry } from './week';
 import { loadWeekCharge } from './week-data';
@@ -128,9 +129,12 @@ export async function chargeAndSendClientAction(input: WeekChargeInput): Promise
     if (typeof customer !== 'string' || !customer) {
       return { ok: false, error: 'This client is not linked to a Stripe customer, so there is no card to charge.' };
     }
+    const stripeKey = await resolveStripeKey();
+    if (!stripeKey) return { ok: false, error: 'Stripe is not connected. Connect it under Account, Stripe, then charge.' };
     const weekText = weekLabel(data.week_start, data.week_end);
     const operator = data.placement!.operator_name;
     const result = await chargeWeek({
+      apiKey: stripeKey.key,
       customerId: customer,
       chargeId: charge.id,
       fingerprint: fingerprint({ total, pay: entry.operatorPay, commission: entry.commission, fee: entry.managementFee }),

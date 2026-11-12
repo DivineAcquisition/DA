@@ -25,12 +25,10 @@ type StripeInvoice = {
   hosted_invoice_url: string | null;
 };
 
-function stripeKey(): string {
-  return process.env.STRIPE_SECRET_KEY?.trim() || '';
-}
+let activeKey = '';
 
-export function stripeChargeConfigured(): boolean {
-  return Boolean(stripeKey());
+function stripeKey(): string {
+  return activeKey || process.env.STRIPE_SECRET_KEY?.trim() || '';
 }
 
 function form(params: Record<string, string | number | undefined>): URLSearchParams {
@@ -69,6 +67,8 @@ async function stripe<T>(method: 'GET' | 'POST' | 'DELETE', path: string, params
 }
 
 export async function chargeWeek(input: {
+  /** The key to charge with (Account, Stripe); defaults to STRIPE_SECRET_KEY. */
+  apiKey?: string;
   customerId: string;
   chargeId: string;
   /** Changes when the amounts change, so a corrected week gets a new invoice. */
@@ -79,8 +79,9 @@ export async function chargeWeek(input: {
   existingInvoiceId: string | null;
   metadata: Record<string, string>;
 }): Promise<ChargeResult> {
-  if (!stripeChargeConfigured()) {
-    return { ok: false, invoiceId: null, status: null, error: 'Stripe is not connected on this deploy (STRIPE_SECRET_KEY is missing).' };
+  activeKey = input.apiKey?.trim() || '';
+  if (!stripeKey()) {
+    return { ok: false, invoiceId: null, status: null, error: 'Stripe is not connected. Connect it under Account, Stripe.' };
   }
   const lines = input.lines.filter((line) => line.amountCents > 0);
   const totalCents = lines.reduce((sum, line) => sum + line.amountCents, 0);

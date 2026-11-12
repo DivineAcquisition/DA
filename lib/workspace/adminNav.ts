@@ -2,6 +2,7 @@ import type { ComponentType } from 'react';
 import {
   Activity,
   Building2,
+  CreditCard,
   FileText,
   Inbox,
   LayoutList,
@@ -149,6 +150,7 @@ function accountDesk(role: 'admin' | 'manager', counts?: NavCounts): NavSection 
       withBadge({ href: '/workspace/operators/applicants', label: 'Applicants', icon: UserPlus }, counts?.applicants),
       { href: '/workspace/control/invites', label: 'Invites', icon: Plus, aliases: ['/ad/invites', '/ad/invite'] },
       { href: '/workspace/team/ghl', label: 'GoHighLevel', icon: Link },
+      { href: '/workspace/team/stripe', label: 'Stripe', icon: CreditCard },
     );
   }
   return {

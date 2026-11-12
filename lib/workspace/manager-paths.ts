@@ -3,6 +3,7 @@ const BLOCKED_PREFIXES = [
   '/workspace/clients',
   '/workspace/control',
   '/workspace/team/ghl',
+  '/workspace/team/stripe',
   '/workspace/operators/applicants',
 ];
 
