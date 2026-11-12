@@ -51,6 +51,10 @@
     {
       "path": "/api/cron/eod-mail",
       "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/health",
+      "schedule": "41 13 * * *"
     }
   ]
 }

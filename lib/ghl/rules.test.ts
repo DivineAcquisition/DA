@@ -156,3 +156,14 @@ describe('provisioning helpers', () => {
     expect(ghlAppUrl('https://app.gohighlevel.com', 'L1', 'c 1')).toBe('https://app.gohighlevel.com/v2/location/L1/contacts/detail/c%201');
   });
 });
+
+describe('polling a location', () => {
+  it('polls only when the token can read conversations and messages', async () => {
+    const { canPoll } = await import('./worker');
+    expect(canPoll([])).toBe(true);
+    expect(canPoll(null)).toBe(true);
+    expect(canPoll(['calendars.readonly'])).toBe(true);
+    expect(canPoll(['conversations.readonly'])).toBe(false);
+    expect(canPoll(['users.readonly', 'conversations/message.readonly'])).toBe(false);
+  });
+});

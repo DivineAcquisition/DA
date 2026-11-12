@@ -90,13 +90,26 @@ export async function runWorker(options: { budgetMs?: number; jobsOnly?: boolean
     }
   }
 
-  // 4. Conversation polling.
+  // 4. Conversation polling. A location whose token cannot read conversations
+  // is skipped: every call would fail, every minute, until the token changes.
   const { data: locations } = await db
     .from('ghl_location')
     .select('case_file_id, poll_cursor, polled_at')
     .order('polled_at', { ascending: true, nullsFirst: true });
+  const { data: connections } = await db
+    .from('ghl_connection')
+    .select('case_file_id, scopes_missing')
+    .is('retired_at', null)
+    .is('replaces_id', null)
+    .eq('level', 'location');
+  const blocked = new Set(
+    ((connections ?? []) as Array<{ case_file_id: string | null; scopes_missing: string[] | null }>)
+      .filter((row) => row.case_file_id && !canPoll(row.scopes_missing))
+      .map((row) => row.case_file_id as string),
+  );
   for (const location of locations ?? []) {
     if (timeLeft() < 8_000) break;
+    if (blocked.has(location.case_file_id)) continue;
     try {
       const count = await pollLocation(db, location.case_file_id, location.poll_cursor, deadline);
       if (count >= 0) summary.polled += 1;
@@ -105,6 +118,12 @@ export async function runWorker(options: { budgetMs?: number; jobsOnly?: boolean
     }
   }
   return summary;
+}
+
+/** Polling reads conversations and their messages; without both scopes every call fails. */
+export function canPoll(scopesMissing: string[] | null | undefined): boolean {
+  const missing = new Set(scopesMissing ?? []);
+  return !missing.has('conversations.readonly') && !missing.has('conversations/message.readonly');
 }
 
 export async function runCheck(db: ServiceClient, check: DueCheck) {
