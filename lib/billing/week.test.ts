@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   MANAGEMENT_FEE,
+  clientTotal,
+  operatorEarnings,
+  operatorStatement,
+  shiftPay,
   hoursLabel,
   money,
   payFromRate,
@@ -43,6 +47,8 @@ const data: WeekData = {
   placement: {
     id: 'pl',
     operator_name: 'Matthew Locsin',
+    operator_email: 'operator@example.com',
+    stripe_linked: true,
     client_name: 'Bay Area Cleaning Pros',
     time_zone: 'America/Chicago',
     shift_start: '09:00',
@@ -61,6 +67,7 @@ const data: WeekData = {
   recipients: { to: ['client@example.com'], cc: [] },
   last_rate: null,
   charge: null,
+  history: [],
 };
 
 describe('weekly billing', () => {
@@ -96,24 +103,65 @@ describe('weekly billing', () => {
       hours: { '2026-11-09': 4, '2026-11-10': 4, '2026-11-11': 0 },
       hourlyRate: 15,
       operatorPay: 120,
+      commission: 0,
       managementFee: MANAGEMENT_FEE,
       note: '',
     });
     expect(receipt.subject).toBe('Weekly receipt: Matthew Locsin for Bay Area Cleaning Pros, Nov 9 – 15, 2026');
     expect(receipt.html).toContain('$220.00');
     expect(receipt.html).toContain('8 hrs × $15.00/hr');
+    expect(receipt.html).toContain('Commission earnings');
     expect(receipt.html).toContain('Divine Acquisition management fee');
     expect(receipt.html).toContain('Texts sent');
     expect(receipt.html).not.toContain('Dials made');
     expect(receipt.html).toContain('Booked a &lt;walkthrough&gt; &amp; two callbacks');
     expect(receipt.text).toContain('Total for the week: $220.00');
     expect(receipt.text).toContain('- Texts sent: 124');
+    expect(receipt.text).toContain('- Monday, Nov 9: 4 hrs, $60.00');
   });
 
   it('describes pay as hours worked when the pay was typed in', () => {
-    const receipt = weeklyReceipt(data, { hours: { '2026-11-09': 4 }, hourlyRate: 15, operatorPay: 200, managementFee: 100, note: 'Thanks!' });
+    const receipt = weeklyReceipt(data, { hours: { '2026-11-09': 4 }, hourlyRate: 15, operatorPay: 200, commission: 0, managementFee: 100, note: 'Thanks!' });
     expect(receipt.html).toContain('4 hrs worked');
     expect(receipt.html).toContain('$300.00');
     expect(receipt.text).toContain('Thanks!');
+  });
+
+  it('splits 18 hours and $72.66 across shifts to the cent', () => {
+    const hours = { '2026-11-02': 2, '2026-11-03': 4, '2026-11-04': 4, '2026-11-05': 4, '2026-11-06': 4 };
+    const pays = shiftPay(hours, 72.66);
+    expect(pays['2026-11-02']).toBe(8.07);
+    expect(Object.values(pays).reduce((sum, value) => Math.round((sum + value) * 100) / 100, 0)).toBe(72.66);
+    expect(Object.values(pays).filter((value) => value === 16.15)).toHaveLength(3);
+    expect(shiftPay({ a: 0 }, 50)).toEqual({ a: 0 });
+  });
+
+  it('charges the client pay + commission + fee, and shows the operator only their pay and commission', () => {
+    const entry = {
+      hours: { '2026-11-09': 2, '2026-11-10': 4, '2026-11-11': 4 },
+      hourlyRate: null,
+      operatorPay: 72.66,
+      commission: 0,
+      managementFee: 100,
+      note: '',
+    };
+    expect(clientTotal(entry)).toBe(172.66);
+    expect(operatorEarnings(entry)).toBe(72.66);
+
+    const client = weeklyReceipt(data, entry, { amount: 172.66, at: '2026-11-12T18:00:00Z', invoiceUrl: 'https://invoice.stripe.com/i/x' });
+    expect(client.html).toContain('$172.66');
+    expect(client.html).toContain('Charged to your card on file');
+    expect(client.html).toContain('https://invoice.stripe.com/i/x');
+
+    const operator = operatorStatement(data, entry);
+    expect(operator.subject).toBe('Your pay for Nov 9 – 15, 2026: $72.66');
+    expect(operator.html).not.toContain('management fee');
+    expect(operator.html).not.toContain('172.66');
+    expect(operator.html).not.toContain('Commission');
+    expect(operator.text).not.toMatch(/management|172\.66/i);
+
+    const withCommission = operatorStatement(data, { ...entry, commission: 25 });
+    expect(withCommission.html).toContain('Commission earned');
+    expect(withCommission.subject).toContain('$97.66');
   });
 });
