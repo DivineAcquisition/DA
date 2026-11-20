@@ -33,7 +33,10 @@ export async function establishInvitedAccount(
     email_confirm: true,
     user_metadata: input.fullName ? { full_name: input.fullName } : undefined,
   });
-  if (createError && !/already|registered|exists/i.test(createError.message)) {
+  if (createError && /already|registered|exists/i.test(createError.message)) {
+    const activated = await setExistingPassword(admin, input.email, input.password);
+    if (!activated.ok) return activated;
+  } else if (createError) {
     return { ok: false, error: createError.message };
   }
 
@@ -42,6 +45,26 @@ export async function establishInvitedAccount(
     password: input.password,
   });
   if (signInError) return { ok: false, error: invitedSignInError(signInError.message) };
+  return { ok: true };
+}
+
+/**
+ * Onboarding can start after a profile exists and before anyone has signed in.
+ * The invitation then sets the password on that account instead of creating a second one.
+ */
+async function setExistingPassword(
+  admin: NonNullable<ReturnType<typeof serviceRoleClient>>,
+  email: string,
+  password: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { data, error } = await admin.from('profile').select('id').ilike('email', email).limit(1);
+  const id = (data?.[0] as { id?: string } | undefined)?.id;
+  if (error || !id) return { ok: false, error: 'This email already has an account, and it could not be activated.' };
+  const { error: updateError } = await admin.auth.admin.updateUserById(id, {
+    password,
+    email_confirm: true,
+  });
+  if (updateError) return { ok: false, error: updateError.message };
   return { ok: true };
 }
 

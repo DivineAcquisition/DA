@@ -5,6 +5,7 @@ import { controlRpc, readable, type ActionResult } from '@/lib/ad/rpc';
 import { resendInviteAction } from '@/lib/ad/actions';
 import { isSalesOperatorRole } from '@/lib/careers/roles';
 import { createOperatorAction } from '@/lib/hire/actions';
+import { sendHireInvite } from '@/lib/hire/mail';
 import { createClient, getSessionContext } from '@/lib/supabase/server';
 import { serviceRoleClient, type UntypedClient } from '@/lib/workspace/db';
 
@@ -99,18 +100,49 @@ export async function advanceApplicantAction(fd: FormData): Promise<DeskResult> 
 }
 
 /**
- * Send the account invite again. An open invite gets a fresh link; one that
- * was never created (the hire had an account) has nothing to resend.
+ * Send the tokenized activation link. An open invite is replaced. A hire that
+ * already had an account still gets a new link.
  */
 export async function resendOperatorInviteAction(fd: FormData): Promise<DeskResult> {
   if (!(await admin())) return { ok: false, error: 'DA Admin only.' };
   const inviteId = text(fd, 'invite_id');
   const operatorId = text(fd, 'operator_id');
-  if (!UUID.test(inviteId)) return { ok: false, error: 'There is no open invite. They already have an account.' };
-  const result = await resendInviteAction(inviteId);
+  if (UUID.test(inviteId)) {
+    const result = await resendInviteAction(inviteId);
+    refresh(operatorId);
+    if (!result.ok) return result;
+    return { ok: true, message: result.message };
+  }
+  if (!UUID.test(operatorId)) return { ok: false, error: 'Operator not found.' };
+  const supabase = await createClient();
+  const sent = await sendActivationLink(supabase, operatorId, true);
   refresh(operatorId);
-  if (!result.ok) return result;
-  return { ok: true, message: result.message };
+  if (sent === 'failed') return { ok: false, error: 'The activation link email failed.' };
+  if (sent !== 'sent') return { ok: false, error: 'The activation link was not issued.' };
+  return { ok: true, message: 'Activation link sent.' };
+}
+
+async function sendActivationLink(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  operatorId: string,
+  force: boolean,
+): Promise<'sent' | 'skipped' | 'failed'> {
+  const issued = await controlRpc<{ token: string | null; email: string | null; name: string | null }>(
+    supabase,
+    'hire_issue_activation',
+    { p_operator: operatorId, p_force: force },
+  );
+  if (issued.error || !issued.data?.token || !issued.data.email) return 'skipped';
+  try {
+    await sendHireInvite({
+      to: issued.data.email,
+      name: issued.data.name || 'there',
+      token: issued.data.token,
+    });
+    return 'sent';
+  } catch {
+    return 'failed';
+  }
 }
 
 /** The note on the journey. Staff read it at the top of the file. */
@@ -132,13 +164,20 @@ export async function saveJourneyNoteAction(fd: FormData): Promise<DeskResult> {
 export async function setStageAction(fd: FormData): Promise<DeskResult> {
   if (!(await admin())) return { ok: false, error: 'DA Admin only.' };
   const operatorId = text(fd, 'operator_id');
+  const stage = text(fd, 'stage');
   const supabase = await createClient();
   const { error } = await controlRpc(supabase, 'hire_set_stage', {
     p_operator: operatorId,
-    p_stage: text(fd, 'stage'),
+    p_stage: stage,
     p_reason: text(fd, 'reason'),
   });
   if (error) return { ok: false, error: readable(error) };
+  let message = 'Stage set. Signed-in, readiness, and placement facts still move it.';
+  if (stage === 'invited' || stage === 'onboarding') {
+    const sent = await sendActivationLink(supabase, operatorId, false);
+    if (sent === 'sent') message = 'Stage set. The activation link was sent.';
+    if (sent === 'failed') message = 'Stage set. The activation link email failed.';
+  }
   refresh(operatorId);
-  return { ok: true, message: 'Stage set. Signed-in, readiness, and placement facts still move it.' };
+  return { ok: true, message };
 }

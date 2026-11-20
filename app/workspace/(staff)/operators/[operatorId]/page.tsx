@@ -145,12 +145,12 @@ export default async function OperatorFilePage({ params }: { params: Promise<{ o
                 {file.invite?.accepted_at ? 'Accepted' : file.invite?.cancelled_at ? 'Cancelled' : when(file.invite?.expires_at)}
               </Fact>
             </dl>
-            {admin && !journey.signed_in_at && file.invite && !file.invite.accepted_at && !file.invite.cancelled_at ? (
+            {admin && !journey.signed_in_at && !file.invite?.accepted_at ? (
               <DeskForm action={resendOperatorInviteAction} className="mt-4 flex flex-wrap gap-2">
-                <input type="hidden" name="invite_id" value={file.invite.id} />
+                <input type="hidden" name="invite_id" value={file.invite && !file.invite.cancelled_at ? file.invite.id : ''} />
                 <input type="hidden" name="operator_id" value={operatorId} />
                 <button type="submit" className={secondary}>
-                  Resend the invite
+                  Send the activation link
                 </button>
               </DeskForm>
             ) : null}

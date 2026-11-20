@@ -57,16 +57,21 @@ type Created = {
 };
 
 async function notifyCreated(row: Created) {
-  if (!row.created) return 'Opened the existing record. No new invite was sent.';
   const notes: string[] = [];
+  if (!row.created) notes.push('Opened the existing record.');
   if (row.token) {
     try {
       await sendHireInvite({ to: row.email, name: row.name, token: row.token });
-      notes.push('Invite sent.');
+      notes.push('Activation link sent.');
     } catch (error) {
-      return `Record created, but the invite email failed: ${error instanceof Error ? error.message : 'Email failed'}.`;
+      const failed = `the activation link email failed: ${error instanceof Error ? error.message : 'Email failed'}.`;
+      if (!row.created) return `Opened the existing record, but ${failed}`;
+      return `Record created, but ${failed}`;
     }
+  } else if (!row.created) {
+    notes.push('No new activation link was sent.');
   }
+  if (!row.created) return notes.join(' ');
   try {
     await sendOperatorWelcome({ to: row.email, name: row.name, operatorId: row.operator_id });
     notes.push('Welcome sent.');
