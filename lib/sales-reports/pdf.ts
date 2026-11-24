@@ -1,4 +1,4 @@
-import { asClientReport, formatValue, paceLabel, periodLabel, reportedLabel } from './client';
+import { asClientReport, focusLabel, formatValue, paceLabel, periodLabel, reportedLabel } from './client';
 
 const PAGE_W = 612;
 const PAGE_H = 792;
@@ -144,11 +144,11 @@ export function buildClientReportPdf(input: unknown): Uint8Array {
   }
   if (report.summary) {
     heading('Summary');
-    paragraph(report.summary);
+    report.summary.split('\n').map((line) => line.trim()).filter(Boolean).forEach((line) => paragraph(line));
   }
   if (report.next_focus) {
-    heading('Next focus');
-    paragraph(report.next_focus);
+    heading(focusLabel(report.kind));
+    report.next_focus.split('\n').map((line) => line.trim()).filter(Boolean).forEach((line) => paragraph(line));
   }
   if (report.plan.length > 0) {
     heading("Tomorrow's plan");

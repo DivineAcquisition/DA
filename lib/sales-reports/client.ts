@@ -14,7 +14,7 @@ export type ClientHeadline = {
 
 export type ClientReport = {
   test: boolean;
-  kind: 'weekly' | 'daily';
+  kind: 'weekly' | 'daily' | 'biweekly';
   client: string;
   operator: string;
   role: string;
@@ -87,6 +87,7 @@ export function periodLabel(report: Pick<ClientReport, 'kind' | 'period_start' |
 export function reportFileName(report: Pick<ClientReport, 'kind' | 'client' | 'period_start' | 'period_end'>): string {
   const client = report.client.replace(/[\\/]/g, '-').trim() || 'Client';
   if (report.kind === 'daily') return `${client} - Daily Report - ${report.period_start}.pdf`;
+  if (report.kind === 'biweekly') return `${client} - Bi-Weekly Report - ${report.period_start} to ${report.period_end}.pdf`;
   return `${client} - Weekly Report - ${report.period_start} to ${report.period_end}.pdf`;
 }
 
@@ -94,6 +95,13 @@ export function reportSubject(report: Pick<ClientReport, 'test' | 'kind' | 'clie
   const range = periodLabel(report);
   const base = report.kind === 'daily'
     ? `${report.client} | Daily Report | ${report.period_start}`
-    : `${report.client} | Weekly Sales Operations Report | ${range}`;
+    : report.kind === 'biweekly'
+      ? `${report.client} | Bi-Weekly Sales Operations Report | ${range}`
+      : `${report.client} | Weekly Sales Operations Report | ${range}`;
   return report.test ? `TEST | ${base}` : base;
+}
+
+/** How the next-focus field is introduced: a 2-week sales focus on a bi-weekly report. */
+export function focusLabel(kind: ClientReport['kind']): string {
+  return kind === 'biweekly' ? 'Sales focus for the next 2 weeks' : 'Next focus';
 }

@@ -122,7 +122,7 @@ export function detailsHtml(details: EmailDetail[]): string {
     .map((detail, index) => {
       const value = detail.href
         ? `<a href="${escapeHtml(detail.href)}" style="color:${C.accent};text-decoration:none;word-break:break-all;">${escapeHtml(detail.value)}</a>`
-        : escapeHtml(detail.value);
+        : escapeHtml(detail.value).replace(/\n/g, '<br />');
       const border = index === 0 ? '' : `border-top:1px solid ${C.panelBorder};`;
       return `<tr><td style="padding:14px 20px;${border}">
 <p style="margin:0;font-family:${FONT_HEAD};font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:${C.muted};">${escapeHtml(detail.label)}</p>

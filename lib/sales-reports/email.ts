@@ -1,5 +1,5 @@
 import { renderEmailHtml, textFooter } from '@/lib/email/layout';
-import { asClientReport, formatValue, paceLabel, periodLabel, reportedLabel, reportSubject } from './client';
+import { asClientReport, focusLabel, formatValue, paceLabel, periodLabel, reportedLabel, reportSubject } from './client';
 
 export function buildClientReportEmail(
   input: unknown,
@@ -14,6 +14,11 @@ export function buildClientReportEmail(
     return `${item.label}: ${formatValue(item.value)}${target}${pace ? `, ${pace}` : ''}${source ? `, ${source}` : ''}`;
   });
   const summary = report.summary ?? '';
+  const focus = report.next_focus
+    ? report.kind === 'biweekly'
+      ? `${focusLabel(report.kind)}:\n${report.next_focus}`
+      : `${focusLabel(report.kind)}: ${report.next_focus}`
+    : '';
   const intro = `${report.operator}, ${report.role}. ${periodLabel(report)}.`;
   const footer = {
     reason: `You received this because Divine Acquisition sends the ${report.client} report.`,
@@ -27,7 +32,7 @@ export function buildClientReportEmail(
     ...lines,
     '',
     summary,
-    report.next_focus ? `Next focus: ${report.next_focus}` : '',
+    focus,
     links.reportUrl ? `View the report: ${links.reportUrl}` : '',
     ...textFooter(footer),
   ].filter(Boolean).join('\n');
@@ -37,7 +42,7 @@ export function buildClientReportEmail(
     preheader: lines[0] ?? subject,
     eyebrow: report.test ? 'Test report' : 'Client report',
     title: report.client,
-    paragraphs: [intro, ...lines, summary, report.next_focus ? `Next focus: ${report.next_focus}` : ''].filter(Boolean),
+    paragraphs: [intro, ...lines, summary, focus].filter(Boolean),
     cta: links.reportUrl ? { href: links.reportUrl, label: 'View full report' } : null,
     showFallbackLink: Boolean(links.reportUrl),
     footer,

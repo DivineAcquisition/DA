@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { controlRpc } from '@/lib/ad/rpc';
-import { asClientReport, formatValue, paceLabel, periodLabel, reportedLabel, type ClientReport } from '@/lib/sales-reports/client';
+import { asClientReport, focusLabel, formatValue, paceLabel, periodLabel, reportedLabel, type ClientReport } from '@/lib/sales-reports/client';
 import { createClient } from '@/lib/supabase/server';
 import { leaveFeedback } from './leave';
 
@@ -81,7 +81,7 @@ function ReportBody({ report }: { report: ClientReport }) {
           ))}
         </ul>
       </section>
-      {report.summary ? <section className="rounded-2xl bg-white p-5 text-sm leading-6"><h2 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-report), sans-serif' }}>Summary</h2><p className="mt-2">{report.summary}</p>{report.next_focus ? <p className="mt-3 text-[#5c5670]">Next focus: {report.next_focus}</p> : null}</section> : null}
+      {report.summary ? <section className="rounded-2xl bg-white p-5 text-sm leading-6"><h2 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-report), sans-serif' }}>Summary</h2><p className="mt-2 whitespace-pre-line">{report.summary}</p>{report.next_focus ? <p className="mt-3 whitespace-pre-line text-[#5c5670]">{focusLabel(report.kind)}:{report.kind === 'biweekly' ? '\n' : ' '}{report.next_focus}</p> : null}</section> : null}
       {report.outcomes.length > 0 ? (
         <section className="rounded-2xl bg-white p-5 text-sm">
           <h2 className="text-lg font-semibold" style={{ fontFamily: 'var(--font-report), sans-serif' }}>Positive outcomes</h2>

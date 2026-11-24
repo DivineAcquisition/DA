@@ -6,6 +6,7 @@ import { serviceClient, type UntypedClient } from '@/lib/workspace/db';
 import { buildClientReportEmail } from './email';
 import { asClientReport, reportFileName } from './client';
 import { buildClientReportPdf } from './pdf';
+import { runBiweekly } from './biweekly-run';
 
 type Claim = {
   id: string;
@@ -253,7 +254,7 @@ async function clickupReportTask(db: UntypedClient, report: ReturnType<typeof as
     method: 'POST',
     headers: { Authorization: token, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      name: `${report.client} ${report.kind === 'daily' ? 'Daily' : 'Weekly'} Report ${report.period_start}${report.kind === 'weekly' ? ` to ${report.period_end}` : ''}`,
+      name: `${report.client} ${report.kind === 'daily' ? 'Daily' : report.kind === 'biweekly' ? 'Bi-Weekly' : 'Weekly'} Report ${report.period_start}${report.kind !== 'daily' ? ` to ${report.period_end}` : ''}`,
       markdown_description: `${headline}\n\n${driveId ? `Drive file ${driveId}` : 'PDF attached on the client email.'}`,
     }),
   });
@@ -362,6 +363,8 @@ export async function runSalesReports() {
   const summary = { claimed: 0, deliveries: 0, errors: [] as string[] };
   const sweep = await db.rpc('so_report_sweep');
   if (sweep.error) summary.errors.push(sweep.error.message);
+  const biweekly = await runBiweekly(db);
+  summary.errors.push(...biweekly.errors);
   const caught = await db.rpc('so_outbound_catchup');
   if (caught.error) summary.errors.push(caught.error.message);
   const claimed = await db.rpc('so_report_claim', { p_limit: 3 });

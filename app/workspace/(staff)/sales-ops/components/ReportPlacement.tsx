@@ -33,7 +33,7 @@ export default function ReportPlacement({ placementId, panel }: { placementId: s
       <ActionForm action={saveReportConfigAction} submitLabel="Save client reporting">
         <input type="hidden" name="placement_id" value={placementId} />
         <p className="text-sm text-[var(--ws-dim)]">Times use {panel.time_zone}. Blank day and time follow the workspace default, Monday at 9:00.</p>
-        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="weekly_enabled" defaultChecked={panel.weekly_enabled} /> Weekly report</label>
+        <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="weekly_enabled" defaultChecked={panel.weekly_enabled} /> Weekly report (off by default: the bi-weekly report replaces it)</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="daily_enabled" defaultChecked={panel.daily_enabled} /> Daily report after each submitted EOD</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="require_approval" defaultChecked={panel.require_approval} /> Require manager approval before sending</label>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" name="cc_manager" defaultChecked={panel.cc_manager} /> CC the assigned manager</label>
