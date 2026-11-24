@@ -91,12 +91,16 @@ export function reportFileName(report: Pick<ClientReport, 'kind' | 'client' | 'p
   return `${client} - Weekly Report - ${report.period_start} to ${report.period_end}.pdf`;
 }
 
-export function reportSubject(report: Pick<ClientReport, 'test' | 'kind' | 'client' | 'period_start' | 'period_end'>): string {
+export function reportSubject(
+  report: Pick<ClientReport, 'test' | 'kind' | 'client' | 'period_start' | 'period_end'> & { operator?: string },
+): string {
   const range = periodLabel(report);
+  // A client can have more than one operator, so the bi-weekly subject names them.
+  const who = report.operator?.trim() ? ` | ${report.operator.trim()}` : '';
   const base = report.kind === 'daily'
     ? `${report.client} | Daily Report | ${report.period_start}`
     : report.kind === 'biweekly'
-      ? `${report.client} | Bi-Weekly Sales Operations Report | ${range}`
+      ? `${report.client} | Bi-Weekly Sales Operations Report${who} | ${range}`
       : `${report.client} | Weekly Sales Operations Report | ${range}`;
   return report.test ? `TEST | ${base}` : base;
 }
