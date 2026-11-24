@@ -138,7 +138,7 @@ export async function chargeAndSendClientAction(input: WeekChargeInput): Promise
       customerId: customer,
       chargeId: charge.id,
       fingerprint: fingerprint({ total, pay: entry.operatorPay, commission: entry.commission, fee: entry.managementFee }),
-      description: `Divine Acquisition: ${operator}, Sales Operator, week of ${weekText}`,
+      description: `Divine Acquisition: ${operator}, Sales Operator, ${data.period_days > 7 ? 'pay period' : 'week of'} ${weekText}`,
       lines: [
         { description: `${operator}, Sales Operator pay: ${weekText}`, amountCents: Math.round(entry.operatorPay * 100) },
         { description: `Commission earnings: ${weekText}`, amountCents: Math.round(entry.commission * 100) },

@@ -60,6 +60,8 @@ export type WeekCharge = {
 
 export type WeekHistory = {
   week_start: string;
+  /** 7 for the weekly periods before 9 Nov 2026, 14 for the 2-week pay periods. */
+  period_days: number;
   hours_total: number;
   operator_pay: number;
   commission: number;
@@ -87,8 +89,13 @@ export type WeekPlacement = {
 export type WeekData = {
   placements: Array<{ id: string; operator_name: string; client_name: string; status: string }>;
   placement: WeekPlacement | null;
+  /** The pay period: its first Monday, its last day, and its length in days. */
   week_start: string;
   week_end: string;
+  period_days: number;
+  /** First Monday of the period before and after this one. */
+  prev_start: string;
+  next_start: string;
   today: string;
   days: WeekDay[];
   recipients: { to: string[]; cc: string[] };
@@ -257,11 +264,35 @@ export function weekLabel(start: string, end: string): string {
   return `${first} – ${last}, ${b.getUTCFullYear()}`;
 }
 
-/** The Sunday that ends the week starting on this Monday. */
-export function weekEnd(start: string): string {
+/** The last day of the period that starts on this Monday (a week unless told otherwise). */
+export function weekEnd(start: string, periodDays = 7): string {
   const date = parseDay(start);
-  date.setUTCDate(date.getUTCDate() + 6);
+  date.setUTCDate(date.getUTCDate() + Math.max(1, periodDays) - 1);
   return date.toISOString().slice(0, 10);
+}
+
+/** How the period reads in a sentence: "week" or "two weeks". */
+export function periodWord(periodDays: number | null | undefined): 'week' | 'two weeks' {
+  return (periodDays ?? 7) > 7 ? 'two weeks' : 'week';
+}
+
+/** The Monday that starts the week holding this day. */
+export function mondayOf(iso: string): string {
+  const date = parseDay(iso);
+  date.setUTCDate(date.getUTCDate() - ((date.getUTCDay() + 6) % 7));
+  return date.toISOString().slice(0, 10);
+}
+
+/** The days split into calendar weeks, in order, so a 2-week period can show a subtotal per week. */
+export function daysByWeek<T extends { date: string }>(days: T[]): Array<{ monday: string; days: T[] }> {
+  const out: Array<{ monday: string; days: T[] }> = [];
+  for (const day of days) {
+    const monday = mondayOf(day.date);
+    const last = out[out.length - 1];
+    if (last && last.monday === monday) last.days.push(day);
+    else out.push({ monday, days: [day] });
+  }
+  return out;
 }
 
 export function shiftWeek(iso: string, weeks: number): string {
@@ -320,24 +351,46 @@ function noteHtml(note: string): string {
     : '';
 }
 
-/** One row per shift: the day, its EOD status, hours and that shift's pay. */
+/** A week's subtotal line inside a 2-week period's shift list. */
+function weekRow(left: string, right: string, first: boolean): string {
+  const border = first ? '' : `border-top:1px solid ${E.border};`;
+  return `<tr>
+<td style="padding:12px 18px 10px;${border}font-family:${FONT_HEAD};font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${E.lavender};">${escapeHtml(left)}</td>
+<td align="right" style="padding:12px 18px 10px;${border}font-family:${FONT_HEAD};font-size:13px;font-weight:700;color:${E.lavender};white-space:nowrap;">${escapeHtml(right)}</td>
+</tr>`;
+}
+
+/**
+ * One row per shift: the day, its EOD status, hours and that shift's pay. A
+ * 2-week period is split by week, each with its hours and pay.
+ */
 function shiftRows(data: WeekData, entry: WeekEntry): { html: string; text: string[] } {
   const pays = shiftPay(entry.hours, entry.operatorPay);
   const days = data.days.filter((day) => (num(entry.hours[day.date]) ?? 0) > 0 || !day.future);
-  const html = days
-    .map((day, index) => {
+  const weeks = daysByWeek(days);
+  const split = weeks.length > 1;
+  const html: string[] = [];
+  const text: string[] = [];
+  for (const [weekIndex, week] of weeks.entries()) {
+    const weekHours = round2(week.days.reduce((sum, day) => sum + (num(entry.hours[day.date]) ?? 0), 0));
+    const weekPay = round2(week.days.reduce((sum, day) => sum + (pays[day.date] ?? 0), 0));
+    if (split) {
+      const heading = `Week ${weekIndex + 1}: ${weekLabel(week.monday, weekEnd(week.monday))}`;
+      html.push(weekRow(`${heading} · ${hoursLabel(weekHours)}`, money(weekPay), weekIndex === 0));
+      text.push(`${weekIndex ? '\n' : ''}${heading}: ${hoursLabel(weekHours)}, ${money(weekPay)}`);
+    }
+    for (const [index, day] of week.days.entries()) {
       const hours = num(entry.hours[day.date]) ?? 0;
-      return row(dayLabel(day.date, 'long'), money(pays[day.date] ?? 0), {
-        first: index === 0,
-        sub: hours > 0 ? hoursLabel(hours) : `${STATUS_LABEL[day.status] ?? day.status} · 0 hrs`,
-      });
-    })
-    .join('');
-  const text = days.map((day) => {
-    const hours = num(entry.hours[day.date]) ?? 0;
-    return `- ${dayLabel(day.date, 'long')}: ${hoursLabel(hours)}, ${money(pays[day.date] ?? 0)}`;
-  });
-  return { html: html || row('No shifts this week', money(0), { first: true }), text };
+      html.push(
+        row(dayLabel(day.date, 'long'), money(pays[day.date] ?? 0), {
+          first: !split && weekIndex === 0 && index === 0,
+          sub: hours > 0 ? hoursLabel(hours) : `${STATUS_LABEL[day.status] ?? day.status} · 0 hrs`,
+        }),
+      );
+      text.push(`- ${dayLabel(day.date, 'long')}: ${hoursLabel(hours)}, ${money(pays[day.date] ?? 0)}`);
+    }
+  }
+  return { html: html.join('') || row(`No shifts this ${periodWord(data.period_days) === 'week' ? 'week' : 'pay period'}`, money(0), { first: true }), text };
 }
 
 /** The client's receipt: pay per shift, commission, the management fee, the total, and the week's work. */
@@ -353,21 +406,25 @@ export function weeklyReceipt(data: WeekData, entry: WeekEntry, charged: Receipt
   const total = clientTotal(entry);
   const outputs = receiptOutputs(data.days);
   const shifts = shiftRows(data, entry);
+  const span = periodWord(data.period_days);
+  const twoWeeks = span === 'two weeks';
+  const kind = twoWeeks ? 'Pay period receipt' : 'Weekly receipt';
+  const these = twoWeeks ? 'these two weeks' : 'this week';
   const payDetail =
     entry.hourlyRate != null && payFromRate(hours, entry.hourlyRate) === pay
       ? `${hoursLabel(hours)} × ${money(entry.hourlyRate)}/hr`
       : `${hoursLabel(hours)} worked`;
 
-  const subject = `Weekly receipt: ${operator} for ${client}, ${week}`;
+  const subject = `${kind}: ${operator} for ${client}, ${week}`;
   const preheader = charged
-    ? `${money(total)} charged for the week of ${week}: ${hoursLabel(hours)} from ${operator}.`
-    : `${money(total)} for the week of ${week}: ${hoursLabel(hours)} from ${operator}.`;
+    ? `${money(total)} charged for ${week}: ${hoursLabel(hours)} from ${operator} over ${these}.`
+    : `${money(total)} for ${week}: ${hoursLabel(hours)} from ${operator} over ${these}.`;
 
   const charges = panel(
     row(`${operator}, Sales Operator`, money(pay), { first: true, sub: payDetail }) +
-      row('Commission earnings', money(commission), { sub: commission > 0 ? 'From results this week' : 'None this week' }) +
-      row('Divine Acquisition management fee', money(fee)) +
-      row(charged ? 'Charged to your card on file' : 'Total for the week', money(total), { strong: true }),
+      row('Commission earnings', money(commission), { sub: commission > 0 ? `From results ${these}` : `None ${these}` }) +
+      row('Divine Acquisition management fee', money(fee), { sub: twoWeeks ? 'Per 2-week pay period' : undefined }) +
+      row(charged ? 'Charged to your card on file' : `Total for ${twoWeeks ? these : 'the week'}`, money(total), { strong: true }),
   );
 
   const paid = charged
@@ -380,7 +437,7 @@ export function weeklyReceipt(data: WeekData, entry: WeekEntry, charged: Receipt
 
   const outputRows = outputs.length
     ? panel(outputs.map((item, index) => row(item.label, metricValue(item), { first: index === 0, sub: item.group })).join(''))
-    : `<p style="margin:0;font-family:${FONT_BODY};font-size:15px;color:${E.muted};">No outputs were logged this week.</p>`;
+    : `<p style="margin:0;font-family:${FONT_BODY};font-size:15px;color:${E.muted};">No outputs were logged ${these}.</p>`;
 
   const wins = data.days.filter((day) => day.wins.trim());
   const winsHtml = wins.length
@@ -399,14 +456,14 @@ export function weeklyReceipt(data: WeekData, entry: WeekEntry, charged: Receipt
 
   const bodyHtml = [
     noteHtml(entry.note),
-    label('This week’s charge'),
+    label(twoWeeks ? 'This pay period’s charge' : 'This week’s charge'),
     charges,
     paid,
     space(),
     label('Pay by shift'),
     panel(shifts.html),
     space(),
-    label('What got done'),
+    label(twoWeeks ? 'What got done, both weeks' : 'What got done'),
     outputRows,
     winsHtml ? space() + label('Wins from the end-of-day reports') + winsHtml : '',
   ].join('');
@@ -414,20 +471,24 @@ export function weeklyReceipt(data: WeekData, entry: WeekEntry, charged: Receipt
   const html = renderEmailHtml({
     subject,
     preheader,
-    eyebrow: 'Weekly receipt',
+    eyebrow: kind,
     title: `${money(total)} for ${week}`,
-    paragraphs: [`Here is the week for ${client}: ${operator}'s hours and pay by shift, what was done, and the charge. It comes from the end-of-day reports.`],
+    paragraphs: [
+      twoWeeks
+        ? `Here are the two weeks for ${client}: ${operator}'s hours and pay by shift for each week, what was done, and the charge. It comes from the end-of-day reports.`
+        : `Here is the week for ${client}: ${operator}'s hours and pay by shift, what was done, and the charge. It comes from the end-of-day reports.`,
+    ],
     bodyHtml,
     footer: { reason: `You received this because ${operator} is the operator Divine Acquisition placed with ${client}.` },
   });
 
   const text = [
-    `Weekly receipt: ${week}`,
+    `${kind}: ${week}`,
     '',
     `${operator}, Sales Operator: ${money(pay)} (${payDetail})`,
     `Commission earnings: ${money(commission)}`,
     `Divine Acquisition management fee: ${money(fee)}`,
-    `${charged ? 'Charged to your card on file' : 'Total for the week'}: ${money(total)}`,
+    `${charged ? 'Charged to your card on file' : `Total for ${twoWeeks ? these : 'the week'}`}: ${money(total)}`,
     charged?.invoiceUrl ? `Stripe receipt: ${charged.invoiceUrl}` : '',
     '',
     entry.note.trim(),
@@ -436,7 +497,7 @@ export function weeklyReceipt(data: WeekData, entry: WeekEntry, charged: Receipt
     ...shifts.text,
     '',
     'What got done',
-    ...(outputs.length ? outputs.map((item) => `- ${item.label}: ${metricValue(item)}`) : ['- No outputs were logged this week.']),
+    ...(outputs.length ? outputs.map((item) => `- ${item.label}: ${metricValue(item)}`) : [`- No outputs were logged ${these}.`]),
     ...(wins.length ? ['', 'Wins', ...wins.map((day) => `- ${dayLabel(day.date, 'long')}: ${day.wins.trim()}`)] : []),
     '',
     'Divine Acquisition',
@@ -463,13 +524,15 @@ export function operatorStatement(data: WeekData, entry: WeekEntry): Receipt {
   const commission = round2(entry.commission);
   const earned = operatorEarnings(entry);
   const shifts = shiftRows(data, entry);
+  const twoWeeks = periodWord(data.period_days) === 'two weeks';
+  const these = twoWeeks ? 'these two weeks' : 'the week';
 
   const subject = `Your pay for ${week}: ${money(earned)}`;
-  const preheader = `${hoursLabel(hours)} with ${client}, ${money(earned)} for the week of ${week}.`;
+  const preheader = `${hoursLabel(hours)} with ${client}, ${money(earned)} for ${week}.`;
   const summary = panel(
     row('Pay for your shifts', money(pay), { first: true, sub: hoursLabel(hours) }) +
       (commission > 0 ? row('Commission earned', money(commission)) : '') +
-      row('Your total for the week', money(earned), { strong: true }),
+      row(`Your total for ${these}`, money(earned), { strong: true }),
   );
   const bodyHtml = [label('Your pay'), summary, space(), label('Pay by shift'), panel(shifts.html)].join('');
 
@@ -478,7 +541,11 @@ export function operatorStatement(data: WeekData, entry: WeekEntry): Receipt {
     preheader,
     eyebrow: 'Pay statement',
     title: `${money(earned)} for ${week}`,
-    paragraphs: [`Hi ${first}, here is your pay for the week of ${week} with ${client}: your hours and pay by shift.`],
+    paragraphs: [
+      twoWeeks
+        ? `Hi ${first}, here is your pay for the two weeks of ${week} with ${client}: your hours and pay by shift, week by week.`
+        : `Hi ${first}, here is your pay for the week of ${week} with ${client}: your hours and pay by shift.`,
+    ],
     bodyHtml,
     footer: { reason: `You received this because you are a Divine Acquisition Sales Operator placed with ${client}.` },
   });
@@ -488,7 +555,7 @@ export function operatorStatement(data: WeekData, entry: WeekEntry): Receipt {
     '',
     `Pay for your shifts: ${money(pay)} (${hoursLabel(hours)})`,
     commission > 0 ? `Commission earned: ${money(commission)}` : '',
-    `Your total for the week: ${money(earned)}`,
+    `Your total for ${these}: ${money(earned)}`,
     '',
     'Pay by shift',
     ...shifts.text,

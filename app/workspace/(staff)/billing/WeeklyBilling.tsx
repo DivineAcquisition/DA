@@ -18,7 +18,8 @@ import {
   payFromRate,
   round2,
   shiftPay,
-  shiftWeek,
+  daysByWeek,
+  periodWord,
   startingHours,
   totalHours,
   weekEnd,
@@ -209,8 +210,8 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
     <div className="@container">
       <DeskHeader
         crumb="Billing"
-        title="Weekly billing"
-        description="Log the week's hours and pay. The client's card is charged pay + commission + the management fee and they get a receipt. The operator gets their own statement with their pay and commission only."
+        title="Billing"
+        description={`Billing runs on 2-week pay periods. Log the period's hours and pay; the client's card is charged pay + commission + the management fee and they get a receipt covering ${periodWord(data.period_days) === 'week' ? 'the week' : 'both weeks'}. The operator gets their own statement with their pay and commission only.`}
         actions={clientPill}
       />
 
@@ -224,24 +225,24 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
           ))}
         </select>
         <div className="flex items-center gap-1">
-          <Link aria-label="Previous week" href={`/workspace/billing?seat=${placement.id}&week=${shiftWeek(data.week_start, -1)}`} className={secondary}>
+          <Link aria-label="Previous pay period" href={`/workspace/billing?seat=${placement.id}&week=${data.prev_start}`} className={secondary}>
             <ChevronLeft className="size-4" aria-hidden />
           </Link>
           <span className="min-w-[150px] px-2 text-center text-sm tabular-nums text-white">{weekLabel(data.week_start, data.week_end)}</span>
-          <Link aria-label="Next week" href={`/workspace/billing?seat=${placement.id}&week=${shiftWeek(data.week_start, 1)}`} className={secondary}>
+          <Link aria-label="Next pay period" href={`/workspace/billing?seat=${placement.id}&week=${data.next_start}`} className={secondary}>
             <ChevronRight className="size-4" aria-hidden />
           </Link>
         </div>
         {!isThisWeek ? (
           <Link href={`/workspace/billing?seat=${placement.id}`} className="text-sm text-brand-200 hover:text-white">
-            This week
+            This pay period
           </Link>
         ) : null}
       </div>
 
       {locked ? (
         <p className="panel mb-5 rounded-2xl px-5 py-3 text-sm text-neutral-300">
-          This week was charged {money(chargedInfo!.amount)} on {shortDate(chargedInfo!.at)}. Hours and money are locked; refund or adjust it in Stripe.
+          This {periodWord(data.period_days) === 'week' ? 'week' : 'pay period'} was charged {money(chargedInfo!.amount)} on {shortDate(chargedInfo!.at)}. Hours and money are locked; refund or adjust it in Stripe.
           {charge?.stripe_invoice_url ? (
             <>
               {' '}
@@ -260,7 +261,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
           <Section
             title="Hours and pay by shift"
             icon={Clock}
-            hint="Log each shift's hours. The week's pay is split across shifts by hours."
+            hint="Log each shift's hours. The period's pay is split across shifts by hours."
             aside={<span className="text-sm tabular-nums text-white">{hoursLabel(hoursTotal)}</span>}
           >
             {!locked ? (
@@ -284,10 +285,26 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
               </div>
             ) : null}
             {data.days.length === 0 ? (
-              <p className="text-sm text-neutral-400">No working days this week.</p>
+              <p className="text-sm text-neutral-400">No working days in this period.</p>
             ) : (
+              <div className="space-y-5">
+                {daysByWeek(data.days).map((week, weekIndex, weeks) => {
+                  const weekHours = round2(week.days.reduce((sum, day) => sum + (num(hours[day.date]) ?? 0), 0));
+                  const weekPay = round2(week.days.reduce((sum, day) => sum + (pays[day.date] ?? 0), 0));
+                  return (
+                <div key={week.monday}>
+                {weeks.length > 1 ? (
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-white/[0.08] pb-2">
+                    <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-brand-200">
+                      Week {weekIndex + 1} · {weekLabel(week.monday, weekEnd(week.monday))}
+                    </span>
+                    <span className="text-[13px] tabular-nums text-neutral-300">
+                      {hoursLabel(weekHours)} · {money(weekPay)}
+                    </span>
+                  </div>
+                ) : null}
               <ul className="divide-y divide-white/[0.06]">
-                {data.days.map((day) => (
+                {week.days.map((day) => (
                   <li key={day.date} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 py-3 sm:flex sm:flex-wrap">
                     <div className="w-28 shrink-0">
                       <p className="text-sm text-white">{dayLabel(day.date)}</p>
@@ -318,10 +335,14 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                   </li>
                 ))}
               </ul>
+                </div>
+                  );
+                })}
+              </div>
             )}
           </Section>
 
-          <Section title="Pay, commission and fee" icon={Receipt} hint="Enter the week's pay, or an hourly rate to work it out.">
+          <Section title="Pay, commission and fee" icon={Receipt} hint="Enter the period's pay, or an hourly rate to work it out.">
             <div className="grid gap-4 sm:grid-cols-2">
               <MoneyInput
                 label="Hourly rate"
@@ -334,7 +355,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                 }}
               />
               <MoneyInput
-                label="Operator pay for the week"
+                label={periodWord(data.period_days) === 'week' ? 'Operator pay for the week' : 'Operator pay for the 2 weeks'}
                 value={payTouched || computedPay == null ? pay : String(computedPay)}
                 disabled={locked}
                 onChange={(value) => {
@@ -430,7 +451,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
             </div>
           </Section>
 
-          <Section title="Outputs this week" icon={Sparkles} hint="Summed from the end-of-day reports. Only numbers above zero go on the client receipt.">
+          <Section title={periodWord(data.period_days) === 'week' ? 'Outputs this week' : 'Outputs, both weeks'} icon={Sparkles} hint="Summed from the end-of-day reports. Only numbers above zero go on the client receipt.">
             {totals.length === 0 ? (
               <p className="text-sm text-neutral-400">Nothing logged this week.</p>
             ) : (
@@ -447,7 +468,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
             )}
           </Section>
 
-          <Section title="Hours log" icon={History} hint="Every week saved for this seat.">
+          <Section title="Hours log" icon={History} hint="Every pay period saved for this seat.">
             {data.history.length === 0 ? (
               <p className="text-sm text-neutral-400">No weeks saved yet.</p>
             ) : (
@@ -455,7 +476,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                 <table className="w-full min-w-[560px] text-sm">
                   <thead>
                     <tr className="text-left">
-                      <th className="pb-2 font-medium">Week</th>
+                      <th className="pb-2 font-medium">Pay period</th>
                       <th className="pb-2 text-right font-medium">Hours</th>
                       <th className="pb-2 text-right font-medium">Pay</th>
                       <th className="pb-2 text-right font-medium">Commission</th>
@@ -468,7 +489,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                       <tr key={week.week_start} className={week.week_start === data.week_start ? 'text-white' : 'text-neutral-300'}>
                         <td className="py-2">
                           <Link href={`/workspace/billing?seat=${placement.id}&week=${week.week_start}`} className="hover:text-white">
-                            {weekLabel(week.week_start, weekEnd(week.week_start))}
+                            {weekLabel(week.week_start, weekEnd(week.week_start, week.period_days))}
                           </Link>
                         </td>
                         <td className="py-2 text-right tabular-nums">{Number(week.hours_total)}</td>

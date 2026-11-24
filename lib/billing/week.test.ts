@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
   MANAGEMENT_FEE,
+  daysByWeek,
+  mondayOf,
+  periodWord,
+  weekEnd,
   clientTotal,
   operatorEarnings,
   operatorStatement,
@@ -58,6 +62,9 @@ const data: WeekData = {
   },
   week_start: '2026-11-09',
   week_end: '2026-11-15',
+  period_days: 7,
+  prev_start: '2026-11-02',
+  next_start: '2026-11-16',
   today: '2026-11-11',
   days: [
     day('2026-11-09', 'submitted', [texts(49), dials], { wins: 'Booked a <walkthrough> & two callbacks' }),
@@ -163,5 +170,60 @@ describe('weekly billing', () => {
     const withCommission = operatorStatement(data, { ...entry, commission: 25 });
     expect(withCommission.html).toContain('Commission earned');
     expect(withCommission.subject).toContain('$97.66');
+  });
+});
+
+describe('2-week pay periods', () => {
+  const period: WeekData = {
+    ...data,
+    week_end: '2026-11-22',
+    period_days: 14,
+    next_start: '2026-11-23',
+    today: '2026-11-24',
+    days: [
+      day('2026-11-09', 'submitted', [texts(40)]),
+      day('2026-11-10', 'submitted', [texts(10)]),
+      day('2026-11-16', 'submitted', [texts(5)], { wins: 'Closed a recurring client' }),
+      day('2026-11-17', 'submitted', [texts(5)]),
+    ],
+  };
+  const entry = {
+    hours: { '2026-11-09': 4, '2026-11-10': 4, '2026-11-16': 4, '2026-11-17': 4 },
+    hourlyRate: null,
+    operatorPay: 145,
+    commission: 0,
+    managementFee: 100,
+    note: '',
+  };
+
+  it('groups days by calendar week', () => {
+    expect(mondayOf('2026-11-22')).toBe('2026-11-16');
+    expect(daysByWeek(period.days).map((week) => [week.monday, week.days.length])).toEqual([
+      ['2026-11-09', 2],
+      ['2026-11-16', 2],
+    ]);
+    expect(weekEnd('2026-11-09', 14)).toBe('2026-11-22');
+    expect(periodWord(14)).toBe('two weeks');
+    expect(periodWord(7)).toBe('week');
+  });
+
+  it('shows both weeks on the client receipt, each with its hours and pay, and one fee for the period', () => {
+    const receipt = weeklyReceipt(period, entry);
+    expect(receipt.subject).toBe('Pay period receipt: Matthew Locsin for Bay Area Cleaning Pros, Nov 9 – 22, 2026');
+    expect(receipt.text).toContain('Week 1: Nov 9 – 15, 2026: 8 hrs, $72.50');
+    expect(receipt.text).toContain('Week 2: Nov 16 – 22, 2026: 8 hrs, $72.50');
+    expect(receipt.text).toContain('- Monday, Nov 16: 4 hrs, $36.25');
+    expect(receipt.text).toContain('Total for these two weeks: $245.00');
+    expect(receipt.text).toContain('- Texts sent: 60');
+    expect(receipt.html).toContain('Per 2-week pay period');
+    expect(receipt.html).toContain('Closed a recurring client');
+  });
+
+  it('gives the operator both weeks and no fee', () => {
+    const statement = operatorStatement(period, entry);
+    expect(statement.subject).toBe('Your pay for Nov 9 – 22, 2026: $145.00');
+    expect(statement.text).toContain('Week 2: Nov 16 – 22, 2026: 8 hrs, $72.50');
+    expect(statement.text).toContain('Your total for these two weeks: $145.00');
+    expect(statement.html).not.toContain('management fee');
   });
 });
