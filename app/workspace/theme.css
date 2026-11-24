@@ -301,3 +301,16 @@ html[data-product='workspace'].dark .da-workspace {
   --field-bg: #26262e;
   background-color: #151518;
 }
+
+/*
+ * Grid cells never grow past their track. A grid with no column template on
+ * phones (e.g. `grid gap-4 sm:grid-cols-2`) otherwise sizes its one column to
+ * its widest child, so a wide table or an email preview pushes every card past
+ * the screen edge and the right side is cut off. Wide content scrolls inside
+ * its own `overflow-x-auto` wrapper instead.
+ */
+@layer base {
+  .da-workspace .grid > * {
+    min-width: 0;
+  }
+}

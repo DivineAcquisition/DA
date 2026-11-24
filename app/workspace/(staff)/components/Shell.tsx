@@ -361,7 +361,7 @@ function LiveAside({ nav, onNavigate }: { nav: NavSection[]; onNavigate: Navigat
   const waiting = waitingOn(nav);
   const desks = nav.filter((section) => DESK_IDS.has(section.id));
   return (
-    <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-80 shrink-0 space-y-4 overflow-y-auto px-4 py-6 xl:block">
+    <aside aria-label="Live" className="sticky top-[104px] hidden h-[calc(100svh-104px)] w-80 shrink-0 space-y-4 overflow-y-auto px-4 py-6 min-[1600px]:block">
       <section className="panel rounded-2xl p-4">
         <h2 className="flex items-center gap-2 text-[15px] font-medium text-white">
           {/* Vistrial's "waiting for you" marker. */}

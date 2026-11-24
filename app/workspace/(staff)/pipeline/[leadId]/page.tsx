@@ -45,7 +45,8 @@ export default async function LeadPage({ params }: { params: Promise<{ leadId: s
         ← All leads
       </Link>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
+      <div className="@container">
+      <div className="grid grid-cols-1 gap-5 @5xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
         <div className="space-y-5">
           <Section title="Contact" icon={UserRound}>
             <dl className="grid gap-4 sm:grid-cols-3">
@@ -98,7 +99,7 @@ export default async function LeadPage({ params }: { params: Promise<{ leadId: s
           </Section>
         </div>
 
-        <div className="space-y-5 xl:sticky xl:top-20 xl:self-start">
+        <div className="space-y-5 @5xl:sticky @5xl:top-20 @5xl:self-start">
           <Section title="Log the discovery call" icon={PhoneCall} hint="The outcome moves the stage.">
             <LogCallForm leadId={lead.id} />
             {calls.length ? (
@@ -119,6 +120,7 @@ export default async function LeadPage({ params }: { params: Promise<{ leadId: s
             <LeadForm leadId={lead.id} stage={lead.stage} nextAction={lead.next_action ?? ''} notes={lead.notes ?? ''} />
           </Section>
         </div>
+      </div>
       </div>
     </div>
   );

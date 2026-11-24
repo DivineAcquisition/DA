@@ -206,7 +206,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
   const isThisWeek = data.today >= data.week_start && data.today <= data.week_end;
 
   return (
-    <div>
+    <div className="@container">
       <DeskHeader
         crumb="Billing"
         title="Weekly billing"
@@ -215,7 +215,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
       />
 
       <div className="mb-5 flex flex-wrap items-center gap-2">
-        <select aria-label="Seat" className={`${field} min-w-[240px]`} value={placement.id} onChange={(event) => router.push(`/workspace/billing?seat=${event.target.value}&week=${data.week_start}`)}>
+        <select aria-label="Seat" className={`${field} w-full sm:w-auto sm:min-w-[240px]`} value={placement.id} onChange={(event) => router.push(`/workspace/billing?seat=${event.target.value}&week=${data.week_start}`)}>
           {data.placements.map((seat) => (
             <option key={seat.id} value={seat.id}>
               {seat.operator_name} · {seat.client_name}
@@ -255,7 +255,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
         <p className="panel mb-5 rounded-2xl px-5 py-3 text-sm text-flag-critical">Last charge attempt failed: {charge.charge_error}</p>
       ) : null}
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,460px)]">
+      <div className="grid grid-cols-1 gap-5 @5xl:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
         <div className="space-y-5">
           <Section
             title="Hours and pay by shift"
@@ -288,15 +288,15 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
             ) : (
               <ul className="divide-y divide-white/[0.06]">
                 {data.days.map((day) => (
-                  <li key={day.date} className="flex flex-wrap items-center gap-x-4 gap-y-2 py-3">
+                  <li key={day.date} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 py-3 sm:flex sm:flex-wrap">
                     <div className="w-28 shrink-0">
                       <p className="text-sm text-white">{dayLabel(day.date)}</p>
                       <div className="mt-1">
                         <Pill tone={STATUS_TONE[day.status] ?? 'neutral'}>{STATUS_LABEL[day.status] ?? day.status}</Pill>
                       </div>
                     </div>
-                    <p className="min-w-0 flex-1 text-[13px] leading-relaxed text-neutral-400">{dayOutputs(day)}</p>
-                    <label className="flex items-center gap-2 text-[13px] text-neutral-500">
+                    <p className="order-2 col-span-2 min-w-0 flex-1 text-[13px] leading-relaxed text-neutral-400 sm:order-none sm:col-span-1">{dayOutputs(day)}</p>
+                    <label className="order-3 col-span-2 flex items-center gap-2 text-[13px] text-neutral-500 sm:order-none sm:col-span-1">
                       <input
                         type="number"
                         inputMode="decimal"
@@ -314,7 +314,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                       />
                       hrs
                     </label>
-                    <span className="w-20 text-right text-sm tabular-nums text-white">{money(pays[day.date] ?? 0)}</span>
+                    <span className="order-1 text-right text-sm tabular-nums text-white sm:order-none sm:w-20">{money(pays[day.date] ?? 0)}</span>
                   </li>
                 ))}
               </ul>
@@ -395,34 +395,34 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               <dl className="space-y-2 rounded-xl border border-white/[0.08] bg-white/[0.015] px-4 py-3 text-sm">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-neutral-500">Client is charged</p>
-                <div className="flex justify-between text-neutral-300">
+                <div className="flex justify-between gap-4 text-neutral-300">
                   <dt>Operator pay</dt>
                   <dd className="tabular-nums">{money(payValue)}</dd>
                 </div>
-                <div className="flex justify-between text-neutral-300">
+                <div className="flex justify-between gap-4 text-neutral-300">
                   <dt>Commission</dt>
                   <dd className="tabular-nums">{money(commissionValue)}</dd>
                 </div>
-                <div className="flex justify-between text-neutral-300">
+                <div className="flex justify-between gap-4 text-neutral-300">
                   <dt>Management fee</dt>
                   <dd className="tabular-nums">{money(feeValue)}</dd>
                 </div>
-                <div className="flex justify-between border-t border-white/[0.08] pt-2 text-base font-medium text-white">
+                <div className="flex justify-between gap-4 border-t border-white/[0.08] pt-2 text-base font-medium text-white">
                   <dt>Total</dt>
                   <dd className="tabular-nums">{money(total)}</dd>
                 </div>
               </dl>
               <dl className="space-y-2 rounded-xl border border-white/[0.08] bg-white/[0.015] px-4 py-3 text-sm">
                 <p className="text-[11px] uppercase tracking-[0.08em] text-neutral-500">Operator is paid</p>
-                <div className="flex justify-between text-neutral-300">
+                <div className="flex justify-between gap-4 text-neutral-300">
                   <dt>Pay ({hoursLabel(hoursTotal)})</dt>
                   <dd className="tabular-nums">{money(payValue)}</dd>
                 </div>
-                <div className="flex justify-between text-neutral-300">
+                <div className="flex justify-between gap-4 text-neutral-300">
                   <dt>Commission</dt>
                   <dd className="tabular-nums">{money(commissionValue)}</dd>
                 </div>
-                <div className="flex justify-between border-t border-white/[0.08] pt-2 text-base font-medium text-white">
+                <div className="flex justify-between gap-4 border-t border-white/[0.08] pt-2 text-base font-medium text-white">
                   <dt>Total</dt>
                   <dd className="tabular-nums">{money(earned)}</dd>
                 </div>
@@ -488,7 +488,7 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
           </Section>
         </div>
 
-        <div className="space-y-4 xl:sticky xl:top-20 xl:self-start">
+        <div className="space-y-4 @5xl:sticky @5xl:top-20 @5xl:self-start">
           <Section title="Emails" icon={Mail} hint="Preview exactly what each person gets.">
             <div role="tablist" className="mb-3 flex gap-1 text-sm">
               {(
@@ -521,13 +521,13 @@ export default function WeeklyBilling({ data }: { data: WeekData }) {
                 </>
               )}
             </p>
-            <iframe title="Email preview" sandbox="" srcDoc={receipt.html} className="h-[600px] w-full rounded-xl border border-white/[0.08] bg-[#07070b]" />
+            <iframe title="Email preview" sandbox="" srcDoc={receipt.html} className="h-[480px] w-full sm:h-[600px] rounded-xl border border-white/[0.08] bg-[#07070b]" />
             {message ? (
               <p role="status" className={`mt-3 text-sm ${message.tone === 'good' ? 'text-flag-good' : 'text-flag-critical'}`}>
                 {message.text}
               </p>
             ) : null}
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-2 max-sm:[&>button]:w-full max-sm:[&>button]:justify-center">
               <button type="button" className={secondary} disabled={pending || locked} onClick={() => run(saveWeekChargeAction)}>
                 Save
               </button>
