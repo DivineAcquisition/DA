@@ -51,7 +51,14 @@ function clean(list: unknown, max: number): string[] {
 
 export async function aiDraft(input: string): Promise<Draft | null> {
   if (!process.env.ANTHROPIC_API_KEY?.trim()) return null;
-  const client = new Anthropic({ maxRetries: 2, timeout: 120_000 });
+  // An organization-level key (not scoped to a workspace) must name the
+  // workspace on every request; a workspace-scoped key needs nothing.
+  const workspace = process.env.ANTHROPIC_WORKSPACE_ID?.trim();
+  const client = new Anthropic({
+    maxRetries: 2,
+    timeout: 120_000,
+    ...(workspace ? { defaultHeaders: { 'anthropic-workspace-id': workspace } } : {}),
+  });
   try {
     const response = await client.beta.messages.create({
       model: MODEL,

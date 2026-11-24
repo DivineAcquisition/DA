@@ -85,6 +85,9 @@ describe('bi-weekly report analysis', () => {
     const check = integrity({ ...base, ghl: { linked: true, status: 'needs_attention', last_success_at: null, last_error: '401: The token is not authorized for this scope.', synced_days: 0 }, mismatches: [] });
     expect(check.state).toBe('unverified');
     expect(check.lines[0]).toContain('401: The token is not authorized for this scope.');
+    const stale = integrity({ ...base, ghl: { linked: true, status: 'needs_attention', last_success_at: null, last_error: '401', synced_days: 4 }, mismatches: [] });
+    expect(stale.state).toBe('unverified');
+    expect(stale.lines.join(' ')).not.toContain('No mismatches');
     const unlinked = integrity({ ...base, ghl: { linked: false, status: null, last_success_at: null, last_error: null, synced_days: 0 }, mismatches: [] });
     expect(unlinked.lines[0]).toContain('not linked to a GoHighLevel user');
   });

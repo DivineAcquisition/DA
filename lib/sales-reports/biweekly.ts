@@ -224,17 +224,14 @@ export function integrity(data: AnalysisData): Integrity {
   const resolved = data.mismatches.length - open.length;
   const linked = Boolean(data.ghl.linked);
   const syncedDays = Number(data.ghl.synced_days) || 0;
-  const state: Integrity['state'] =
-    linked && data.ghl.status !== 'needs_attention' && syncedDays >= submittedDays && submittedDays > 0
-      ? 'verified'
-      : linked && syncedDays > 0
-        ? 'partly_verified'
-        : 'unverified';
+  // Numbers count as checked only when the link is healthy and GoHighLevel synced at least one day.
+  const checked = linked && data.ghl.status !== 'needs_attention' && syncedDays > 0;
+  const state: Integrity['state'] = checked && syncedDays >= submittedDays && submittedDays > 0 ? 'verified' : checked ? 'partly_verified' : 'unverified';
 
   const lines: string[] = [];
   if (!linked) {
     lines.push('This seat is not linked to a GoHighLevel user, so none of the numbers could be checked against GoHighLevel. The client report shows them as operator reported.');
-  } else if (data.ghl.status === 'needs_attention' || syncedDays === 0) {
+  } else if (!checked) {
     lines.push(
       `GoHighLevel did not sync for this period${data.ghl.last_error ? ` (${data.ghl.last_error})` : ''}, so the numbers could not be checked. The client report shows them as operator reported.`,
     );
@@ -251,7 +248,7 @@ export function integrity(data: AnalysisData): Integrity {
       );
     }
     if (open.length > 12) lines.push(`…and ${open.length - 12} more on the seat's Mismatches list.`);
-  } else if (linked && syncedDays > 0) {
+  } else if (checked) {
     lines.push('No mismatches: every checked number the operator entered matched GoHighLevel.');
   }
   if (resolved) lines.push(`${resolved} earlier mismatch${resolved === 1 ? ' was' : 'es were'} already reviewed.`);
