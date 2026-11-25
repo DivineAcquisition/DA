@@ -6,6 +6,9 @@ import {
   CALENDAR,
   CTA_LABEL,
   FACEBOOK_DISCLAIMER,
+  HEADLINE_ACCOUNTS,
+  HEADLINE_LEAD,
+  HEADLINE_WINDOW,
   PILL_BANNER,
   TESTIMONIALS,
   TESTIMONIALS_HEADLINE,
@@ -46,9 +49,7 @@ export default async function CleaningFunnelPage({
         <div className="lx-wrap lx-hero-inner">
           <AnimatedShinyText className="lx-pill mx-0 max-w-none text-brand-300">{PILL_BANNER}</AnimatedShinyText>
           <h1 className="lx-headline go-hero-title">
-            We&apos;ll Book <span className="lx-accent">10 First Cleans</span> From Homeowners Who Only Talked To You,
-            Then Turn Them Into <span className="lx-accent">Recurring Clients.</span>
-            <span className="go-hero-close">Done For You, Ads Live In 7 Days.</span>
+            {HEADLINE_LEAD} <span className="lx-accent">{HEADLINE_ACCOUNTS}</span> {HEADLINE_WINDOW}
           </h1>
           <p className="lx-requirement">{VIDEO_LABEL}</p>
           <div className="lx-video-wrap go-magic">
