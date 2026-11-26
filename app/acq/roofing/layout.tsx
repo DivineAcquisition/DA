@@ -1,7 +1,15 @@
 import type { Metadata } from 'next';
+import { Geist_Mono } from 'next/font/google';
 import { RoofingPixel } from '@/app/acq/components/RoofingPixel';
+import { interDisplay } from '@/app/fonts/inter-display';
 import { ROOFING } from '@/lib/acq/niche-content';
-import './niche.css';
+import '@/app/site/site.css';
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: { absolute: ROOFING.meta.title },
@@ -29,9 +37,9 @@ export const metadata: Metadata = {
 
 export default function RoofingLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div className={`${interDisplay.variable} ${geistMono.variable} da-site min-h-screen`}>
       <RoofingPixel />
       {children}
-    </>
+    </div>
   );
 }

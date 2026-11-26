@@ -97,6 +97,25 @@ export type NicheContent = {
   /** Content setting. A spend band qualifies when its minimum is at least this many dollars. */
   qualificationCutoff: number;
   bookingLead: string;
+  /** Small labels above the landing page's section headings. */
+  sectionLabels: {
+    stats: string;
+    need: string;
+    why: string;
+    fit: string;
+    steps: string;
+    faq: string;
+    final: string;
+  };
+  /** The standalone form page every call to action on the landing page opens. */
+  apply: {
+    meta: { title: string; description: string };
+    eyebrow: string;
+    lead: string;
+    steps: { title: string; body: string }[];
+    back: string;
+    nextNote: string;
+  };
   form: {
     heading: string;
     submit: string;
@@ -376,6 +395,33 @@ export const ROOFING: NicheContent = {
   },
   qualificationCutoff: 2000,
   bookingLead: 'Pick a time for your free 30-minute Lead Leak Audit. You keep the findings either way.',
+  sectionLabels: {
+    stats: 'The numbers',
+    need: 'The fix',
+    why: 'The audit',
+    fit: 'Fit',
+    steps: 'The process',
+    faq: 'FAQ',
+    final: 'Free audit',
+  },
+  apply: {
+    meta: {
+      title: 'Book Your Free Lead Leak Audit | Divine Acquisition',
+      description: 'Tell us about your roofing company, then pick a time for your free 30-minute Lead Leak Audit.',
+    },
+    eyebrow: 'Free Lead Leak Audit',
+    lead: 'Tell us a little about your company. Next, you pick a time for your free 30-minute audit.',
+    steps: [
+      { title: 'Tell us about your company', body: 'This form. Under a minute.' },
+      { title: 'Pick a time', body: '30 minutes on our calendar.' },
+      {
+        title: 'Get your audit',
+        body: 'We time your reply, count the estimates with no second call, and show what they cost. You keep the findings.',
+      },
+    ],
+    back: 'Back to the overview',
+    nextNote: "Next, you'll pick a time for your audit.",
+  },
   form: {
     heading: 'Book your free Lead Leak Audit',
     submit: 'Continue to booking',
@@ -454,6 +500,10 @@ export const REMODELING_DRAFT: NicheContent = (() => {
     title: 'Lead Leak Audit for Remodeling Companies | Divine Acquisition',
     description:
       'Free 30-minute Lead Leak Audit for remodeling companies who already pay for leads. See what happens to the quotes you have already sent.',
+  };
+  draft.apply.meta = {
+    title: draft.apply.meta.title,
+    description: 'Tell us about your remodeling company, then pick a time for your free 30-minute Lead Leak Audit.',
   };
   draft.pill = 'For remodeling companies running ads';
   const headline =

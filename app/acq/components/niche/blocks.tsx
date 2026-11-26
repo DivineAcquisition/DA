@@ -62,7 +62,7 @@ export function NicheVideo({ video }: { video: NicheContent['video'] }) {
   );
 }
 
-function embedSrc(url: string): string | null {
+export function embedSrc(url: string): string | null {
   try {
     const parsed = new URL(url);
     const host = parsed.hostname.replace(/^www\./, '');

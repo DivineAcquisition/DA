@@ -234,6 +234,14 @@ export function roofingNotYetPath(host?: string): string {
   return acqPublicPath('/roofing/not-yet', host);
 }
 
+export function roofingLandingPath(host?: string | null): string {
+  return acqPublicPath('/roofing', host);
+}
+
+export function roofingApplyPath(host?: string | null): string {
+  return acqPublicPath('/roofing/apply', host);
+}
+
 export function roofingVisitorPath(
   payload: QualificationPayload,
   host: string | undefined,
