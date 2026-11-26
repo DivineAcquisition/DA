@@ -17,9 +17,9 @@ const interDisplay = Inter({
   display: 'swap',
 });
 
-const title = 'Divine Acquisition | Add 10-15 Recurring Accounts In 30-90 Days';
+const title = 'Divine Acquisition | Grow Your Residential & Remote Cleaning Business On Autopilot';
 const description =
-  "We'll help cleaning companies add 10-15 recurring accounts in 30-90 days.";
+  'Missed-call booking, quote follow-up, and recurring conversion for remote residential cleaning companies. Live in 14 days.';
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -27,16 +27,18 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://go.divineacquisition.io'),
   alternates: { canonical: 'https://go.divineacquisition.io/' },
   openGraph: {
-    title,
-    description,
+    title: 'Divine Acquisition | More recurring cleans from the leads you already buy',
+    description:
+      'We install the booking and follow-up backend so Facebook and Google leads stop dying in voicemail. Keep Jobber or Housecall Pro.',
     url: 'https://go.divineacquisition.io/',
     siteName: 'Divine Acquisition',
     images: [{ url: '/icon-512.png', width: 512, height: 512, alt: 'Divine Acquisition' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title,
-    description,
+    title: 'Divine Acquisition | More recurring cleans from the leads you already buy',
+    description:
+      'We install the booking and follow-up backend so Facebook and Google leads stop dying in voicemail. Keep Jobber or Housecall Pro.',
   },
   robots: { index: true, follow: true },
 };

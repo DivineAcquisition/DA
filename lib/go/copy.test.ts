@@ -7,9 +7,10 @@ describe('cleaning funnel copy', () => {
       .join(' ')
       .toLowerCase();
     expect(text).toContain('cleaning');
-    expect(HEADLINE_BEFORE).toBe("We'll Help Cleaning Companies Add 10-15 Recurring Accounts In 30-90 Days.");
-    expect(text).toContain('10-15 recurring accounts');
-    expect(text).toContain('30-90 days');
+    expect(HEADLINE_BEFORE).toBe(
+      "We'll Book 10 First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In 7 Days.",
+    );
+    expect(text).toContain('recurring clients');
     expect(text).not.toContain('coach');
     expect(TESTIMONIALS.map((item) => item.role).join(' ')).toMatch(/Clean/i);
   });
