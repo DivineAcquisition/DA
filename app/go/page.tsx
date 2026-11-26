@@ -17,7 +17,6 @@ import {
   CALENDAR,
   CTA_LABEL,
   FACEBOOK_DISCLAIMER,
-  HEADLINE_CLOSE,
   HEADLINE_MAIN,
   PILL_BANNER,
   TESTIMONIALS,
@@ -71,10 +70,9 @@ function Hero() {
               <span className="da-display text-[13px] font-semibold tracking-[0.01em] text-white sm:text-sm">{PILL_BANNER}</span>
             </span>
           </p>
-          <h1 className="da-display da-gradient-text mt-7 text-[2.15rem] leading-[1.05] font-semibold text-balance sm:text-5xl lg:text-[3.35rem]">
+          <h1 className="da-display da-gradient-text go-hero-title mt-7 text-[2.15rem] leading-[1.05] font-bold text-balance sm:text-5xl lg:text-[3.35rem]">
             {HEADLINE_MAIN}
           </h1>
-          <p className="da-display mt-5 text-lg font-medium text-[#c3b6fe] sm:text-2xl">{HEADLINE_CLOSE}</p>
           <p className="da-mono mt-8 text-[11px] tracking-[0.18em] text-[#c3b6fe]/80 uppercase">{VIDEO_LABEL}</p>
           <div className="da-panel relative mt-5 w-full overflow-hidden rounded-[28px] p-1.5 sm:p-2">
             <BorderBeam size={120} duration={10} colorFrom="#9a88fc" colorTo="#c3b6fe" borderWidth={1} />

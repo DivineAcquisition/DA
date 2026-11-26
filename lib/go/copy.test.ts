@@ -8,7 +8,7 @@ describe('cleaning funnel copy', () => {
       .toLowerCase();
     expect(text).toContain('cleaning');
     expect(HEADLINE_BEFORE).toBe(
-      "We'll Book 10 First Cleans From Homeowners Who Only Talked To You, Then Turn Them Into Recurring Clients. Done For You, Ads Live In 7 Days.",
+      "We'll Help You Book 10 New Cleans, Then Turn Them Into Recurring Clients With 30-90 Days.",
     );
     expect(text).toContain('recurring clients');
     expect(text).not.toContain('coach');

@@ -888,6 +888,11 @@
   }
 }
 
+/* A step heavier than the company site's medium display weight. */
+.da-site .go-hero-title {
+  font-weight: 700;
+}
+
 /* Video frame on the cleaning page once it uses the company-site surface. */
 .da-site .go-player {
   width: 100%;
